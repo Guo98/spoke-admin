@@ -1,0 +1,19 @@
+.bold {
+    font-weight: bold;
+}
+
+.order-padding {
+    padding-bottom: 8px;
+}
+
+.details-padding {
+    padding-left: 20px;
+}
+
+.header-margins {
+    margin-top: 0px;
+}
+
+.support-button-padding {
+    padding-top: 10px;
+}

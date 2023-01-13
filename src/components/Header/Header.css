@@ -1,0 +1,25 @@
+.rounded-edges .MuiInputBase-root {
+    border-radius: 999em 999em 999em 999em;
+}
+
+.css-gjbq6i-MuiInputBase-root-MuiFilledInput-root:before {
+    border-bottom: 0px !important;
+}
+
+.search-padding {
+    padding-left: 20px;
+    padding-right: 30px;
+    padding-top: 20px;
+}
+
+.css-g9m4e0-MuiInputBase-root-MuiFilledInput-root:before {
+    border-bottom: 0px !important;
+}
+
+.css-g9m4e0-MuiInputBase-root-MuiFilledInput-root:after {
+    border-bottom: 0px !important;
+}
+
+.profile-align {
+    text-align: right;
+}

@@ -1,0 +1,14 @@
+.header-font {
+    font-size: larger;
+    padding-left: 10%;
+}
+
+.bottomPush {
+    position: fixed;
+    bottom: 0;
+}
+
+.noVerticalPadding {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
