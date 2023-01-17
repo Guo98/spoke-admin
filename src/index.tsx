@@ -6,6 +6,15 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./app/store";
 import { Provider } from "react-redux";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+const theme = createTheme({
+  typography: {
+    allVariants: {
+      fontFamily: "Nunito Sans",
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,7 +28,9 @@ root.render(
       audience="https://spoke-api.azurewebsites.net"
     >
       <Provider store={store}>
-        <App />
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
       </Provider>
     </Auth0Provider>
   </React.StrictMode>

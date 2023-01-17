@@ -8,6 +8,7 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Grid from "@mui/material/Grid";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import CircleIcon from "@mui/icons-material/Circle";
+import Typography from "@mui/material/Typography";
 import AssignModal from "./AssignModal";
 import ManageModal from "./ManageModal";
 import { InventorySummary } from "../../interfaces/inventory";
@@ -52,7 +53,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const SummaryList = (props: InventorySummary) => {
-  const { name, location, serial_numbers } = props;
+  const { name, location, serial_numbers, image_source } = props;
   return (
     <>
       {serial_numbers?.length > 0 &&
@@ -62,13 +63,13 @@ const SummaryList = (props: InventorySummary) => {
               <AccordionSummary>
                 <Grid container>
                   <Grid item xs={5}>
-                    <div className="bold">{name}</div>
+                    <Typography fontWeight="bold">{name}</Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    {device.sn}
+                    <Typography>{device.sn}</Typography>
                   </Grid>
                   <Grid item xs={2} sx={{ textAlign: "left" }}>
-                    {location}
+                    <Typography>{location}</Typography>
                   </Grid>
                   {device.status === "In Stock" && (
                     <Grid item sx={{ color: "#6BD651" }}>
@@ -93,6 +94,8 @@ const SummaryList = (props: InventorySummary) => {
                         <AssignModal
                           serial_number={device.sn}
                           device_name={name}
+                          device_location={location}
+                          image_source={image_source}
                         />
                       </div>
                     ) : (

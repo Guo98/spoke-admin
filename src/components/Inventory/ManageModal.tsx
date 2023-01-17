@@ -19,9 +19,13 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 450,
   bgcolor: "background.paper",
-  border: "2px solid #000",
+  borderRadius: "20px",
   boxShadow: 24,
   p: 4,
+};
+
+const textFieldStyle = {
+  "& fieldset": { borderRadius: "10px" },
 };
 
 interface ManageProps {
@@ -65,15 +69,20 @@ const ManageModal = (props: ManageProps) => {
             <>
               <Typography
                 id="modal-modal-title"
-                variant="h6"
-                component="h2"
+                variant="h5"
+                component="h3"
                 sx={{ textAlign: "center" }}
               >
                 Manage Device
               </Typography>
-              <Grid container spacing={2} justifyContent="space-evenly">
+              <Grid
+                container
+                spacing={2}
+                justifyContent="space-evenly"
+                sx={{ paddingTop: "15px" }}
+              >
                 <Grid item xs={10}>
-                  <FormControl variant="standard" fullWidth>
+                  <FormControl fullWidth sx={textFieldStyle}>
                     <InputLabel id="manage-type-label">
                       What do you want to do?
                     </InputLabel>
@@ -100,6 +109,7 @@ const ManageModal = (props: ManageProps) => {
                   <Button
                     variant="contained"
                     onClick={() => setChangeView(true)}
+                    sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
                   >
                     <ArrowForwardIcon />
                   </Button>

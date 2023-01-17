@@ -15,7 +15,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { updateInventory } from "../../app/slices/inventorySlice";
-import { getInventory, testAuth } from "../../services/inventoryAPI";
+import { getInventory } from "../../services/inventoryAPI";
 import SummaryCard from "./SummaryCard";
 import SummaryList from "./SummaryList";
 import Filter from "./Filter";
@@ -73,8 +73,6 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {
     const fetchData = async () => {
       const accessToken = await getAccessTokenSilently();
-      //console.log("access token :::::::: ", accessToken);
-      //const authResult = await testAuth(accessToken);
       const inventoryResult = await getInventory(accessToken);
       dispatch(updateInventory(inventoryResult.data));
     };

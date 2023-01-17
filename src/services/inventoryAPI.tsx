@@ -21,13 +21,14 @@ export async function getInventory(accessToken: string) {
     });
 }
 
-export async function testAuth(accessToken: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + "/testingauth", {
-    method: "GET",
+export async function deployLaptop(accessToken: string, body: object) {
+  return fetch(process.env.REACT_APP_SPOKE_API + "/deployLaptop", {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "text/plain",
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify(body),
   })
     .then((response) => {
       if (!response.ok) {

@@ -61,13 +61,6 @@ const SummaryCard = (props: InventorySummary) => {
                 color: lowStock() ? "red" : "black",
               }}
             />
-            {/* <Chip
-              label={getStatus()}
-              sx={{
-                backgroundColor:
-                  getStatus() === "Low Stock" ? "#FBDBDB" : "lightblue",
-              }}
-            /> */}
           </Stack>
         </CardContent>
       </Card>

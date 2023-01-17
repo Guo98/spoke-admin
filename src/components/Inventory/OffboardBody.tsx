@@ -19,6 +19,15 @@ interface OffboardProps {
   };
 }
 
+const textFieldStyle = {
+  "& fieldset": { borderRadius: "10px" },
+};
+
+const rightTextFieldStyle = {
+  "& fieldset": { borderRadius: "10px" },
+  float: "right",
+};
+
 const OffboardBody = (props: OffboardProps) => {
   const { manageType, name, address } = props;
   const [disabled, setDisabled] = useState(true);
@@ -31,8 +40,9 @@ const OffboardBody = (props: OffboardProps) => {
             label="First Name"
             value={name.first_name}
             disabled={disabled}
-            variant="standard"
             fullWidth
+            sx={textFieldStyle}
+            size="small"
           />
         </Grid>
         <Grid item xs={6}>
@@ -40,8 +50,9 @@ const OffboardBody = (props: OffboardProps) => {
             label="Last Name"
             value={name.last_name}
             disabled={disabled}
-            variant="standard"
             fullWidth
+            sx={rightTextFieldStyle}
+            size="small"
           />
         </Grid>
       </Grid>
@@ -51,7 +62,8 @@ const OffboardBody = (props: OffboardProps) => {
           value={address.al1}
           disabled={disabled}
           fullWidth
-          variant="standard"
+          sx={textFieldStyle}
+          size="small"
         />
       </Grid>
       <Grid container sx={{ paddingTop: "15px" }}>
@@ -60,7 +72,8 @@ const OffboardBody = (props: OffboardProps) => {
           value={address.al2}
           disabled={disabled}
           fullWidth
-          variant="standard"
+          sx={textFieldStyle}
+          size="small"
         />
       </Grid>
       <Grid container spacing={3} sx={{ paddingTop: "15px" }}>
@@ -69,8 +82,9 @@ const OffboardBody = (props: OffboardProps) => {
             label="City"
             value={address.city}
             disabled={disabled}
-            variant="standard"
             fullWidth
+            sx={textFieldStyle}
+            size="small"
           />
         </Grid>
         <Grid item xs={6}>
@@ -78,8 +92,9 @@ const OffboardBody = (props: OffboardProps) => {
             label="State"
             value={address.state}
             disabled={disabled}
-            variant="standard"
             fullWidth
+            sx={textFieldStyle}
+            size="small"
           />
         </Grid>
       </Grid>
@@ -89,8 +104,9 @@ const OffboardBody = (props: OffboardProps) => {
             label="Postal Code"
             value={address.postal_code}
             disabled={disabled}
-            variant="standard"
             fullWidth
+            sx={textFieldStyle}
+            size="small"
           />
         </Grid>
         <Grid item xs={6}>
@@ -98,17 +114,43 @@ const OffboardBody = (props: OffboardProps) => {
             label="Country"
             value={address.country_code}
             disabled={disabled}
-            variant="standard"
             fullWidth
+            sx={textFieldStyle}
+            size="small"
           />
         </Grid>
       </Grid>
-      <Grid container justifyContent="space-evenly" sx={{ paddingTop: "15px" }}>
+      <Grid
+        container
+        justifyContent="space-evenly"
+        sx={{ paddingTop: "15px" }}
+        spacing={3}
+      >
         <Grid item xs={6}>
-          <Button onClick={() => setDisabled(false)}>Edit</Button>
+          <Button
+            onClick={() => setDisabled(false)}
+            sx={{
+              backgroundColor: "white",
+              color: "#054ffe",
+              borderRadius: "10px",
+            }}
+            variant="contained"
+            fullWidth
+          >
+            Edit
+          </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button variant="contained">Submit</Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#054ffe",
+              borderRadius: "10px",
+            }}
+            fullWidth
+          >
+            Submit
+          </Button>
         </Grid>
       </Grid>
     </>
