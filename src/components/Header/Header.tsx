@@ -18,12 +18,26 @@ const Header: FC = (): ReactElement => {
             <FormControl className="rounded-edges" fullWidth variant="filled">
               <InputLabel
                 htmlFor="outlined-adornment-password"
-                sx={{ paddingLeft: "15px" }}
+                sx={{
+                  paddingLeft: "15px",
+                }}
               >
                 Search orders, users, and accounts
               </InputLabel>
               <FilledInput
                 id="outlined-adornment-password"
+                sx={{
+                  ":before": {
+                    borderBottom: "0px",
+                  },
+                  ":after": {
+                    borderBottom: "0px",
+                  },
+                  "&&&:before": {
+                    borderBottom: "0px",
+                  },
+                }}
+                inputProps={{ disableUnderline: true }}
                 endAdornment={
                   <InputAdornment position="end" sx={{ paddingRight: "25px" }}>
                     <IconButton

@@ -34,10 +34,6 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     {...props}
   />
 ))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
   flexDirection: "row-reverse",
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
@@ -54,6 +50,17 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const SummaryList = (props: InventorySummary) => {
   const { name, location, serial_numbers, image_source } = props;
+
+  const determineStatus = (status: string) => {
+    if (status === "Offboarding" || status === "Returning") {
+      return "Requested";
+    } else if (status === "Top Up") {
+      return "In Progress";
+    } else {
+      return status;
+    }
+  };
+
   return (
     <>
       {serial_numbers?.length > 0 &&
@@ -92,7 +99,7 @@ const SummaryList = (props: InventorySummary) => {
                         Status:{" "}
                       </Typography>
                       <Typography display="inline" component="span">
-                        {device.status}
+                        {determineStatus(device.status)}
                       </Typography>
                     </div>
                     <>
@@ -117,7 +124,7 @@ const SummaryList = (props: InventorySummary) => {
                           Grade:{" "}
                         </Typography>
                         <Typography display="inline" component="span">
-                          {device.grade}
+                          {device.grade || "Not graded yet"}
                         </Typography>
                       </div>
                     )}

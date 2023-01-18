@@ -63,6 +63,8 @@ const Inventory: FC = (): ReactElement => {
   const [tabValue, setTabValue] = useState(0);
   const [stock, setStock] = useState(data);
   const [deployed, setDeployed] = useState(data);
+  const [inprogress, setInprogress] = useState(data);
+  const [oginprogrss, setOGInprogress] = useState(data);
   const [ogstock, setOGStock] = useState(data);
   const [ogdeployed, setOGDeployed] = useState(data);
   const [openAdd, setOpenAdd] = useState(false);
@@ -88,9 +90,6 @@ const Inventory: FC = (): ReactElement => {
     }
   }, [data]);
 
-  useEffect(() => {}, [stock]);
-  useEffect(() => {}, [deployed]);
-
   const setFilters = (location: string, name: string) => {
     setLocation(location);
     setDevice([name]);
@@ -114,16 +113,23 @@ const Inventory: FC = (): ReactElement => {
     setInventoryData(data);
     let inStock: InventorySummary[] = [];
     let deployed: InventorySummary[] = [];
+    let offboarding: InventorySummary[] = [];
+
     const tempData = data;
     tempData.forEach((device) => {
       let instocklaptops = device.serial_numbers.filter(
-        (individual) =>
-          individual.status === "In Stock" ||
-          individual.status === "Offboarding" ||
-          individual.status === "Returning"
+        (individual) => individual.status === "In Stock"
       );
+
       let deployedlaptops = device.serial_numbers.filter(
         (individual) => individual.status === "Deployed"
+      );
+
+      let offboardingLaptops = device.serial_numbers.filter(
+        (individual) =>
+          individual.status === "Offboarding" ||
+          individual.status === "Returning" ||
+          individual.status === "Top Up"
       );
 
       let tempInStock = { ...device };
@@ -133,11 +139,17 @@ const Inventory: FC = (): ReactElement => {
       let tempDeployed = { ...device };
       tempDeployed.serial_numbers = deployedlaptops.slice(0);
       deployed.push(tempDeployed);
+
+      let tempOffboarding = { ...device };
+      tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
+      offboarding.push(tempOffboarding);
     });
     setStock(inStock);
     setOGStock(inStock);
     setDeployed(deployed);
     setOGDeployed(deployed);
+    setInprogress(offboarding);
+    setOGInprogress(offboarding);
   }, [data]);
 
   return (
@@ -175,8 +187,20 @@ const Inventory: FC = (): ReactElement => {
           >
             <div className="container-padding">
               <Filter
-                data={tabValue === 0 ? ogstock : ogdeployed}
-                setData={tabValue === 0 ? setStock : setDeployed}
+                data={
+                  tabValue === 0
+                    ? ogstock
+                    : tabValue === 1
+                    ? ogdeployed
+                    : oginprogrss
+                }
+                setData={
+                  tabValue === 0
+                    ? setStock
+                    : tabValue === 1
+                    ? setDeployed
+                    : setInprogress
+                }
                 device_name={device}
                 selected_location={location}
               />
@@ -192,6 +216,7 @@ const Inventory: FC = (): ReactElement => {
             >
               <Tab label="In Stock" {...a11yProps(0)} />
               <Tab label="Deployed" {...a11yProps(1)} />
+              <Tab label="Pending" {...a11yProps(2)} />
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>
@@ -237,6 +262,36 @@ const Inventory: FC = (): ReactElement => {
                 <>
                   {deployed?.length > 0 &&
                     deployed.map((device, index) => {
+                      return cards ? (
+                        <SummaryCard
+                          {...device}
+                          setFilters={setFilters}
+                          index={index}
+                          type="deployed"
+                        />
+                      ) : (
+                        <SummaryList {...device} />
+                      );
+                    })}
+                </>
+              ) : (
+                <CircularProgress />
+              )}
+            </Box>
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            <Box
+              sx={{
+                display: cards ? "flex" : "block",
+                flexWrap: "wrap",
+                flexDirection: "row",
+                justifyContent: cards ? "space-evenly" : "center",
+              }}
+            >
+              {!loading ? (
+                <>
+                  {inprogress?.length > 0 &&
+                    inprogress.map((device, index) => {
                       return cards ? (
                         <SummaryCard
                           {...device}

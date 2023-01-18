@@ -27,7 +27,7 @@ function App() {
             <SpokeDrawer />
           </Box>
         )}
-        <Box component="main" sx={{ flexGrow: 1 }}>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
           {window.location.pathname.substring(1) !== "logout" && <Header />}
           <RouterProvider router={AppContainer} />
         </Box>

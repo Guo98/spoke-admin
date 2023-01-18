@@ -26,53 +26,57 @@ const SummaryCard = (props: InventorySummary) => {
   };
   return (
     <>
-      <Card
-        sx={{
-          minWidth: "275px",
-          maxWidth: "500px",
-          margin: "10px",
-          borderRadius: 2,
-          boxShadow: "5px 5px 5px gray",
-        }}
-        key={index}
-      >
-        <CardMedia
-          sx={{ height: 200 }}
-          image={image_source}
-          title="laptop"
-          component="img"
-        />
-        <CardContent sx={{ backgroundColor: "white" }}>
-          <Link
-            onClick={() => {
-              if (setFilters) setFilters(location, name);
+      {serial_numbers.length > 0 && (
+        <>
+          <Card
+            sx={{
+              minWidth: "275px",
+              maxWidth: "500px",
+              margin: "10px",
+              borderRadius: 2,
+              boxShadow: "5px 5px 5px gray",
             }}
+            key={index}
           >
-            {name}
-          </Link>
-          <Stack
-            direction="row"
-            sx={{ paddingTop: "10px" }}
-            justifyContent="space-evenly"
-          >
-            <Chip
-              label={location}
-              sx={{ backgroundColor: "#D1FBFF", marginRight: "5px" }}
+            <CardMedia
+              sx={{ height: 200 }}
+              image={image_source}
+              title="laptop"
+              component="img"
             />
-            <Chip
-              label={
-                serial_numbers.length +
-                (type === "stock" ? " in stock" : " deployed")
-              }
-              sx={{
-                backgroundColor: "#F0F1F1",
-                marginRight: "5px",
-                color: lowStock() ? "red" : "black",
-              }}
-            />
-          </Stack>
-        </CardContent>
-      </Card>
+            <CardContent sx={{ backgroundColor: "white" }}>
+              <Link
+                onClick={() => {
+                  if (setFilters) setFilters(location, name);
+                }}
+              >
+                {name}
+              </Link>
+              <Stack
+                direction="row"
+                sx={{ paddingTop: "10px" }}
+                justifyContent="space-evenly"
+              >
+                <Chip
+                  label={location}
+                  sx={{ backgroundColor: "#D1FBFF", marginRight: "5px" }}
+                />
+                <Chip
+                  label={
+                    serial_numbers.length +
+                    (type === "stock" ? " in stock" : " deployed")
+                  }
+                  sx={{
+                    backgroundColor: "#F0F1F1",
+                    marginRight: "5px",
+                    color: lowStock() ? "red" : "black",
+                  }}
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </>
   );
 };

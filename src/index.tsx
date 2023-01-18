@@ -22,10 +22,10 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Auth0Provider
-      domain="dev-wwotwaa87dcb33bj.us.auth0.com"
-      clientId="wwpmTOorA6jhau8PREVftfasMs3Rwv7L"
+      domain={process.env.REACT_APP_AUTH0_DOMAIN!}
+      clientId={process.env.REACT_APP_AUTH0_CLIENTID!}
       redirectUri={window.location.origin}
-      audience="https://spoke-api.azurewebsites.net"
+      audience={process.env.REACT_APP_AUTH0_AUDIENCE!}
     >
       <Provider store={store}>
         <ThemeProvider theme={theme}>
