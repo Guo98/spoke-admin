@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -41,6 +40,11 @@ interface ManageProps {
     postal_code: string;
     country_code: string;
   };
+  email: string;
+  device_name: string;
+  serial_number: string;
+  device_location: string;
+  phone_number: string;
 }
 
 const ManageModal = (props: ManageProps) => {
@@ -49,7 +53,11 @@ const ManageModal = (props: ManageProps) => {
   const [changeView, setChangeView] = useState(false);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setChangeView(false);
+    setManageType("");
+  };
 
   const handleChange = (event: SelectChangeEvent) => {
     setManageType(event.target.value);

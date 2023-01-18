@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -12,8 +12,8 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import { useAuth0 } from "@auth0/auth0-react";
-import { deployLaptop } from "../../services/inventoryAPI";
-import { imageMapping, ImageMapping } from "../../utilities/mappings";
+import { manageLaptop } from "../../services/inventoryAPI";
+import ConfirmationBody from "./ConfirmationBody";
 
 const style = {
   position: "absolute" as "absolute",
@@ -86,6 +86,7 @@ const DeployModalContent = (props: DeployProps) => {
   const [country, setCountry] = useState(addressObj.country);
   const [updatedemail, setEmail] = useState(email);
   const [pn, setPn] = useState(phone_number);
+  const [confirmation, setConfirmation] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -110,234 +111,253 @@ const DeployModalContent = (props: DeployProps) => {
       device_location: device_location,
       shipping: shipping,
     };
-    const deployResult = await deployLaptop(accessToken, deployObj);
+    const deployResult = await manageLaptop(
+      accessToken,
+      deployObj,
+      "deployLaptop"
+    );
     console.log("deploy result ::::::: ", deployResult);
+    if (deployResult) {
+      setConfirmation(true);
+    }
   };
 
+  useEffect(() => {
+    if (!openModal) {
+      setConfirmation(false);
+    }
+  }, [openModal]);
+
   return (
-    <Box sx={style}>
-      <Typography id="modal-modal-title" variant="h5" component="h3">
-        Please Confirm Deployment Details:
-      </Typography>
-      <Card sx={{ display: "flex" }}>
-        <CardMedia
-          component="img"
-          sx={{ width: 175 }}
-          image={image_source}
-          alt="laptop"
-        />
-        <CardContent>
-          <Typography sx={{ fontWeight: "bold" }}>{device_name}</Typography>
-          <Typography>{serial_number}</Typography>
-        </CardContent>
-      </Card>
-      <Stack spacing={2} sx={{ paddingTop: "20px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-fn"
-              label="First Name"
-              defaultValue={fn}
-              onChange={(event) => setFn(event.target.value)}
-              size="small"
-              sx={textFieldStyle}
-              disabled={!edit}
+    <>
+      {!confirmation ? (
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h5" component="h3">
+            Please Confirm Deployment Details:
+          </Typography>
+          <Card sx={{ display: "flex" }}>
+            <CardMedia
+              component="img"
+              sx={{ width: 175 }}
+              image={image_source}
+              alt="laptop"
             />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-ln"
-              label="Last Name"
-              defaultValue={ln}
-              sx={rightTextFieldStyle}
-              onChange={(event) => setLn(event.target.value)}
-              size="small"
-              disabled={!edit}
-            />
-          </Grid>
-        </Grid>
-        <div>
-          <TextField
-            required
-            id="standard-address"
-            label="Address Line 1"
-            defaultValue={ad1}
-            fullWidth
-            onChange={(event) => setAd1(event.target.value)}
-            size="small"
-            sx={textFieldStyle}
-            disabled={!edit}
-          />
-        </div>
-        <div>
-          <TextField
-            id="standard-address"
-            label="Address Line 2"
-            defaultValue={ad2}
-            fullWidth
-            onChange={(event) => setAd2(event.target.value)}
-            size="small"
-            sx={textFieldStyle}
-            disabled={!edit}
-          />
-        </div>
-        <Grid
-          container
-          spacing={2}
-          sx={{
-            marginLeft: "-16px !important",
-            marginTop: "0px !important",
-          }}
-        >
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-city"
-              label="City"
-              defaultValue={city}
-              onChange={(event) => setCity(event.target.value)}
-              size="small"
-              sx={textFieldStyle}
-              disabled={!edit}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-state"
-              label="State/Province"
-              defaultValue={state}
-              sx={rightTextFieldStyle}
-              onChange={(event) => setState(event.target.value)}
-              size="small"
-              disabled={!edit}
-            />
-          </Grid>
-        </Grid>
-        <Grid
-          container
-          spacing={2}
-          sx={{
-            marginLeft: "-16px !important",
-            marginTop: "0px !important",
-          }}
-        >
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-postal-code"
-              label="Postal Code"
-              defaultValue={postalCode}
-              onChange={(event) => setPC(event.target.value)}
-              size="small"
-              sx={textFieldStyle}
-              disabled={!edit}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-country"
-              label="Country"
-              defaultValue={country}
-              sx={rightTextFieldStyle}
-              onChange={(event) => setCountry(event.target.value)}
-              size="small"
-              disabled={!edit}
-            />
-          </Grid>
-        </Grid>
-        <Grid
-          container
-          spacing={2}
-          sx={{
-            marginLeft: "-16px !important",
-            marginTop: "0px !important",
-          }}
-        >
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-email"
-              label="Email"
-              defaultValue={updatedemail}
-              onChange={(event) => setEmail(event.target.value)}
-              size="small"
-              sx={textFieldStyle}
-              disabled={!edit}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              required
-              id="standard-phonenumber"
-              label="Phone Number"
-              defaultValue={pn}
-              sx={rightTextFieldStyle}
-              onChange={(event) => setPn(event.target.value)}
-              size="small"
-              disabled={!edit}
-            />
-          </Grid>
-        </Grid>
-        <div>
-          <TextField
-            id="standard-note"
-            label="Note"
-            defaultValue={note}
-            fullWidth
-            sx={textFieldStyle}
-            size="small"
-            disabled={!edit}
-          />
-        </div>
-      </Stack>
-      <hr />
-      <FormControlLabel
-        control={<Checkbox required />}
-        label={
-          <div>
-            <span>By checking this box, I agree to </span>
-            <Link>Terms of Service</Link>
-          </div>
-        }
-      />
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <div className="button">
-            <Button
-              variant="contained"
-              fullWidth
+            <CardContent>
+              <Typography sx={{ fontWeight: "bold" }}>{device_name}</Typography>
+              <Typography>{serial_number}</Typography>
+            </CardContent>
+          </Card>
+          <Stack spacing={2} sx={{ paddingTop: "20px" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-fn"
+                  label="First Name"
+                  defaultValue={fn}
+                  onChange={(event) => setFn(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  disabled={!edit}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-ln"
+                  label="Last Name"
+                  defaultValue={ln}
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setLn(event.target.value)}
+                  size="small"
+                  disabled={!edit}
+                />
+              </Grid>
+            </Grid>
+            <div>
+              <TextField
+                required
+                id="standard-address"
+                label="Address Line 1"
+                defaultValue={ad1}
+                fullWidth
+                onChange={(event) => setAd1(event.target.value)}
+                size="small"
+                sx={textFieldStyle}
+                disabled={!edit}
+              />
+            </div>
+            <div>
+              <TextField
+                id="standard-address"
+                label="Address Line 2"
+                defaultValue={ad2}
+                fullWidth
+                onChange={(event) => setAd2(event.target.value)}
+                size="small"
+                sx={textFieldStyle}
+                disabled={!edit}
+              />
+            </div>
+            <Grid
+              container
+              spacing={2}
               sx={{
-                backgroundColor: "white",
-                color: "#054ffe",
-                borderRadius: "10px",
+                marginLeft: "-16px !important",
+                marginTop: "0px !important",
               }}
-              onClick={() => setEdit(true)}
             >
-              Edit
-            </Button>
-          </div>
-        </Grid>
-        <Grid item xs={6}>
-          <div className="button">
-            <Button
-              variant="contained"
-              fullWidth
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-city"
+                  label="City"
+                  defaultValue={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  disabled={!edit}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-state"
+                  label="State/Province"
+                  defaultValue={state}
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setState(event.target.value)}
+                  size="small"
+                  disabled={!edit}
+                />
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              spacing={2}
               sx={{
-                backgroundColor: "#054ffe",
-                borderRadius: "10px",
+                marginLeft: "-16px !important",
+                marginTop: "0px !important",
               }}
-              onClick={async () => await deploy()}
             >
-              Deploy
-            </Button>
-          </div>
-        </Grid>
-      </Grid>
-    </Box>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-postal-code"
+                  label="Postal Code"
+                  defaultValue={postalCode}
+                  onChange={(event) => setPC(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  disabled={!edit}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-country"
+                  label="Country"
+                  defaultValue={country}
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setCountry(event.target.value)}
+                  size="small"
+                  disabled={!edit}
+                />
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                marginLeft: "-16px !important",
+                marginTop: "0px !important",
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-email"
+                  label="Email"
+                  defaultValue={updatedemail}
+                  onChange={(event) => setEmail(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  disabled={!edit}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="standard-phonenumber"
+                  label="Phone Number"
+                  defaultValue={pn}
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setPn(event.target.value)}
+                  size="small"
+                  disabled={!edit}
+                />
+              </Grid>
+            </Grid>
+            <div>
+              <TextField
+                id="standard-note"
+                label="Note"
+                defaultValue={note}
+                fullWidth
+                sx={textFieldStyle}
+                size="small"
+                disabled={!edit}
+              />
+            </div>
+          </Stack>
+          <hr />
+          <FormControlLabel
+            control={<Checkbox required />}
+            label={
+              <div>
+                <span>By checking this box, I agree to </span>
+                <Link>Terms of Service</Link>
+              </div>
+            }
+          />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <div className="button">
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: "white",
+                    color: "#054ffe",
+                    borderRadius: "10px",
+                  }}
+                  onClick={() => setEdit(true)}
+                >
+                  Edit
+                </Button>
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className="button">
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: "#054ffe",
+                    borderRadius: "10px",
+                  }}
+                  onClick={async () => await deploy()}
+                >
+                  Deploy
+                </Button>
+              </div>
+            </Grid>
+          </Grid>
+        </Box>
+      ) : (
+        <ConfirmationBody conType="deploy" name={fn + " " + ln} />
+      )}
+    </>
   );
 };
 

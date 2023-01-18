@@ -55,7 +55,6 @@ const AssignModal = (props: AssignProps) => {
   const { serial_number, device_name, device_location, image_source } = props;
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(true);
-  const [openDeploy, setDeploy] = useState(false);
   const [shipping, setShipping] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -71,7 +70,11 @@ const AssignModal = (props: AssignProps) => {
     setOpen(true);
     setForm(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setForm(false);
+    setShipping("");
+  };
 
   const handleChange = (event: SelectChangeEvent) => {
     setShipping(event.target.value as string);
@@ -229,7 +232,7 @@ const AssignModal = (props: AssignProps) => {
           </Box>
         ) : (
           <DeployModalContent
-            openModal={openDeploy}
+            openModal={form}
             first_name={firstname}
             last_name={lastname}
             device_name={device_name}

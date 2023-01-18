@@ -7,7 +7,6 @@ export async function getInventory(accessToken: string) {
     },
   })
     .then((response) => {
-      // console.log("response ::::::::::", response.json());
       if (!response.ok) {
         throw new Error("Missing Body");
       }
@@ -21,8 +20,12 @@ export async function getInventory(accessToken: string) {
     });
 }
 
-export async function deployLaptop(accessToken: string, body: object) {
-  return fetch(process.env.REACT_APP_SPOKE_API + "/deployLaptop", {
+export async function manageLaptop(
+  accessToken: string,
+  body: object,
+  route: string
+) {
+  return fetch(process.env.REACT_APP_SPOKE_API + "/" + route, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,

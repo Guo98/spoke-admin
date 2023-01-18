@@ -11,6 +11,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Fab from "@mui/material/Fab";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
@@ -65,6 +66,7 @@ const Inventory: FC = (): ReactElement => {
   const [ogstock, setOGStock] = useState(data);
   const [ogdeployed, setOGDeployed] = useState(data);
   const [openAdd, setOpenAdd] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -79,6 +81,15 @@ const Inventory: FC = (): ReactElement => {
 
     fetchData().catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      setLoading(false);
+    }
+  }, [data]);
+
+  useEffect(() => {}, [stock]);
+  useEffect(() => {}, [deployed]);
 
   const setFilters = (location: string, name: string) => {
     setLocation(location);
@@ -106,7 +117,10 @@ const Inventory: FC = (): ReactElement => {
     const tempData = data;
     tempData.forEach((device) => {
       let instocklaptops = device.serial_numbers.filter(
-        (individual) => individual.status === "In Stock"
+        (individual) =>
+          individual.status === "In Stock" ||
+          individual.status === "Offboarding" ||
+          individual.status === "Returning"
       );
       let deployedlaptops = device.serial_numbers.filter(
         (individual) => individual.status === "Deployed"
@@ -189,18 +203,25 @@ const Inventory: FC = (): ReactElement => {
                 justifyContent: cards ? "space-evenly" : "center",
               }}
             >
-              {stock?.length > 0 &&
-                stock.map((device, index) => {
-                  return cards ? (
-                    <SummaryCard
-                      {...device}
-                      setFilters={setFilters}
-                      index={index}
-                    />
-                  ) : (
-                    <SummaryList {...device} />
-                  );
-                })}
+              {!loading ? (
+                <>
+                  {stock?.length > 0 &&
+                    stock.map((device, index) => {
+                      return cards ? (
+                        <SummaryCard
+                          {...device}
+                          setFilters={setFilters}
+                          index={index}
+                          type="stock"
+                        />
+                      ) : (
+                        <SummaryList {...device} />
+                      );
+                    })}
+                </>
+              ) : (
+                <CircularProgress />
+              )}
             </Box>
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
@@ -212,23 +233,30 @@ const Inventory: FC = (): ReactElement => {
                 justifyContent: cards ? "space-evenly" : "center",
               }}
             >
-              {deployed?.length > 0 &&
-                deployed.map((device, index) => {
-                  return cards ? (
-                    <SummaryCard
-                      {...device}
-                      setFilters={setFilters}
-                      index={index}
-                    />
-                  ) : (
-                    <SummaryList {...device} />
-                  );
-                })}
+              {!loading ? (
+                <>
+                  {deployed?.length > 0 &&
+                    deployed.map((device, index) => {
+                      return cards ? (
+                        <SummaryCard
+                          {...device}
+                          setFilters={setFilters}
+                          index={index}
+                          type="deployed"
+                        />
+                      ) : (
+                        <SummaryList {...device} />
+                      );
+                    })}
+                </>
+              ) : (
+                <CircularProgress />
+              )}
             </Box>
           </TabPanel>
           <Fab
             color="primary"
-            sx={{ bottom: 15, position: "absolute" }}
+            sx={{ bottom: 15, position: "fixed" }}
             onClick={() => setOpenAdd(true)}
           >
             <AddIcon />
@@ -240,7 +268,7 @@ const Inventory: FC = (): ReactElement => {
           />
           <Fab
             color="primary"
-            sx={{ bottom: 15, right: 15, position: "absolute" }}
+            sx={{ bottom: 15, right: 15, position: "fixed" }}
             onClick={() => openFiltersDrawer(true)}
           >
             <FilterAltIcon />

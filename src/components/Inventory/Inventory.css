@@ -6,6 +6,10 @@
     text-align: right;
 }
 
+.center {
+    text-align: center;
+}
+
 .bold {
     font-weight: bold;
 }

@@ -6,6 +6,7 @@ export interface InventorySummary {
   setFilters?: Function;
   index?: number;
   image_source?: string;
+  type?: string;
 }
 
 interface SerialNumbers {
@@ -22,4 +23,8 @@ interface SerialNumbers {
     country_code: string;
   };
   events?: string[];
+  email?: string;
+  phone_number?: string;
+  condition?: string;
+  grade?: string;
 }

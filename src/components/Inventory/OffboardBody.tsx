@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { useAuth0 } from "@auth0/auth0-react";
+import { manageLaptop } from "../../services/inventoryAPI";
+import ConfirmationBody from "./ConfirmationBody";
 
 interface OffboardProps {
   manageType: string;
@@ -17,6 +21,11 @@ interface OffboardProps {
     postal_code: string;
     country_code: string;
   };
+  device_name: string;
+  serial_number: string;
+  device_location: string;
+  email: string;
+  phone_number: string;
 }
 
 const textFieldStyle = {
@@ -29,130 +38,273 @@ const rightTextFieldStyle = {
 };
 
 const OffboardBody = (props: OffboardProps) => {
-  const { manageType, name, address } = props;
+  const {
+    manageType,
+    name,
+    address,
+    device_name,
+    device_location,
+    serial_number,
+    email,
+    phone_number,
+  } = props;
+
   const [disabled, setDisabled] = useState(true);
+  const [fn, setFn] = useState(name.first_name);
+  const [ln, setLn] = useState(name.last_name);
+  const [al1, setAl1] = useState(address.al1);
+  const [al2, setAl2] = useState(address.al2);
+  const [city, setCity] = useState(address.city);
+  const [state, setState] = useState(address.state);
+  const [postal_code, setPC] = useState(address.postal_code);
+  const [country, setCountry] = useState(address.country_code);
+  const [updatedemail, setEmail] = useState(email);
+  const [pn, setPn] = useState(phone_number);
+  const [requestor_email, setREmail] = useState("");
+  const [note, setNote] = useState("");
+  const [confirmation, setConfirmation] = useState(false);
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  const offboardLaptop = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const bodyObj = {
+      client: "public",
+      type: manageType,
+      device_location: device_location,
+      device_name: device_name,
+      serial_number: serial_number,
+      recipient_name: fn + " " + ln,
+      recipient_email: updatedemail,
+      item: device_name,
+      shipping_address: "",
+      phone_num: pn,
+      requestor_email: requestor_email,
+      note: note,
+    };
+
+    const offboardResult = await manageLaptop(
+      accessToken,
+      bodyObj,
+      "offboarding"
+    );
+
+    setConfirmation(true);
+  };
+
   return (
     <>
-      <h4>{manageType} Details</h4>
-      <Grid container spacing={3}>
-        <Grid item xs={6}>
-          <TextField
-            label="First Name"
-            value={name.first_name}
-            disabled={disabled}
-            fullWidth
-            sx={textFieldStyle}
-            size="small"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Last Name"
-            value={name.last_name}
-            disabled={disabled}
-            fullWidth
-            sx={rightTextFieldStyle}
-            size="small"
-          />
-        </Grid>
-      </Grid>
-      <Grid container sx={{ paddingTop: "15px" }}>
-        <TextField
-          label="Address Line 1"
-          value={address.al1}
-          disabled={disabled}
-          fullWidth
-          sx={textFieldStyle}
-          size="small"
-        />
-      </Grid>
-      <Grid container sx={{ paddingTop: "15px" }}>
-        <TextField
-          label="Address Line 2"
-          value={address.al2}
-          disabled={disabled}
-          fullWidth
-          sx={textFieldStyle}
-          size="small"
-        />
-      </Grid>
-      <Grid container spacing={3} sx={{ paddingTop: "15px" }}>
-        <Grid item xs={6}>
-          <TextField
-            label="City"
-            value={address.city}
-            disabled={disabled}
-            fullWidth
-            sx={textFieldStyle}
-            size="small"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="State"
-            value={address.state}
-            disabled={disabled}
-            fullWidth
-            sx={textFieldStyle}
-            size="small"
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={3} sx={{ paddingTop: "15px" }}>
-        <Grid item xs={6}>
-          <TextField
-            label="Postal Code"
-            value={address.postal_code}
-            disabled={disabled}
-            fullWidth
-            sx={textFieldStyle}
-            size="small"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Country"
-            value={address.country_code}
-            disabled={disabled}
-            fullWidth
-            sx={textFieldStyle}
-            size="small"
-          />
-        </Grid>
-      </Grid>
-      <Grid
-        container
-        justifyContent="space-evenly"
-        sx={{ paddingTop: "15px" }}
-        spacing={3}
-      >
-        <Grid item xs={6}>
-          <Button
-            onClick={() => setDisabled(false)}
-            sx={{
-              backgroundColor: "white",
-              color: "#054ffe",
-              borderRadius: "10px",
-            }}
-            variant="contained"
-            fullWidth
-          >
-            Edit
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#054ffe",
-              borderRadius: "10px",
-            }}
-            fullWidth
-          >
-            Submit
-          </Button>
-        </Grid>
-      </Grid>
+      {!confirmation ? (
+        <>
+          <h4>{manageType} Details</h4>
+          <Stack spacing={2}>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <TextField
+                  label="First Name"
+                  value={fn}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setFn(event.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Last Name"
+                  value={ln}
+                  disabled={disabled}
+                  fullWidth
+                  sx={rightTextFieldStyle}
+                  size="small"
+                  onChange={(event) => setLn(event.target.value)}
+                  required
+                />
+              </Grid>
+            </Grid>
+            <TextField
+              label="Address Line 1"
+              value={al1}
+              disabled={disabled}
+              fullWidth
+              sx={textFieldStyle}
+              size="small"
+              onChange={(event) => setAl1(event.target.value)}
+              required
+            />
+            <TextField
+              label="Address Line 2"
+              value={al2}
+              disabled={disabled}
+              fullWidth
+              sx={textFieldStyle}
+              size="small"
+              onChange={(event) => setAl2(event.target.value)}
+              required
+            />
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                marginLeft: "-23px !important",
+                marginTop: "0px !important",
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  label="City"
+                  value={city}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setCity(event.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="State/Province"
+                  value={state}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setState(event.target.value)}
+                  required
+                />
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                marginLeft: "-23px !important",
+                marginTop: "0px !important",
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  label="Postal Code"
+                  value={postal_code}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setPC(event.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Country"
+                  value={country}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setCountry(event.target.value)}
+                  required
+                />
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                marginLeft: "-23px !important",
+                marginTop: "0px !important",
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  label="Email"
+                  value={updatedemail}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Phone Number"
+                  value={pn}
+                  disabled={disabled}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setPn(event.target.value)}
+                  required
+                />
+              </Grid>
+            </Grid>
+            <TextField
+              label="Requestor Email"
+              value={requestor_email}
+              fullWidth
+              sx={textFieldStyle}
+              size="small"
+              onChange={(event) => setREmail(event.target.value)}
+              required
+            />
+            <TextField
+              label="Note"
+              value={note}
+              fullWidth
+              sx={textFieldStyle}
+              size="small"
+              onChange={(event) => setNote(event.target.value)}
+            />
+            <Grid
+              container
+              justifyContent="space-evenly"
+              sx={{
+                marginLeft: "-23px !important",
+                marginTop: "0px !important",
+              }}
+              spacing={3}
+            >
+              <Grid item xs={6}>
+                <Button
+                  onClick={() => setDisabled(false)}
+                  sx={{
+                    backgroundColor: "white",
+                    color: "#054ffe",
+                    borderRadius: "10px",
+                    ":hover": {
+                      backgroundColor: "white",
+                    },
+                  }}
+                  variant="contained"
+                  fullWidth
+                >
+                  Edit
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#054ffe",
+                    borderRadius: "10px",
+                  }}
+                  fullWidth
+                  onClick={() => offboardLaptop()}
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </Stack>
+        </>
+      ) : (
+        <ConfirmationBody conType={manageType} name={fn + " " + ln} />
+      )}
     </>
   );
 };

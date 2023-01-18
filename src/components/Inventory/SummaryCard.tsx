@@ -6,14 +6,20 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
 import { InventorySummary } from "../../interfaces/inventory";
-import { imageMapping, ImageMapping } from "../../utilities/mappings";
 
 const SummaryCard = (props: InventorySummary) => {
-  const { name, location, serial_numbers, index, setFilters, image_source } =
-    props;
+  const {
+    name,
+    location,
+    serial_numbers,
+    index,
+    setFilters,
+    image_source,
+    type,
+  } = props;
 
   const lowStock = () => {
-    if (serial_numbers.length < 10) {
+    if (serial_numbers.length < 10 && type === "stock") {
       return true;
     }
     return false;
@@ -54,7 +60,10 @@ const SummaryCard = (props: InventorySummary) => {
               sx={{ backgroundColor: "#D1FBFF", marginRight: "5px" }}
             />
             <Chip
-              label={serial_numbers.length + " in stock"}
+              label={
+                serial_numbers.length +
+                (type === "stock" ? " in stock" : " deployed")
+              }
               sx={{
                 backgroundColor: "#F0F1F1",
                 marginRight: "5px",

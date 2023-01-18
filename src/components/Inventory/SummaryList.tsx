@@ -84,12 +84,46 @@ const SummaryList = (props: InventorySummary) => {
                 <Grid container>
                   <Grid item xs={7}>
                     <div className="top-padding">
-                      <span className="bold">Status: </span>
-                      <span>{device.status}</span>
+                      <Typography
+                        display="inline"
+                        component="span"
+                        fontWeight="bold"
+                      >
+                        Status:{" "}
+                      </Typography>
+                      <Typography display="inline" component="span">
+                        {device.status}
+                      </Typography>
                     </div>
+                    <>
+                      <Typography
+                        display="inline"
+                        component="span"
+                        fontWeight="bold"
+                      >
+                        Condition:{" "}
+                      </Typography>
+                      <Typography display="inline" component="span">
+                        {device.condition}
+                      </Typography>
+                    </>
+                    {device.condition === "Used" && (
+                      <div>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          Grade:{" "}
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {device.grade}
+                        </Typography>
+                      </div>
+                    )}
                   </Grid>
                   <Grid item xs={3}>
-                    {device.status === "In Stock" ? (
+                    {device.status === "In Stock" && (
                       <div className="right">
                         <AssignModal
                           serial_number={device.sn}
@@ -98,7 +132,8 @@ const SummaryList = (props: InventorySummary) => {
                           image_source={image_source}
                         />
                       </div>
-                    ) : (
+                    )}
+                    {device.status === "Deployed" && (
                       <div className="right">
                         <ManageModal
                           name={{
@@ -106,6 +141,11 @@ const SummaryList = (props: InventorySummary) => {
                             last_name: device.last_name!,
                           }}
                           address={device.address!}
+                          email={device.email!}
+                          serial_number={device.sn}
+                          device_name={name}
+                          device_location={location}
+                          phone_number={device.phone_number!}
                         />
                       </div>
                     )}
