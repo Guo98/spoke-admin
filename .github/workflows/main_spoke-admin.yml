@@ -25,6 +25,11 @@ jobs:
         run: |
           npm install
           npm run build --if-present
+        env: |
+          REACT_APP_SPOKE_API=https://spoke-api-development.azurewebsites.net
+          REACT_APP_AUTH0_DOMAIN=dev-wwotwaa87dcb33bj.us.auth0.com
+          REACT_APP_AUTH0_CLIENTID=wwpmTOorA6jhau8PREVftfasMs3Rwv7L
+          REACT_APP_AUTH0_AUDIENCE=https://spoke-api.azurewebsites.net
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
