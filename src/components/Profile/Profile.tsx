@@ -11,6 +11,7 @@ import "./Profile.css";
 const Profile = () => {
   const { isAuthenticated, user, logout } = useAuth0();
   const [username, setUsername] = useState<string | undefined>("");
+  const [userpic, setPic] = useState<string | undefined>("");
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
@@ -19,7 +20,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      setUsername(user.given_name);
+      setUsername(user.given_name || user.nickname);
+      setPic(user.picture);
     }
   }, [isAuthenticated]);
 
@@ -41,7 +43,11 @@ const Profile = () => {
         </Grid>
         <Grid item xs={4}>
           <Button sx={{ paddingTop: 0 }} onClick={handleClick}>
-            <Avatar sx={{ marginLeft: 0 }}>{username?.charAt(0)}</Avatar>
+            {userpic === "" ? (
+              <Avatar sx={{ marginLeft: 0 }}>{username?.charAt(0)}</Avatar>
+            ) : (
+              <Avatar sx={{ marginLeft: 0 }} src={userpic} />
+            )}
           </Button>
           <Popover
             id={popoverId}

@@ -26,6 +26,9 @@ root.render(
       clientId={process.env.REACT_APP_AUTH0_CLIENTID!}
       redirectUri={window.location.origin}
       audience={process.env.REACT_APP_AUTH0_AUDIENCE!}
+      scope="admin"
+      useRefreshTokens={true}
+      organization="org_CxAEPTJ4kpVvkZ8G"
     >
       <Provider store={store}>
         <ThemeProvider theme={theme}>
