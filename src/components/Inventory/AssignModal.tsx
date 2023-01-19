@@ -92,7 +92,13 @@ const AssignModal = (props: AssignProps) => {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Assign</Button>
+      <Button
+        variant="contained"
+        sx={{ borderRadius: "10px" }}
+        onClick={handleOpen}
+      >
+        Assign
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}

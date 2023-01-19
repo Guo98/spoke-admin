@@ -5,6 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
+import SummaryCarousel from "./SummaryCarousel";
 import { InventorySummary } from "../../interfaces/inventory";
 
 const SummaryCard = (props: InventorySummary) => {
@@ -16,6 +17,7 @@ const SummaryCard = (props: InventorySummary) => {
     setFilters,
     image_source,
     type,
+    specs,
   } = props;
 
   const lowStock = () => {
@@ -39,10 +41,9 @@ const SummaryCard = (props: InventorySummary) => {
             key={index}
           >
             <CardMedia
-              sx={{ height: 200 }}
-              image={image_source}
-              title="laptop"
-              component="img"
+              children={
+                <SummaryCarousel image_source={image_source} specs={specs} />
+              }
             />
             <CardContent sx={{ backgroundColor: "white" }}>
               <Link

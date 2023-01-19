@@ -7,6 +7,12 @@ export interface InventorySummary {
   index?: number;
   image_source?: string;
   type?: string;
+  specs: {
+    screen_size: string;
+    ram: string;
+    hard_drive: string;
+    cpu: string;
+  };
 }
 
 interface SerialNumbers {

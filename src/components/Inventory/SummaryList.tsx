@@ -49,7 +49,13 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const SummaryList = (props: InventorySummary) => {
-  const { name, location, serial_numbers, image_source } = props;
+  const {
+    name,
+    location,
+    serial_numbers,
+    image_source,
+    specs: { screen_size, ram, hard_drive, cpu },
+  } = props;
 
   const determineStatus = (status: string) => {
     if (status === "Offboarding" || status === "Returning") {
@@ -128,6 +134,61 @@ const SummaryList = (props: InventorySummary) => {
                         </Typography>
                       </div>
                     )}
+                    <Grid
+                      container
+                      spacing={2}
+                      justifyContent="space-evenly"
+                      paddingTop="10px"
+                    >
+                      <Grid item xs={3}>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          Screen Size:{" "}
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {screen_size}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          CPU:{" "}
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {cpu}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          Ram:{" "}
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {ram}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          Storage:{" "}
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {hard_drive}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
                   <Grid item xs={3}>
                     {device.status === "In Stock" && (

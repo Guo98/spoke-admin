@@ -185,7 +185,7 @@ const Inventory: FC = (): ReactElement => {
             onClose={() => openFiltersDrawer(false)}
             PaperProps={{ sx: { width: "20%" } }}
           >
-            <div className="container-padding">
+            <div className="filter-padding">
               <Filter
                 data={
                   tabValue === 0
@@ -202,7 +202,7 @@ const Inventory: FC = (): ReactElement => {
                     : setInprogress
                 }
                 device_name={device}
-                selected_location={location}
+                selected_location={[location]}
               />
             </div>
           </Drawer>

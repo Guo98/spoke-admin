@@ -1,27 +1,20 @@
 import React, { useEffect, useState } from "react";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import RadioGroup from "@mui/material/RadioGroup";
-import Radio from "@mui/material/Radio";
-import InputLabel from "@mui/material/InputLabel";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Checkbox from "@mui/material/Checkbox";
-import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import SouthIcon from "@mui/icons-material/South";
 import NorthIcon from "@mui/icons-material/North";
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import { InventorySummary } from "../../interfaces/inventory";
 import Typography from "@mui/material/Typography";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 interface FilterProps {
   data: InventorySummary[];
   setData: Function;
   device_name?: string[];
-  selected_location?: string;
+  selected_location?: string[];
 }
 
 const boxStyle = {
@@ -30,57 +23,129 @@ const boxStyle = {
 
 const Filter = (props: FilterProps) => {
   const { data, setData, device_name, selected_location } = props;
+  const ogdata = useSelector((state: RootState) => state.inventory.data);
   const [devices, setDevices] = useState<string[]>(device_name as string[]);
-  const [location, setLocation] = useState(selected_location);
+  const [rams, setRams] = useState<string[]>([]);
+  const [cpus, setCpus] = useState<string[]>([]);
+  const [storages, setStorages] = useState<string[]>([]);
+  const [location, setLocation] = useState<string[]>(
+    selected_location as string[]
+  );
   const [condition, setCondition] = useState("");
-  const [sortDeviceIcon, setSortDeviceIcon] = useState<JSX.Element | null>(
-    null
-  );
+  const [sortDeviceIcon, setSortDeviceIcon] = useState<
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | undefined
+  >(undefined);
   const [sortDevice, setSortDevice] = useState("");
-  const [sortLocationIcon, setSortLocationIcon] = useState<JSX.Element | null>(
-    null
-  );
+  const [sortLocationIcon, setSortLocationIcon] = useState<
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | undefined
+  >(undefined);
   const [sortLocation, setSortLocation] = useState("");
 
   const locations = [...new Set(data.map((item) => item.location))];
   const deviceNames = [...new Set(data.map((item) => item.name))];
+  const deviceRams = [...new Set(data.map((item) => item.specs.ram))];
+  const deviceCpus = [...new Set(data.map((item) => item.specs.cpu))];
+  const deviceStorages = [
+    ...new Set(data.map((item) => item.specs.hard_drive)),
+  ];
 
-  const handleDeviceChange = (event: SelectChangeEvent<typeof devices>) => {
-    const {
-      target: { value },
-    } = event;
-    setDevices(typeof value === "string" ? value.split(",") : value);
+  const filterDevice = (device: string) => {
+    if (devices.indexOf(device) > -1) {
+      setDevices(devices.filter((dev) => dev !== device));
+    } else {
+      setDevices((prevDevices) => [...prevDevices, device]);
+    }
   };
 
-  const handleConditionChange = (event: React.ChangeEvent, value: string) => {
+  const filterRam = (ram: string) => {
+    if (rams.indexOf(ram) > -1) {
+      setRams(rams.filter((r) => r !== ram));
+    } else {
+      setRams((prevRams) => [...prevRams, ram]);
+    }
+  };
+
+  const filterCpu = (cpu: string) => {
+    if (cpus.indexOf(cpu) > -1) {
+      setCpus(cpus.filter((c) => c !== cpu));
+    } else {
+      setCpus((prevCpus) => [...prevCpus, cpu]);
+    }
+  };
+
+  const filterLocation = (loc: string) => {
+    if (location.indexOf(loc) > -1) {
+      setLocation(location.filter((l) => l !== loc));
+    } else {
+      setLocation((prevLocation) => [...prevLocation, loc]);
+    }
+  };
+
+  const filterStorage = (storage: string) => {
+    if (storages.indexOf(storage) > -1) {
+      setStorages(storages.filter((s) => s !== storage));
+    } else {
+      setStorages((prevStorages) => [...prevStorages, storage]);
+    }
+  };
+
+  const handleConditionChange = (value: string) => {
     setCondition(value);
   };
 
   const clearAll = () => {
+    console.log("data >>>>>> ", data);
     setDevices([]);
-    setLocation("");
+    setRams([]);
+    setCpus([]);
+    setStorages([]);
+    setLocation([]);
     setCondition("");
-    setData(data);
+    setData(ogdata);
     setSortLocation("");
-    setSortLocationIcon(null);
+    setSortLocationIcon(undefined);
     setSortDevice("");
-    setSortDeviceIcon(null);
+    setSortDeviceIcon(undefined);
   };
 
   const filterDevices = () => {
-    let filteredResults = data;
-    if (devices.length > 0) {
-      if (location !== "") {
-        filteredResults = data.filter(
-          (item) =>
-            devices.indexOf(item.name) > -1 && item.location === location
-        );
-      } else {
-        filteredResults = data.filter(
-          (item) => devices.indexOf(item.name) > -1
-        );
+    let filteredResults = Array.from(data);
+    console.log("filtered resuylts >>>>>>> ", filteredResults);
+    if (devices.length > 0)
+      filteredResults = data.filter((item) => devices.indexOf(item.name) > -1);
+    console.log("huh ?????? ", filteredResults);
+    if (location.length > 0)
+      filteredResults = filteredResults.filter(
+        (item) => location.indexOf(item.location) > -1
+      );
+
+    if (rams.length > 0)
+      filteredResults = filteredResults.filter(
+        (item) => rams.indexOf(item.specs.ram) > -1
+      );
+
+    if (cpus.length > 0)
+      filteredResults = filteredResults.filter(
+        (item) => cpus.indexOf(item.specs.cpu) > -1
+      );
+
+    if (storages.length > 0)
+      filteredResults = filteredResults.filter(
+        (item) => storages.indexOf(item.specs.hard_drive) > -1
+      );
+
+    if (condition !== "") {
+      for (let i = 0; i < filteredResults.length; i++) {
+        filteredResults[i].serial_numbers = filteredResults[
+          i
+        ].serial_numbers.filter((individual) => {
+          return individual.condition === condition;
+        });
       }
     }
+    console.log("after filted results <<<<<<<<< ", filteredResults);
     setData(filteredResults);
   };
 
@@ -88,7 +153,7 @@ const Filter = (props: FilterProps) => {
     let sortData = data;
     if (type === "device") {
       setSortLocation("");
-      setSortLocationIcon(null);
+      setSortLocationIcon(undefined);
       if (!sortDeviceIcon || sortDevice === "descending") {
         setSortDeviceIcon(<NorthIcon />);
         setSortDevice("ascending");
@@ -104,7 +169,7 @@ const Filter = (props: FilterProps) => {
       }
     } else if (type === "location") {
       setSortDevice("");
-      setSortDeviceIcon(null);
+      setSortDeviceIcon(undefined);
       if (!sortLocationIcon || sortLocation === "descending") {
         setSortLocationIcon(<NorthIcon />);
         setSortLocation("ascending");
@@ -125,104 +190,171 @@ const Filter = (props: FilterProps) => {
   return (
     <>
       <Typography variant="h6" component="h4">
-        Sort By
+        Sort and Filter
       </Typography>
-      <>
-        <Stack
-          spacing={2}
-          width="90%"
-          alignItems="center"
-          sx={{ paddingTop: "10px" }}
-        >
-          <Button
-            variant={sortDevice === "" ? "outlined" : "contained"}
-            startIcon={sortDeviceIcon}
-            sx={{ width: "80%", borderRadius: "10px" }}
-            onClick={() => sortByAction("device")}
-          >
-            Device
-          </Button>
-          <Button
-            startIcon={sortLocationIcon}
-            sx={{ width: "80%", borderRadius: "10px" }}
-            variant={sortLocation === "" ? "outlined" : "contained"}
-            onClick={() => sortByAction("location")}
-          >
-            Location
-          </Button>
-        </Stack>
-      </>
-      <Typography variant="h6" component="h4">
-        Filter By
-      </Typography>
+      <hr />
+      <Typography>Sort</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <Chip
+          icon={sortDeviceIcon}
+          label="Device"
+          variant={sortDevice === "" ? "outlined" : "filled"}
+          color={sortDevice === "" ? "default" : "primary"}
+          clickable
+          onClick={() => sortByAction("device")}
+        />
+        <Chip
+          icon={sortLocationIcon}
+          label="Location"
+          variant={sortLocation === "" ? "outlined" : "filled"}
+          color={sortLocation === "" ? "default" : "primary"}
+          onClick={() => sortByAction("location")}
+          clickable
+        />
+      </Box>
+      <br />
+      <hr />
+      <Typography>Filters</Typography>
+      <br />
+      <Typography variant="caption">Device(s)</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          paddingTop: 1,
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        {deviceNames.map((device) => (
+          <Chip
+            label={device}
+            variant={devices.indexOf(device) > -1 ? "filled" : "outlined"}
+            clickable
+            sx={{ marginTop: "5px" }}
+            onClick={() => filterDevice(device)}
+          />
+        ))}
+      </Box>
+      <br />
+      <Typography variant="caption">Condition</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          paddingTop: 1,
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <Chip
+          clickable
+          label="New"
+          variant={condition === "New" ? "filled" : "outlined"}
+          onClick={() => handleConditionChange("New")}
+        />
+        <Chip
+          clickable
+          label="Used"
+          variant={condition === "Used" ? "filled" : "outlined"}
+          onClick={() => handleConditionChange("Used")}
+        />
+      </Box>
+      <br />
+      <Typography variant="caption">Location</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          paddingTop: 1,
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
+        }}
+      >
+        {locations.map((loc) => (
+          <Chip
+            label={loc}
+            variant={location.indexOf(loc) > -1 ? "filled" : "outlined"}
+            clickable
+            sx={{ marginTop: "5px" }}
+            onClick={() => filterLocation(loc)}
+          />
+        ))}
+      </Box>
+      <br />
+      <Typography variant="caption">RAM</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          paddingTop: 1,
+          flexDirection: "wrap",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
+        }}
+      >
+        {deviceRams.map((ram) => (
+          <Chip
+            label={ram}
+            clickable
+            sx={{ marginTop: "5px" }}
+            variant={rams.indexOf(ram) > -1 ? "filled" : "outlined"}
+            onClick={() => filterRam(ram)}
+          />
+        ))}
+      </Box>
+      <br />
+      <Typography variant="caption">CPU</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          paddingTop: 1,
+          flexDirection: "wrap",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
+        }}
+      >
+        {deviceCpus.map((cpu) => (
+          <Chip
+            label={cpu}
+            clickable
+            sx={{ marginTop: "5px" }}
+            variant={cpus.indexOf(cpu) > -1 ? "filled" : "outlined"}
+            onClick={() => filterCpu(cpu)}
+          />
+        ))}
+      </Box>
+      <br />
+      <Typography variant="caption">Storage</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          paddingTop: 1,
+          flexDirection: "wrap",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
+        }}
+      >
+        {deviceStorages.map((storage) => (
+          <Chip
+            label={storage}
+            clickable
+            sx={{ marginTop: "5px" }}
+            variant={storages.indexOf(storage) > -1 ? "filled" : "outlined"}
+            onClick={() => filterStorage(storage)}
+          />
+        ))}
+      </Box>
       <Box sx={boxStyle}>
-        <>
-          <FormControl sx={{ width: "90%" }}>
-            <InputLabel id="device-label">Device</InputLabel>
-            <Select
-              labelId="device-label"
-              id="device-multi-checkbox"
-              multiple
-              value={devices}
-              variant="standard"
-              label="Device"
-              onChange={handleDeviceChange}
-              renderValue={(selected) => selected.join(",")}
-            >
-              {deviceNames.map((device) => (
-                <MenuItem key={device} value={device}>
-                  <Checkbox checked={devices.indexOf(device) > -1} />
-                  <ListItemText primary={device} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
-        <div className="radio-padding">
-          <FormControl>
-            <FormLabel id="condition-label">Condition</FormLabel>
-            <RadioGroup
-              aria-labelledby="condition-label"
-              name="condition-radio-group"
-              onChange={handleConditionChange}
-            >
-              <FormControlLabel
-                value="new"
-                control={<Radio checked={condition === "new"} />}
-                label="New"
-              />
-              <FormControlLabel
-                value="old"
-                control={<Radio checked={condition === "old"} />}
-                label="Old"
-              />
-            </RadioGroup>
-          </FormControl>
-        </div>
-        <>
-          <FormControl sx={{ width: "90%" }}>
-            <InputLabel id="location-label">Location</InputLabel>
-            <Select
-              labelId="location-label"
-              id="location-select"
-              value={location}
-              label="Location"
-              variant="standard"
-              onChange={(event: SelectChangeEvent) =>
-                setLocation(event.target.value as string)
-              }
-            >
-              {locations.map((loc) => (
-                <MenuItem value={loc}>{loc}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
         <>
           <Stack
             direction="row"
             justifyContent="space-evenly"
-            sx={{ paddingRight: 5, paddingTop: 5 }}
+            sx={{ paddingTop: 5 }}
           >
             <Button onClick={filterDevices}>Apply</Button>
             <Button onClick={clearAll}>Clear</Button>

@@ -330,6 +330,9 @@ const DeployModalContent = (props: DeployProps) => {
                     backgroundColor: "white",
                     color: "#054ffe",
                     borderRadius: "10px",
+                    ":hover": {
+                      backgroundColor: "white",
+                    },
                   }}
                   onClick={() => setEdit(true)}
                 >

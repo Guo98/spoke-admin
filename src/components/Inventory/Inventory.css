@@ -2,6 +2,11 @@
     padding-left: 25px;
 }
 
+.filter-padding {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 .right-align {
     text-align: right;
 }
@@ -36,7 +41,6 @@
 
 .radio-padding {
     padding-top: 35px;
-    padding-left: 10px;
 }
 
 .bottom-push {
@@ -45,4 +49,9 @@
 
 .buttongroup {
     padding-bottom: 5px;
+}
+
+.center-align {
+    text-align: center;
+    padding-top: 50px;
 }
