@@ -1,11 +1,14 @@
-import InitialState, {
+import InitialInventoryState, {
   UpdateInventoryAction,
 } from "../../types/redux/inventory";
 import { InventorySummary } from "../../interfaces/inventory";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: { data: InventorySummary[] } = {
+const initialState: InitialInventoryState = {
   data: [],
+  pending: [],
+  deployed: [],
+  in_stock: [],
 };
 
 export const inventorySlice = createSlice({
@@ -14,6 +17,44 @@ export const inventorySlice = createSlice({
   reducers: {
     updateInventory: (state, action: PayloadAction<InventorySummary[]>) => {
       state.data = action.payload;
+
+      let inStock: InventorySummary[] = [];
+      let deployed: InventorySummary[] = [];
+      let offboarding: InventorySummary[] = [];
+
+      const tempData = action.payload;
+      tempData.forEach((device) => {
+        let instocklaptops = device.serial_numbers.filter(
+          (individual) => individual.status === "In Stock"
+        );
+
+        let deployedlaptops = device.serial_numbers.filter(
+          (individual) => individual.status === "Deployed"
+        );
+
+        let offboardingLaptops = device.serial_numbers.filter(
+          (individual) =>
+            individual.status === "Offboarding" ||
+            individual.status === "Returning" ||
+            individual.status === "Top Up"
+        );
+
+        let tempInStock = { ...device };
+        tempInStock.serial_numbers = instocklaptops.slice(0);
+        inStock.push(tempInStock);
+
+        let tempDeployed = { ...device };
+        tempDeployed.serial_numbers = deployedlaptops.slice(0);
+        deployed.push(tempDeployed);
+
+        let tempOffboarding = { ...device };
+        tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
+        offboarding.push(tempOffboarding);
+      });
+
+      state.pending = offboarding;
+      state.deployed = deployed;
+      state.in_stock = inStock;
     },
   },
 });

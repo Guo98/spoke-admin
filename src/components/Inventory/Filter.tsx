@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  ReactElement,
+  JSXElementConstructor,
+} from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import SouthIcon from "@mui/icons-material/South";
@@ -6,6 +11,7 @@ import NorthIcon from "@mui/icons-material/North";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import { InventorySummary } from "../../interfaces/inventory";
+import InitialInventoryState from "../../types/redux/inventory";
 import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -15,31 +21,40 @@ interface FilterProps {
   setData: Function;
   device_name?: string[];
   selected_location?: string[];
+  tab_value: number;
 }
+
+const reduxInventoryMapping = ["in_stock", "deployed", "pending"];
 
 const boxStyle = {
   border: "1px black",
 };
 
 const Filter = (props: FilterProps) => {
-  const { data, setData, device_name, selected_location } = props;
-  const ogdata = useSelector((state: RootState) => state.inventory.data);
-  const [devices, setDevices] = useState<string[]>(device_name as string[]);
+  const { data, setData, device_name, selected_location, tab_value } = props;
+  const ogdata = useSelector(
+    (state: RootState) =>
+      state.inventory[
+        reduxInventoryMapping[tab_value] as keyof InitialInventoryState
+      ]
+  );
+
+  const [devices, setDevices] = useState<string[]>(
+    device_name![0] !== "" ? (device_name as string[]) : []
+  );
   const [rams, setRams] = useState<string[]>([]);
   const [cpus, setCpus] = useState<string[]>([]);
   const [storages, setStorages] = useState<string[]>([]);
   const [location, setLocation] = useState<string[]>(
-    selected_location as string[]
+    selected_location![0] !== "" ? (selected_location as string[]) : []
   );
   const [condition, setCondition] = useState("");
   const [sortDeviceIcon, setSortDeviceIcon] = useState<
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | undefined
+    ReactElement<any, string | JSXElementConstructor<any>> | undefined
   >(undefined);
   const [sortDevice, setSortDevice] = useState("");
   const [sortLocationIcon, setSortLocationIcon] = useState<
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | undefined
+    ReactElement<any, string | JSXElementConstructor<any>> | undefined
   >(undefined);
   const [sortLocation, setSortLocation] = useState("");
 
@@ -96,7 +111,6 @@ const Filter = (props: FilterProps) => {
   };
 
   const clearAll = () => {
-    console.log("data >>>>>> ", data);
     setDevices([]);
     setRams([]);
     setCpus([]);
@@ -111,11 +125,11 @@ const Filter = (props: FilterProps) => {
   };
 
   const filterDevices = () => {
-    let filteredResults = Array.from(data);
-    console.log("filtered resuylts >>>>>>> ", filteredResults);
+    let filteredResults: InventorySummary[] = JSON.parse(JSON.stringify(data));
+
     if (devices.length > 0)
       filteredResults = data.filter((item) => devices.indexOf(item.name) > -1);
-    console.log("huh ?????? ", filteredResults);
+
     if (location.length > 0)
       filteredResults = filteredResults.filter(
         (item) => location.indexOf(item.location) > -1
@@ -137,20 +151,24 @@ const Filter = (props: FilterProps) => {
       );
 
     if (condition !== "") {
+      let newResult = [...filteredResults];
       for (let i = 0; i < filteredResults.length; i++) {
-        filteredResults[i].serial_numbers = filteredResults[
-          i
-        ].serial_numbers.filter((individual) => {
-          return individual.condition === condition;
-        });
+        const filteredSN = filteredResults[i].serial_numbers.filter(
+          (individual) => {
+            return individual.condition === condition;
+          }
+        );
+
+        newResult[i].serial_numbers = [...filteredSN];
       }
+      setData(newResult);
+    } else {
+      setData(filteredResults);
     }
-    console.log("after filted results <<<<<<<<< ", filteredResults);
-    setData(filteredResults);
   };
 
   const sortByAction = (type: string) => {
-    let sortData = data;
+    let sortData: InventorySummary[] = JSON.parse(JSON.stringify(data));
     if (type === "device") {
       setSortLocation("");
       setSortLocationIcon(undefined);
@@ -354,7 +372,7 @@ const Filter = (props: FilterProps) => {
           <Stack
             direction="row"
             justifyContent="space-evenly"
-            sx={{ paddingTop: 5 }}
+            sx={{ paddingTop: 5, paddingBottom: 5 }}
           >
             <Button onClick={filterDevices}>Apply</Button>
             <Button onClick={clearAll}>Clear</Button>

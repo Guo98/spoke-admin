@@ -55,6 +55,16 @@ function a11yProps(index: number) {
 
 const Inventory: FC = (): ReactElement => {
   const data = useSelector((state: RootState) => state.inventory.data);
+  const pendingRedux = useSelector(
+    (state: RootState) => state.inventory.pending
+  );
+  const deployedRedux = useSelector(
+    (state: RootState) => state.inventory.deployed
+  );
+  const stockRedux = useSelector(
+    (state: RootState) => state.inventory.in_stock
+  );
+
   const [cards, setCards] = useState(true);
   const [filterdrawer, openFiltersDrawer] = useState(false);
   const [inventoryData, setInventoryData] = useState(data);
@@ -110,47 +120,13 @@ const Inventory: FC = (): ReactElement => {
   };
 
   useEffect(() => {
-    setInventoryData(data);
-    let inStock: InventorySummary[] = [];
-    let deployed: InventorySummary[] = [];
-    let offboarding: InventorySummary[] = [];
-
-    const tempData = data;
-    tempData.forEach((device) => {
-      let instocklaptops = device.serial_numbers.filter(
-        (individual) => individual.status === "In Stock"
-      );
-
-      let deployedlaptops = device.serial_numbers.filter(
-        (individual) => individual.status === "Deployed"
-      );
-
-      let offboardingLaptops = device.serial_numbers.filter(
-        (individual) =>
-          individual.status === "Offboarding" ||
-          individual.status === "Returning" ||
-          individual.status === "Top Up"
-      );
-
-      let tempInStock = { ...device };
-      tempInStock.serial_numbers = instocklaptops.slice(0);
-      inStock.push(tempInStock);
-
-      let tempDeployed = { ...device };
-      tempDeployed.serial_numbers = deployedlaptops.slice(0);
-      deployed.push(tempDeployed);
-
-      let tempOffboarding = { ...device };
-      tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
-      offboarding.push(tempOffboarding);
-    });
-    setStock(inStock);
-    setOGStock(inStock);
-    setDeployed(deployed);
-    setOGDeployed(deployed);
-    setInprogress(offboarding);
-    setOGInprogress(offboarding);
-  }, [data]);
+    setStock(stockRedux);
+    setOGStock(stockRedux);
+    setDeployed(deployedRedux);
+    setOGDeployed(deployedRedux);
+    setInprogress(pendingRedux);
+    setOGInprogress(pendingRedux);
+  }, [pendingRedux, deployedRedux, stockRedux]);
 
   return (
     <>
@@ -203,6 +179,7 @@ const Inventory: FC = (): ReactElement => {
                 }
                 device_name={device}
                 selected_location={[location]}
+                tab_value={tabValue}
               />
             </div>
           </Drawer>
