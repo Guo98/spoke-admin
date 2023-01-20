@@ -21,7 +21,6 @@ import SummaryCard from "./SummaryCard";
 import SummaryList from "./SummaryList";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
-import { InventorySummary } from "../../interfaces/inventory";
 import "./Inventory.css";
 
 interface TabPanelProps {

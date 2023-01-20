@@ -3,6 +3,7 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import { useAuth0 } from "@auth0/auth0-react";
 import { manageLaptop } from "../../services/inventoryAPI";
 import ConfirmationBody from "./ConfirmationBody";
@@ -35,6 +36,18 @@ const textFieldStyle = {
 const rightTextFieldStyle = {
   "& fieldset": { borderRadius: "10px" },
   float: "right",
+};
+
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 450,
+  bgcolor: "background.paper",
+  borderRadius: "20px",
+  boxShadow: 24,
+  p: 4,
 };
 
 const OffboardBody = (props: OffboardProps) => {
@@ -95,7 +108,7 @@ const OffboardBody = (props: OffboardProps) => {
   return (
     <>
       {!confirmation ? (
-        <>
+        <Box sx={style}>
           <h4>{manageType} Details</h4>
           <Stack spacing={2}>
             <Grid container spacing={3}>
@@ -301,7 +314,7 @@ const OffboardBody = (props: OffboardProps) => {
               </Grid>
             </Grid>
           </Stack>
-        </>
+        </Box>
       ) : (
         <ConfirmationBody conType={manageType} name={fn + " " + ln} />
       )}

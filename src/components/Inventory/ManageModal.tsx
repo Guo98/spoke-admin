@@ -72,62 +72,60 @@ const ManageModal = (props: ManageProps) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
-          {!changeView ? (
-            <>
-              <Typography
-                id="modal-modal-title"
-                variant="h5"
-                component="h3"
-                sx={{ textAlign: "center" }}
-              >
-                Manage Device
-              </Typography>
-              <Grid
-                container
-                spacing={2}
-                justifyContent="space-evenly"
-                sx={{ paddingTop: "15px" }}
-              >
-                <Grid item xs={10}>
-                  <FormControl fullWidth sx={textFieldStyle}>
-                    <InputLabel id="manage-type-label">
-                      What do you want to do?
-                    </InputLabel>
-                    <Select
-                      labelId="manage-type-label"
-                      id="manage-select-standard"
-                      value={manageType}
-                      onChange={handleChange}
-                      label="Age"
-                    >
-                      <MenuItem value="Offboarding">Offboarding</MenuItem>
-                      <MenuItem value="Returning">Returning</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid
-                  xs={2}
-                  sx={{
-                    float: "right",
-                    paddingTop: "25px",
-                    paddingLeft: "10px",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() => setChangeView(true)}
-                    sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
+        {!changeView ? (
+          <Box sx={style}>
+            <Typography
+              id="modal-modal-title"
+              variant="h5"
+              component="h3"
+              sx={{ textAlign: "center" }}
+            >
+              Manage Device
+            </Typography>
+            <Grid
+              container
+              spacing={2}
+              justifyContent="space-evenly"
+              sx={{ paddingTop: "15px" }}
+            >
+              <Grid item xs={10}>
+                <FormControl fullWidth sx={textFieldStyle}>
+                  <InputLabel id="manage-type-label">
+                    What do you want to do?
+                  </InputLabel>
+                  <Select
+                    labelId="manage-type-label"
+                    id="manage-select-standard"
+                    value={manageType}
+                    onChange={handleChange}
+                    label="Age"
                   >
-                    <ArrowForwardIcon />
-                  </Button>
-                </Grid>
+                    <MenuItem value="Offboarding">Offboarding</MenuItem>
+                    <MenuItem value="Returning">Returning</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
-            </>
-          ) : (
-            <OffboardBody manageType={manageType} {...props} />
-          )}
-        </Box>
+              <Grid
+                xs={2}
+                sx={{
+                  float: "right",
+                  paddingTop: "25px",
+                  paddingLeft: "10px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => setChangeView(true)}
+                  sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
+                >
+                  <ArrowForwardIcon />
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        ) : (
+          <OffboardBody manageType={manageType} {...props} />
+        )}
       </Modal>
     </div>
   );

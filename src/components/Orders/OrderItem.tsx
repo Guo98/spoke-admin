@@ -19,6 +19,7 @@ interface OrderProps {
   city: string;
   country: string;
   items: Item[];
+  state: string;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -52,7 +53,8 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const OrderItem = (props: OrderProps) => {
-  const { order_number, first_name, last_name, city, country, items } = props;
+  const { order_number, first_name, last_name, city, country, items, state } =
+    props;
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
 
@@ -103,7 +105,7 @@ const OrderItem = (props: OrderProps) => {
           </Grid>
           <Grid item xs={2}>
             <div>
-              {city}, {country}
+              {state}, {country}
             </div>
           </Grid>
           <Grid item xs={4}>

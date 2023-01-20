@@ -63,6 +63,7 @@ const AssignModal = (props: AssignProps) => {
   const [email, setEmail] = useState("");
   const [phonenumber, setPhonenumber] = useState("");
   const [note, setNote] = useState("");
+  const [error, setError] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -84,9 +85,17 @@ const AssignModal = (props: AssignProps) => {
     const accessToken = await getAccessTokenSilently();
     const addressResult = await validateAddress(address, accessToken);
     if (addressResult.message === "Successful!") {
-      setAddrObj(addressResult.data);
+      if (
+        addressResult.data.country === "US" ||
+        addressResult.data.country === "USA"
+      ) {
+        setAddrObj(addressResult.data);
+        setForm(false);
+      } else {
+        setError("Currently not supported outside of the US.");
+      }
     } else {
-      console.log("couldn't validate address");
+      setError("Currently not supported outside of the US.");
     }
   };
 
@@ -150,6 +159,8 @@ const AssignModal = (props: AssignProps) => {
                   onChange={(event) => setAddress(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
+                  error={error !== ""}
+                  helperText={error}
                 />
               </div>
               <Grid
@@ -228,7 +239,6 @@ const AssignModal = (props: AssignProps) => {
                   }}
                   onClick={async () => {
                     await checkAddress();
-                    setForm(false);
                   }}
                 >
                   Submit

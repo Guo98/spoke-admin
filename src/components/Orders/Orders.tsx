@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import ordersMock from "../../mockData/orders.json";
+import { useAuth0 } from "@auth0/auth0-react";
+import CircularProgress from "@mui/material/CircularProgress";
+import { getAllOrders } from "../../services/ordersAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
 import { updateOrders } from "../../app/slices/ordersSlice";
@@ -39,23 +41,51 @@ function a11yProps(index: number) {
   };
 }
 
+const style = {
+  display: "flex",
+  flexWrap: "wrap",
+  flexDirection: "row",
+  justifyContent: "space-evenly",
+};
+
 const Orders = () => {
   const data = useSelector((state: RootState) => state.orders.data);
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
   const [allOrders, setAll] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
 
+  const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
-    dispatch(updateOrders(ordersMock));
+    const fetchData = async () => {
+      const accessToken = await getAccessTokenSilently();
+      const ordersResult = await getAllOrders(accessToken);
+      dispatch(updateOrders(ordersResult.data));
+    };
+
+    fetchData().catch(console.error);
   }, []);
 
   useEffect(() => {
-    let combinedOrders = [] as Order[];
-    setOrders(data);
-    combinedOrders = combinedOrders.concat(data.in_progress!, data.completed!);
-    setAll(combinedOrders);
+    if (Object.keys(data).length > 0) {
+      setLoading(false);
+    }
   }, [data]);
+
+  useEffect(() => {
+    if (!loading) {
+      let combinedOrders = [] as Order[];
+      setOrders(data);
+      combinedOrders = combinedOrders.concat(
+        data.in_progress!,
+        data.completed!
+      );
+      setAll(combinedOrders);
+    }
+  }, [loading]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -77,48 +107,75 @@ const Orders = () => {
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
-          {allOrders?.map((order: Order) => {
-            return (
-              <OrderItem
-                order_number={order.orderNo}
-                first_name={order.firstName}
-                last_name={order.lastName}
-                city={order.address.city}
-                country={order.address.country}
-                items={order.items}
-              />
-            );
-          })}
+          {!loading ? (
+            <>
+              {allOrders?.map((order: Order) => {
+                return (
+                  <OrderItem
+                    order_number={order.orderNo}
+                    first_name={order.firstName}
+                    last_name={order.lastName}
+                    city={order.address.city}
+                    country={order.address.country}
+                    state={order.address.subdivision}
+                    items={order.items}
+                  />
+                );
+              })}
+            </>
+          ) : (
+            <Box sx={style}>
+              <CircularProgress />
+            </Box>
+          )}
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          {ordersData?.in_progress!?.length > 0 &&
-            ordersData.in_progress?.map((order) => {
-              return (
-                <OrderItem
-                  order_number={order.orderNo}
-                  first_name={order.firstName}
-                  last_name={order.lastName}
-                  city={order.address.city}
-                  country={order.address.country}
-                  items={order.items}
-                />
-              );
-            })}
+          {!loading ? (
+            <>
+              {ordersData?.in_progress!?.length > 0 &&
+                ordersData.in_progress?.map((order) => {
+                  return (
+                    <OrderItem
+                      order_number={order.orderNo}
+                      first_name={order.firstName}
+                      last_name={order.lastName}
+                      city={order.address.city}
+                      state={order.address.subdivision}
+                      country={order.address.country}
+                      items={order.items}
+                    />
+                  );
+                })}
+            </>
+          ) : (
+            <Box sx={style}>
+              <CircularProgress />
+            </Box>
+          )}
         </TabPanel>
         <TabPanel value={tabValue} index={2}>
-          {ordersData?.completed!?.length > 0 &&
-            ordersData.completed?.map((order) => {
-              return (
-                <OrderItem
-                  order_number={order.orderNo}
-                  first_name={order.firstName}
-                  last_name={order.lastName}
-                  city={order.address.city}
-                  country={order.address.country}
-                  items={order.items}
-                />
-              );
-            })}
+          {!loading ? (
+            <>
+              {ordersData?.completed!?.length > 0 &&
+                ordersData.completed?.map((order) => {
+                  return (
+                    <OrderItem
+                      order_number={order.orderNo}
+                      first_name={order.firstName}
+                      last_name={order.lastName}
+                      city={order.address.city}
+                      country={order.address.country}
+                      state={order.address.subdivision}
+                      items={order.items}
+                    />
+                  );
+                })}
+            </>
+          ) : (
+            <Box sx={style}>
+              <CircularProgress />
+            </Box>
+          )}
         </TabPanel>
       </Box>
     </>
