@@ -27,7 +27,7 @@ const SummaryCard = (props: InventorySummary) => {
     return false;
   };
   return (
-    <div>
+    <>
       {serial_numbers.length > 0 && (
         <>
           <Card
@@ -77,7 +77,7 @@ const SummaryCard = (props: InventorySummary) => {
           </Card>
         </>
       )}
-    </div>
+    </>
   );
 };
 
