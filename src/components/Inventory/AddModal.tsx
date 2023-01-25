@@ -13,10 +13,12 @@ import {
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { InventorySummary } from "../../interfaces/inventory";
+import { manageLaptop } from "../../services/inventoryAPI";
 import TabPanel from "../common/TabPanel";
 import TopUp from "./AddModalBoxes/TopUp";
-import { manageLaptop } from "../../services/inventoryAPI";
+import NewDeviceRequest from "./AddModalBoxes/NewDeviceRequest";
 import RequestConfirmation from "./AddModalBoxes/RequestConfirmation";
+import SendToSpoke from "./AddModalBoxes/SendToSpoke";
 
 const style = {
   position: "absolute" as "absolute",
@@ -159,10 +161,10 @@ const AddModal = (props: AddProps) => {
                 />
               </TabPanel>
               <TabPanel value={tabValue} index={1} prefix="add-inv">
-                New Device
+                <NewDeviceRequest addToRequestList={addToRequestList} />
               </TabPanel>
               <TabPanel value={tabValue} index={2} prefix="add-inv">
-                Send to Spoke
+                <SendToSpoke addToRequestList={addToRequestList} />
               </TabPanel>
               <Divider sx={{ paddingTop: "20px", marginBottom: "10px" }} />
               <TextField
