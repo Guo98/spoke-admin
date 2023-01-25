@@ -80,9 +80,10 @@ const OffboardBody = (props: OffboardProps) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const offboardLaptop = async () => {
+    const client = atob(localStorage.getItem("spokeclient")!);
     const accessToken = await getAccessTokenSilently();
     const bodyObj = {
-      client: "public",
+      client: client,
       type: manageType,
       device_location: device_location,
       device_name: device_name,

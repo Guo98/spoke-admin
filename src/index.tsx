@@ -19,6 +19,11 @@ const theme = createTheme({
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+const getOrgId = () => {
+  return localStorage.getItem("orgId") || undefined;
+};
+
 root.render(
   <React.StrictMode>
     <Auth0Provider
@@ -28,7 +33,7 @@ root.render(
       audience={process.env.REACT_APP_AUTH0_AUDIENCE!}
       scope="admin"
       useRefreshTokens={true}
-      organization="org_CxAEPTJ4kpVvkZ8G"
+      organization={getOrgId() === undefined ? undefined : getOrgId()}
     >
       <Provider store={store}>
         <ThemeProvider theme={theme}>

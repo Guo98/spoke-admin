@@ -1,8 +1,21 @@
 import React, { useState } from "react";
-import { Typography, TextField, Box } from "@mui/material";
+import {
+  Typography,
+  TextField,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from "@mui/material";
 
 interface SendProps {
-  addToRequestList: Function;
+  setSendDeviceName: Function;
+  setWarehouse: Function;
+  setQuantity: Function;
+  warehouse: string;
+  quantity: number;
 }
 
 const textFieldStyle = {
@@ -11,9 +24,12 @@ const textFieldStyle = {
 };
 
 const SendToSpoke = (props: SendProps) => {
-  const [deviceName, setDeviceName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [warehouse, setWarehouse] = useState("");
+  const { setSendDeviceName, setWarehouse, setQuantity, warehouse, quantity } =
+    props;
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setWarehouse(event.target.value);
+  };
 
   return (
     <Box>
@@ -27,7 +43,7 @@ const SendToSpoke = (props: SendProps) => {
         sx={textFieldStyle}
         size="small"
         placeholder="E.g. MacBook Pro 16' M1 2021"
-        onChange={(event) => setDeviceName(event.target.value)}
+        onChange={(event) => setSendDeviceName(event.target.value)}
       />
       <TextField
         fullWidth
@@ -40,16 +56,20 @@ const SendToSpoke = (props: SendProps) => {
         InputProps={{
           inputProps: { min: 1 },
         }}
-        defaultValue={1}
+        defaultValue={quantity}
       />
-      <TextField
-        fullWidth
-        label="Spoke Warehouse"
-        required
-        sx={textFieldStyle}
-        size="small"
-        onChange={(event) => setWarehouse(event.target.value)}
-      />
+      <FormControl fullWidth sx={textFieldStyle} required size="small">
+        <InputLabel id="warehouse-type-label">Spoke Warehouse</InputLabel>
+        <Select
+          labelId="warehouse-type-label"
+          id="warehouse-select-standard"
+          value={warehouse}
+          onChange={handleChange}
+          label="Spoke Warehouse"
+        >
+          <MenuItem value="Georgia, USA">Georgia, USA</MenuItem>
+        </Select>
+      </FormControl>
     </Box>
   );
 };

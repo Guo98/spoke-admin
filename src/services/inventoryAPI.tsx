@@ -1,5 +1,5 @@
-export async function getInventory(accessToken: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + "/getInventory/public", {
+export async function getInventory(accessToken: string, client: string) {
+  return fetch(process.env.REACT_APP_SPOKE_API + `/getInventory/${client}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

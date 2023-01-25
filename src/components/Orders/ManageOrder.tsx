@@ -44,7 +44,6 @@ const ManageOrder = (props: ManageProps) => {
   const handleClose = () => setOpen(false);
 
   const sendSupport = async () => {
-    console.log("user obj :::::::: ", user);
     const supportObj = {
       orderNo: order_no,
       customer_name: name,
@@ -55,7 +54,7 @@ const ManageOrder = (props: ManageProps) => {
     const accessToken = await getAccessTokenSilently();
     try {
       const emailResp = await sendSupportEmail(accessToken, supportObj);
-      console.log("result here :::::: ", emailResp);
+
       if (emailResp.message === "Successful") {
         setSent(true);
       }

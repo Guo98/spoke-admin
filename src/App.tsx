@@ -5,6 +5,7 @@ import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
 import { useAuth0 } from "@auth0/auth0-react";
 import Header from "./components/Header/Header";
+import { orgMapping } from "./utilities/mappings";
 import "./App.css";
 
 function App() {
@@ -15,6 +16,13 @@ function App() {
       loginWithRedirect();
     }
   }, [isLoading, isAuthenticated]);
+
+  useEffect(() => {
+    if (user && user.org_id) {
+      localStorage.setItem("orgId", user.org_id);
+      localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
+    }
+  }, [user]);
 
   return (
     <div>

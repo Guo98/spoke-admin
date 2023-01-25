@@ -91,6 +91,7 @@ const DeployModalContent = (props: DeployProps) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const deploy = async () => {
+    const client = atob(localStorage.getItem("spokeclient")!);
     const accessToken = await getAccessTokenSilently();
     const deployObj = {
       client: "public",
@@ -116,7 +117,7 @@ const DeployModalContent = (props: DeployProps) => {
       deployObj,
       "deployLaptop"
     );
-    console.log("deploy result ::::::: ", deployResult);
+
     if (deployResult) {
       setConfirmation(true);
     }

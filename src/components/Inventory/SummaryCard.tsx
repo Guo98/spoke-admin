@@ -27,7 +27,7 @@ const SummaryCard = (props: InventorySummary) => {
     return false;
   };
   return (
-    <>
+    <div>
       {serial_numbers.length > 0 && (
         <>
           <Card
@@ -38,7 +38,6 @@ const SummaryCard = (props: InventorySummary) => {
               borderRadius: 2,
               boxShadow: "5px 5px 5px gray",
             }}
-            key={index}
           >
             <CardMedia
               children={
@@ -78,7 +77,7 @@ const SummaryCard = (props: InventorySummary) => {
           </Card>
         </>
       )}
-    </>
+    </div>
   );
 };
 

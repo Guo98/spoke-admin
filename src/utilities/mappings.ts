@@ -10,4 +10,8 @@ const imageMapping: ImageMapping = {
     "https://spokeimages.blob.core.windows.net/image/macbook16.jpeg",
 };
 
-export { imageMapping };
+const orgMapping: any = {
+  org_CxAEPTJ4kpVvkZ8G: "public",
+};
+
+export { imageMapping, orgMapping };

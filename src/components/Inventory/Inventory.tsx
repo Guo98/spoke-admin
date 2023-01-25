@@ -63,8 +63,9 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const client = atob(localStorage.getItem("spokeclient")!);
       const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(accessToken);
+      const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
     };
 
@@ -192,6 +193,7 @@ const Inventory: FC = (): ReactElement => {
                           setFilters={setFilters}
                           index={index}
                           type="stock"
+                          key={index}
                         />
                       ) : (
                         <SummaryList {...device} />
@@ -222,6 +224,7 @@ const Inventory: FC = (): ReactElement => {
                           setFilters={setFilters}
                           index={index}
                           type="deployed"
+                          key={index}
                         />
                       ) : (
                         <SummaryList {...device} />
@@ -252,6 +255,7 @@ const Inventory: FC = (): ReactElement => {
                           setFilters={setFilters}
                           index={index}
                           type="deployed"
+                          key={index}
                         />
                       ) : (
                         <SummaryList {...device} />

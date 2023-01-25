@@ -1,5 +1,5 @@
-export async function getAllOrders(accessToken: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + "/getAllOrders/public", {
+export async function getAllOrders(accessToken: string, client: string) {
+  return fetch(process.env.REACT_APP_SPOKE_API + `/getAllOrders/${client}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

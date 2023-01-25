@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { Typography, TextField, Box } from "@mui/material";
 
 interface NewDevice {
-  addToRequestList: Function;
+  setDeviceName: Function;
+  setSpecifications: Function;
+  setColor: Function;
+  setRefURL: Function;
+  setLocation: Function;
 }
 
 const textFieldStyle = {
@@ -11,11 +15,8 @@ const textFieldStyle = {
 };
 
 const NewDeviceRequest = (props: NewDevice) => {
-  const [deviceName, setDeviceName] = useState("");
-  const [specifications, setSpecifications] = useState("");
-  const [color, setColor] = useState("");
-  const [refurl, setRefURL] = useState("");
-  const [location, setLocation] = useState("");
+  const { setDeviceName, setSpecifications, setColor, setRefURL, setLocation } =
+    props;
 
   return (
     <Box>

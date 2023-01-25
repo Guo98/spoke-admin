@@ -39,13 +39,16 @@ const Orders = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (client: string) => {
       const accessToken = await getAccessTokenSilently();
-      const ordersResult = await getAllOrders(accessToken);
+      const ordersResult = await getAllOrders(accessToken, client);
       dispatch(updateOrders(ordersResult.data));
     };
+    const encodedClient = localStorage.getItem("spokeclient");
 
-    fetchData().catch(console.error);
+    if (encodedClient) {
+      fetchData(atob(encodedClient)).catch(console.error);
+    }
   }, []);
 
   useEffect(() => {
@@ -62,7 +65,8 @@ const Orders = () => {
         data.in_progress!,
         data.completed!
       );
-      setAll(combinedOrders);
+
+      setAll(combinedOrders.reverse());
     }
   }, [loading]);
 
@@ -88,7 +92,7 @@ const Orders = () => {
         <TabPanel value={tabValue} index={0} prefix="orders">
           {!loading ? (
             <>
-              {allOrders?.map((order: Order) => {
+              {allOrders?.map((order: Order, index) => {
                 return (
                   <OrderItem
                     order_number={order.orderNo}
@@ -99,6 +103,7 @@ const Orders = () => {
                     state={order.address.subdivision}
                     items={order.items}
                     email={order.email}
+                    key={index}
                   />
                 );
               })}
@@ -113,7 +118,7 @@ const Orders = () => {
           {!loading ? (
             <>
               {ordersData?.in_progress!?.length > 0 &&
-                ordersData.in_progress?.map((order) => {
+                ordersData.in_progress?.map((order, index) => {
                   return (
                     <OrderItem
                       order_number={order.orderNo}
@@ -124,6 +129,7 @@ const Orders = () => {
                       country={order.address.country}
                       items={order.items}
                       email={order.email}
+                      key={index}
                     />
                   );
                 })}
@@ -138,7 +144,7 @@ const Orders = () => {
           {!loading ? (
             <>
               {ordersData?.completed!?.length > 0 &&
-                ordersData.completed?.map((order) => {
+                ordersData.completed?.map((order, index) => {
                   return (
                     <OrderItem
                       order_number={order.orderNo}
@@ -149,6 +155,7 @@ const Orders = () => {
                       state={order.address.subdivision}
                       items={order.items}
                       email={order.email}
+                      key={index}
                     />
                   );
                 })}

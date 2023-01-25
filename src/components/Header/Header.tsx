@@ -37,7 +37,7 @@ const Header: FC = (): ReactElement => {
                     borderBottom: "0px",
                   },
                 }}
-                inputProps={{ disableUnderline: true }}
+                inputProps={{ disableunderline: true }}
                 endAdornment={
                   <InputAdornment position="end" sx={{ paddingRight: "25px" }}>
                     <IconButton

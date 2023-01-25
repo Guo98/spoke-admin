@@ -54,6 +54,9 @@ interface RequestedItem {
   name: string;
   quantity: number;
   location: string;
+  specifications?: string;
+  color?: string;
+  refurl?: string;
 }
 
 const AddModal = (props: AddProps) => {
@@ -64,6 +67,15 @@ const AddModal = (props: AddProps) => {
   const [requestedItems, setRequestedItems] = useState<RequestedItem[]>([]);
   const [requested, setRequested] = useState(false);
   const [checked, setChecked] = useState(false);
+  // send to spoke states
+  const [deviceName, setDeviceName] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [warehouse, setWarehouse] = useState("");
+  // new device states
+  const [specifications, setSpecifications] = useState("");
+  const [color, setColor] = useState("");
+  const [refurl, setRefURL] = useState("");
+  const [location, setLocation] = useState("");
 
   const { user, getAccessTokenSilently } = useAuth0();
 
@@ -71,11 +83,29 @@ const AddModal = (props: AddProps) => {
     setOpen(open);
   }, [open]);
 
+  const requestDisabled = () => {
+    if (tabValue === 0) {
+      return requestedItems.length === 0 || !checked;
+    } else if (tabValue === 1) {
+      return (
+        deviceName === "" ||
+        location === "" ||
+        specifications === "" ||
+        color === "" ||
+        refurl === "" ||
+        !checked
+      );
+    } else if (tabValue === 2) {
+      return deviceName === "" || warehouse === "" || !checked;
+    }
+  };
+
   const handleClose = () => {
     setOpen(false);
     setParentOpen(false);
     setRequested(false);
     setRequestedItems([]);
+    setTabValue(0);
   };
 
   const handleChecked = (event: ChangeEvent<HTMLInputElement>) => {
@@ -94,23 +124,45 @@ const AddModal = (props: AddProps) => {
     setTabValue(newValue);
   };
 
+  const newSendDevice = () => {
+    if (tabValue === 1) {
+      return [
+        {
+          name: deviceName,
+          quantity: 1,
+          location,
+          specifications,
+          color,
+          refurl,
+        },
+      ];
+    } else {
+      return [
+        {
+          name: deviceName,
+          quantity,
+          location: warehouse,
+        },
+      ];
+    }
+  };
+
   const requestLaptop = async () => {
+    const client = atob(localStorage.getItem("spokeclient")!);
     const accessToken = await getAccessTokenSilently();
     const requestObj = {
       notes,
       requestor_email: user?.email,
       name: user?.name,
-      client: "Public",
+      client: client,
       request_type:
         tabValue === 0
           ? "a top up"
           : tabValue === 1
           ? "a new device"
           : "to send a device to Spoke",
-      items: requestedItems,
+      items: tabValue === 0 ? requestedItems : newSendDevice(),
     };
-
-    // console.log("request obj :::::::: ", requestObj);
 
     const apiResp = await manageLaptop(
       accessToken,
@@ -161,10 +213,22 @@ const AddModal = (props: AddProps) => {
                 />
               </TabPanel>
               <TabPanel value={tabValue} index={1} prefix="add-inv">
-                <NewDeviceRequest addToRequestList={addToRequestList} />
+                <NewDeviceRequest
+                  setDeviceName={setDeviceName}
+                  setSpecifications={setSpecifications}
+                  setColor={setColor}
+                  setLocation={setLocation}
+                  setRefURL={setRefURL}
+                />
               </TabPanel>
               <TabPanel value={tabValue} index={2} prefix="add-inv">
-                <SendToSpoke addToRequestList={addToRequestList} />
+                <SendToSpoke
+                  setSendDeviceName={setDeviceName}
+                  setWarehouse={setWarehouse}
+                  setQuantity={setQuantity}
+                  warehouse={warehouse}
+                  quantity={quantity}
+                />
               </TabPanel>
               <Divider sx={{ paddingTop: "20px", marginBottom: "10px" }} />
               <TextField
@@ -187,13 +251,13 @@ const AddModal = (props: AddProps) => {
                   textTransform: "none",
                 }}
                 onClick={requestLaptop}
-                disabled={requestedItems.length === 0 || !checked}
+                disabled={requestDisabled()}
               >
                 Request
               </Button>
             </>
           ) : (
-            <RequestConfirmation />
+            <RequestConfirmation tabValue={tabValue} />
           )}
         </Box>
       </Modal>
