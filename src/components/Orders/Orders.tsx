@@ -10,29 +10,8 @@ import { RootState } from "../../app/store";
 import { updateOrders } from "../../app/slices/ordersSlice";
 import { Order } from "../../interfaces/orders";
 import OrderItem from "./OrderItem";
+import TabPanel from "../common/TabPanel";
 import "./Orders.css";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`orders-tabpanel-${index}`}
-      aria-labelledby={`orders-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ paddingTop: 2 }}>{children}</Box>}
-    </div>
-  );
-}
 
 function a11yProps(index: number) {
   return {
@@ -106,7 +85,7 @@ const Orders = () => {
             <Tab label="Completed" {...a11yProps(2)} />
           </Tabs>
         </Box>
-        <TabPanel value={tabValue} index={0}>
+        <TabPanel value={tabValue} index={0} prefix="orders">
           {!loading ? (
             <>
               {allOrders?.map((order: Order) => {
@@ -119,6 +98,7 @@ const Orders = () => {
                     country={order.address.country}
                     state={order.address.subdivision}
                     items={order.items}
+                    email={order.email}
                   />
                 );
               })}
@@ -129,7 +109,7 @@ const Orders = () => {
             </Box>
           )}
         </TabPanel>
-        <TabPanel value={tabValue} index={1}>
+        <TabPanel value={tabValue} index={1} prefix="orders">
           {!loading ? (
             <>
               {ordersData?.in_progress!?.length > 0 &&
@@ -143,6 +123,7 @@ const Orders = () => {
                       state={order.address.subdivision}
                       country={order.address.country}
                       items={order.items}
+                      email={order.email}
                     />
                   );
                 })}
@@ -153,7 +134,7 @@ const Orders = () => {
             </Box>
           )}
         </TabPanel>
-        <TabPanel value={tabValue} index={2}>
+        <TabPanel value={tabValue} index={2} prefix="orders">
           {!loading ? (
             <>
               {ordersData?.completed!?.length > 0 &&
@@ -167,6 +148,7 @@ const Orders = () => {
                       country={order.address.country}
                       state={order.address.subdivision}
                       items={order.items}
+                      email={order.email}
                     />
                   );
                 })}

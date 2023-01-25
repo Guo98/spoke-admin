@@ -8,7 +8,8 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Grid from "@mui/material/Grid";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 import { Item } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
 
@@ -20,6 +21,7 @@ interface OrderProps {
   country: string;
   items: Item[];
   state: string;
+  email: string;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -53,8 +55,16 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const OrderItem = (props: OrderProps) => {
-  const { order_number, first_name, last_name, city, country, items, state } =
-    props;
+  const {
+    order_number,
+    first_name,
+    last_name,
+    city,
+    country,
+    items,
+    state,
+    email,
+  } = props;
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
 
@@ -98,20 +108,20 @@ const OrderItem = (props: OrderProps) => {
       <AccordionSummary>
         <Grid container>
           <Grid item xs={2}>
-            <div className="bold order-padding">Order #{order_number}</div>
-            <div>
+            <Typography fontWeight="bold">Order #{order_number}</Typography>
+            <Typography>
               {first_name} {last_name}
-            </div>
+            </Typography>
           </Grid>
           <Grid item xs={2}>
-            <div>
+            <Typography>
               {state}, {country}
-            </div>
+            </Typography>
           </Grid>
-          <Grid item xs={4}>
-            {laptopName}
+          <Grid item xs={5}>
+            <Typography>{laptopName}</Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             <Chip
               label={orderStatus()}
               sx={{
@@ -121,24 +131,49 @@ const OrderItem = (props: OrderProps) => {
               }}
             />
           </Grid>
-          <Grid item xs={2}>
+        </Grid>
+      </AccordionSummary>
+      <AccordionDetails sx={{ borderTop: "0px" }}>
+        <Grid container justifyContent="space-evenly" sx={{ paddingLeft: 3 }}>
+          <Grid item xs={9}>
+            <Typography component="h4" fontWeight="bold">
+              Item{items.length > 1 ? "s" : ""} Ordered:{" "}
+            </Typography>
+            <ul>
+              {items.map((item) => {
+                return (
+                  <li>
+                    <Grid container spacing={2}>
+                      <Grid item xs={10}>
+                        <Typography>{item.name}</Typography>
+                      </Grid>
+                      <Grid item xs={2}>
+                        {item.tracking_number[0] && (
+                          <Link
+                            href={
+                              "https://withspoke.aftership.com/" +
+                              item.tracking_number[0]
+                            }
+                          >
+                            Track
+                          </Link>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </li>
+                );
+              })}
+            </ul>
+          </Grid>
+          <Grid item xs={3}>
             <ManageOrder
               order_no={order_number}
               name={first_name + " " + last_name}
               items={items}
+              email={email}
             />
           </Grid>
         </Grid>
-      </AccordionSummary>
-      <AccordionDetails sx={{ borderTop: "0px" }}>
-        <div className="details-padding">
-          <h4 className="header-margins">
-            Item{items.length > 1 ? "s" : ""} Ordered:{" "}
-          </h4>
-          {items.map((item) => {
-            return <div>{item.name}</div>;
-          })}
-        </div>
       </AccordionDetails>
     </Accordion>
   );

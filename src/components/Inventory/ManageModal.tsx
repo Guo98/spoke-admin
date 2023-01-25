@@ -98,7 +98,7 @@ const ManageModal = (props: ManageProps) => {
                     id="manage-select-standard"
                     value={manageType}
                     onChange={handleChange}
-                    label="Age"
+                    label="What do you want to do?"
                   >
                     <MenuItem value="Offboarding">Offboarding</MenuItem>
                     <MenuItem value="Returning">Returning</MenuItem>

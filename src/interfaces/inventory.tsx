@@ -13,6 +13,7 @@ export interface InventorySummary {
     hard_drive: string;
     cpu: string;
   };
+  hidden?: boolean;
 }
 
 interface SerialNumbers {

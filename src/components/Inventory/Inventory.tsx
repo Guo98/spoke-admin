@@ -21,29 +21,8 @@ import SummaryCard from "./SummaryCard";
 import SummaryList from "./SummaryList";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
+import TabPanel from "../common/TabPanel";
 import "./Inventory.css";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`orders-tabpanel-${index}`}
-      aria-labelledby={`orders-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ paddingTop: 2 }}>{children}</Box>}
-    </div>
-  );
-}
 
 function a11yProps(index: number) {
   return {
@@ -66,7 +45,6 @@ const Inventory: FC = (): ReactElement => {
 
   const [cards, setCards] = useState(true);
   const [filterdrawer, openFiltersDrawer] = useState(false);
-  const [inventoryData, setInventoryData] = useState(data);
   const [device, setDevice] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [tabValue, setTabValue] = useState(0);
@@ -195,7 +173,7 @@ const Inventory: FC = (): ReactElement => {
               <Tab label="Pending" {...a11yProps(2)} />
             </Tabs>
           </Box>
-          <TabPanel value={tabValue} index={0}>
+          <TabPanel value={tabValue} index={0} prefix="inv">
             <Box
               sx={{
                 display: cards ? "flex" : "block",
@@ -225,7 +203,7 @@ const Inventory: FC = (): ReactElement => {
               )}
             </Box>
           </TabPanel>
-          <TabPanel value={tabValue} index={1}>
+          <TabPanel value={tabValue} index={1} prefix="inv">
             <Box
               sx={{
                 display: cards ? "flex" : "block",
@@ -255,7 +233,7 @@ const Inventory: FC = (): ReactElement => {
               )}
             </Box>
           </TabPanel>
-          <TabPanel value={tabValue} index={2}>
+          <TabPanel value={tabValue} index={2} prefix="inv">
             <Box
               sx={{
                 display: cards ? "flex" : "block",
@@ -295,7 +273,7 @@ const Inventory: FC = (): ReactElement => {
           <AddModal
             open={openAdd}
             setParentOpen={setOpenAdd}
-            deviceNames={inventoryData}
+            deviceNames={ogstock}
           />
           <Fab
             color="primary"

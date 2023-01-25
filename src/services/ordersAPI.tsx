@@ -19,3 +19,26 @@ export async function getAllOrders(accessToken: string) {
       return [];
     });
 }
+
+export async function sendSupportEmail(accessToken: string, body: object) {
+  return fetch(process.env.REACT_APP_SPOKE_API + "/supportEmail", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Missing Body");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data;
+    })
+    .catch((err) => {
+      return [];
+    });
+}
