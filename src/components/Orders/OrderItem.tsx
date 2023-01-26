@@ -5,11 +5,21 @@ import MuiAccordionSummary, {
   AccordionSummaryProps,
 } from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
-import Grid from "@mui/material/Grid";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
-import Chip from "@mui/material/Chip";
-import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
+import {
+  Grid,
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+  Chip,
+  Typography,
+  Button,
+  Box,
+  Paper,
+} from "@mui/material";
 import { Item } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
 
@@ -92,6 +102,18 @@ const OrderItem = (props: OrderProps) => {
     }
   };
 
+  const anyTrackingNumbers = () => {
+    let anyTrackingNumbers = false;
+
+    items.forEach((item) => {
+      if (item.tracking_number !== "") {
+        anyTrackingNumbers = true;
+      }
+    });
+
+    return anyTrackingNumbers;
+  };
+
   useEffect(() => {
     let itemFilter = items.filter(
       (item) => item.type && item.type === "laptop"
@@ -122,56 +144,81 @@ const OrderItem = (props: OrderProps) => {
             <Typography>{laptopName}</Typography>
           </Grid>
           <Grid item xs={3}>
-            <Chip
-              label={orderStatus()}
-              sx={{
-                width: "116px",
-                backgroundColor: statusBgColor(),
-                color: statusTextColor(),
-              }}
-            />
+            <Box display="flex" justifyContent="flex-end">
+              <Chip
+                label={orderStatus()}
+                sx={{
+                  width: "116px",
+                  backgroundColor: statusBgColor(),
+                  color: statusTextColor(),
+                }}
+              />
+            </Box>
           </Grid>
         </Grid>
       </AccordionSummary>
-      <AccordionDetails sx={{ borderTop: "0px" }}>
-        <Grid container justifyContent="space-evenly" sx={{ paddingLeft: 3 }}>
+      <AccordionDetails sx={{ borderTop: "0px", backgroundColor: "#F8F8F8" }}>
+        <Grid
+          container
+          justifyContent="space-evenly"
+          sx={{ paddingLeft: 3 }}
+          alignItems="center"
+        >
           <Grid item xs={9}>
-            <Typography component="h4" fontWeight="bold">
-              Item{items.length > 1 ? "s" : ""} Ordered:{" "}
-            </Typography>
-            <ul>
-              {items.map((item) => {
-                return (
-                  <li>
-                    <Grid container spacing={2}>
-                      <Grid item xs={10}>
-                        <Typography>{item.name}</Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        {item.tracking_number[0] && (
-                          <Link
-                            href={
-                              "https://withspoke.aftership.com/" +
-                              item.tracking_number[0]
-                            }
-                          >
-                            Track
-                          </Link>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </li>
-                );
-              })}
-            </ul>
+            <TableContainer component={Paper}>
+              <Table aria-label="items table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell width="70%">
+                      <Typography fontWeight="bold">Item</Typography>
+                    </TableCell>
+                    <TableCell width="30%">
+                      <Typography fontWeight="bold">Quantity</Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {items.map((item) => {
+                    return (
+                      <TableRow hover>
+                        <TableCell width="70%">{item.name}</TableCell>
+                        <TableCell width="30%">{item.quantity || 1}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
           <Grid item xs={3}>
-            <ManageOrder
-              order_no={order_number}
-              name={first_name + " " + last_name}
-              items={items}
-              email={email}
-            />
+            <Box display="flex" justifyContent="flex-end">
+              <ManageOrder
+                order_no={order_number}
+                name={first_name + " " + last_name}
+                items={items}
+                email={email}
+              />
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              sx={{ marginTop: "15px" }}
+            >
+              <Button
+                variant="contained"
+                size="small"
+                sx={{
+                  width: "116px",
+                  borderRadius: "999em 999em 999em 999em",
+                  textTransform: "none",
+                }}
+                href={"https://withspoke.aftership.com/"}
+                target="_blank"
+                disabled={!anyTrackingNumbers()}
+              >
+                Track
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </AccordionDetails>
@@ -180,3 +227,5 @@ const OrderItem = (props: OrderProps) => {
 };
 
 export default OrderItem;
+
+// "https://withspoke.aftership.com/"

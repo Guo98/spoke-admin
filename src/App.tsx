@@ -9,13 +9,26 @@ import { orgMapping } from "./utilities/mappings";
 import "./App.css";
 
 function App() {
-  const { isAuthenticated, loginWithRedirect, isLoading, user } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, isLoading, user, logout } =
+    useAuth0();
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
       loginWithRedirect();
     }
   }, [isLoading, isAuthenticated]);
+
+  const handleLogout = (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    logout();
+    event.returnValue = "";
+  };
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleLogout);
+
+    return () => window.removeEventListener("beforeunload", handleLogout);
+  }, []);
 
   useEffect(() => {
     if (user && user.org_id) {

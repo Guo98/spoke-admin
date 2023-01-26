@@ -29,7 +29,7 @@ export interface Item {
   variant?: Variant[];
   quantity: number;
   supplier: string;
-  tracking_number: string[];
+  tracking_number: string[] | string;
   type?: string;
 }
 
