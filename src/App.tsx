@@ -18,17 +18,17 @@ function App() {
     }
   }, [isLoading, isAuthenticated]);
 
-  const handleLogout = (event: BeforeUnloadEvent) => {
-    event.preventDefault();
-    logout();
-    event.returnValue = "";
-  };
+  // const handleLogout = (event: BeforeUnloadEvent) => {
+  //   event.preventDefault();
+  //   logout();
+  //   event.returnValue = "";
+  // };
 
-  useEffect(() => {
-    window.addEventListener("beforeunload", handleLogout);
+  // useEffect(() => {
+  //   window.addEventListener("beforeunload", handleLogout);
 
-    return () => window.removeEventListener("beforeunload", handleLogout);
-  }, []);
+  //   return () => window.removeEventListener("beforeunload", handleLogout);
+  // }, []);
 
   useEffect(() => {
     if (user && user.org_id) {

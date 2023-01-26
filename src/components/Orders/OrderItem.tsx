@@ -165,7 +165,7 @@ const OrderItem = (props: OrderProps) => {
           alignItems="center"
         >
           <Grid item xs={9}>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
               <Table aria-label="items table">
                 <TableHead>
                   <TableRow>
@@ -199,26 +199,27 @@ const OrderItem = (props: OrderProps) => {
                 email={email}
               />
             </Box>
-            <Box
-              display="flex"
-              justifyContent="flex-end"
-              sx={{ marginTop: "15px" }}
-            >
-              <Button
-                variant="contained"
-                size="small"
-                sx={{
-                  width: "116px",
-                  borderRadius: "999em 999em 999em 999em",
-                  textTransform: "none",
-                }}
-                href={"https://withspoke.aftership.com/"}
-                target="_blank"
-                disabled={!anyTrackingNumbers()}
+            {anyTrackingNumbers() && (
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                sx={{ marginTop: "15px" }}
               >
-                Track
-              </Button>
-            </Box>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    width: "116px",
+                    borderRadius: "999em 999em 999em 999em",
+                    textTransform: "none",
+                  }}
+                  href={"https://withspoke.aftership.com/"}
+                  target="_blank"
+                >
+                  Track
+                </Button>
+              </Box>
+            )}
           </Grid>
         </Grid>
       </AccordionDetails>

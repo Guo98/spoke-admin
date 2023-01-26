@@ -39,6 +39,7 @@ const Orders = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
+    console.log("in this use effect here ?????????", loading);
     const fetchData = async (client: string) => {
       const accessToken = await getAccessTokenSilently();
       const ordersResult = await getAllOrders(accessToken, client);
@@ -49,7 +50,7 @@ const Orders = () => {
     if (encodedClient) {
       fetchData(atob(encodedClient)).catch(console.error);
     }
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     if (Object.keys(data).length > 0) {
