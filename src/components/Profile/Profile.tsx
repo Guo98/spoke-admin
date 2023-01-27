@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import Popover from "@mui/material/Popover";
-import Box from "@mui/material/Box";
+import {
+  Typography,
+  Avatar,
+  Grid,
+  Button,
+  Popover,
+  Box,
+  Paper,
+} from "@mui/material";
 import "./Profile.css";
 
 const Profile = () => {
@@ -42,7 +45,10 @@ const Profile = () => {
           </Typography>
         </Grid>
         <Grid item xs={4}>
-          <Button sx={{ paddingTop: 0 }} onClick={handleClick}>
+          <Button
+            sx={{ paddingTop: 0, paddingRight: 0, paddingLeft: 0 }}
+            onClick={handleClick}
+          >
             {userpic === "" ? (
               <Avatar sx={{ marginLeft: 0 }}>{username?.charAt(0)}</Avatar>
             ) : (
@@ -56,7 +62,7 @@ const Profile = () => {
             onClose={handleClose}
             anchorOrigin={{
               vertical: "bottom",
-              horizontal: "left",
+              horizontal: "right",
             }}
           >
             <Box>

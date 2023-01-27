@@ -32,7 +32,9 @@ const RequestConfirmation = (props: RequestProps) => {
           <Typography textAlign="center" paddingTop="10px" fontStyle="italic">
             Please make sure to ship to the following address:
           </Typography>
-          <Typography textAlign="center">[Client Name]</Typography>
+          <Typography textAlign="center">
+            {atob(localStorage.getItem("spokeclient")!)}
+          </Typography>
           <Typography textAlign="center">c/o Spoke Technology</Typography>
           <Typography textAlign="center">2725 Northwoods Pkwy</Typography>
           <Typography textAlign="center">Suite A-2</Typography>

@@ -14,6 +14,7 @@ export interface InventorySummary {
     cpu: string;
   };
   hidden?: boolean;
+  adding_stock?: number;
 }
 
 interface SerialNumbers {

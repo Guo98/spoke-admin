@@ -19,10 +19,13 @@ import { updateInventory } from "../../app/slices/inventorySlice";
 import { getInventory } from "../../services/inventoryAPI";
 import SummaryCard from "./SummaryCard";
 import SummaryList from "./SummaryList";
+import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
 import TabPanel from "../common/TabPanel";
+import Header from "../Header/Header";
 import "./Inventory.css";
+import { Typography } from "@mui/material";
 
 function a11yProps(index: number) {
   return {
@@ -74,6 +77,7 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     if (data.length > 0) {
+      console.log("should be in here ;::::::::: ");
       setLoading(false);
     }
   }, [data]);
@@ -109,6 +113,7 @@ const Inventory: FC = (): ReactElement => {
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
+        <Header label="Search Inventory" />
         <Grid container>
           <Grid item xs={7}>
             <h2>Inventory</h2>
@@ -196,7 +201,10 @@ const Inventory: FC = (): ReactElement => {
                           key={index}
                         />
                       ) : (
-                        <SummaryList {...device} />
+                        <>
+                          <SummaryList {...device} />
+                          {/* <InventoryAccordion {...device} /> */}
+                        </>
                       );
                     })}
                 </>
@@ -271,8 +279,10 @@ const Inventory: FC = (): ReactElement => {
             color="primary"
             sx={{ bottom: 15, position: "fixed" }}
             onClick={() => setOpenAdd(true)}
+            variant="extended"
           >
-            <AddIcon />
+            {/* <AddIcon /> */}
+            <Typography>Add Inventory</Typography>
           </Fab>
           <AddModal
             open={openAdd}

@@ -21,14 +21,14 @@ const SummaryCard = (props: InventorySummary) => {
   } = props;
 
   const lowStock = () => {
-    if (serial_numbers.length < 10 && type === "stock") {
+    if (serial_numbers?.length < 10 && type === "stock") {
       return true;
     }
     return false;
   };
   return (
     <>
-      {serial_numbers.length > 0 && (
+      {serial_numbers?.length > 0 && (
         <>
           <Card
             sx={{

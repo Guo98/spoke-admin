@@ -4,7 +4,6 @@ import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
 import { useAuth0 } from "@auth0/auth0-react";
-import Header from "./components/Header/Header";
 import { orgMapping } from "./utilities/mappings";
 import "./App.css";
 
@@ -49,7 +48,7 @@ function App() {
           </Box>
         )}
         <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
-          {window.location.pathname.substring(1) !== "logout" && <Header />}
+          {/* {window.location.pathname.substring(1) !== "logout" && <Header />} */}
           <RouterProvider router={AppContainer} />
         </Box>
       </Box>

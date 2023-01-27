@@ -129,7 +129,7 @@ const SpokeDrawer: FC = (): ReactElement => {
             </ListItem>
           ))}
           <div className="bottomPush">
-            {["Settings", "Support", "Log Out"].map((text) => (
+            {["Support", "Log Out"].map((text) => (
               <ListItem key={text} className="noVerticalPadding">
                 <ListItemButton onClick={() => footerAction(text)}>
                   <ListItemIcon>

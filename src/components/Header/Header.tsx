@@ -1,15 +1,23 @@
 import React, { FC, ReactElement } from "react";
-import Grid from "@mui/material/Grid";
+import {
+  Grid,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  FilledInput,
+  IconButton,
+  Box,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import FilledInput from "@mui/material/FilledInput";
-import IconButton from "@mui/material/IconButton";
 import Profile from "../Profile/Profile";
 import "./Header.css";
 
-const Header: FC = (): ReactElement => {
+interface HeaderProps {
+  label: string;
+}
+
+const Header = (props: HeaderProps): ReactElement => {
+  const { label } = props;
   return (
     <>
       <Grid container spacing={2} justifyContent="space-between">
@@ -22,7 +30,7 @@ const Header: FC = (): ReactElement => {
                   paddingLeft: "15px",
                 }}
               >
-                Search orders, users, and accounts
+                {label}
               </InputLabel>
               <FilledInput
                 id="outlined-adornment-password"
@@ -55,7 +63,9 @@ const Header: FC = (): ReactElement => {
           </div>
         </Grid>
         <Grid item xs={3}>
-          <Profile />
+          <Box display="flex" justifyContent="flex-end">
+            <Profile />
+          </Box>
         </Grid>
       </Grid>
     </>

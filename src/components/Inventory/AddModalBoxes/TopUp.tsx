@@ -18,6 +18,7 @@ import {
   Divider,
   Button,
   Typography,
+  Paper,
 } from "@mui/material";
 import { InventorySummary } from "../../../interfaces/inventory";
 
@@ -148,8 +149,12 @@ const TopUp = (props: TopUpProps) => {
               } = device;
 
               return (
-                <div className="bottom-padding">
-                  <Card sx={{ display: "flex" }}>
+                <div
+                  className={
+                    selectedDevices.length - 1 !== index ? "bottom-padding" : ""
+                  }
+                >
+                  <Card sx={{ display: "flex" }} component={Paper}>
                     <CardMedia
                       component="img"
                       sx={{ width: 150, objectFit: "contain" }}

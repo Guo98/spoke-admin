@@ -24,32 +24,37 @@ export const inventorySlice = createSlice({
 
       const tempData = action.payload;
       tempData.forEach((device) => {
-        let instocklaptops = device.serial_numbers.filter(
-          (individual) => individual.status === "In Stock"
-        );
+        if (device.serial_numbers) {
+          let instocklaptops = device.serial_numbers.filter(
+            (individual) => individual.status === "In Stock"
+          );
 
-        let deployedlaptops = device.serial_numbers.filter(
-          (individual) => individual.status === "Deployed"
-        );
+          let deployedlaptops = device.serial_numbers.filter(
+            (individual) => individual.status === "Deployed"
+          );
 
-        let offboardingLaptops = device.serial_numbers.filter(
-          (individual) =>
-            individual.status === "Offboarding" ||
-            individual.status === "Returning" ||
-            individual.status === "Top Up"
-        );
+          let offboardingLaptops = device.serial_numbers.filter(
+            (individual) =>
+              individual.status === "Offboarding" ||
+              individual.status === "Returning" ||
+              individual.status === "Top Up"
+          );
 
-        let tempInStock = { ...device };
-        tempInStock.serial_numbers = instocklaptops.slice(0);
-        inStock.push(tempInStock);
+          let tempInStock = { ...device };
+          tempInStock.serial_numbers = instocklaptops.slice(0);
+          inStock.push(tempInStock);
 
-        let tempDeployed = { ...device };
-        tempDeployed.serial_numbers = deployedlaptops.slice(0);
-        deployed.push(tempDeployed);
+          let tempDeployed = { ...device };
+          tempDeployed.serial_numbers = deployedlaptops.slice(0);
+          deployed.push(tempDeployed);
 
-        let tempOffboarding = { ...device };
-        tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
-        offboarding.push(tempOffboarding);
+          let tempOffboarding = { ...device };
+          tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
+          offboarding.push(tempOffboarding);
+        }
+        // } else if (device.adding_stock) {
+        //   offboarding.push(device);
+        // }
       });
 
       state.pending = offboarding;

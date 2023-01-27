@@ -11,6 +11,7 @@ import { updateOrders } from "../../app/slices/ordersSlice";
 import { Order } from "../../interfaces/orders";
 import OrderItem from "./OrderItem";
 import TabPanel from "../common/TabPanel";
+import Header from "../Header/Header";
 import "./Orders.css";
 
 function a11yProps(index: number) {
@@ -78,6 +79,7 @@ const Orders = () => {
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
+        <Header label="Search Orders" />
         <h2>Orders</h2>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
