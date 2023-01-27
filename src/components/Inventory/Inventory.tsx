@@ -77,7 +77,6 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     if (data.length > 0) {
-      console.log("should be in here ;::::::::: ");
       setLoading(false);
     }
   }, [data]);
@@ -119,22 +118,24 @@ const Inventory: FC = (): ReactElement => {
             <h2>Inventory</h2>
           </Grid>
           <Grid item xs={5}>
-            <ToggleButtonGroup sx={{ float: "right" }} exclusive>
-              <ToggleButton
-                value="cards"
-                selected={cards}
-                onClick={() => setCards(true)}
-              >
-                <ViewModuleIcon />
-              </ToggleButton>
-              <ToggleButton
-                value="list"
-                selected={!cards}
-                onClick={() => setCards(false)}
-              >
-                <ViewListIcon />
-              </ToggleButton>
-            </ToggleButtonGroup>
+            {tabValue !== 0 && (
+              <ToggleButtonGroup sx={{ float: "right" }} exclusive>
+                <ToggleButton
+                  value="cards"
+                  selected={cards}
+                  onClick={() => setCards(true)}
+                >
+                  <ViewModuleIcon />
+                </ToggleButton>
+                <ToggleButton
+                  value="list"
+                  selected={!cards}
+                  onClick={() => setCards(false)}
+                >
+                  <ViewListIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )}
           </Grid>
         </Grid>
         <div className="right">
@@ -182,30 +183,31 @@ const Inventory: FC = (): ReactElement => {
           <TabPanel value={tabValue} index={0} prefix="inv">
             <Box
               sx={{
-                display: cards ? "flex" : "block",
+                display: "block",
                 flexWrap: "wrap",
                 flexDirection: "row",
-                justifyContent: cards ? "space-evenly" : "center",
+                justifyContent: "center",
               }}
             >
               {!loading ? (
                 <>
                   {stock?.length > 0 &&
                     stock.map((device, index) => {
-                      return cards ? (
-                        <SummaryCard
-                          {...device}
-                          setFilters={setFilters}
-                          index={index}
-                          type="stock"
-                          key={index}
-                        />
-                      ) : (
-                        <>
-                          <SummaryList {...device} />
-                          {/* <InventoryAccordion {...device} /> */}
-                        </>
-                      );
+                      // return cards ? (
+                      //   <SummaryCard
+                      //     {...device}
+                      //     setFilters={setFilters}
+                      //     index={index}
+                      //     type="stock"
+                      //     key={index}
+                      //   />
+                      // ) : (
+                      //   <>
+                      //     {/* <SummaryList {...device} /> */}
+                      //     <InventoryAccordion {...device} />
+                      //   </>
+                      // );
+                      return <InventoryAccordion {...device} />;
                     })}
                 </>
               ) : (
