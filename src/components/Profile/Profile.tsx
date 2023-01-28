@@ -5,10 +5,10 @@ import {
   Avatar,
   Grid,
   Button,
-  Popover,
-  Box,
-  Paper,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 import "./Profile.css";
 
 const Profile = () => {
@@ -48,6 +48,8 @@ const Profile = () => {
           <Button
             sx={{ paddingTop: 0, paddingRight: 0, paddingLeft: 0 }}
             onClick={handleClick}
+            aria-controls={open ? "profile-menu" : undefined}
+            id="profile-button"
           >
             {userpic === "" ? (
               <Avatar sx={{ marginLeft: 0 }}>{username?.charAt(0)}</Avatar>
@@ -55,24 +57,20 @@ const Profile = () => {
               <Avatar sx={{ marginLeft: 0 }} src={userpic} />
             )}
           </Button>
-          <Popover
-            id={popoverId}
-            open={open}
+          <Menu
+            id="profile-menu"
             anchorEl={anchorEl}
+            open={open}
             onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
+            MenuListProps={{ "aria-labelledby": "profile-button" }}
           >
-            <Box>
-              <Button
-                onClick={() => logout({ returnTo: window.location.origin })}
-              >
-                Log Out
-              </Button>
-            </Box>
-          </Popover>
+            <MenuItem
+              onClick={() => logout({ returnTo: window.location.origin })}
+            >
+              <LogoutIcon />{" "}
+              <Typography sx={{ paddingLeft: "5px" }}>Logout</Typography>
+            </MenuItem>
+          </Menu>
         </Grid>
       </Grid>
     </div>

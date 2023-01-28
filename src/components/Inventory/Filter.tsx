@@ -207,11 +207,11 @@ const Filter = (props: FilterProps) => {
 
   return (
     <>
-      <Typography variant="h6" component="h4">
+      <Typography variant="h6" component="h4" fontWeight="bold">
         Sort and Filter
       </Typography>
       <hr />
-      <Typography>Sort</Typography>
+      <Typography fontWeight="bold">Sort</Typography>
       <Box
         sx={{
           display: "flex",
@@ -239,7 +239,7 @@ const Filter = (props: FilterProps) => {
       </Box>
       <br />
       <hr />
-      <Typography>Filters</Typography>
+      <Typography fontWeight="bold">Filters</Typography>
       <br />
       <Typography variant="caption">Device(s)</Typography>
       <Box

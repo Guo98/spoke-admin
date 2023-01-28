@@ -28,7 +28,7 @@ interface IconMapping {
   Team: JSX.Element;
   Settings: JSX.Element;
   Support: JSX.Element;
-  "Log Out": JSX.Element;
+  Logout: JSX.Element;
   "Log In": JSX.Element;
 }
 
@@ -40,7 +40,7 @@ const iconMapping: IconMapping = {
   Team: <GroupsIcon />,
   Settings: <TuneIcon />,
   Support: <SupportAgentIcon />,
-  "Log Out": <LogoutIcon />,
+  Logout: <LogoutIcon />,
   "Log In": <LoginIcon />,
 };
 
@@ -95,7 +95,7 @@ const SpokeDrawer: FC = (): ReactElement => {
 
   const footerAction = (text: string) => {
     switch (text) {
-      case "Log Out":
+      case "Logout":
         logout({ returnTo: window.location.origin });
         break;
       case "Support":
@@ -136,7 +136,7 @@ const SpokeDrawer: FC = (): ReactElement => {
             </ListItem>
           ))}
           <div className="bottomPush">
-            {["Support", "Log Out"].map((text) => (
+            {["Support", "Logout"].map((text) => (
               <ListItem key={text} className="noVerticalPadding">
                 <ListItemButton onClick={() => footerAction(text)}>
                   <ListItemIcon>
