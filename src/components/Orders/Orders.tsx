@@ -34,13 +34,14 @@ const Orders = () => {
   const [ordersData, setOrders] = useState(data);
   const [allOrders, setAll] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [inprog, setInprog] = useState<Order[]>([]);
+  const [completed, setCompleted] = useState<Order[]>([]);
 
   const dispatch = useDispatch();
 
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    console.log("in this use effect here ?????????", loading);
     const fetchData = async (client: string) => {
       const accessToken = await getAccessTokenSilently();
       const ordersResult = await getAllOrders(accessToken, client);
@@ -67,7 +68,8 @@ const Orders = () => {
         data.in_progress!,
         data.completed!
       );
-
+      setInprog(data.in_progress!);
+      setCompleted(data.completed!);
       setAll(combinedOrders.reverse());
     }
   }, [loading]);
@@ -76,10 +78,68 @@ const Orders = () => {
     setTabValue(newValue);
   };
 
+  const searchBar = (text: string) => {
+    if (text !== "") {
+      text = text.toLowerCase();
+      switch (tabValue as number) {
+        case 0:
+          const filteredOrders = searchFilter(allOrders, text);
+          setAll(filteredOrders);
+          break;
+        case 1:
+          const filteredDeployed = searchFilter(
+            [...ordersData.in_progress!],
+            text
+          );
+          setInprog(filteredDeployed);
+          break;
+        case 2:
+          const filteredComplete = searchFilter(
+            [...ordersData.completed!],
+            text
+          );
+          setCompleted(filteredComplete);
+          break;
+      }
+    } else {
+      switch (tabValue as number) {
+        case 0:
+          let combinedOrders = [] as Order[];
+          combinedOrders = combinedOrders.concat(
+            data.in_progress!,
+            data.completed!
+          );
+          setAll(combinedOrders.reverse());
+          break;
+        case 1:
+          setInprog(data.in_progress!);
+          break;
+        case 2:
+          setCompleted(data.completed!);
+          break;
+      }
+    }
+  };
+
+  const searchFilter = (objs: Order[], text: string) => {
+    return objs.filter(
+      (order) =>
+        order.orderNo.toString().indexOf(text) > -1 ||
+        order.full_name.toLowerCase().indexOf(text) > -1 ||
+        order.address.country.toLowerCase().indexOf(text) > -1 ||
+        order.address.subdivision.toLowerCase().indexOf(text) > -1 ||
+        order.items.filter((item) => item.name.toLowerCase().indexOf(text) > -1)
+          .length > 0
+    );
+  };
+
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
-        <Header label="Search Orders" />
+        <Header
+          label="Search Orders by order number, name, item, location"
+          textChange={searchBar}
+        />
         <h2>Orders</h2>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
@@ -120,8 +180,8 @@ const Orders = () => {
         <TabPanel value={tabValue} index={1} prefix="orders">
           {!loading ? (
             <>
-              {ordersData?.in_progress!?.length > 0 &&
-                ordersData.in_progress?.map((order, index) => {
+              {inprog!?.length > 0 &&
+                inprog?.map((order, index) => {
                   return (
                     <OrderItem
                       order_number={order.orderNo}
@@ -146,8 +206,8 @@ const Orders = () => {
         <TabPanel value={tabValue} index={2} prefix="orders">
           {!loading ? (
             <>
-              {ordersData?.completed!?.length > 0 &&
-                ordersData.completed?.map((order, index) => {
+              {completed!?.length > 0 &&
+                completed?.map((order, index) => {
                   return (
                     <OrderItem
                       order_number={order.orderNo}

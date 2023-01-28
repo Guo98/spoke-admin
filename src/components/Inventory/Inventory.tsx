@@ -26,6 +26,7 @@ import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
 import "./Inventory.css";
 import { Typography } from "@mui/material";
+import { InventorySummary } from "../../interfaces/inventory";
 
 function a11yProps(index: number) {
   return {
@@ -109,10 +110,56 @@ const Inventory: FC = (): ReactElement => {
     setOGInprogress(pendingRedux);
   }, [pendingRedux, deployedRedux, stockRedux]);
 
+  const searchBar = (text: string) => {
+    text = text.toLowerCase();
+    if (text !== "") {
+      switch (tabValue as number) {
+        case 0:
+          let copiedStock = searchFilter([...ogstock], text);
+          setStock(copiedStock);
+          break;
+        case 1:
+          let copiedDeploy = searchFilter([...ogdeployed], text);
+          setDeployed(copiedDeploy);
+          break;
+        case 2:
+          let copiedProg = searchFilter([...oginprogrss], text);
+          setInprogress(copiedProg);
+          break;
+      }
+    } else {
+      switch (tabValue as number) {
+        case 0:
+          setStock(ogstock);
+          break;
+        case 1:
+          setDeployed(ogdeployed);
+          break;
+        case 2:
+          setInprogress(oginprogrss);
+          break;
+      }
+    }
+  };
+
+  const searchFilter = (objs: InventorySummary[], text: string) => {
+    return objs.filter(
+      (device) =>
+        device.name.toLowerCase().indexOf(text) > -1 ||
+        device.location.toLowerCase().indexOf(text) > -1 ||
+        device.serial_numbers.filter(
+          (dev) => dev.sn.toLowerCase().indexOf(text) > -1
+        ).length > 0
+    );
+  };
+
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
-        <Header label="Search Inventory" />
+        <Header
+          label="Search Inventory by device name, serial number, location"
+          textChange={searchBar}
+        />
         <Grid container>
           <Grid item xs={7}>
             <h2>Inventory</h2>
@@ -183,7 +230,7 @@ const Inventory: FC = (): ReactElement => {
           <TabPanel value={tabValue} index={0} prefix="inv">
             <Box
               sx={{
-                display: "block",
+                display: loading ? "flex" : "block",
                 flexWrap: "wrap",
                 flexDirection: "row",
                 justifyContent: "center",

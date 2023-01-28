@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from "react";
+import React, { useState, ReactElement } from "react";
 import {
   Grid,
   InputAdornment,
@@ -9,15 +9,20 @@ import {
   Box,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 import Profile from "../Profile/Profile";
 import "./Header.css";
 
 interface HeaderProps {
   label: string;
+  textChange: Function;
 }
 
 const Header = (props: HeaderProps): ReactElement => {
-  const { label } = props;
+  const { label, textChange } = props;
+  const [text, setText] = useState("");
+  const [clear, setClear] = useState(false);
+
   return (
     <>
       <Grid container spacing={2} justifyContent="space-between">
@@ -45,19 +50,37 @@ const Header = (props: HeaderProps): ReactElement => {
                     borderBottom: "0px",
                   },
                 }}
+                value={text}
                 inputProps={{ disableunderline: true }}
                 endAdornment={
                   <InputAdornment position="end" sx={{ paddingRight: "25px" }}>
                     <IconButton
                       aria-label="search orders, users, and accounts button"
-                      onClick={() => console.log("testing")}
-                      onMouseDown={() => console.log("testing")}
+                      onClick={() => {
+                        if (clear) {
+                          setText("");
+                          textChange("");
+                        } else {
+                          textChange(text);
+                        }
+                        setClear((prevClear) => !prevClear);
+                      }}
+                      onMouseDown={() => {
+                        if (clear) {
+                          setText("");
+                          textChange("");
+                        } else {
+                          textChange(text);
+                        }
+                        setClear((prevClear) => !prevClear);
+                      }}
                       edge="end"
                     >
-                      <SearchIcon />
+                      {!clear ? <SearchIcon /> : <CloseIcon />}
                     </IconButton>
                   </InputAdornment>
                 }
+                onChange={(event) => setText(event.target.value)}
               />
             </FormControl>
           </div>
