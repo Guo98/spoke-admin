@@ -74,13 +74,38 @@ const Header = (props: HeaderProps): ReactElement => {
                         }
                         setClear((prevClear) => !prevClear);
                       }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          if (clear) {
+                            setText("");
+                            textChange("");
+                          } else {
+                            textChange(text);
+                          }
+                          setClear((prevClear) => !prevClear);
+                        }
+                      }}
                       edge="end"
                     >
                       {!clear ? <SearchIcon /> : <CloseIcon />}
                     </IconButton>
                   </InputAdornment>
                 }
-                onChange={(event) => setText(event.target.value)}
+                onChange={(event) => {
+                  setText(event.target.value);
+                  setClear(false);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    if (clear) {
+                      setText("");
+                      textChange("");
+                    } else {
+                      textChange(text);
+                    }
+                    setClear((prevClear) => !prevClear);
+                  }
+                }}
               />
             </FormControl>
           </div>

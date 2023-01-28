@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -26,14 +26,17 @@ const textFieldStyle = {
 };
 
 interface ManageProps {
-  order_no: number;
-  name: string;
-  items: Item[];
+  order_no?: number;
+  name?: string;
+  items?: Item[];
   email: string;
+  order: boolean;
+  footerOpen?: boolean;
+  setFooterOpen?: Function;
 }
 
 const ManageOrder = (props: ManageProps) => {
-  const { order_no, name, items } = props;
+  const { order_no, name, items, order } = props;
   const [open, setOpen] = useState(false);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
@@ -41,16 +44,28 @@ const ManageOrder = (props: ManageProps) => {
 
   const { user, getAccessTokenSilently } = useAuth0();
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    if (props.setFooterOpen) {
+      props.setFooterOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    setOpen(props.footerOpen!);
+  }, [props.footerOpen]);
 
   const sendSupport = async () => {
-    const supportObj = {
-      orderNo: order_no,
-      customer_name: name,
-      requestor_email: user?.email,
-      support_message: content,
-      support_subject: subject,
-    };
+    let supportObj = {};
+    if (order) {
+      supportObj = {
+        orderNo: order_no,
+        customer_name: name,
+        requestor_email: user?.email,
+        support_message: content,
+        support_subject: subject,
+      };
+    }
     const accessToken = await getAccessTokenSilently();
     try {
       const emailResp = await sendSupportEmail(accessToken, supportObj);
@@ -65,18 +80,20 @@ const ManageOrder = (props: ManageProps) => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        sx={{
-          borderRadius: "999em 999em 999em 999em",
-          height: "32px",
-          width: "116px",
-          textTransform: "none",
-        }}
-        onClick={() => setOpen(true)}
-      >
-        Manage
-      </Button>
+      {order && (
+        <Button
+          variant="contained"
+          sx={{
+            borderRadius: "999em 999em 999em 999em",
+            height: "32px",
+            width: "116px",
+            textTransform: "none",
+          }}
+          onClick={() => setOpen(true)}
+        >
+          Manage
+        </Button>
+      )}
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           {!sent ? (
@@ -87,7 +104,7 @@ const ManageOrder = (props: ManageProps) => {
                 fontWeight="bold"
                 sx={{ paddingBottom: "10px" }}
               >
-                Need Help with Order #{order_no}? Contact Spoke:
+                {order && `Need Help with Order #${order_no}? `}Contact Spoke:
               </Typography>
               <TextField
                 label="Subject"

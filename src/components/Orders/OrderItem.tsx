@@ -197,6 +197,7 @@ const OrderItem = (props: OrderProps) => {
                 name={first_name + " " + last_name}
                 items={items}
                 email={email}
+                order={true}
               />
             </Box>
             {anyTrackingNumbers() && (

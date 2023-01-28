@@ -83,7 +83,10 @@ const Orders = () => {
       text = text.toLowerCase();
       switch (tabValue as number) {
         case 0:
-          const filteredOrders = searchFilter(allOrders, text);
+          const filteredOrders = searchFilter(
+            [...ordersData.in_progress!, ...ordersData.completed!],
+            text
+          );
           setAll(filteredOrders);
           break;
         case 1:

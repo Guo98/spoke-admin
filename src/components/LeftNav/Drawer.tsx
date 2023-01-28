@@ -1,10 +1,12 @@
 import React, { FC, ReactElement, useEffect, useState } from "react";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+} from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
@@ -14,6 +16,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
+import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import "./Drawer.css";
 
@@ -43,6 +46,7 @@ const iconMapping: IconMapping = {
 
 const SpokeDrawer: FC = (): ReactElement => {
   const [selectedIndex, setIndex] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
 
@@ -94,6 +98,9 @@ const SpokeDrawer: FC = (): ReactElement => {
       case "Log Out":
         logout({ returnTo: window.location.origin });
         break;
+      case "Support":
+        setModalOpen(true);
+        break;
       default:
         break;
     }
@@ -141,6 +148,12 @@ const SpokeDrawer: FC = (): ReactElement => {
             ))}
           </div>
         </List>
+        <ManageOrder
+          email=""
+          order={false}
+          footerOpen={modalOpen}
+          setFooterOpen={setModalOpen}
+        />
       </Drawer>
     </>
   );
