@@ -54,7 +54,7 @@ const SummaryList = (props: InventorySummary) => {
     location,
     serial_numbers,
     image_source,
-    specs: { screen_size, ram, hard_drive, cpu },
+    specs: { screen_size, ram, hard_drive, cpu } = {},
   } = props;
 
   const determineStatus = (status: string) => {

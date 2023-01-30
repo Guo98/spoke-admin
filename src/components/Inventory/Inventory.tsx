@@ -165,7 +165,7 @@ const Inventory: FC = (): ReactElement => {
             <h2>Inventory</h2>
           </Grid>
           <Grid item xs={5}>
-            {tabValue !== 0 && (
+            {/* {tabValue !== 0 && (
               <ToggleButtonGroup sx={{ float: "right" }} exclusive>
                 <ToggleButton
                   value="cards"
@@ -182,7 +182,7 @@ const Inventory: FC = (): ReactElement => {
                   <ViewListIcon />
                 </ToggleButton>
               </ToggleButtonGroup>
-            )}
+            )} */}
           </Grid>
         </Grid>
         <div className="right">
@@ -254,7 +254,11 @@ const Inventory: FC = (): ReactElement => {
                       //     <InventoryAccordion {...device} />
                       //   </>
                       // );
-                      return <InventoryAccordion {...device} />;
+                      return (
+                        !device.new_device && (
+                          <InventoryAccordion {...device} tabValue={tabValue} />
+                        )
+                      );
                     })}
                 </>
               ) : (
@@ -265,26 +269,31 @@ const Inventory: FC = (): ReactElement => {
           <TabPanel value={tabValue} index={1} prefix="inv">
             <Box
               sx={{
-                display: cards ? "flex" : "block",
+                display: "block",
                 flexWrap: "wrap",
                 flexDirection: "row",
-                justifyContent: cards ? "space-evenly" : "center",
+                justifyContent: "center",
               }}
             >
               {!loading ? (
                 <>
                   {deployed?.length > 0 &&
                     deployed.map((device, index) => {
-                      return cards ? (
-                        <SummaryCard
-                          {...device}
-                          setFilters={setFilters}
-                          index={index}
-                          type="deployed"
-                          key={index}
-                        />
-                      ) : (
-                        <SummaryList {...device} />
+                      // return cards ? (
+                      //   <SummaryCard
+                      //     {...device}
+                      //     setFilters={setFilters}
+                      //     index={index}
+                      //     type="deployed"
+                      //     key={index}
+                      //   />
+                      // ) : (
+                      //   <SummaryList {...device} />
+                      // );
+                      return (
+                        device.serial_numbers.length > 0 && (
+                          <InventoryAccordion {...device} tabValue={tabValue} />
+                        )
                       );
                     })}
                 </>
@@ -296,26 +305,31 @@ const Inventory: FC = (): ReactElement => {
           <TabPanel value={tabValue} index={2} prefix="inv">
             <Box
               sx={{
-                display: cards ? "flex" : "block",
+                display: "block",
                 flexWrap: "wrap",
                 flexDirection: "row",
-                justifyContent: cards ? "space-evenly" : "center",
+                justifyContent: "center",
               }}
             >
               {!loading ? (
                 <>
                   {inprogress?.length > 0 &&
                     inprogress.map((device, index) => {
-                      return cards ? (
-                        <SummaryCard
-                          {...device}
-                          setFilters={setFilters}
-                          index={index}
-                          type="deployed"
-                          key={index}
-                        />
-                      ) : (
-                        <SummaryList {...device} />
+                      // return cards ? (
+                      //   <SummaryCard
+                      //     {...device}
+                      //     setFilters={setFilters}
+                      //     index={index}
+                      //     type="deployed"
+                      //     key={index}
+                      //   />
+                      // ) : (
+                      //   <SummaryList {...device} />
+                      // );
+                      return (
+                        device.serial_numbers.length > 0 && (
+                          <InventoryAccordion {...device} tabValue={tabValue} />
+                        )
                       );
                     })}
                 </>

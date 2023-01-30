@@ -37,7 +37,8 @@ export const inventorySlice = createSlice({
             (individual) =>
               individual.status === "Offboarding" ||
               individual.status === "Returning" ||
-              individual.status === "Top Up"
+              individual.status === "Top Up" ||
+              individual.status === "In Progress"
           );
 
           let tempInStock = { ...device };

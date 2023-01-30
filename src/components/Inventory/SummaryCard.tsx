@@ -41,7 +41,7 @@ const SummaryCard = (props: InventorySummary) => {
           >
             <CardMedia
               children={
-                <SummaryCarousel image_source={image_source} specs={specs} />
+                <SummaryCarousel image_source={image_source} specs={specs!} />
               }
             />
             <CardContent sx={{ backgroundColor: "white" }}>

@@ -106,6 +106,13 @@ const AddModal = (props: AddProps) => {
     setRequested(false);
     setRequestedItems([]);
     setTabValue(0);
+    setChecked(false);
+    setDeviceName("");
+    setWarehouse("");
+    setSpecifications("");
+    setColor("");
+    setRefURL("");
+    setLocation("");
   };
 
   const handleChecked = (event: ChangeEvent<HTMLInputElement>) => {

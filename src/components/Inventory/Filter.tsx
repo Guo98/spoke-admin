@@ -60,10 +60,10 @@ const Filter = (props: FilterProps) => {
 
   const locations = [...new Set(data.map((item) => item.location))];
   const deviceNames = [...new Set(data.map((item) => item.name))];
-  const deviceRams = [...new Set(data.map((item) => item.specs.ram))];
-  const deviceCpus = [...new Set(data.map((item) => item.specs.cpu))];
+  const deviceRams = [...new Set(data.map((item) => item.specs!.ram))];
+  const deviceCpus = [...new Set(data.map((item) => item.specs!.cpu))];
   const deviceStorages = [
-    ...new Set(data.map((item) => item.specs.hard_drive)),
+    ...new Set(data.map((item) => item.specs!.hard_drive)),
   ];
 
   const filterDevice = (device: string) => {
@@ -137,17 +137,17 @@ const Filter = (props: FilterProps) => {
 
     if (rams.length > 0)
       filteredResults = filteredResults.filter(
-        (item) => rams.indexOf(item.specs.ram) > -1
+        (item) => rams.indexOf(item.specs!.ram) > -1
       );
 
     if (cpus.length > 0)
       filteredResults = filteredResults.filter(
-        (item) => cpus.indexOf(item.specs.cpu) > -1
+        (item) => cpus.indexOf(item.specs!.cpu) > -1
       );
 
     if (storages.length > 0)
       filteredResults = filteredResults.filter(
-        (item) => storages.indexOf(item.specs.hard_drive) > -1
+        (item) => storages.indexOf(item.specs!.hard_drive) > -1
       );
 
     if (condition !== "") {

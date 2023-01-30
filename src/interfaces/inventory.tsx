@@ -7,14 +7,15 @@ export interface InventorySummary {
   index?: number;
   image_source?: string;
   type?: string;
-  specs: {
+  specs?: {
     screen_size: string;
     ram: string;
     hard_drive: string;
     cpu: string;
+    gpu?: string;
   };
   hidden?: boolean;
-  adding_stock?: number;
+  new_device?: boolean;
 }
 
 interface SerialNumbers {
@@ -35,4 +36,7 @@ interface SerialNumbers {
   phone_number?: string;
   condition?: string;
   grade?: string;
+  color?: string;
+  date_deployed?: string;
+  quantity?: number;
 }

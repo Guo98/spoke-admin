@@ -59,7 +59,7 @@ const TopUp = (props: TopUpProps) => {
     const {
       name,
       image_source,
-      specs: { cpu, hard_drive, ram },
+      specs: { cpu, hard_drive, ram } = { cpu: "", hard_drive: "", ram: "" },
       location,
     } = devicesState[deviceIntIndex];
 
