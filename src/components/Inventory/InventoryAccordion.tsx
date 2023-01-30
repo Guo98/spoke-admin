@@ -343,7 +343,14 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               phone_number={item.phone_number!}
                             />
                           )}
-                          {tabValue === 2 && <Button>Track</Button>}
+                          {tabValue === 2 && (
+                            <Button
+                              href={"https://withspoke.aftership.com/"}
+                              target="_blank"
+                            >
+                              Track
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
