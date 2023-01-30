@@ -60,11 +60,34 @@ const Filter = (props: FilterProps) => {
 
   const locations = [...new Set(data.map((item) => item.location))];
   const deviceNames = [...new Set(data.map((item) => item.name))];
-  const deviceRams = [...new Set(data.map((item) => item.specs!.ram))];
-  const deviceCpus = [...new Set(data.map((item) => item.specs!.cpu))];
+  const deviceRams = [
+    ...new Set(
+      data.map((item) => {
+        if (item.specs?.ram) {
+          return item.specs.ram;
+        }
+      })
+    ),
+  ].filter((r) => r);
+
+  const deviceCpus = [
+    ...new Set(
+      data.map((item) => {
+        if (item.specs?.cpu) {
+          return item.specs.cpu;
+        }
+      })
+    ),
+  ].filter((c) => c);
   const deviceStorages = [
-    ...new Set(data.map((item) => item.specs!.hard_drive)),
-  ];
+    ...new Set(
+      data.map((item) => {
+        if (item.specs?.hard_drive) {
+          return item.specs.hard_drive;
+        }
+      })
+    ),
+  ].filter((h) => h);
 
   const filterDevice = (device: string) => {
     if (devices.indexOf(device) > -1) {
@@ -137,17 +160,17 @@ const Filter = (props: FilterProps) => {
 
     if (rams.length > 0)
       filteredResults = filteredResults.filter(
-        (item) => rams.indexOf(item.specs!.ram) > -1
+        (item) => item.specs && rams.indexOf(item.specs!.ram) > -1
       );
 
     if (cpus.length > 0)
       filteredResults = filteredResults.filter(
-        (item) => cpus.indexOf(item.specs!.cpu) > -1
+        (item) => item.specs && cpus.indexOf(item.specs!.cpu) > -1
       );
 
     if (storages.length > 0)
       filteredResults = filteredResults.filter(
-        (item) => storages.indexOf(item.specs!.hard_drive) > -1
+        (item) => item.specs && storages.indexOf(item.specs!.hard_drive) > -1
       );
 
     if (condition !== "") {
@@ -320,8 +343,8 @@ const Filter = (props: FilterProps) => {
             label={ram}
             clickable
             sx={{ marginTop: "5px" }}
-            variant={rams.indexOf(ram) > -1 ? "filled" : "outlined"}
-            onClick={() => filterRam(ram)}
+            variant={rams.indexOf(ram!) > -1 ? "filled" : "outlined"}
+            onClick={() => filterRam(ram!)}
           />
         ))}
       </Box>
@@ -341,8 +364,8 @@ const Filter = (props: FilterProps) => {
             label={cpu}
             clickable
             sx={{ marginTop: "5px" }}
-            variant={cpus.indexOf(cpu) > -1 ? "filled" : "outlined"}
-            onClick={() => filterCpu(cpu)}
+            variant={cpus.indexOf(cpu!) > -1 ? "filled" : "outlined"}
+            onClick={() => filterCpu(cpu!)}
           />
         ))}
       </Box>
@@ -362,8 +385,8 @@ const Filter = (props: FilterProps) => {
             label={storage}
             clickable
             sx={{ marginTop: "5px" }}
-            variant={storages.indexOf(storage) > -1 ? "filled" : "outlined"}
-            onClick={() => filterStorage(storage)}
+            variant={storages.indexOf(storage!) > -1 ? "filled" : "outlined"}
+            onClick={() => filterStorage(storage!)}
           />
         ))}
       </Box>

@@ -6,7 +6,6 @@ import MuiAccordionSummary, {
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import DevicesIcon from "@mui/icons-material/Devices";
 import {
   CardMedia,
   CardContent,

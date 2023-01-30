@@ -11,6 +11,7 @@ import {
   Divider,
   TextField,
 } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth0 } from "@auth0/auth0-react";
 import { InventorySummary } from "../../interfaces/inventory";
 import { manageLaptop } from "../../services/inventoryAPI";
@@ -76,6 +77,8 @@ const AddModal = (props: AddProps) => {
   const [color, setColor] = useState("");
   const [refurl, setRefURL] = useState("");
   const [location, setLocation] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const { user, getAccessTokenSilently } = useAuth0();
 
@@ -155,6 +158,7 @@ const AddModal = (props: AddProps) => {
   };
 
   const requestLaptop = async () => {
+    setLoading(true);
     const client = atob(localStorage.getItem("spokeclient")!);
     const accessToken = await getAccessTokenSilently();
     const requestObj = {
@@ -183,6 +187,7 @@ const AddModal = (props: AddProps) => {
       console.error("Error in sending email");
       setRequested(true);
     }
+    setLoading(false);
   };
 
   const addToRequestList = (device: RequestedItem) => {
@@ -258,9 +263,9 @@ const AddModal = (props: AddProps) => {
                   textTransform: "none",
                 }}
                 onClick={requestLaptop}
-                disabled={requestDisabled()}
+                disabled={requestDisabled() || loading}
               >
-                Request
+                {!loading ? "Request" : <CircularProgress />}
               </Button>
             </>
           ) : (

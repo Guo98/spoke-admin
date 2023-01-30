@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -9,7 +9,11 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useDispatch } from "react-redux";
+import { useAuth0 } from "@auth0/auth0-react";
 import OffboardBody from "./OffboardBody";
+import { updateInventory } from "../../app/slices/inventorySlice";
+import { getInventory } from "../../services/inventoryAPI";
 
 const style = {
   position: "absolute" as "absolute",
@@ -51,8 +55,29 @@ const ManageModal = (props: ManageProps) => {
   const [open, setOpen] = useState(false);
   const [manageType, setManageType] = useState("");
   const [changeView, setChangeView] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleOpen = () => setOpen(true);
+  const dispatch = useDispatch();
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const client = atob(localStorage.getItem("spokeclient")!);
+      const accessToken = await getAccessTokenSilently();
+      const inventoryResult = await getInventory(accessToken, client);
+      dispatch(updateInventory(inventoryResult.data));
+    };
+
+    if (!open && loading) {
+      fetchData().catch(console.error);
+    }
+  }, [open]);
+
+  const handleOpen = () => {
+    setOpen(true);
+    setLoading(true);
+  };
   const handleClose = () => {
     setOpen(false);
     setChangeView(false);

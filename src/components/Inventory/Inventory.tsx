@@ -72,9 +72,23 @@ const Inventory: FC = (): ReactElement => {
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
     };
-
-    fetchData().catch(console.error);
+    if (loading) {
+      fetchData().catch(console.error);
+    }
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const client = atob(localStorage.getItem("spokeclient")!);
+      const accessToken = await getAccessTokenSilently();
+      const inventoryResult = await getInventory(accessToken, client);
+      dispatch(updateInventory(inventoryResult.data));
+    };
+
+    if (!openAdd && data.length > 0) {
+      fetchData().catch(console.error);
+    }
+  }, [openAdd]);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -256,7 +270,11 @@ const Inventory: FC = (): ReactElement => {
                       // );
                       return (
                         !device.new_device && (
-                          <InventoryAccordion {...device} tabValue={tabValue} />
+                          <InventoryAccordion
+                            {...device}
+                            tabValue={tabValue}
+                            key={index}
+                          />
                         )
                       );
                     })}
@@ -292,7 +310,11 @@ const Inventory: FC = (): ReactElement => {
                       // );
                       return (
                         device.serial_numbers.length > 0 && (
-                          <InventoryAccordion {...device} tabValue={tabValue} />
+                          <InventoryAccordion
+                            {...device}
+                            tabValue={tabValue}
+                            key={index}
+                          />
                         )
                       );
                     })}
@@ -328,7 +350,11 @@ const Inventory: FC = (): ReactElement => {
                       // );
                       return (
                         device.serial_numbers.length > 0 && (
-                          <InventoryAccordion {...device} tabValue={tabValue} />
+                          <InventoryAccordion
+                            {...device}
+                            tabValue={tabValue}
+                            key={index}
+                          />
                         )
                       );
                     })}
@@ -344,7 +370,6 @@ const Inventory: FC = (): ReactElement => {
             onClick={() => setOpenAdd(true)}
             variant="extended"
           >
-            {/* <AddIcon /> */}
             <Typography>Add Inventory</Typography>
           </Fab>
           <AddModal
