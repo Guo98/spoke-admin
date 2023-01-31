@@ -78,7 +78,8 @@ const Profile = () => {
                 setMode(!mode);
               }}
             >
-              {!mode ? <LightModeIcon /> : <DarkModeIcon />} Theme
+              {!mode ? <LightModeIcon /> : <DarkModeIcon />}
+              <Typography sx={{ paddingLeft: "5px" }}>Theme</Typography>
             </MenuItem>
             <MenuItem
               onClick={() => logout({ returnTo: window.location.origin })}
