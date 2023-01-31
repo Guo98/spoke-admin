@@ -70,6 +70,7 @@ const Profile = () => {
             onClose={handleClose}
             MenuListProps={{ "aria-labelledby": "profile-button" }}
             anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
           >
             <MenuItem
               onClick={() => {
