@@ -19,6 +19,7 @@ import {
   Button,
   Typography,
   Paper,
+  useTheme,
 } from "@mui/material";
 import { InventorySummary } from "../../../interfaces/inventory";
 
@@ -49,6 +50,8 @@ const TopUp = (props: TopUpProps) => {
   const [deviceIndex, setDeviceIndex] = useState("");
   const [adding, setAdding] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   const handleChange = (event: SelectChangeEvent) => {
     setDeviceIndex(event.target.value as string);
@@ -335,7 +338,10 @@ const TopUp = (props: TopUpProps) => {
       )}
       <Stack>
         <IconButton disableRipple onClick={() => setAdding(true)}>
-          <AddCircleIcon fontSize="large" sx={{ color: "black" }} />
+          <AddCircleIcon
+            fontSize="large"
+            sx={{ color: isDarkTheme ? "white" : "black" }}
+          />
         </IconButton>
       </Stack>
     </Box>

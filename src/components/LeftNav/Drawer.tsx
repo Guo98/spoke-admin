@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import {
   Drawer,
   List,
@@ -6,6 +6,7 @@ import {
   ListItemButton,
   ListItemText,
   ListItemIcon,
+  useTheme,
 } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
@@ -44,11 +45,61 @@ const iconMapping: IconMapping = {
   "Log In": <LoginIcon />,
 };
 
-const SpokeDrawer: FC = (): ReactElement => {
+interface DrawerProps {
+  respwindow?: () => Window;
+}
+
+const SpokeDrawer = (props: DrawerProps): ReactElement => {
+  const { respwindow } = props;
   const [selectedIndex, setIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
+
+  const container =
+    respwindow !== undefined ? () => respwindow().document.body : undefined;
+
+  const drawerContent = (
+    <>
+      <List>
+        {["Orders", "Inventory"].map((text, index) => (
+          <ListItem key={text} selected={index === selectedIndex}>
+            <ListItemButton
+              onClick={() => {
+                gotoPage(text);
+              }}
+            >
+              <ListItemIcon>
+                {iconMapping[text as keyof IconMapping]}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+        <div className="bottomPush">
+          {["Support", "Logout"].map((text) => (
+            <ListItem key={text} className="noVerticalPadding">
+              <ListItemButton onClick={() => footerAction(text)}>
+                <ListItemIcon>
+                  {iconMapping[text as keyof IconMapping]}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </div>
+      </List>
+      <ManageOrder
+        email=""
+        order={false}
+        footerOpen={modalOpen}
+        setFooterOpen={setModalOpen}
+      />
+    </>
+  );
 
   useEffect(() => {
     switch (window.location.pathname.substring(1)) {
@@ -109,10 +160,30 @@ const SpokeDrawer: FC = (): ReactElement => {
   return (
     <>
       <Drawer
+        variant="temporary"
+        container={container}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: "block", sm: "none" },
+        }}
+        open={mobileOpen}
+        onClose={() => setMobileOpen(!mobileOpen)}
+      >
+        {drawerContent}
+      </Drawer>
+      <Drawer
         variant="permanent"
         open={true}
         anchor={"left"}
-        PaperProps={{ sx: { width: "20%", backgroundColor: "#F1f3f3" } }}
+        PaperProps={{
+          sx: {
+            width: "20%",
+            backgroundColor: isDarkTheme ? "#25282a" : "#F1f3f3",
+          },
+        }}
+        sx={{ display: { xs: "none", sm: "block" } }}
       >
         <div style={{ paddingLeft: "32px", paddingTop: "10px" }}>
           <img
@@ -120,40 +191,7 @@ const SpokeDrawer: FC = (): ReactElement => {
             style={{ height: "44px", width: "149px", justifyContent: "center" }}
           />
         </div>
-        <List>
-          {["Orders", "Inventory"].map((text, index) => (
-            <ListItem key={text} selected={index === selectedIndex}>
-              <ListItemButton
-                onClick={() => {
-                  gotoPage(text);
-                }}
-              >
-                <ListItemIcon>
-                  {iconMapping[text as keyof IconMapping]}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-          <div className="bottomPush">
-            {["Support", "Logout"].map((text) => (
-              <ListItem key={text} className="noVerticalPadding">
-                <ListItemButton onClick={() => footerAction(text)}>
-                  <ListItemIcon>
-                    {iconMapping[text as keyof IconMapping]}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </div>
-        </List>
-        <ManageOrder
-          email=""
-          order={false}
-          footerOpen={modalOpen}
-          setFooterOpen={setModalOpen}
-        />
+        {drawerContent}
       </Drawer>
     </>
   );

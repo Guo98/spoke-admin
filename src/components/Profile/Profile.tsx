@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Typography,
@@ -9,17 +9,23 @@ import {
   MenuItem,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import "./Profile.css";
+import { ColorModeContext } from "../../utilities/color-context";
 
 const Profile = () => {
   const { isAuthenticated, user, logout } = useAuth0();
   const [username, setUsername] = useState<string | undefined>("");
   const [userpic, setPic] = useState<string | undefined>("");
+  const [mode, setMode] = useState(true);
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
 
   const popoverId = open ? "profile-popover" : undefined;
+
+  const colorMode = useContext(ColorModeContext);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -63,7 +69,16 @@ const Profile = () => {
             open={open}
             onClose={handleClose}
             MenuListProps={{ "aria-labelledby": "profile-button" }}
+            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
           >
+            <MenuItem
+              onClick={() => {
+                colorMode.toggleColorMode();
+                setMode(!mode);
+              }}
+            >
+              {!mode ? <LightModeIcon /> : <DarkModeIcon />} Theme
+            </MenuItem>
             <MenuItem
               onClick={() => logout({ returnTo: window.location.origin })}
             >

@@ -6,15 +6,6 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./app/store";
 import { Provider } from "react-redux";
 import { Auth0Provider } from "@auth0/auth0-react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-
-const theme = createTheme({
-  typography: {
-    allVariants: {
-      fontFamily: "Nunito Sans",
-    },
-  },
-});
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -35,9 +26,7 @@ root.render(
       organization={getOrgId() === undefined ? undefined : getOrgId()}
     >
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <App />
-        </ThemeProvider>
+        <App />
       </Provider>
     </Auth0Provider>
   </React.StrictMode>

@@ -3,7 +3,6 @@ import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import MuiAccordionSummary, {
   AccordionSummaryProps,
 } from "@mui/material/AccordionSummary";
-import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -21,6 +20,8 @@ import {
   Paper,
   Chip,
   Button,
+  useTheme,
+  AccordionDetails,
 } from "@mui/material";
 import AssignModal from "./AssignModal";
 import ManageModal from "./ManageModal";
@@ -49,11 +50,6 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
   },
 }));
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
-  backgroundColor: "#F8F8F8",
-}));
-
 type Order = "asc" | "desc";
 
 interface InventoryAccordionProps extends InventorySummary {
@@ -75,6 +71,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
 
   const [orderBy, setOrderBy] = useState("");
   const [order, setOrder] = useState<Order>("asc");
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   const sortHandler = (cell: string) => (event: React.MouseEvent<unknown>) => {
     const isAsc = orderBy === cell && order === "asc";
@@ -230,7 +228,12 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
           </Grid>
         </Grid>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          borderTop: "1px solid rgba(0, 0, 0, .125)",
+          backgroundColor: isDarkTheme ? "#465059" : "#F8F8F8",
+        }}
+      >
         {serial_numbers.length > 0 ? (
           <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
             <Table aria-label="device-table">
@@ -246,7 +249,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       onClick={sortHandler("Serial Number")}
                       direction={orderBy === "Serial Number" ? order : "asc"}
                     >
-                      <Typography>Serial Number</Typography>
+                      <Typography fontWeight="bold">Serial Number</Typography>
                     </TableSortLabel>
                   </TableCell>
                   <TableCell
@@ -259,7 +262,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       onClick={sortHandler("Condition")}
                       direction={orderBy === "Condition" ? order : "asc"}
                     >
-                      <Typography>
+                      <Typography fontWeight="bold">
                         {tabValue === 0
                           ? "Condition"
                           : tabValue === 1
@@ -278,7 +281,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       onClick={sortHandler("Grade")}
                       direction={orderBy === "Grade" ? order : "asc"}
                     >
-                      <Typography>
+                      <Typography fontWeight="bold">
                         {tabValue === 0
                           ? "Grade"
                           : tabValue === 1
@@ -288,7 +291,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                     </TableSortLabel>
                   </TableCell>
                   <TableCell key="Action" width="20%">
-                    <Typography>Action</Typography>
+                    <Typography fontWeight="bold">Action</Typography>
                   </TableCell>
                 </TableRow>
               </TableHead>

@@ -19,6 +19,8 @@ import {
   Button,
   Box,
   Paper,
+  useTheme,
+  AccordionDetails,
 } from "@mui/material";
 import { Item } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
@@ -49,7 +51,6 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     {...props}
   />
 ))(({ theme }) => ({
-  backgroundColor: "white",
   flexDirection: "row-reverse",
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
@@ -59,10 +60,10 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
   },
 }));
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
-}));
+// const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+//   padding: theme.spacing(2),
+//   borderTop: "1px solid rgba(0, 0, 0, .125)",
+// }));
 
 const OrderItem = (props: OrderProps) => {
   const {
@@ -77,6 +78,8 @@ const OrderItem = (props: OrderProps) => {
   } = props;
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   const orderStatus = () => {
     if (laptopTracking === "") {
@@ -157,7 +160,12 @@ const OrderItem = (props: OrderProps) => {
           </Grid>
         </Grid>
       </AccordionSummary>
-      <AccordionDetails sx={{ borderTop: "0px", backgroundColor: "#F8F8F8" }}>
+      <AccordionDetails
+        sx={{
+          borderTop: "0px",
+          backgroundColor: isDarkTheme ? "#465059" : "#F8F8F8",
+        }}
+      >
         <Grid
           container
           justifyContent="space-evenly"
