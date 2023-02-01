@@ -49,17 +49,10 @@ const getDesignTokens = (mode: PaletteMode) => ({
 });
 
 function App() {
-  const { isAuthenticated, loginWithRedirect, isLoading, user, logout } =
-    useAuth0();
+  const { user } = useAuth0();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"dark" | "light">("light");
-
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      loginWithRedirect();
-    }
-  }, [isLoading, isAuthenticated]);
 
   useEffect(() => {
     if (user && user.org_id) {
