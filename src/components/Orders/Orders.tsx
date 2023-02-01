@@ -4,6 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useSearchParams } from "react-router-dom";
 import { getAllOrders } from "../../services/ordersAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
@@ -39,7 +40,31 @@ const Orders = () => {
 
   const dispatch = useDispatch();
 
-  const { getAccessTokenSilently } = useAuth0();
+  const [searchParams] = useSearchParams();
+
+  const {
+    getAccessTokenSilently,
+    loginWithRedirect,
+    isAuthenticated,
+    isLoading,
+  } = useAuth0();
+
+  useEffect(() => {
+    const paramsAsObj = Object.fromEntries([...searchParams]);
+    if (
+      Object.keys(paramsAsObj).indexOf("invitation") > -1 &&
+      Object.keys(paramsAsObj).indexOf("organization") > -1 &&
+      !isAuthenticated &&
+      !isLoading
+    ) {
+      loginWithRedirect({
+        invitation: paramsAsObj.invitation,
+        organization: paramsAsObj.organization,
+      });
+    } else if (!isAuthenticated && !isLoading) {
+      loginWithRedirect();
+    }
+  }, [searchParams, isLoading, isAuthenticated]);
 
   useEffect(() => {
     const fetchData = async (client: string) => {
