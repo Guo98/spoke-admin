@@ -122,8 +122,15 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
           justifyItems="space-between"
           justifyContent="center"
           flexGrow={1}
+          alignItems="center"
         >
-          <Grid item xs={4} sm={2}>
+          <Grid
+            item
+            xs={4}
+            sm={2}
+            justifyContent="center"
+            alignContent="center"
+          >
             <CardMedia
               component="img"
               sx={{ width: 175 }}

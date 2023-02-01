@@ -187,7 +187,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       >
         <div style={{ paddingLeft: "32px", paddingTop: "10px" }}>
           <img
-            src="https://spokeimages.blob.core.windows.net/image/fullspokelogo.png"
+            src={
+              isDarkTheme
+                ? "https://spokeimages.blob.core.windows.net/image/fullspokeinvert.png"
+                : "https://spokeimages.blob.core.windows.net/image/fullspokenormal.png"
+            }
             style={{ height: "44px", width: "149px", justifyContent: "center" }}
           />
         </div>
