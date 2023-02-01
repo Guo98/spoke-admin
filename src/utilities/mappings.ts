@@ -12,6 +12,7 @@ const imageMapping: ImageMapping = {
 
 const orgMapping: any = {
   org_CxAEPTJ4kpVvkZ8G: "public",
+  org_2cr6d5b5cEsEEtsR: "public",
 };
 
 export { imageMapping, orgMapping };
