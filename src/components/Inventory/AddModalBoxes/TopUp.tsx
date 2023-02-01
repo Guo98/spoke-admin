@@ -285,7 +285,7 @@ const TopUp = (props: TopUpProps) => {
                 >
                   {devicesState?.length > 0 &&
                     devicesState.map((device, index) => {
-                      if (!device.hidden) {
+                      if (!device.hidden && !device.new_device) {
                         return (
                           <MenuItem value={index}>
                             {device.name}, {device.location}

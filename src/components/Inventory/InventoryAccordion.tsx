@@ -329,6 +329,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               device_name={name}
                               device_location={location}
                               image_source={image_source}
+                              type="individual"
                             />
                           )}
                           {tabValue === 1 && (

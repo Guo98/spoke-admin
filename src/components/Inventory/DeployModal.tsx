@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Stack from "@mui/material/Stack";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
+import React, { useEffect, useState, ChangeEvent } from "react";
+import {
+  Box,
+  Button,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  FormControlLabel,
+  Checkbox,
+  Stack,
+  Grid,
+  TextField,
+  Link,
+} from "@mui/material";
+import { useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
-import { manageLaptop } from "../../services/inventoryAPI";
+import { manageLaptop, getInventory } from "../../services/inventoryAPI";
 import ConfirmationBody from "./ConfirmationBody";
+import { updateInventory } from "../../app/slices/inventorySlice";
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 500,
   bgcolor: "background.paper",
   border: "1px solid #000",
   borderRadius: "20px",
@@ -87,8 +91,15 @@ const DeployModalContent = (props: DeployProps) => {
   const [updatedemail, setEmail] = useState(email);
   const [pn, setPn] = useState(phone_number);
   const [confirmation, setConfirmation] = useState(false);
+  const [checked, setChecked] = useState(false);
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
+
+  const dispatch = useDispatch();
+
+  const handleChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
 
   const deploy = async () => {
     const client = atob(localStorage.getItem("spokeclient")!);
@@ -111,6 +122,7 @@ const DeployModalContent = (props: DeployProps) => {
       serial_number: serial_number,
       device_location: device_location,
       shipping: shipping,
+      requestor_email: user?.email,
     };
     const deployResult = await manageLaptop(
       accessToken,
@@ -120,6 +132,10 @@ const DeployModalContent = (props: DeployProps) => {
 
     if (deployResult) {
       setConfirmation(true);
+      const client = atob(localStorage.getItem("spokeclient")!);
+      const accessToken = await getAccessTokenSilently();
+      const inventoryResult = await getInventory(accessToken, client);
+      dispatch(updateInventory(inventoryResult.data));
     }
   };
 
@@ -313,7 +329,7 @@ const DeployModalContent = (props: DeployProps) => {
           </Stack>
           <hr />
           <FormControlLabel
-            control={<Checkbox required />}
+            control={<Checkbox required onChange={handleChecked} />}
             label={
               <div>
                 <span>By checking this box, I agree to </span>
@@ -351,6 +367,7 @@ const DeployModalContent = (props: DeployProps) => {
                     borderRadius: "10px",
                   }}
                   onClick={async () => await deploy()}
+                  disabled={!checked}
                 >
                   Deploy
                 </Button>

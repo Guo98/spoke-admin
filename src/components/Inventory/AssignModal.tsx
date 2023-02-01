@@ -1,25 +1,29 @@
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
+import {
+  Box,
+  Button,
+  Typography,
+  Modal,
+  TextField,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  SelectChangeEvent,
+  Grid,
+  Stack,
+} from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import DeployModalContent from "./DeployModal";
 import { validateAddress } from "../../services/address";
+import { InventorySummary } from "../../interfaces/inventory";
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 500,
   bgcolor: "background.paper",
   borderRadius: "20px",
   boxShadow: 24,
@@ -36,10 +40,12 @@ const rightTextFieldStyle = {
 };
 
 interface AssignProps {
-  serial_number: string;
-  device_name: string;
-  device_location: string;
-  image_source: string | undefined;
+  serial_number?: string;
+  device_name?: string;
+  device_location?: string;
+  image_source?: string | undefined;
+  type: string;
+  devices?: InventorySummary[];
 }
 
 interface ValidateAddress {
@@ -52,7 +58,8 @@ interface ValidateAddress {
 }
 
 const AssignModal = (props: AssignProps) => {
-  const { serial_number, device_name, device_location, image_source } = props;
+  const { serial_number, device_name, device_location, image_source, type } =
+    props;
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(true);
   const [shipping, setShipping] = useState("");
@@ -64,6 +71,7 @@ const AssignModal = (props: AssignProps) => {
   const [phonenumber, setPhonenumber] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
+  const [selectedDevice, setSD] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -75,10 +83,15 @@ const AssignModal = (props: AssignProps) => {
     setOpen(false);
     setForm(false);
     setShipping("");
+    setSD("");
   };
 
   const handleChange = (event: SelectChangeEvent) => {
     setShipping(event.target.value as string);
+  };
+
+  const handleDeviceChange = (event: SelectChangeEvent) => {
+    setSD(event.target.value as string);
   };
 
   const checkAddress = async () => {
@@ -103,10 +116,10 @@ const AssignModal = (props: AssignProps) => {
     <div>
       <Button
         variant="contained"
-        sx={{ borderRadius: "10px" }}
+        sx={{ borderRadius: "10px", alignItems: "center" }}
         onClick={handleOpen}
       >
-        Assign
+        Assign {type === "general" && "a Device"}
       </Button>
       <Modal
         open={open}
@@ -125,7 +138,53 @@ const AssignModal = (props: AssignProps) => {
               New Deployment
             </Typography>
             <Stack spacing={2}>
-              <Grid container spacing={2}>
+              {type === "general" && (
+                <div>
+                  <FormControl
+                    fullWidth
+                    sx={textFieldStyle}
+                    required
+                    size="small"
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Device to Deploy
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Device to Deploy"
+                      onChange={handleDeviceChange}
+                      value={selectedDevice}
+                      required
+                    >
+                      {props.devices!.length > 0 &&
+                        props.devices?.map((dev, index) => {
+                          if (dev.serial_numbers.length > 0) {
+                            return (
+                              <MenuItem value={index}>
+                                {dev.name + ","}
+                                <Typography
+                                  fontStyle="italic"
+                                  sx={{ paddingLeft: "5px" }}
+                                >
+                                  {dev.location}
+                                </Typography>
+                              </MenuItem>
+                            );
+                          }
+                        })}
+                    </Select>
+                  </FormControl>
+                </div>
+              )}
+              <Grid
+                container
+                spacing={2}
+                sx={{
+                  marginLeft: "-16px !important",
+                  marginTop: "0px !important",
+                }}
+              >
                 <Grid item xs={6}>
                   <TextField
                     required
@@ -251,15 +310,31 @@ const AssignModal = (props: AssignProps) => {
             openModal={form}
             first_name={firstname}
             last_name={lastname}
-            device_name={device_name}
+            device_name={
+              type === "general"
+                ? props.devices![parseInt(selectedDevice)]?.name
+                : device_name!
+            }
             addressObj={addressObj!}
-            serial_number={serial_number}
+            serial_number={
+              type === "general"
+                ? props.devices![parseInt(selectedDevice)]?.serial_numbers[0].sn
+                : serial_number!
+            }
             email={email}
             phone_number={phonenumber}
             note={note}
-            device_location={device_location}
+            device_location={
+              type === "general"
+                ? props.devices![parseInt(selectedDevice)]?.location
+                : device_location!
+            }
             shipping={shipping}
-            image_source={image_source}
+            image_source={
+              type === "general"
+                ? props.devices![parseInt(selectedDevice)]?.image_source
+                : image_source
+            }
           />
         )}
       </Modal>

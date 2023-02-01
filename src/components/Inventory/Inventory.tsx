@@ -1,31 +1,27 @@
 import React, { FC, ReactElement, useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ViewListIcon from "@mui/icons-material/ViewList";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import AddIcon from "@mui/icons-material/Add";
-import Drawer from "@mui/material/Drawer";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import {
+  Box,
+  Grid,
+  Drawer,
+  Tabs,
+  Tab,
+  Fab,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import Fab from "@mui/material/Fab";
-import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { updateInventory } from "../../app/slices/inventorySlice";
 import { getInventory } from "../../services/inventoryAPI";
-import SummaryCard from "./SummaryCard";
-import SummaryList from "./SummaryList";
 import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
+import AssignModal from "./AssignModal";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
 import "./Inventory.css";
-import { Typography } from "@mui/material";
 import { InventorySummary } from "../../interfaces/inventory";
 
 function a11yProps(index: number) {
@@ -174,29 +170,19 @@ const Inventory: FC = (): ReactElement => {
           label="Search Inventory by device name, serial number, location"
           textChange={searchBar}
         />
-        <Grid container>
+        <Grid container direction="row" alignItems="center">
           <Grid item xs={7}>
             <h2>Inventory</h2>
           </Grid>
           <Grid item xs={5}>
-            {/* {tabValue !== 0 && (
-              <ToggleButtonGroup sx={{ float: "right" }} exclusive>
-                <ToggleButton
-                  value="cards"
-                  selected={cards}
-                  onClick={() => setCards(true)}
-                >
-                  <ViewModuleIcon />
-                </ToggleButton>
-                <ToggleButton
-                  value="list"
-                  selected={!cards}
-                  onClick={() => setCards(false)}
-                >
-                  <ViewListIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
-            )} */}
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              justifyItems="center"
+              alignItems="center"
+            >
+              <AssignModal type="general" devices={ogstock} />
+            </Box>
           </Grid>
         </Grid>
         <div className="right">
@@ -254,20 +240,6 @@ const Inventory: FC = (): ReactElement => {
                 <>
                   {stock?.length > 0 &&
                     stock.map((device, index) => {
-                      // return cards ? (
-                      //   <SummaryCard
-                      //     {...device}
-                      //     setFilters={setFilters}
-                      //     index={index}
-                      //     type="stock"
-                      //     key={index}
-                      //   />
-                      // ) : (
-                      //   <>
-                      //     {/* <SummaryList {...device} /> */}
-                      //     <InventoryAccordion {...device} />
-                      //   </>
-                      // );
                       return (
                         !device.new_device && (
                           <InventoryAccordion
@@ -297,17 +269,6 @@ const Inventory: FC = (): ReactElement => {
                 <>
                   {deployed?.length > 0 &&
                     deployed.map((device, index) => {
-                      // return cards ? (
-                      //   <SummaryCard
-                      //     {...device}
-                      //     setFilters={setFilters}
-                      //     index={index}
-                      //     type="deployed"
-                      //     key={index}
-                      //   />
-                      // ) : (
-                      //   <SummaryList {...device} />
-                      // );
                       return (
                         device.serial_numbers.length > 0 && (
                           <InventoryAccordion
@@ -337,17 +298,6 @@ const Inventory: FC = (): ReactElement => {
                 <>
                   {inprogress?.length > 0 &&
                     inprogress.map((device, index) => {
-                      // return cards ? (
-                      //   <SummaryCard
-                      //     {...device}
-                      //     setFilters={setFilters}
-                      //     index={index}
-                      //     type="deployed"
-                      //     key={index}
-                      //   />
-                      // ) : (
-                      //   <SummaryList {...device} />
-                      // );
                       return (
                         device.serial_numbers.length > 0 && (
                           <InventoryAccordion
