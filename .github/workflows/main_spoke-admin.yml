@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
 
 env:
-  REACT_APP_SPOKE_API: "https://spoke-api-development.azurewebsites.net"
-  REACT_APP_AUTH0_DOMAIN: "dev-wwotwaa87dcb33bj.us.auth0.com"
-  REACT_APP_AUTH0_CLIENTID: "wwpmTOorA6jhau8PREVftfasMs3Rwv7L"
+  REACT_APP_SPOKE_API: "https://spoke-api.azurewebsites.net"
+  REACT_APP_AUTH0_DOMAIN: "withspoke.us.auth0.com"
+  REACT_APP_AUTH0_CLIENTID: "T2c5x7bhdUdI25uszsk57MyDrAp0Yda6"
   REACT_APP_AUTH0_AUDIENCE: "https://spoke-api.azurewebsites.net"
 
 jobs:
