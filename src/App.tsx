@@ -1,13 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import {
-  CssBaseline,
-  PaletteColorOptions,
-  PaletteMode,
-  ThemeOptions,
-  useMediaQuery,
-} from "@mui/material";
+import { CssBaseline, PaletteMode, useMediaQuery } from "@mui/material";
 import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
@@ -32,6 +26,22 @@ const getDesignTokens = (mode: PaletteMode) => ({
         paper: "#1d252d",
       },
     }),
+  },
+  components: {
+    MuiButton: {
+      variants: [
+        {
+          props: {
+            variant: "contained" as
+              | "contained"
+              | "text"
+              | "outlined"
+              | undefined,
+          },
+          style: { backgroundColor: "#5c6bc0" },
+        },
+      ],
+    },
   },
 });
 

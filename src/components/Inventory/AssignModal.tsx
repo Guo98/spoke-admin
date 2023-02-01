@@ -116,7 +116,10 @@ const AssignModal = (props: AssignProps) => {
     <div>
       <Button
         variant="contained"
-        sx={{ borderRadius: "10px", alignItems: "center" }}
+        sx={{
+          borderRadius: "10px",
+          alignItems: "center",
+        }}
         onClick={handleOpen}
       >
         Assign {type === "general" && "a Device"}
