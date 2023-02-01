@@ -68,8 +68,8 @@ const Orders = () => {
         data.in_progress!,
         data.completed!
       );
-      setInprog(data.in_progress!);
-      setCompleted(data.completed!);
+      setInprog([...data.in_progress!].reverse());
+      setCompleted([...data.completed!].reverse());
       setAll(combinedOrders.reverse());
     }
   }, [loading]);
@@ -170,6 +170,7 @@ const Orders = () => {
                     items={order.items}
                     email={order.email}
                     key={index}
+                    shipping_status={order.shipping_status}
                   />
                 );
               })}
@@ -196,6 +197,7 @@ const Orders = () => {
                       items={order.items}
                       email={order.email}
                       key={index}
+                      shipping_status={order.shipping_status}
                     />
                   );
                 })}
@@ -222,6 +224,7 @@ const Orders = () => {
                       items={order.items}
                       email={order.email}
                       key={index}
+                      shipping_status={order.shipping_status}
                     />
                   );
                 })}

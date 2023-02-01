@@ -34,6 +34,7 @@ interface OrderProps {
   items: Item[];
   state: string;
   email: string;
+  shipping_status: string;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -75,6 +76,7 @@ const OrderItem = (props: OrderProps) => {
     items,
     state,
     email,
+    shipping_status,
   } = props;
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
@@ -82,26 +84,32 @@ const OrderItem = (props: OrderProps) => {
   const isDarkTheme = useTheme().palette.mode === "dark";
 
   const orderStatus = () => {
-    if (laptopTracking === "") {
+    if (!laptopTracking && shipping_status === "Incomplete") {
       return "Order Received";
-    } else {
+    } else if (shipping_status === "Incomplete") {
       return "Shipped";
+    } else if (shipping_status === "Completed") {
+      return "Completed";
     }
   };
 
   const statusBgColor = () => {
-    if (laptopTracking === "") {
+    if (!laptopTracking && shipping_status === "Incomplete") {
       return "#FBF1DD";
-    } else {
+    } else if (shipping_status === "Incomplete") {
       return "#ECE7F1";
+    } else if (shipping_status === "Completed") {
+      return "#E2FDFF";
     }
   };
 
   const statusTextColor = () => {
-    if (laptopTracking === "") {
+    if (!laptopTracking && shipping_status === "Incomplete") {
       return "#FF6900";
-    } else {
+    } else if (shipping_status === "Incomplete") {
       return "#6A37E8";
+    } else if (shipping_status === "Completed") {
+      return "#05B1C0";
     }
   };
 
