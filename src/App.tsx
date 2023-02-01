@@ -28,20 +28,23 @@ const getDesignTokens = (mode: PaletteMode) => ({
     }),
   },
   components: {
-    MuiButton: {
-      variants: [
-        {
-          props: {
-            variant: "contained" as
-              | "contained"
-              | "text"
-              | "outlined"
-              | undefined,
+    mode,
+    ...(mode === "dark" && {
+      MuiButton: {
+        variants: [
+          {
+            props: {
+              variant: "contained" as
+                | "contained"
+                | "text"
+                | "outlined"
+                | undefined,
+            },
+            style: { backgroundColor: "#5c6bc0" },
           },
-          style: { backgroundColor: "#5c6bc0" },
-        },
-      ],
-    },
+        ],
+      },
+    }),
   },
 });
 
