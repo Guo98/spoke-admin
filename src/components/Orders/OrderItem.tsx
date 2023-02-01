@@ -99,7 +99,7 @@ const OrderItem = (props: OrderProps) => {
     } else if (shipping_status === "Incomplete") {
       return "#ECE7F1";
     } else if (shipping_status === "Completed") {
-      return "#E2FDFF";
+      return "#E8FDFF";
     }
   };
 
@@ -109,7 +109,7 @@ const OrderItem = (props: OrderProps) => {
     } else if (shipping_status === "Incomplete") {
       return "#6A37E8";
     } else if (shipping_status === "Completed") {
-      return "#05B1C0";
+      return "#01A1AF";
     }
   };
 
@@ -159,7 +159,7 @@ const OrderItem = (props: OrderProps) => {
               <Chip
                 label={orderStatus()}
                 sx={{
-                  width: "116px",
+                  width: "125px",
                   backgroundColor: statusBgColor(),
                   color: statusTextColor(),
                 }}

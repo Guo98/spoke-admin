@@ -70,7 +70,7 @@ const Orders = () => {
       );
       setInprog([...data.in_progress!].reverse());
       setCompleted([...data.completed!].reverse());
-      setAll(combinedOrders.reverse());
+      setAll(combinedOrders.sort((a, b) => b.orderNo - a.orderNo));
     }
   }, [loading]);
 
