@@ -69,6 +69,7 @@ function App() {
   }, [user]);
 
   useEffect(() => {
+    const storageMode = localStorage.getItem("spoke-theme");
     setMode(prefersDarkMode ? "dark" : "light");
   }, [prefersDarkMode]);
 

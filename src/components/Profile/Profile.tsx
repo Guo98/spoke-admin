@@ -23,8 +23,6 @@ const Profile = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
 
-  const popoverId = open ? "profile-popover" : undefined;
-
   const colorMode = useContext(ColorModeContext);
 
   useEffect(() => {
@@ -75,6 +73,7 @@ const Profile = () => {
             <MenuItem
               onClick={() => {
                 colorMode.toggleColorMode();
+                localStorage.setItem("spoke-theme", !mode ? "light" : "dark");
                 setMode(!mode);
               }}
             >
