@@ -63,7 +63,12 @@ function App() {
 
   useEffect(() => {
     const storageMode = localStorage.getItem("spoke-theme");
-    setMode(prefersDarkMode ? "dark" : "light");
+    console.log("storage mode here checking >>>>>> ", storageMode);
+    if (!storageMode) {
+      setMode(prefersDarkMode ? "dark" : "light");
+    } else {
+      setMode(storageMode as "dark" | "light");
+    }
   }, [prefersDarkMode]);
 
   const colorMode = useMemo(

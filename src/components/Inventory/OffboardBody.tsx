@@ -91,7 +91,16 @@ const OffboardBody = (props: OffboardProps) => {
       recipient_name: fn + " " + ln,
       recipient_email: updatedemail,
       item: device_name,
-      shipping_address: "",
+      shipping_address:
+        al1 +
+        ", " +
+        (al2 ? al2 + ", " : "") +
+        city +
+        ", " +
+        state +
+        postal_code +
+        ", " +
+        country,
       phone_num: pn,
       requestor_email: requestor_email,
       note: note,

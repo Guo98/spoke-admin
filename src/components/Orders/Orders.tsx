@@ -75,6 +75,7 @@ const Orders = () => {
     const encodedClient = localStorage.getItem("spokeclient");
 
     if (encodedClient) {
+      console.log("in here right now >>>>>>>>>");
       fetchData(atob(encodedClient)).catch(console.error);
     }
   }, [loading]);

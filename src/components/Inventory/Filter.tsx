@@ -182,7 +182,9 @@ const Filter = (props: FilterProps) => {
           }
         );
 
-        newResult[i].serial_numbers = [...filteredSN];
+        let newSn = { ...newResult[i] };
+        newSn.serial_numbers = [...filteredSN];
+        newResult[i] = newSn;
       }
       setData(newResult);
     } else {

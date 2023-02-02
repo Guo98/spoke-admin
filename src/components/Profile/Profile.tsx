@@ -73,7 +73,7 @@ const Profile = () => {
             <MenuItem
               onClick={() => {
                 colorMode.toggleColorMode();
-                localStorage.setItem("spoke-theme", !mode ? "light" : "dark");
+                localStorage.setItem("spoke-theme", !mode ? "dark" : "light");
                 setMode(!mode);
               }}
             >
