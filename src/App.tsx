@@ -45,6 +45,28 @@ const getDesignTokens = (mode: PaletteMode) => ({
             },
             style: { backgroundColor: "#5c6bc0" },
           },
+          {
+            props: {
+              variant: "text" as "contained" | "text" | "outlined" | undefined,
+            },
+            style: { color: "#ACB9FF" },
+          },
+        ],
+      },
+      MuiFab: {
+        variants: [
+          {
+            props: {
+              variant: "extended" as "extended" | "circular" | undefined,
+            },
+            style: { backgroundColor: "#5c6bc0" },
+          },
+          {
+            props: {
+              variant: "circular" as "extended" | "circular" | undefined,
+            },
+            style: { backgroundColor: "#5c6bc0" },
+          },
         ],
       },
     }),

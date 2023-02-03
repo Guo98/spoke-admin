@@ -226,7 +226,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       : "#ebebeb",
                   color:
                     serial_numbers.length < 10 && tabValue === 0
-                      ? "red"
+                      ? "#DC0202"
                       : "black",
                   marginTop: "20px",
                 }}
