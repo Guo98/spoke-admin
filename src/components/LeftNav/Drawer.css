@@ -13,3 +13,9 @@
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
+
+.bottom-version {
+    bottom: 0;
+    position: fixed;
+    padding-left: 32px;
+}

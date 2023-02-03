@@ -56,6 +56,8 @@ const Inventory: FC = (): ReactElement => {
   const [ogdeployed, setOGDeployed] = useState(data);
   const [openAdd, setOpenAdd] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [inprogTotal, setInprogTotal] = useState(0);
+  const [deployedTotal, setDeployedTotal] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -118,6 +120,18 @@ const Inventory: FC = (): ReactElement => {
     setOGDeployed(deployedRedux);
     setInprogress(pendingRedux);
     setOGInprogress(pendingRedux);
+
+    let deployedVar = 0;
+    deployedRedux.forEach((d) => {
+      deployedVar += d.serial_numbers.length;
+    });
+    setDeployedTotal(deployedVar);
+
+    let inprogVar = 0;
+    pendingRedux.forEach((p) => {
+      inprogVar += p.serial_numbers.length;
+    });
+    setInprogTotal(inprogVar);
   }, [pendingRedux, deployedRedux, stockRedux]);
 
   const searchBar = (text: string) => {
@@ -267,18 +281,44 @@ const Inventory: FC = (): ReactElement => {
             >
               {!loading ? (
                 <>
-                  {deployed?.length > 0 &&
-                    deployed.map((device, index) => {
-                      return (
-                        device.serial_numbers.length > 0 && (
-                          <InventoryAccordion
-                            {...device}
-                            tabValue={tabValue}
-                            key={index}
-                          />
-                        )
-                      );
-                    })}
+                  {deployedTotal > 0 ? (
+                    <>
+                      {deployed?.length > 0 &&
+                        deployed.map((device, index) => {
+                          return (
+                            device.serial_numbers.length > 0 && (
+                              <InventoryAccordion
+                                {...device}
+                                tabValue={tabValue}
+                                key={index}
+                              />
+                            )
+                          );
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        src={
+                          "https://spokeimages.blob.core.windows.net/image/warehouse.avif"
+                        }
+                        style={{
+                          display: "block",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                        }}
+                      />
+                      <div>
+                        <Typography
+                          textAlign="center"
+                          sx={{ paddingTop: "20px" }}
+                          variant="subtitle1"
+                        >
+                          No Inventory Currently Deployed
+                        </Typography>
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 <CircularProgress />
@@ -296,18 +336,44 @@ const Inventory: FC = (): ReactElement => {
             >
               {!loading ? (
                 <>
-                  {inprogress?.length > 0 &&
-                    inprogress.map((device, index) => {
-                      return (
-                        device.serial_numbers.length > 0 && (
-                          <InventoryAccordion
-                            {...device}
-                            tabValue={tabValue}
-                            key={index}
-                          />
-                        )
-                      );
-                    })}
+                  {inprogTotal > 0 ? (
+                    <>
+                      {inprogress?.length > 0 &&
+                        inprogress.map((device, index) => {
+                          return (
+                            device.serial_numbers.length > 0 && (
+                              <InventoryAccordion
+                                {...device}
+                                tabValue={tabValue}
+                                key={index}
+                              />
+                            )
+                          );
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        src={
+                          "https://spokeimages.blob.core.windows.net/image/warehousestock.png"
+                        }
+                        style={{
+                          display: "block",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                        }}
+                      />
+                      <div>
+                        <Typography
+                          textAlign="center"
+                          sx={{ paddingTop: "20px" }}
+                          variant="subtitle1"
+                        >
+                          No Inventory Currently Pending
+                        </Typography>
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 <CircularProgress />

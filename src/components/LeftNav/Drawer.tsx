@@ -7,6 +7,7 @@ import {
   ListItemText,
   ListItemIcon,
   useTheme,
+  Typography,
 } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
@@ -19,6 +20,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
+import { resetData } from "../../services/inventoryAPI";
 import "./Drawer.css";
 
 interface IconMapping {
@@ -57,7 +59,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
-  const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
+  const { getAccessTokenSilently, logout } = useAuth0();
 
   const container =
     respwindow !== undefined ? () => respwindow().document.body : undefined;
@@ -82,7 +84,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         <div className="bottomPush">
           {["Support", "Logout"].map((text) => (
             <ListItem key={text} className="noVerticalPadding">
-              <ListItemButton onClick={() => footerAction(text)}>
+              <ListItemButton onClick={async () => await footerAction(text)}>
                 <ListItemIcon>
                   {iconMapping[text as keyof IconMapping]}
                 </ListItemIcon>
@@ -144,9 +146,15 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     }
   };
 
-  const footerAction = (text: string) => {
+  const footerAction = async (text: string) => {
     switch (text) {
       case "Logout":
+        const accessToken = await getAccessTokenSilently();
+        try {
+          await resetData(accessToken);
+        } catch (e) {
+          console.error("Error in resetting device");
+        }
         logout({ returnTo: window.location.origin });
         break;
       case "Support":
@@ -196,6 +204,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           />
         </div>
         {drawerContent}
+        <div className="bottom-version">
+          <Typography fontSize="10px">Version 1.0.0-beta</Typography>
+        </div>
       </Drawer>
     </>
   );

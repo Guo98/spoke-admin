@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import { Box, Tabs, Tab, IconButton, Typography } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@mui/material/CircularProgress";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useSearchParams } from "react-router-dom";
 import { getAllOrders } from "../../services/ordersAPI";
 import { useSelector, useDispatch } from "react-redux";
@@ -168,7 +167,12 @@ const Orders = () => {
           label="Search Orders by order number, name, item, location"
           textChange={searchBar}
         />
-        <h2>Orders</h2>
+        <h2>
+          Orders{" "}
+          <IconButton>
+            <FileDownloadIcon />
+          </IconButton>
+        </h2>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}
@@ -183,22 +187,30 @@ const Orders = () => {
         <TabPanel value={tabValue} index={0} prefix="orders">
           {!loading ? (
             <>
-              {allOrders?.map((order: Order, index) => {
-                return (
-                  <OrderItem
-                    order_number={order.orderNo}
-                    first_name={order.firstName}
-                    last_name={order.lastName}
-                    city={order.address.city}
-                    country={order.address.country}
-                    state={order.address.subdivision}
-                    items={order.items}
-                    email={order.email}
-                    key={index}
-                    shipping_status={order.shipping_status}
-                  />
-                );
-              })}
+              {allOrders.length > 0 ? (
+                <>
+                  {allOrders?.map((order: Order, index) => {
+                    return (
+                      <OrderItem
+                        order_number={order.orderNo}
+                        first_name={order.firstName}
+                        last_name={order.lastName}
+                        city={order.address.city}
+                        country={order.address.country}
+                        state={order.address.subdivision}
+                        items={order.items}
+                        email={order.email}
+                        key={index}
+                        shipping_status={order.shipping_status}
+                      />
+                    );
+                  })}
+                </>
+              ) : (
+                <Typography textAlign="center">
+                  There are no orders place.
+                </Typography>
+              )}
             </>
           ) : (
             <Box sx={style}>
@@ -209,23 +221,31 @@ const Orders = () => {
         <TabPanel value={tabValue} index={1} prefix="orders">
           {!loading ? (
             <>
-              {inprog!?.length > 0 &&
-                inprog?.map((order, index) => {
-                  return (
-                    <OrderItem
-                      order_number={order.orderNo}
-                      first_name={order.firstName}
-                      last_name={order.lastName}
-                      city={order.address.city}
-                      state={order.address.subdivision}
-                      country={order.address.country}
-                      items={order.items}
-                      email={order.email}
-                      key={index}
-                      shipping_status={order.shipping_status}
-                    />
-                  );
-                })}
+              {inprog.length > 0 ? (
+                <>
+                  {inprog!?.length > 0 &&
+                    inprog?.map((order, index) => {
+                      return (
+                        <OrderItem
+                          order_number={order.orderNo}
+                          first_name={order.firstName}
+                          last_name={order.lastName}
+                          city={order.address.city}
+                          state={order.address.subdivision}
+                          country={order.address.country}
+                          items={order.items}
+                          email={order.email}
+                          key={index}
+                          shipping_status={order.shipping_status}
+                        />
+                      );
+                    })}
+                </>
+              ) : (
+                <Typography textAlign="center">
+                  There are no orders place.
+                </Typography>
+              )}
             </>
           ) : (
             <Box sx={style}>
@@ -236,23 +256,31 @@ const Orders = () => {
         <TabPanel value={tabValue} index={2} prefix="orders">
           {!loading ? (
             <>
-              {completed!?.length > 0 &&
-                completed?.map((order, index) => {
-                  return (
-                    <OrderItem
-                      order_number={order.orderNo}
-                      first_name={order.firstName}
-                      last_name={order.lastName}
-                      city={order.address.city}
-                      country={order.address.country}
-                      state={order.address.subdivision}
-                      items={order.items}
-                      email={order.email}
-                      key={index}
-                      shipping_status={order.shipping_status}
-                    />
-                  );
-                })}
+              {completed.length > 0 ? (
+                <>
+                  {completed!?.length > 0 &&
+                    completed?.map((order, index) => {
+                      return (
+                        <OrderItem
+                          order_number={order.orderNo}
+                          first_name={order.firstName}
+                          last_name={order.lastName}
+                          city={order.address.city}
+                          country={order.address.country}
+                          state={order.address.subdivision}
+                          items={order.items}
+                          email={order.email}
+                          key={index}
+                          shipping_status={order.shipping_status}
+                        />
+                      );
+                    })}
+                </>
+              ) : (
+                <Typography textAlign="center">
+                  There are no orders place.
+                </Typography>
+              )}
             </>
           ) : (
             <Box sx={style}>
