@@ -73,11 +73,11 @@ const OffboardBody = (props: OffboardProps) => {
   const [country, setCountry] = useState(address.country_code);
   const [updatedemail, setEmail] = useState(email);
   const [pn, setPn] = useState(phone_number);
-  const [requestor_email, setREmail] = useState("");
   const [note, setNote] = useState("");
   const [confirmation, setConfirmation] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const offboardLaptop = async () => {
     const client = atob(localStorage.getItem("spokeclient")!);
@@ -102,7 +102,7 @@ const OffboardBody = (props: OffboardProps) => {
         ", " +
         country,
       phone_num: pn,
-      requestor_email: requestor_email,
+      requestor_email: user?.email,
       note: note,
     };
 
@@ -111,6 +111,12 @@ const OffboardBody = (props: OffboardProps) => {
       bodyObj,
       "offboarding"
     );
+
+    console.log("offboard reuslt >>>>>>>>>> ", offboardResult);
+
+    if (offboardResult.status === "Success") {
+      setSuccess(true);
+    }
 
     setConfirmation(true);
   };
@@ -267,15 +273,6 @@ const OffboardBody = (props: OffboardProps) => {
               </Grid>
             </Grid>
             <TextField
-              label="Requestor Email"
-              value={requestor_email}
-              fullWidth
-              sx={textFieldStyle}
-              size="small"
-              onChange={(event) => setREmail(event.target.value)}
-              required
-            />
-            <TextField
               label="Note"
               value={note}
               fullWidth
@@ -326,7 +323,11 @@ const OffboardBody = (props: OffboardProps) => {
           </Stack>
         </Box>
       ) : (
-        <ConfirmationBody conType={manageType} name={fn + " " + ln} />
+        <ConfirmationBody
+          conType={manageType}
+          name={fn + " " + ln}
+          success={success}
+        />
       )}
     </>
   );

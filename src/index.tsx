@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./app/store";
 import { Provider } from "react-redux";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { YbugProvider } from "ybug-react";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -26,7 +27,12 @@ root.render(
       organization={getOrgId() === undefined ? undefined : getOrgId()}
     >
       <Provider store={store}>
-        <App />
+        <YbugProvider
+          ybugId="a3cazwp84q6jb5sjvmjj"
+          settings={{ launcher_position: "right-middle" }}
+        >
+          <App />
+        </YbugProvider>
       </Provider>
     </Auth0Provider>
   </React.StrictMode>
