@@ -127,7 +127,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
           <Grid
             item
             xs={4}
-            sm={2}
+            sm={2.5}
             justifyContent="center"
             alignContent="center"
           >
@@ -138,7 +138,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
               alt="laptop"
             />
           </Grid>
-          <Grid item xs={6} sm={7}>
+          <Grid item xs={6} sm={6.5}>
             <CardContent>
               <Typography fontWeight="bold" fontSize="18px">
                 {(props.new_device ? "[Requested] " : "") + name}

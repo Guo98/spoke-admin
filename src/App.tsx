@@ -6,9 +6,12 @@ import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useYbugApi } from "ybug-react";
+import { useDispatch } from "react-redux";
 import { orgMapping } from "./utilities/mappings";
 import { ColorModeContext } from "./utilities/color-context";
 import { blueGrey } from "@mui/material/colors";
+import { updateClient } from "./app/store";
 import "./App.css";
 
 const getDesignTokens = (mode: PaletteMode) => ({
@@ -50,20 +53,32 @@ const getDesignTokens = (mode: PaletteMode) => ({
 
 function App() {
   const { user } = useAuth0();
+  const YbugContext = useYbugApi();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"dark" | "light">("light");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (user && user.org_id) {
       localStorage.setItem("orgId", user.org_id);
       localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
+      dispatch(updateClient(orgMapping[user.org_id]));
+
+      if (YbugContext?.Ybug) {
+        YbugContext.init({
+          user: {
+            email: user.email,
+            name: user.name,
+          },
+        });
+      }
     }
   }, [user]);
 
   useEffect(() => {
     const storageMode = localStorage.getItem("spoke-theme");
-    console.log("storage mode here checking >>>>>> ", storageMode);
+
     if (!storageMode) {
       setMode(prefersDarkMode ? "dark" : "light");
     } else {

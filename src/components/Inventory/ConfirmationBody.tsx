@@ -2,10 +2,12 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 
 interface ConfirmationProps {
   conType: string;
   name: string;
+  success?: boolean;
 }
 
 const style = {
@@ -22,6 +24,7 @@ const style = {
 };
 
 const ConfirmationBody = (props: ConfirmationProps) => {
+  const { success } = props;
   return (
     <Box sx={style}>
       <Typography
@@ -30,17 +33,27 @@ const ConfirmationBody = (props: ConfirmationProps) => {
         component="h3"
         textAlign="center"
       >
-        Your order has been received
+        {!success
+          ? "There was an error submitting your order"
+          : "Your order has been received"}
       </Typography>
       <div className="center">
-        <CheckCircleIcon
-          sx={{ color: "#06BE08", height: "10%", width: "10%" }}
-        />
+        {!success ? (
+          <ErrorIcon sx={{ height: "10%", width: "10%", color: "red" }} />
+        ) : (
+          <CheckCircleIcon
+            sx={{ color: "#06BE08", height: "10%", width: "10%" }}
+          />
+        )}
       </div>
-      <Typography textAlign="center">Thank you for your order!</Typography>
       <Typography textAlign="center">
-        You'll received a confirmation email with your order details.
+        {!success ? "Please try again later." : "Thank you for your order!"}
       </Typography>
+      {success && (
+        <Typography textAlign="center">
+          You'll received a confirmation email with your order details.
+        </Typography>
+      )}
     </Box>
   );
 };

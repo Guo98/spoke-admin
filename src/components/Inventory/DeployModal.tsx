@@ -92,6 +92,7 @@ const DeployModalContent = (props: DeployProps) => {
   const [pn, setPn] = useState(phone_number);
   const [confirmation, setConfirmation] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -132,6 +133,7 @@ const DeployModalContent = (props: DeployProps) => {
 
     if (deployResult) {
       setConfirmation(true);
+      setSuccess(true);
       const client = atob(localStorage.getItem("spokeclient")!);
       const accessToken = await getAccessTokenSilently();
       const inventoryResult = await getInventory(accessToken, client);
@@ -376,7 +378,11 @@ const DeployModalContent = (props: DeployProps) => {
           </Grid>
         </Box>
       ) : (
-        <ConfirmationBody conType="deploy" name={fn + " " + ln} />
+        <ConfirmationBody
+          conType="deploy"
+          name={fn + " " + ln}
+          success={success}
+        />
       )}
     </>
   );

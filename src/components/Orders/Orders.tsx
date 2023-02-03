@@ -31,6 +31,7 @@ const style = {
 
 const Orders = () => {
   const data = useSelector((state: RootState) => state.orders.data);
+  const clientData = useSelector((state: RootState) => state.client.data);
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
   const [allOrders, setAll] = useState<Order[]>([]);
@@ -72,13 +73,11 @@ const Orders = () => {
       const ordersResult = await getAllOrders(accessToken, client);
       dispatch(updateOrders(ordersResult.data));
     };
-    const encodedClient = localStorage.getItem("spokeclient");
 
-    if (encodedClient) {
-      console.log("in here right now >>>>>>>>>");
-      fetchData(atob(encodedClient)).catch(console.error);
+    if (isAuthenticated && !isLoading && loading) {
+      if (clientData) fetchData(clientData).catch(console.error);
     }
-  }, [loading]);
+  }, [isAuthenticated, isLoading, clientData]);
 
   useEffect(() => {
     if (Object.keys(data).length > 0) {
