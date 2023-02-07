@@ -11,7 +11,6 @@ import {
   Stack,
   Grid,
   TextField,
-  Link,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -334,8 +333,8 @@ const DeployModalContent = (props: DeployProps) => {
             control={<Checkbox required onChange={handleChecked} />}
             label={
               <div>
-                <span>By checking this box, I agree to </span>
-                <Link>Terms of Service</Link>
+                By checking this box, I agree to have Spoke deploy the device on
+                my behalf.
               </div>
             }
           />
