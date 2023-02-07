@@ -193,7 +193,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         }}
         sx={{ display: { xs: "none", sm: "block" } }}
       >
-        <div style={{ paddingLeft: "32px", paddingTop: "10px" }}>
+        <div style={{ paddingLeft: "32px", paddingTop: "20px" }}>
           <img
             src={
               isDarkTheme

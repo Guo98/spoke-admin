@@ -354,9 +354,12 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               type="individual"
                             />
                           )}
-                          {tabValue === 2 && (
+                          {tabValue === 2 && item.tracking_number && (
                             <Button
-                              href={"https://withspoke.aftership.com/"}
+                              href={
+                                "https://withspoke.aftership.com/" +
+                                item.tracking_number
+                              }
                               target="_blank"
                             >
                               Track
