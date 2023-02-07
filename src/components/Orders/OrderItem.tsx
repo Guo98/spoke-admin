@@ -95,7 +95,7 @@ const OrderItem = (props: OrderProps) => {
 
   const statusBgColor = () => {
     if (!laptopTracking && shipping_status === "Incomplete") {
-      return "#FBFFDD";
+      return "#FFF8EF";
     } else if (shipping_status === "Incomplete") {
       return "#ECE7F1";
     } else if (shipping_status === "Completed") {

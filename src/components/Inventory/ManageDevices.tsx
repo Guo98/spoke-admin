@@ -53,14 +53,13 @@ const ManageDevices = (props: ManageDeviceProps) => {
     setNames([...devices.map((dev) => dev.name)]);
   }, [devices]);
 
-  // console.log("devices >>>>>>>>>>>>> ", device_names);
-
   return (
     <>
       <ButtonGroup
         variant="contained"
         ref={anchorRef}
         aria-label="split button"
+        sx={{ boxShadow: 0 }}
       >
         {selectedIndex === 0 && (
           <Button
