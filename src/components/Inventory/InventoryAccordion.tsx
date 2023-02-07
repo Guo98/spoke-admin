@@ -304,10 +304,10 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
               </TableHead>
               <TableBody>
                 {serial_numbers.length > 0 &&
-                  tableSort().map((item) => {
+                  tableSort().map((item, index) => {
                     const { sn, condition } = item;
                     return (
-                      <TableRow>
+                      <TableRow key={index}>
                         <TableCell width="40%">
                           <Typography>{sn}</Typography>
                         </TableCell>
@@ -351,6 +351,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               device_name={name}
                               device_location={location}
                               phone_number={item.phone_number!}
+                              type="individual"
                             />
                           )}
                           {tabValue === 2 && (

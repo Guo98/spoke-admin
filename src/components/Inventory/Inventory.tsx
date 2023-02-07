@@ -8,17 +8,22 @@ import {
   Fab,
   CircularProgress,
   Typography,
+  IconButton,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useAuth0 } from "@auth0/auth0-react";
+import * as FileSaver from "file-saver";
+import { Buffer } from "buffer";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { updateInventory } from "../../app/slices/inventorySlice";
-import { getInventory } from "../../services/inventoryAPI";
+import { download, getInventory } from "../../services/inventoryAPI";
 import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
 import AssignModal from "./AssignModal";
+import ManageDevices from "./ManageDevices";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
 import "./Inventory.css";
@@ -42,8 +47,8 @@ const Inventory: FC = (): ReactElement => {
   const stockRedux = useSelector(
     (state: RootState) => state.inventory.in_stock
   );
+  const clientData = useSelector((state: RootState) => state.client.data);
 
-  const [cards, setCards] = useState(true);
   const [filterdrawer, openFiltersDrawer] = useState(false);
   const [device, setDevice] = useState<string[]>([]);
   const [location, setLocation] = useState("");
@@ -77,9 +82,8 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const client = atob(localStorage.getItem("spokeclient")!);
       const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(accessToken, client);
+      const inventoryResult = await getInventory(accessToken, clientData);
       dispatch(updateInventory(inventoryResult.data));
     };
 
@@ -94,19 +98,15 @@ const Inventory: FC = (): ReactElement => {
     }
   }, [data]);
 
-  const setFilters = (location: string, name: string) => {
-    setLocation(location);
-    setDevice([name]);
-    let filteredResults = tabValue === 0 ? stock : deployed;
-    filteredResults = filteredResults.filter(
-      (device) => device.name === name && device.location === location
-    );
-    setCards(false);
-    if (tabValue === 0) {
-      setStock(filteredResults);
-    } else {
-      setDeployed(filteredResults);
-    }
+  const downloadInventory = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const downloadResult = await download(accessToken, clientData);
+
+    const blob = new Blob([new Buffer(downloadResult.data)], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    FileSaver.saveAs(blob, "inventory.xlsx");
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -186,7 +186,12 @@ const Inventory: FC = (): ReactElement => {
         />
         <Grid container direction="row" alignItems="center">
           <Grid item xs={7}>
-            <h2>Inventory</h2>
+            <h2>
+              Inventory{" "}
+              <IconButton onClick={downloadInventory}>
+                <FileDownloadIcon />
+              </IconButton>
+            </h2>
           </Grid>
           <Grid item xs={5}>
             <Box
@@ -195,7 +200,8 @@ const Inventory: FC = (): ReactElement => {
               justifyItems="center"
               alignItems="center"
             >
-              <AssignModal type="general" devices={ogstock} />
+              {/* <AssignModal type="general" devices={ogstock} /> */}
+              <ManageDevices devices={ogstock} />
             </Box>
           </Grid>
         </Grid>

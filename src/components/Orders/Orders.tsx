@@ -4,7 +4,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useSearchParams } from "react-router-dom";
-import { getAllOrders } from "../../services/ordersAPI";
+import { Buffer } from "buffer";
+import * as FileSaver from "file-saver";
+import { downloadOrders, getAllOrders } from "../../services/ordersAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
 import { updateOrders } from "../../app/slices/ordersSlice";
@@ -102,6 +104,17 @@ const Orders = () => {
     setTabValue(newValue);
   };
 
+  const download = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const downloadResult = await downloadOrders(accessToken, clientData);
+
+    const blob = new Blob([new Buffer(downloadResult.data)], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    FileSaver.saveAs(blob, "orders.xlsx");
+  };
+
   const searchBar = (text: string) => {
     if (text !== "") {
       text = text.toLowerCase();
@@ -169,7 +182,7 @@ const Orders = () => {
         />
         <h2>
           Orders{" "}
-          <IconButton>
+          <IconButton onClick={download}>
             <FileDownloadIcon />
           </IconButton>
         </h2>

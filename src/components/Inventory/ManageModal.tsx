@@ -32,11 +32,11 @@ const textFieldStyle = {
 };
 
 interface ManageProps {
-  name: {
+  name?: {
     first_name: string;
     last_name: string;
   };
-  address: {
+  address?: {
     al1: string;
     al2?: string;
     city: string;
@@ -44,11 +44,13 @@ interface ManageProps {
     postal_code: string;
     country_code: string;
   };
-  email: string;
-  device_name: string;
-  serial_number: string;
-  device_location: string;
-  phone_number: string;
+  email?: string;
+  device_name?: string;
+  serial_number?: string;
+  device_location?: string;
+  phone_number?: string;
+  type: string;
+  device_names?: string[];
 }
 
 const ManageModal = (props: ManageProps) => {
@@ -90,7 +92,14 @@ const ManageModal = (props: ManageProps) => {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Manage</Button>
+      <Button
+        onClick={handleOpen}
+        sx={{
+          borderRadius: props.type === "general" ? "10px 0px 0px 10px" : "",
+        }}
+      >
+        {props.type === "individual" ? "Manage" : "Offboard a Device"}
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -134,9 +143,10 @@ const ManageModal = (props: ManageProps) => {
                 xs={2}
                 sx={{
                   float: "right",
-                  paddingTop: "25px",
+                  paddingTop: "25px !important",
                   paddingLeft: "10px",
                 }}
+                item
               >
                 <Button
                   variant="contained"

@@ -117,7 +117,7 @@ const AssignModal = (props: AssignProps) => {
       <Button
         variant="contained"
         sx={{
-          borderRadius: "10px",
+          borderRadius: type === "general" ? "10px 0px 0px 10px" : "10px",
           alignItems: "center",
         }}
         onClick={handleOpen}

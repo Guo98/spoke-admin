@@ -160,6 +160,7 @@ const SummaryList = (props: InventorySummary) => {
                           device_name={name}
                           device_location={location}
                           phone_number={device.phone_number!}
+                          type="individual"
                         />
                       </div>
                     )}
