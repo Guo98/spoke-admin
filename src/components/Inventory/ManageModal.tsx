@@ -80,7 +80,8 @@ const ManageModal = (props: ManageProps) => {
   }, [open]);
 
   useEffect(() => {
-    setDeviceNames([...props.devices!?.map((dev) => dev.name)]);
+    if (props.devices && props.devices.length > 0)
+      setDeviceNames([...props.devices!?.map((dev) => dev.name)]);
   }, [props.devices]);
 
   const handleOpen = () => {
