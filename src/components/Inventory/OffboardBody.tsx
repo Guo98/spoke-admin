@@ -87,6 +87,7 @@ const OffboardBody = (props: OffboardProps) => {
   const [confirmation, setConfirmation] = useState(false);
   const [success, setSuccess] = useState(false);
   const [selectedDeviceName, setSelectedDeviceName] = useState("");
+  const [otherName, setOtherName] = useState("");
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -97,11 +98,21 @@ const OffboardBody = (props: OffboardProps) => {
       client: client,
       type: manageType,
       device_location: device_location,
-      device_name: type === "general" ? selectedDeviceName : device_name,
+      device_name:
+        type === "general"
+          ? selectedDeviceName !== "Other"
+            ? selectedDeviceName
+            : otherName
+          : device_name,
       serial_number: serial_number,
       recipient_name: fn + " " + ln,
       recipient_email: updatedemail,
-      item: type === "general" ? selectedDeviceName : device_name,
+      item:
+        type === "general"
+          ? selectedDeviceName !== "Other"
+            ? selectedDeviceName
+            : otherName
+          : device_name,
       shipping_address:
         al1 +
         ", " +
@@ -157,8 +168,21 @@ const OffboardBody = (props: OffboardProps) => {
                     props.device_names!.map((devName) => {
                       return <MenuItem value={devName}>{devName}</MenuItem>;
                     })}
+                  <MenuItem value="Other">Other</MenuItem>
                 </Select>
               </FormControl>
+            )}
+            {selectedDeviceName === "Other" && (
+              <TextField
+                label="Device Name"
+                value={otherName}
+                disabled={disabled}
+                fullWidth
+                sx={textFieldStyle}
+                size="small"
+                onChange={(event) => setOtherName(event.target.value)}
+                required
+              />
             )}
             <Grid
               container

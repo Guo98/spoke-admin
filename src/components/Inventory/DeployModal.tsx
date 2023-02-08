@@ -92,6 +92,7 @@ const DeployModalContent = (props: DeployProps) => {
   const [confirmation, setConfirmation] = useState(false);
   const [checked, setChecked] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [editNote, setEditNote] = useState(note);
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -320,11 +321,12 @@ const DeployModalContent = (props: DeployProps) => {
               <TextField
                 id="standard-note"
                 label="Note"
-                defaultValue={note}
+                defaultValue={editNote}
                 fullWidth
                 sx={textFieldStyle}
                 size="small"
                 disabled={!edit}
+                onChange={(event) => setEditNote(event.target.value)}
               />
             </div>
           </Stack>

@@ -81,7 +81,7 @@ const ManageModal = (props: ManageProps) => {
 
   useEffect(() => {
     if (props.devices && props.devices.length > 0)
-      setDeviceNames([...props.devices!?.map((dev) => dev.name)]);
+      setDeviceNames([...new Set(props.devices!?.map((dev) => dev.name))]);
   }, [props.devices]);
 
   const handleOpen = () => {
@@ -143,8 +143,8 @@ const ManageModal = (props: ManageProps) => {
                     {props.type === "general" && (
                       <MenuItem value="Deployment">New Deployment</MenuItem>
                     )}
-                    <MenuItem value="Offboarding">Offboarding</MenuItem>
-                    <MenuItem value="Returning">Returning</MenuItem>
+                    <MenuItem value="Offboard">Offboard</MenuItem>
+                    <MenuItem value="Return">Return</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
