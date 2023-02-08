@@ -7,6 +7,7 @@ import {
   Button,
   Menu,
   MenuItem,
+  useTheme,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -25,6 +26,8 @@ const Profile = () => {
   const open = Boolean(anchorEl);
 
   const colorMode = useContext(ColorModeContext);
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -74,7 +77,7 @@ const Profile = () => {
             <MenuItem
               onClick={() => {
                 colorMode.toggleColorMode();
-                localStorage.setItem("spoke-theme", mode ? "dark" : "light");
+                localStorage.setItem("spoke-theme", !mode ? "dark" : "light");
                 setMode(!mode);
               }}
             >
