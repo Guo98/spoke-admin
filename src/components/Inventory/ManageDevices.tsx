@@ -73,9 +73,7 @@ const ManageDevices = (props: ManageDeviceProps) => {
         {selectedIndex === 1 && (
           <AssignModal type="general" devices={devices} />
         )}
-        {selectedIndex === 2 && (
-          <ManageModal type="general" device_names={device_names} />
-        )}
+        {selectedIndex === 2 && <ManageModal type="general" />}
         <Button
           size="small"
           aria-controls={open ? "split-button-menu" : undefined}

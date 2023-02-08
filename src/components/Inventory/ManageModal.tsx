@@ -14,6 +14,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import OffboardBody from "./OffboardBody";
 import { updateInventory } from "../../app/slices/inventorySlice";
 import { getInventory } from "../../services/inventoryAPI";
+import { InventorySummary } from "../../interfaces/inventory";
+import AssignModal from "./AssignModal";
 
 const style = {
   position: "absolute" as "absolute",
@@ -50,7 +52,7 @@ interface ManageProps {
   device_location?: string;
   phone_number?: string;
   type: string;
-  device_names?: string[];
+  devices?: InventorySummary[];
 }
 
 const ManageModal = (props: ManageProps) => {
@@ -58,6 +60,7 @@ const ManageModal = (props: ManageProps) => {
   const [manageType, setManageType] = useState("");
   const [changeView, setChangeView] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [device_names, setDeviceNames] = useState<string[]>([]);
 
   const dispatch = useDispatch();
 
@@ -75,6 +78,10 @@ const ManageModal = (props: ManageProps) => {
       fetchData().catch(console.error);
     }
   }, [open]);
+
+  useEffect(() => {
+    setDeviceNames([...props.devices!?.map((dev) => dev.name)]);
+  }, [props.devices]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -94,11 +101,9 @@ const ManageModal = (props: ManageProps) => {
     <div>
       <Button
         onClick={handleOpen}
-        sx={{
-          borderRadius: props.type === "general" ? "10px 0px 0px 10px" : "",
-        }}
+        variant={props.type === "general" ? "contained" : "text"}
       >
-        {props.type === "individual" ? "Manage" : "Offboard a Device"}
+        Manage
       </Button>
       <Modal
         open={open}
@@ -134,6 +139,9 @@ const ManageModal = (props: ManageProps) => {
                     onChange={handleChange}
                     label="What do you want to do?"
                   >
+                    {props.type === "general" && (
+                      <MenuItem value="Deployment">New Deployment</MenuItem>
+                    )}
                     <MenuItem value="Offboarding">Offboarding</MenuItem>
                     <MenuItem value="Returning">Returning</MenuItem>
                   </Select>
@@ -159,7 +167,23 @@ const ManageModal = (props: ManageProps) => {
             </Grid>
           </Box>
         ) : (
-          <OffboardBody manageType={manageType} {...props} />
+          <>
+            {manageType !== "Deployment" && (
+              <OffboardBody
+                manageType={manageType}
+                {...props}
+                device_names={device_names}
+              />
+            )}
+            {manageType === "Deployment" && (
+              <AssignModal
+                type="general"
+                devices={props.devices}
+                manageOpen={true}
+                handleParentClose={handleClose}
+              />
+            )}
+          </>
         )}
       </Modal>
     </div>

@@ -24,6 +24,7 @@ import Filter from "./Filter";
 import AddModal from "./AddModal";
 import AssignModal from "./AssignModal";
 import ManageDevices from "./ManageDevices";
+import ManageModal from "./ManageModal";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
 import "./Inventory.css";
@@ -201,7 +202,8 @@ const Inventory: FC = (): ReactElement => {
               alignItems="center"
             >
               {/* <AssignModal type="general" devices={ogstock} /> */}
-              <ManageDevices devices={ogstock} />
+              {/* <ManageDevices devices={ogstock} /> */}
+              <ManageModal type="general" devices={ogstock} />
             </Box>
           </Grid>
         </Grid>
