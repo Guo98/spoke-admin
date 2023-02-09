@@ -13,9 +13,10 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import "./Profile.css";
 import { ColorModeContext } from "../../utilities/color-context";
+import { resetData } from "../../services/inventoryAPI";
 
 const Profile = () => {
-  const { isAuthenticated, user, logout } = useAuth0();
+  const { isAuthenticated, user, logout, getAccessTokenSilently } = useAuth0();
   const [username, setUsername] = useState<string | undefined>("");
   const [userpic, setPic] = useState<string | undefined>("");
   const [mode, setMode] = useState(true);
@@ -73,15 +74,22 @@ const Profile = () => {
             <MenuItem
               onClick={() => {
                 colorMode.toggleColorMode();
-                localStorage.setItem("spoke-theme", !mode ? "dark" : "light");
                 setMode(!mode);
               }}
             >
-              {!mode ? <LightModeIcon /> : <DarkModeIcon />}
+              {colorMode.mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
               <Typography sx={{ paddingLeft: "5px" }}>Theme</Typography>
             </MenuItem>
             <MenuItem
-              onClick={() => logout({ returnTo: window.location.origin })}
+              onClick={async () => {
+                const accessToken = await getAccessTokenSilently();
+                try {
+                  await resetData(accessToken);
+                } catch (e) {
+                  console.error("Error in resetting data");
+                }
+                logout({ returnTo: window.location.origin });
+              }}
             >
               <LogoutIcon />{" "}
               <Typography sx={{ paddingLeft: "5px" }}>Logout</Typography>

@@ -11,7 +11,6 @@ import {
   Stack,
   Grid,
   TextField,
-  Link,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -93,6 +92,7 @@ const DeployModalContent = (props: DeployProps) => {
   const [confirmation, setConfirmation] = useState(false);
   const [checked, setChecked] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [editNote, setEditNote] = useState(note);
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -321,11 +321,12 @@ const DeployModalContent = (props: DeployProps) => {
               <TextField
                 id="standard-note"
                 label="Note"
-                defaultValue={note}
+                defaultValue={editNote}
                 fullWidth
                 sx={textFieldStyle}
                 size="small"
                 disabled={!edit}
+                onChange={(event) => setEditNote(event.target.value)}
               />
             </div>
           </Stack>
@@ -334,8 +335,8 @@ const DeployModalContent = (props: DeployProps) => {
             control={<Checkbox required onChange={handleChecked} />}
             label={
               <div>
-                <span>By checking this box, I agree to </span>
-                <Link>Terms of Service</Link>
+                By checking this box, I agree to have Spoke deploy the device on
+                my behalf.
               </div>
             }
           />

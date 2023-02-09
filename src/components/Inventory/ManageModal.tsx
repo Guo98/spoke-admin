@@ -14,6 +14,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import OffboardBody from "./OffboardBody";
 import { updateInventory } from "../../app/slices/inventorySlice";
 import { getInventory } from "../../services/inventoryAPI";
+import { InventorySummary } from "../../interfaces/inventory";
+import AssignModal from "./AssignModal";
 
 const style = {
   position: "absolute" as "absolute",
@@ -32,11 +34,11 @@ const textFieldStyle = {
 };
 
 interface ManageProps {
-  name: {
+  name?: {
     first_name: string;
     last_name: string;
   };
-  address: {
+  address?: {
     al1: string;
     al2?: string;
     city: string;
@@ -44,11 +46,13 @@ interface ManageProps {
     postal_code: string;
     country_code: string;
   };
-  email: string;
-  device_name: string;
-  serial_number: string;
-  device_location: string;
-  phone_number: string;
+  email?: string;
+  device_name?: string;
+  serial_number?: string;
+  device_location?: string;
+  phone_number?: string;
+  type: string;
+  devices?: InventorySummary[];
 }
 
 const ManageModal = (props: ManageProps) => {
@@ -56,6 +60,7 @@ const ManageModal = (props: ManageProps) => {
   const [manageType, setManageType] = useState("");
   const [changeView, setChangeView] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [device_names, setDeviceNames] = useState<string[]>([]);
 
   const dispatch = useDispatch();
 
@@ -74,6 +79,11 @@ const ManageModal = (props: ManageProps) => {
     }
   }, [open]);
 
+  useEffect(() => {
+    if (props.devices && props.devices.length > 0)
+      setDeviceNames([...new Set(props.devices!?.map((dev) => dev.name))]);
+  }, [props.devices]);
+
   const handleOpen = () => {
     setOpen(true);
     setLoading(true);
@@ -90,7 +100,12 @@ const ManageModal = (props: ManageProps) => {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Manage</Button>
+      <Button
+        onClick={handleOpen}
+        variant={props.type === "general" ? "contained" : "text"}
+      >
+        Manage
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -125,8 +140,11 @@ const ManageModal = (props: ManageProps) => {
                     onChange={handleChange}
                     label="What do you want to do?"
                   >
-                    <MenuItem value="Offboarding">Offboarding</MenuItem>
-                    <MenuItem value="Returning">Returning</MenuItem>
+                    {props.type === "general" && (
+                      <MenuItem value="Deployment">New Deployment</MenuItem>
+                    )}
+                    <MenuItem value="Offboard">Offboard</MenuItem>
+                    <MenuItem value="Return">Return</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -134,9 +152,10 @@ const ManageModal = (props: ManageProps) => {
                 xs={2}
                 sx={{
                   float: "right",
-                  paddingTop: "25px",
+                  paddingTop: "25px !important",
                   paddingLeft: "10px",
                 }}
+                item
               >
                 <Button
                   variant="contained"
@@ -149,7 +168,23 @@ const ManageModal = (props: ManageProps) => {
             </Grid>
           </Box>
         ) : (
-          <OffboardBody manageType={manageType} {...props} />
+          <>
+            {manageType !== "Deployment" && (
+              <OffboardBody
+                manageType={manageType}
+                {...props}
+                device_names={device_names}
+              />
+            )}
+            {manageType === "Deployment" && (
+              <AssignModal
+                type="general"
+                devices={props.devices}
+                manageOpen={true}
+                handleParentClose={handleClose}
+              />
+            )}
+          </>
         )}
       </Modal>
     </div>

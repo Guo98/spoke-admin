@@ -110,11 +110,16 @@ function App() {
 
   const colorMode = useMemo(
     () => ({
+      mode: mode,
       toggleColorMode: () => {
+        localStorage.setItem(
+          "spoke-theme",
+          mode === "light" ? "dark" : "light"
+        );
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
     }),
-    []
+    [mode]
   );
 
   let theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);

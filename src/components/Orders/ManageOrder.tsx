@@ -52,14 +52,14 @@ const ManageOrder = (props: ManageProps) => {
   };
 
   useEffect(() => {
-    setOpen(props.footerOpen!);
+    if (props.footerOpen) setOpen(props.footerOpen!);
   }, [props.footerOpen]);
 
   const sendSupport = async () => {
     let supportObj = {};
     if (order) {
       supportObj = {
-        orderNo: order_no,
+        orderNo: order_no ? order_no : "General",
         customer_name: name,
         requestor_email: user?.email,
         support_message: content,
@@ -72,12 +72,15 @@ const ManageOrder = (props: ManageProps) => {
 
       if (emailResp.message === "Successful") {
         setSent(true);
+        if (props.setFooterOpen) {
+          // props.setFooterOpen(false);
+        }
       }
     } catch (e) {
       console.log("email support err ::::::::: ", e);
     }
   };
-
+  console.log("sent state ::::::::::: ", sent);
   return (
     <>
       {order && (

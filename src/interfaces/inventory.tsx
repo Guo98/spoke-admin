@@ -39,4 +39,5 @@ interface SerialNumbers {
   color?: string;
   date_deployed?: string;
   quantity?: number;
+  tracking_number?: string;
 }

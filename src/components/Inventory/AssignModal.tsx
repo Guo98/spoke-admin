@@ -46,6 +46,8 @@ interface AssignProps {
   image_source?: string | undefined;
   type: string;
   devices?: InventorySummary[];
+  manageOpen?: boolean;
+  handleParentClose?: Function;
 }
 
 interface ValidateAddress {
@@ -60,7 +62,9 @@ interface ValidateAddress {
 const AssignModal = (props: AssignProps) => {
   const { serial_number, device_name, device_location, image_source, type } =
     props;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(
+    props.manageOpen !== undefined ? props.manageOpen : false
+  );
   const [form, setForm] = useState(true);
   const [shipping, setShipping] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -84,6 +88,8 @@ const AssignModal = (props: AssignProps) => {
     setForm(false);
     setShipping("");
     setSD("");
+
+    if (type === "general") props.handleParentClose!();
   };
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -114,16 +120,18 @@ const AssignModal = (props: AssignProps) => {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        sx={{
-          borderRadius: "10px",
-          alignItems: "center",
-        }}
-        onClick={handleOpen}
-      >
-        Assign {type === "general" && "a Device"}
-      </Button>
+      {type !== "general" && (
+        <Button
+          variant="contained"
+          sx={{
+            borderRadius: type === "general" ? "10px 0px 0px 10px" : "10px",
+            alignItems: "center",
+          }}
+          onClick={handleOpen}
+        >
+          Assign
+        </Button>
+      )}
       <Modal
         open={open}
         onClose={handleClose}

@@ -1,20 +1,27 @@
 import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+  Button,
+  Stack,
+  Box,
+  SelectChangeEvent,
+} from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { manageLaptop } from "../../services/inventoryAPI";
 import ConfirmationBody from "./ConfirmationBody";
 
 interface OffboardProps {
   manageType: string;
-  name: {
+  name?: {
     first_name: string;
     last_name: string;
   };
-  address: {
+  address?: {
     al1: string;
     al2?: string;
     city: string;
@@ -22,11 +29,13 @@ interface OffboardProps {
     postal_code: string;
     country_code: string;
   };
-  device_name: string;
-  serial_number: string;
-  device_location: string;
-  email: string;
-  phone_number: string;
+  device_name?: string;
+  serial_number?: string;
+  device_location?: string;
+  email?: string;
+  phone_number?: string;
+  type: string;
+  device_names?: string[];
 }
 
 const textFieldStyle = {
@@ -60,22 +69,25 @@ const OffboardBody = (props: OffboardProps) => {
     serial_number,
     email,
     phone_number,
+    type,
   } = props;
 
-  const [disabled, setDisabled] = useState(true);
-  const [fn, setFn] = useState(name.first_name);
-  const [ln, setLn] = useState(name.last_name);
-  const [al1, setAl1] = useState(address.al1);
-  const [al2, setAl2] = useState(address.al2);
-  const [city, setCity] = useState(address.city);
-  const [state, setState] = useState(address.state);
-  const [postal_code, setPC] = useState(address.postal_code);
-  const [country, setCountry] = useState(address.country_code);
+  const [disabled, setDisabled] = useState(type !== "general");
+  const [fn, setFn] = useState(name?.first_name || "");
+  const [ln, setLn] = useState(name?.last_name || "");
+  const [al1, setAl1] = useState(address?.al1 || "");
+  const [al2, setAl2] = useState(address?.al2 || "");
+  const [city, setCity] = useState(address?.city || "");
+  const [state, setState] = useState(address?.state || "");
+  const [postal_code, setPC] = useState(address?.postal_code || "");
+  const [country, setCountry] = useState(address?.country_code || "");
   const [updatedemail, setEmail] = useState(email);
   const [pn, setPn] = useState(phone_number);
   const [note, setNote] = useState("");
   const [confirmation, setConfirmation] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [selectedDeviceName, setSelectedDeviceName] = useState("");
+  const [otherName, setOtherName] = useState("");
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -86,11 +98,21 @@ const OffboardBody = (props: OffboardProps) => {
       client: client,
       type: manageType,
       device_location: device_location,
-      device_name: device_name,
+      device_name:
+        type === "general"
+          ? selectedDeviceName !== "Other"
+            ? selectedDeviceName
+            : otherName
+          : device_name,
       serial_number: serial_number,
       recipient_name: fn + " " + ln,
       recipient_email: updatedemail,
-      item: device_name,
+      item:
+        type === "general"
+          ? selectedDeviceName !== "Other"
+            ? selectedDeviceName
+            : otherName
+          : device_name,
       shipping_address:
         al1 +
         ", " +
@@ -98,6 +120,7 @@ const OffboardBody = (props: OffboardProps) => {
         city +
         ", " +
         state +
+        " " +
         postal_code +
         ", " +
         country,
@@ -112,13 +135,15 @@ const OffboardBody = (props: OffboardProps) => {
       "offboarding"
     );
 
-    console.log("offboard reuslt >>>>>>>>>> ", offboardResult);
-
     if (offboardResult.status === "Success") {
       setSuccess(true);
     }
 
     setConfirmation(true);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setSelectedDeviceName(event.target.value);
   };
 
   return (
@@ -127,7 +152,46 @@ const OffboardBody = (props: OffboardProps) => {
         <Box sx={style}>
           <h4>{manageType} Details</h4>
           <Stack spacing={2}>
-            <Grid container spacing={3}>
+            {type === "general" && (
+              <FormControl fullWidth sx={textFieldStyle} size="small" required>
+                <InputLabel id="manage-type-label">
+                  Which device do you want to {manageType.toLowerCase()}?
+                </InputLabel>
+                <Select
+                  labelId="manage-type-label"
+                  id="manage-select-standard"
+                  value={selectedDeviceName}
+                  onChange={handleChange}
+                  label={`Which device do you want to ${manageType.toLowerCase()}?`}
+                >
+                  {props.device_names!.length > 0 &&
+                    props.device_names!.map((devName) => {
+                      return <MenuItem value={devName}>{devName}</MenuItem>;
+                    })}
+                  <MenuItem value="Other">Other</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+            {selectedDeviceName === "Other" && (
+              <TextField
+                label="Device Name"
+                value={otherName}
+                disabled={disabled}
+                fullWidth
+                sx={textFieldStyle}
+                size="small"
+                onChange={(event) => setOtherName(event.target.value)}
+                required
+              />
+            )}
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                marginLeft: type === "general" ? "-23px !important" : "",
+                marginTop: type === "general" ? "0px !important" : "",
+              }}
+            >
               <Grid item xs={6}>
                 <TextField
                   label="First Name"
@@ -171,7 +235,6 @@ const OffboardBody = (props: OffboardProps) => {
               sx={textFieldStyle}
               size="small"
               onChange={(event) => setAl2(event.target.value)}
-              required
             />
             <Grid
               container
@@ -289,24 +352,26 @@ const OffboardBody = (props: OffboardProps) => {
               }}
               spacing={3}
             >
-              <Grid item xs={6}>
-                <Button
-                  onClick={() => setDisabled(false)}
-                  sx={{
-                    backgroundColor: "white",
-                    color: "#054ffe",
-                    borderRadius: "10px",
-                    ":hover": {
+              {type !== "general" && (
+                <Grid item xs={6}>
+                  <Button
+                    onClick={() => setDisabled(false)}
+                    sx={{
                       backgroundColor: "white",
-                    },
-                  }}
-                  variant="contained"
-                  fullWidth
-                >
-                  Edit
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
+                      color: "#054ffe",
+                      borderRadius: "10px",
+                      ":hover": {
+                        backgroundColor: "white",
+                      },
+                    }}
+                    variant="contained"
+                    fullWidth
+                  >
+                    Edit
+                  </Button>
+                </Grid>
+              )}
+              <Grid item xs={type !== "general" ? 6 : 12}>
                 <Button
                   variant="contained"
                   sx={{

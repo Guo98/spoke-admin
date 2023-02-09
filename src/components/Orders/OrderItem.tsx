@@ -95,7 +95,7 @@ const OrderItem = (props: OrderProps) => {
 
   const statusBgColor = () => {
     if (!laptopTracking && shipping_status === "Incomplete") {
-      return "#FBFFDD";
+      return "#FFF8EF";
     } else if (shipping_status === "Incomplete") {
       return "#ECE7F1";
     } else if (shipping_status === "Completed") {
@@ -114,13 +114,14 @@ const OrderItem = (props: OrderProps) => {
   };
 
   const anyTrackingNumbers = () => {
-    let anyTrackingNumbers = false;
+    let anyTrackingNumbers = "";
 
-    items.forEach((item) => {
-      if (item.tracking_number !== "") {
-        anyTrackingNumbers = true;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].tracking_number !== "") {
+        anyTrackingNumbers = items[i].tracking_number[0];
+        break;
       }
-    });
+    }
 
     return anyTrackingNumbers;
   };
@@ -216,7 +217,7 @@ const OrderItem = (props: OrderProps) => {
                 order={true}
               />
             </Box>
-            {anyTrackingNumbers() && (
+            {anyTrackingNumbers() !== "" && (
               <Box
                 display="flex"
                 justifyContent="flex-end"
@@ -230,7 +231,9 @@ const OrderItem = (props: OrderProps) => {
                     borderRadius: "999em 999em 999em 999em",
                     textTransform: "none",
                   }}
-                  href={"https://withspoke.aftership.com/"}
+                  href={
+                    "https://withspoke.aftership.com/" + anyTrackingNumbers()
+                  }
                   target="_blank"
                 >
                   Track
