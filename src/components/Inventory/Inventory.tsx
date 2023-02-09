@@ -63,6 +63,7 @@ const Inventory: FC = (): ReactElement => {
   const [loading, setLoading] = useState(true);
   const [inprogTotal, setInprogTotal] = useState(0);
   const [deployedTotal, setDeployedTotal] = useState(0);
+  const [filtered, setFiltered] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -167,6 +168,12 @@ const Inventory: FC = (): ReactElement => {
   };
 
   const searchFilter = (objs: InventorySummary[], text: string) => {
+    if (text !== "") {
+      setFiltered(true);
+    } else {
+      setFiltered(false);
+    }
+
     return objs.filter(
       (device) =>
         device.name.toLowerCase().indexOf(text) > -1 ||
@@ -200,8 +207,6 @@ const Inventory: FC = (): ReactElement => {
               justifyItems="center"
               alignItems="center"
             >
-              {/* <AssignModal type="general" devices={ogstock} /> */}
-              {/* <ManageDevices devices={ogstock} /> */}
               <ManageModal type="general" devices={ogstock} />
             </Box>
           </Grid>

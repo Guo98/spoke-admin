@@ -59,7 +59,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
-  const { getAccessTokenSilently, logout } = useAuth0();
+  const { getAccessTokenSilently, logout, user } = useAuth0();
 
   const container =
     respwindow !== undefined ? () => respwindow().document.body : undefined;
@@ -94,12 +94,14 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           ))}
         </div>
       </List>
-      <ManageOrder
-        email=""
-        order={false}
-        footerOpen={modalOpen}
-        setFooterOpen={setModalOpen}
-      />
+      {modalOpen && (
+        <ManageOrder
+          email={user?.email!}
+          order={false}
+          footerOpen={modalOpen}
+          setFooterOpen={setModalOpen}
+        />
+      )}
     </>
   );
 
@@ -170,16 +172,16 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       <Drawer
         variant="temporary"
         container={container}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
+        // ModalProps={{
+        //   keepMounted: true, // Better open performance on mobile.
+        // }}
         sx={{
           display: { xs: "block", sm: "none" },
         }}
         open={mobileOpen}
         onClose={() => setMobileOpen(!mobileOpen)}
       >
-        {drawerContent}
+        {mobileOpen && drawerContent}
       </Drawer>
       <Drawer
         variant="permanent"
