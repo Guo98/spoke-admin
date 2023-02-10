@@ -8,6 +8,10 @@ import {
   ListItemIcon,
   useTheme,
   Typography,
+  Hidden,
+  AppBar,
+  Toolbar,
+  IconButton,
 } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
@@ -18,6 +22,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
+import MenuIcon from "@mui/icons-material/Menu";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { resetData } from "../../services/inventoryAPI";
