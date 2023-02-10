@@ -9,15 +9,11 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  REACT_APP_SPOKE_API: "https://spoke-api.azurewebsites.net"
-  REACT_APP_AUTH0_DOMAIN: "withspoke.us.auth0.com"
-  REACT_APP_AUTH0_CLIENTID: "T2c5x7bhdUdI25uszsk57MyDrAp0Yda6"
-  REACT_APP_AUTH0_AUDIENCE: "https://spoke-api.azurewebsites.net"
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: "Production"
 
     steps:
       - uses: actions/checkout@v2
@@ -28,6 +24,11 @@ jobs:
           node-version: "18.x"
 
       - name: npm install, build, and test
+        env:
+          REACT_APP_SPOKE_API: ${{ secrets.SPOKE_API }}
+          REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          REACT_APP_AUTH0_CLIENTID: ${{ secrets.AUTH0_CLIENTID }}
+          REACT_APP_AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
         run: |
           npm install
           npm run build --if-present
