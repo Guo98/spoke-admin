@@ -1,10 +1,19 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { CssBaseline, PaletteMode, useMediaQuery } from "@mui/material";
+import {
+  CssBaseline,
+  PaletteMode,
+  useMediaQuery,
+  Hidden,
+  AppBar,
+  Toolbar,
+  IconButton,
+} from "@mui/material";
 import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useYbugApi } from "ybug-react";
 import { useDispatch } from "react-redux";
@@ -131,12 +140,25 @@ function App() {
         <div>
           <Box sx={{ display: "flex" }}>
             {window.location.pathname.substring(1) !== "logout" && (
-              <Box
-                component="nav"
-                sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
-              >
-                <SpokeDrawer />
-              </Box>
+              <>
+                <Hidden mdUp>
+                  <AppBar position="fixed">
+                    <Toolbar>
+                      <IconButton
+                      // onClick={() => setMobileOpen((prevOpen) => !prevOpen)}
+                      >
+                        <MenuIcon />
+                      </IconButton>
+                    </Toolbar>
+                  </AppBar>
+                </Hidden>
+                <Box
+                  component="nav"
+                  sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+                >
+                  <SpokeDrawer />
+                </Box>
+              </>
             )}
             <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
               <RouterProvider router={AppContainer} />
