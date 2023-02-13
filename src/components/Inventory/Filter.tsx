@@ -18,10 +18,12 @@ import { RootState } from "../../app/store";
 
 interface FilterProps {
   data: InventorySummary[];
+  ipData: InventorySummary[];
+  depData: InventorySummary[];
   setData: Function;
-  device_name?: string[];
-  selected_location?: string[];
-  tab_value: number;
+  setIPData: Function;
+  setDepData: Function;
+  setFiltering: Function;
 }
 
 const reduxInventoryMapping = ["in_stock", "deployed", "pending"];
@@ -31,23 +33,24 @@ const boxStyle = {
 };
 
 const Filter = (props: FilterProps) => {
-  const { data, setData, device_name, selected_location, tab_value } = props;
-  const ogdata = useSelector(
-    (state: RootState) =>
-      state.inventory[
-        reduxInventoryMapping[tab_value] as keyof InitialInventoryState
-      ]
-  );
+  const {
+    data,
+    ipData,
+    depData,
+    setData,
+    setIPData,
+    setDepData,
+    setFiltering,
+  } = props;
+  const ogdata = useSelector((state: RootState) => state.inventory.in_stock);
+  const progRedux = useSelector((state: RootState) => state.inventory.pending);
+  const depRedux = useSelector((state: RootState) => state.inventory.deployed);
 
-  const [devices, setDevices] = useState<string[]>(
-    device_name![0] !== "" ? (device_name as string[]) : []
-  );
+  const [devices, setDevices] = useState<string[]>([]);
   const [rams, setRams] = useState<string[]>([]);
   const [cpus, setCpus] = useState<string[]>([]);
   const [storages, setStorages] = useState<string[]>([]);
-  const [location, setLocation] = useState<string[]>(
-    selected_location![0] !== "" ? (selected_location as string[]) : []
-  );
+  const [location, setLocation] = useState<string[]>([]);
   const [condition, setCondition] = useState("");
   const [sortDeviceIcon, setSortDeviceIcon] = useState<
     ReactElement<any, string | JSXElementConstructor<any>> | undefined
@@ -141,40 +144,79 @@ const Filter = (props: FilterProps) => {
     setLocation([]);
     setCondition("");
     setData(ogdata);
+    setIPData(progRedux);
+    setDepData(depRedux);
     setSortLocation("");
     setSortLocationIcon(undefined);
     setSortDevice("");
     setSortDeviceIcon(undefined);
+    setFiltering(false);
   };
 
   const filterDevices = () => {
     let filteredResults: InventorySummary[] = JSON.parse(JSON.stringify(data));
+    let filteredIP: InventorySummary[] = JSON.parse(JSON.stringify(ipData));
+    let filteredDep: InventorySummary[] = JSON.parse(JSON.stringify(depData));
 
-    if (devices.length > 0)
+    if (devices.length > 0) {
       filteredResults = data.filter((item) => devices.indexOf(item.name) > -1);
+      filteredIP = ipData.filter((item) => devices.indexOf(item.name) > -1);
+      filteredDep = depData.filter((item) => devices.indexOf(item.name) > -1);
+    }
 
-    if (location.length > 0)
+    if (location.length > 0) {
       filteredResults = filteredResults.filter(
         (item) => location.indexOf(item.location) > -1
       );
+      filteredIP = filteredIP.filter(
+        (item) => location.indexOf(item.location) > -1
+      );
+      filteredDep = filteredDep.filter(
+        (item) => location.indexOf(item.location) > -1
+      );
+    }
 
-    if (rams.length > 0)
+    if (rams.length > 0) {
       filteredResults = filteredResults.filter(
         (item) => item.specs && rams.indexOf(item.specs!.ram) > -1
       );
+      filteredIP = filteredIP.filter(
+        (item) => item.specs && rams.indexOf(item.specs!.ram) > -1
+      );
+      filteredDep = filteredDep.filter(
+        (item) => item.specs && rams.indexOf(item.specs!.ram) > -1
+      );
+    }
 
-    if (cpus.length > 0)
+    if (cpus.length > 0) {
       filteredResults = filteredResults.filter(
         (item) => item.specs && cpus.indexOf(item.specs!.cpu) > -1
       );
+      filteredIP = filteredIP.filter(
+        (item) => item.specs && cpus.indexOf(item.specs!.cpu) > -1
+      );
+      filteredDep = filteredDep.filter(
+        (item) => item.specs && cpus.indexOf(item.specs!.cpu) > -1
+      );
+    }
 
-    if (storages.length > 0)
+    if (storages.length > 0) {
       filteredResults = filteredResults.filter(
         (item) => item.specs && storages.indexOf(item.specs!.hard_drive) > -1
       );
+      filteredIP = filteredIP.filter(
+        (item) => item.specs && storages.indexOf(item.specs!.hard_drive) > -1
+      );
+      filteredDep = filteredDep.filter(
+        (item) => item.specs && storages.indexOf(item.specs!.hard_drive) > -1
+      );
+    }
 
     if (condition !== "") {
       let newResult = [...filteredResults];
+      let newIPResult = [...filteredIP];
+      let newDepResult = [...filteredDep];
+
       for (let i = 0; i < filteredResults.length; i++) {
         const filteredSN = filteredResults[i].serial_numbers.filter(
           (individual) => {
@@ -186,9 +228,38 @@ const Filter = (props: FilterProps) => {
         newSn.serial_numbers = [...filteredSN];
         newResult[i] = newSn;
       }
+
+      for (let i = 0; i < filteredIP.length; i++) {
+        const filteredSN = filteredIP[i].serial_numbers.filter((individual) => {
+          return individual.condition === condition;
+        });
+
+        let newSn = { ...newIPResult[i] };
+        newSn.serial_numbers = [...filteredSN];
+        newIPResult[i] = newSn;
+      }
+
+      for (let i = 0; i < filteredDep.length; i++) {
+        const filteredSN = filteredDep[i].serial_numbers.filter(
+          (individual) => {
+            return individual.condition === condition;
+          }
+        );
+
+        let newSn = { ...newDepResult[i] };
+        newSn.serial_numbers = [...filteredSN];
+        newDepResult[i] = newSn;
+      }
+
       setData(newResult);
+      setIPData(newIPResult);
+      setDepData(newDepResult);
+      setFiltering(true);
     } else {
       setData(filteredResults);
+      setIPData(filteredIP);
+      setDepData(filteredDep);
+      setFiltering(true);
     }
   };
 

@@ -39,6 +39,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [inprog, setInprog] = useState<Order[]>([]);
   const [completed, setCompleted] = useState<Order[]>([]);
+  const [filtered, setFiltered] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -117,47 +118,30 @@ const Orders = () => {
 
   const searchBar = (text: string) => {
     if (text !== "") {
+      setFiltered(true);
       text = text.toLowerCase();
-      switch (tabValue as number) {
-        case 0:
-          const filteredOrders = searchFilter(
-            [...ordersData.in_progress!, ...ordersData.completed!],
-            text
-          );
-          setAll(filteredOrders);
-          break;
-        case 1:
-          const filteredDeployed = searchFilter(
-            [...ordersData.in_progress!],
-            text
-          );
-          setInprog(filteredDeployed);
-          break;
-        case 2:
-          const filteredComplete = searchFilter(
-            [...ordersData.completed!],
-            text
-          );
-          setCompleted(filteredComplete);
-          break;
-      }
+
+      const filteredOrders = searchFilter(
+        [...ordersData.in_progress!, ...ordersData.completed!],
+        text
+      );
+      setAll(filteredOrders);
+
+      const filteredDeployed = searchFilter([...ordersData.in_progress!], text);
+      setInprog(filteredDeployed);
+
+      const filteredComplete = searchFilter([...ordersData.completed!], text);
+      setCompleted(filteredComplete);
     } else {
-      switch (tabValue as number) {
-        case 0:
-          let combinedOrders = [] as Order[];
-          combinedOrders = combinedOrders.concat(
-            data.in_progress!,
-            data.completed!
-          );
-          setAll(combinedOrders.reverse());
-          break;
-        case 1:
-          setInprog(data.in_progress!);
-          break;
-        case 2:
-          setCompleted(data.completed!);
-          break;
-      }
+      setFiltered(false);
+      let combinedOrders = [] as Order[];
+      combinedOrders = combinedOrders.concat(
+        data.in_progress!,
+        data.completed!
+      );
+      setAll(combinedOrders.reverse());
+      setInprog(data.in_progress!);
+      setCompleted(data.completed!);
     }
   };
 
@@ -221,7 +205,7 @@ const Orders = () => {
                 </>
               ) : (
                 <Typography textAlign="center">
-                  There are no orders place.
+                  {filtered ? "No orders found" : "There are no orders placed."}
                 </Typography>
               )}
             </>
@@ -256,7 +240,7 @@ const Orders = () => {
                 </>
               ) : (
                 <Typography textAlign="center">
-                  There are no orders place.
+                  {filtered ? "No orders found" : "There are no orders placed."}
                 </Typography>
               )}
             </>
@@ -291,7 +275,7 @@ const Orders = () => {
                 </>
               ) : (
                 <Typography textAlign="center">
-                  There are no orders place.
+                  {filtered ? "No orders found" : "There are no orders placed."}
                 </Typography>
               )}
             </>

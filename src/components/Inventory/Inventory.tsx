@@ -22,7 +22,6 @@ import { download, getInventory } from "../../services/inventoryAPI";
 import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
-import Loader from "../common/Loader";
 import ManageModal from "./ManageModal";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
@@ -50,8 +49,6 @@ const Inventory: FC = (): ReactElement => {
   const clientData = useSelector((state: RootState) => state.client.data);
 
   const [filterdrawer, openFiltersDrawer] = useState(false);
-  const [device, setDevice] = useState<string[]>([]);
-  const [location, setLocation] = useState("");
   const [tabValue, setTabValue] = useState(0);
   const [stock, setStock] = useState(data);
   const [deployed, setDeployed] = useState(data);
@@ -63,6 +60,7 @@ const Inventory: FC = (): ReactElement => {
   const [loading, setLoading] = useState(true);
   const [inprogTotal, setInprogTotal] = useState(0);
   const [deployedTotal, setDeployedTotal] = useState(0);
+  const [stockTotal, setStockTotal] = useState(0);
   const [filtered, setFiltered] = useState(false);
 
   const dispatch = useDispatch();
@@ -133,47 +131,79 @@ const Inventory: FC = (): ReactElement => {
       inprogVar += p.serial_numbers.length;
     });
     setInprogTotal(inprogVar);
+
+    let stockVar = 0;
+    stockRedux.forEach((s) => {
+      stockVar += s.serial_numbers.length;
+    });
+    setStockTotal(stockVar);
   }, [pendingRedux, deployedRedux, stockRedux]);
 
-  const searchBar = (text: string) => {
-    text = text.toLowerCase();
-    if (text !== "") {
-      switch (tabValue as number) {
-        case 0:
-          let copiedStock = searchFilter([...ogstock], text);
-          setStock(copiedStock);
-          break;
-        case 1:
-          let copiedDeploy = searchFilter([...ogdeployed], text);
-          setDeployed(copiedDeploy);
-          break;
-        case 2:
-          let copiedProg = searchFilter([...oginprogrss], text);
-          setInprogress(copiedProg);
-          break;
-      }
-    } else {
-      switch (tabValue as number) {
-        case 0:
-          setStock(ogstock);
-          break;
-        case 1:
-          setDeployed(ogdeployed);
-          break;
-        case 2:
-          setInprogress(oginprogrss);
-          break;
-      }
-    }
-  };
+  useEffect(() => {
+    let deployedVar = 0;
+    deployed.forEach((d) => {
+      deployedVar += d.serial_numbers.length;
+    });
+    setDeployedTotal(deployedVar);
 
-  const searchFilter = (objs: InventorySummary[], text: string) => {
+    let inprogVar = 0;
+    inprogress.forEach((p) => {
+      inprogVar += p.serial_numbers.length;
+    });
+    setInprogTotal(inprogVar);
+
+    let stockVar = 0;
+    stock.forEach((s) => {
+      stockVar += s.serial_numbers.length;
+    });
+    setStockTotal(stockVar);
+  }, [stock, deployed, inprogress]);
+
+  useEffect(() => {
+    if (!filtered) {
+      let deployedVar = 0;
+      deployedRedux.forEach((d) => {
+        deployedVar += d.serial_numbers.length;
+      });
+      setDeployedTotal(deployedVar);
+
+      let inprogVar = 0;
+      pendingRedux.forEach((p) => {
+        inprogVar += p.serial_numbers.length;
+      });
+      setInprogTotal(inprogVar);
+    }
+  }, [filtered]);
+
+  const searchFilter = (text: string) => {
     if (text !== "") {
+      const searchStock = searchFilterFunction(
+        [...ogstock],
+        text.toLowerCase()
+      );
+      let searchInProg = searchFilterFunction(
+        [...oginprogrss],
+        text.toLowerCase()
+      );
+
+      let searchDeployed = searchFilterFunction(
+        [...ogdeployed],
+        text.toLowerCase()
+      );
+
+      setStock(searchStock);
+      setDeployed(searchDeployed);
+      setInprogress(searchInProg);
       setFiltered(true);
     } else {
       setFiltered(false);
+      setStock(ogstock);
+      setDeployed(ogdeployed);
+      setInprogress(oginprogrss);
     }
+  };
 
+  const searchFilterFunction = (objs: InventorySummary[], text: string) => {
     return objs.filter(
       (device) =>
         device.name.toLowerCase().indexOf(text) > -1 ||
@@ -189,7 +219,7 @@ const Inventory: FC = (): ReactElement => {
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
         <Header
           label="Search Inventory by device name, serial number, location"
-          textChange={searchBar}
+          textChange={searchFilter}
         />
         <Grid container direction="row" alignItems="center">
           <Grid item xs={7}>
@@ -217,26 +247,17 @@ const Inventory: FC = (): ReactElement => {
             open={filterdrawer}
             onClose={() => openFiltersDrawer(false)}
             PaperProps={{ sx: { width: "20%" } }}
+            keepMounted={true}
           >
             <div className="filter-padding">
               <Filter
-                data={
-                  tabValue === 0
-                    ? ogstock
-                    : tabValue === 1
-                    ? ogdeployed
-                    : oginprogrss
-                }
-                setData={
-                  tabValue === 0
-                    ? setStock
-                    : tabValue === 1
-                    ? setDeployed
-                    : setInprogress
-                }
-                device_name={device}
-                selected_location={[location]}
-                tab_value={tabValue}
+                data={ogstock}
+                ipData={oginprogrss}
+                depData={ogdeployed}
+                setData={setStock}
+                setIPData={setInprogress}
+                setDepData={setDeployed}
+                setFiltering={setFiltered}
               />
             </div>
           </Drawer>
@@ -264,18 +285,35 @@ const Inventory: FC = (): ReactElement => {
             >
               {!loading ? (
                 <>
-                  {stock?.length > 0 &&
-                    stock.map((device, index) => {
-                      return (
-                        !device.new_device && (
-                          <InventoryAccordion
-                            {...device}
-                            tabValue={tabValue}
-                            key={index}
-                          />
-                        )
-                      );
-                    })}
+                  {stockTotal > 0 ? (
+                    <>
+                      {stock?.length > 0 &&
+                        stock.map((device, index) => {
+                          return (
+                            !device.new_device && (
+                              <InventoryAccordion
+                                {...device}
+                                tabValue={tabValue}
+                                key={index}
+                              />
+                            )
+                          );
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      {!filtered ? (
+                        <Typography>
+                          Nothing in stock. To assign a laptop, please order
+                          more.
+                        </Typography>
+                      ) : (
+                        <Typography textAlign="center">
+                          No results found
+                        </Typography>
+                      )}
+                    </>
+                  )}
                 </>
               ) : (
                 <CircularProgress />
@@ -310,25 +348,33 @@ const Inventory: FC = (): ReactElement => {
                     </>
                   ) : (
                     <>
-                      <img
-                        src={
-                          "https://spokeimages.blob.core.windows.net/image/warehouse.avif"
-                        }
-                        style={{
-                          display: "block",
-                          marginLeft: "auto",
-                          marginRight: "auto",
-                        }}
-                      />
-                      <div>
-                        <Typography
-                          textAlign="center"
-                          sx={{ paddingTop: "20px" }}
-                          variant="subtitle1"
-                        >
-                          No Inventory Currently Deployed
+                      {!filtered ? (
+                        <>
+                          <img
+                            src={
+                              "https://spokeimages.blob.core.windows.net/image/warehouse.avif"
+                            }
+                            style={{
+                              display: "block",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          />
+                          <div>
+                            <Typography
+                              textAlign="center"
+                              sx={{ paddingTop: "20px" }}
+                              variant="subtitle1"
+                            >
+                              No Inventory Currently Deployed
+                            </Typography>
+                          </div>
+                        </>
+                      ) : (
+                        <Typography textAlign="center">
+                          No results found
                         </Typography>
-                      </div>
+                      )}
                     </>
                   )}
                 </>
@@ -365,25 +411,33 @@ const Inventory: FC = (): ReactElement => {
                     </>
                   ) : (
                     <>
-                      <img
-                        src={
-                          "https://spokeimages.blob.core.windows.net/image/warehousestock.png"
-                        }
-                        style={{
-                          display: "block",
-                          marginLeft: "auto",
-                          marginRight: "auto",
-                        }}
-                      />
-                      <div>
-                        <Typography
-                          textAlign="center"
-                          sx={{ paddingTop: "20px" }}
-                          variant="subtitle1"
-                        >
-                          No Inventory Currently Pending
+                      {!filtered ? (
+                        <>
+                          <img
+                            src={
+                              "https://spokeimages.blob.core.windows.net/image/warehousestock.png"
+                            }
+                            style={{
+                              display: "block",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          />
+                          <div>
+                            <Typography
+                              textAlign="center"
+                              sx={{ paddingTop: "20px" }}
+                              variant="subtitle1"
+                            >
+                              No Inventory Currently Pending
+                            </Typography>
+                          </div>
+                        </>
+                      ) : (
+                        <Typography textAlign="center">
+                          No results found
                         </Typography>
-                      </div>
+                      )}
                     </>
                   )}
                 </>

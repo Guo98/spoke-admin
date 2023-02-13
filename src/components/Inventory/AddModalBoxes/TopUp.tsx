@@ -301,7 +301,7 @@ const TopUp = (props: TopUpProps) => {
                 variant="outlined"
                 sx={textFieldStyle}
                 type="number"
-                defaultValue={1}
+                defaultValue={5}
                 required
                 InputProps={{
                   inputProps: { min: 1 },

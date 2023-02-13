@@ -80,7 +80,7 @@ const ManageOrder = (props: ManageProps) => {
       console.log("email support err ::::::::: ", e);
     }
   };
-  console.log("sent state ::::::::::: ", sent);
+
   return (
     <>
       {order && (
