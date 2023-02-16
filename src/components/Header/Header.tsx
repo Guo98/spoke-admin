@@ -7,6 +7,7 @@ import {
   FilledInput,
   IconButton,
   Box,
+  Hidden,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -26,7 +27,7 @@ const Header = (props: HeaderProps): ReactElement => {
   return (
     <>
       <Grid container spacing={2} justifyContent="space-between">
-        <Grid item xs={9} lg={8}>
+        <Grid item xs={12} md={9}>
           <div className="search-padding">
             <FormControl className="rounded-edges" fullWidth variant="filled">
               <InputLabel
@@ -110,11 +111,13 @@ const Header = (props: HeaderProps): ReactElement => {
             </FormControl>
           </div>
         </Grid>
-        <Grid item xs={3}>
-          <Box display="flex" justifyContent="flex-end">
-            <Profile />
-          </Box>
-        </Grid>
+        <Hidden mdDown>
+          <Grid item md={3}>
+            <Box display="flex" justifyContent="flex-end">
+              <Profile mobile={false} />
+            </Box>
+          </Grid>
+        </Hidden>
       </Grid>
     </>
   );

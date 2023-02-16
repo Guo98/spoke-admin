@@ -61,10 +61,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     name,
     location,
     serial_numbers,
-    index,
-    setFilters,
     image_source,
-    type,
     specs: { screen_size, cpu, ram, hard_drive } = {},
     tabValue,
   } = props;
@@ -118,16 +115,19 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
       <AccordionSummary>
         <Grid
           container
-          spacing={2}
-          justifyItems="space-between"
+          spacing={{ md: 2 }}
+          justifyItems={{ md: "space-between" }}
           justifyContent="center"
-          flexGrow={1}
+          flexGrow={{ md: 1 }}
           alignItems="center"
+          direction={{ md: "row", xs: "column" }}
+          flexDirection={{ xs: "column", md: "row" }}
+          display={{ md: "flex", xs: "block" }}
         >
           <Grid
             item
             xs={4}
-            sm={2.5}
+            md={2.5}
             justifyContent="center"
             alignContent="center"
           >
@@ -138,100 +138,103 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
               alt="laptop"
             />
           </Grid>
-          <Grid item xs={6} sm={6.5}>
-            <CardContent>
-              <Typography fontWeight="bold" fontSize="18px">
-                {(props.new_device ? "[Requested] " : "") + name}
-              </Typography>
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    Screen Size:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {screen_size}
-                  </Typography>
-                </div>
-              )}
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    CPU:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {cpu}
-                  </Typography>
-                </div>
-              )}
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    RAM:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {ram}
-                  </Typography>
-                </div>
-              )}
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    SSD:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {hard_drive}
-                  </Typography>
-                </div>
-              )}
-            </CardContent>
+          <Grid item xs={4} md={6.5}>
+            <Typography fontWeight="bold" fontSize="18px">
+              {(props.new_device ? "[Requested] " : "") + name}
+            </Typography>
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  Screen Size:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {screen_size}
+                </Typography>
+              </div>
+            )}
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  CPU:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {cpu}
+                </Typography>
+              </div>
+            )}
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  RAM:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {ram}
+                </Typography>
+              </div>
+            )}
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  SSD:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {hard_drive}
+                </Typography>
+              </div>
+            )}
           </Grid>
-          <Grid item xs={2} sm={3}>
-            <CardContent>
-              <Typography>{location}</Typography>
-              <Chip
-                label={
-                  serial_numbers.length === 0
-                    ? "Out of Stock"
-                    : serial_numbers.length +
-                      (tabValue === 0
-                        ? " in stock"
-                        : tabValue === 1
-                        ? " deployed"
-                        : " pending")
-                }
-                sx={{
-                  backgroundColor:
-                    serial_numbers.length < 10 && tabValue === 0
-                      ? "#ffefea"
-                      : "#ebebeb",
-                  color:
-                    serial_numbers.length < 10 && tabValue === 0
-                      ? "#DC0202"
-                      : "black",
-                  marginTop: "20px",
-                }}
-              />
-            </CardContent>
+          <Grid
+            item
+            xs={4}
+            md={3}
+            display={{ xs: "flex", md: "block" }}
+            justifyItems={{ xs: "space-evenly" }}
+          >
+            <Typography>{location}</Typography>
+            <Chip
+              label={
+                serial_numbers.length === 0
+                  ? "Out of Stock"
+                  : serial_numbers.length +
+                    (tabValue === 0
+                      ? " in stock"
+                      : tabValue === 1
+                      ? " deployed"
+                      : " pending")
+              }
+              sx={{
+                backgroundColor:
+                  serial_numbers.length < 10 && tabValue === 0
+                    ? "#ffefea"
+                    : "#ebebeb",
+                color:
+                  serial_numbers.length < 10 && tabValue === 0
+                    ? "#DC0202"
+                    : "black",
+                marginTop: { md: "20px" },
+                marginLeft: { md: "0px", xs: "15px" },
+              }}
+            />
           </Grid>
         </Grid>
       </AccordionSummary>

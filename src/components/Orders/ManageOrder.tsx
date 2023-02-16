@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Item } from "../../interfaces/orders";
 import { useAuth0 } from "@auth0/auth0-react";
 import { sendSupportEmail } from "../../services/ordersAPI";
@@ -139,8 +140,18 @@ const ManageOrder = (props: ManageProps) => {
             </>
           ) : (
             <>
-              <Typography>
-                Request sent, someone will reach out. Click anywhere to exit.
+              <Typography variant="h5" component="h3" textAlign="center">
+                Request received!
+              </Typography>
+              <div className="center">
+                <CheckCircleIcon
+                  sx={{ color: "#06BE08", height: "10%", width: "10%" }}
+                />
+              </div>
+              <Typography textAlign="center">
+                We'll get back to you as soon as possible. If you need any more
+                immediate assistance please shoot us a message on slack or email
+                info@withspoke.com.
               </Typography>
             </>
           )}

@@ -4,7 +4,6 @@ import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import MuiAccordionSummary, {
   AccordionSummaryProps,
 } from "@mui/material/AccordionSummary";
-import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import {
   Grid,
@@ -21,7 +20,10 @@ import {
   Paper,
   useTheme,
   AccordionDetails,
+  TextField,
 } from "@mui/material";
+import { postOrder } from "../../services/ordersAPI";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Item } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
 
@@ -35,6 +37,9 @@ interface OrderProps {
   state: string;
   email: string;
   shipping_status: string;
+  client: string;
+  actualClient?: string;
+  order_id?: string;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -77,9 +82,16 @@ const OrderItem = (props: OrderProps) => {
     state,
     email,
     shipping_status,
+    client,
   } = props;
+  let tempItems = JSON.parse(JSON.stringify(items));
+
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
+  const [adminedit, setAdminedit] = useState(false);
+  const [trackingNumbers, setTrackingNumbers] = useState([]);
+
+  const { getAccessTokenSilently } = useAuth0();
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -137,26 +149,46 @@ const OrderItem = (props: OrderProps) => {
     }
   }, [items]);
 
+  const saveTrackingNumbers = async () => {
+    if (JSON.stringify(tempItems) !== JSON.stringify(items)) {
+      const accessToken = await getAccessTokenSilently();
+      const bodyObj = {
+        client: props.actualClient,
+        full_name: first_name + " " + last_name,
+        items: tempItems,
+        order_id: props.order_id,
+        status: shipping_status,
+      };
+      const postOrderResp = await postOrder(
+        "updateTrackingNumber",
+        accessToken,
+        bodyObj
+      );
+    }
+
+    setAdminedit(false);
+  };
+
   return (
     <Accordion>
       <AccordionSummary>
-        <Grid container>
-          <Grid item xs={2}>
+        <Grid container direction={{ md: "row", xs: "column" }}>
+          <Grid item md={2}>
             <Typography fontWeight="bold">Order #{order_number}</Typography>
             <Typography>
               {first_name} {last_name}
             </Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item md={2}>
             <Typography>
               {state}, {country}
             </Typography>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item md={5}>
             <Typography>{laptopName}</Typography>
           </Grid>
-          <Grid item xs={3}>
-            <Box display="flex" justifyContent="flex-end">
+          <Grid item md={3}>
+            <Box display={{ md: "flex" }} justifyContent="flex-end">
               <Chip
                 label={orderStatus()}
                 sx={{
@@ -181,25 +213,56 @@ const OrderItem = (props: OrderProps) => {
           sx={{ paddingLeft: 3 }}
           alignItems="center"
         >
-          <Grid item xs={9}>
+          <Grid item xs={client === "spokeops" ? 12 : 9}>
             <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
               <Table aria-label="items table">
                 <TableHead>
                   <TableRow>
-                    <TableCell width="70%">
+                    <TableCell width={client === "spokeops" ? "50%" : "70%"}>
                       <Typography fontWeight="bold">Item</Typography>
                     </TableCell>
-                    <TableCell width="30%">
+                    <TableCell width={client === "spokeops" ? "25%" : "30%"}>
                       <Typography fontWeight="bold">Quantity</Typography>
                     </TableCell>
+                    {client === "spokeops" && (
+                      <TableCell width="25%">
+                        <Typography fontWeight="bold">
+                          Tracking Number
+                        </Typography>
+                      </TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {items.map((item) => {
+                  {items.map((item, index) => {
                     return (
                       <TableRow hover>
-                        <TableCell width="70%">{item.name}</TableCell>
-                        <TableCell width="30%">{item.quantity || 1}</TableCell>
+                        <TableCell
+                          width={client === "spokeops" ? "50%" : "70%"}
+                        >
+                          {item.name}
+                        </TableCell>
+                        <TableCell
+                          width={client === "spokeops" ? "25%" : "30%"}
+                        >
+                          {item.quantity || 1}
+                        </TableCell>
+                        {client === "spokeops" && (
+                          <TableCell width="25%">
+                            {adminedit && item.tracking_number === "" ? (
+                              <TextField
+                                size="small"
+                                onChange={(event) =>
+                                  (tempItems[index].tracking_number = [
+                                    event.target.value,
+                                  ])
+                                }
+                              />
+                            ) : (
+                              item.tracking_number
+                            )}
+                          </TableCell>
+                        )}
                       </TableRow>
                     );
                   })}
@@ -207,41 +270,79 @@ const OrderItem = (props: OrderProps) => {
               </Table>
             </TableContainer>
           </Grid>
-          <Grid item xs={3}>
-            <Box display="flex" justifyContent="flex-end">
-              <ManageOrder
-                order_no={order_number}
-                name={first_name + " " + last_name}
-                items={items}
-                email={email}
-                order={true}
-              />
-            </Box>
-            {anyTrackingNumbers() !== "" && (
-              <Box
-                display="flex"
-                justifyContent="flex-end"
-                sx={{ marginTop: "15px" }}
-              >
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    width: "116px",
-                    borderRadius: "999em 999em 999em 999em",
-                    textTransform: "none",
-                  }}
-                  href={
-                    "https://withspoke.aftership.com/" + anyTrackingNumbers()
-                  }
-                  target="_blank"
-                >
-                  Track
-                </Button>
+          {client !== "spokeops" && (
+            <Grid item xs={3}>
+              <Box display="flex" justifyContent="flex-end">
+                <ManageOrder
+                  order_no={order_number}
+                  name={first_name + " " + last_name}
+                  items={items}
+                  email={email}
+                  order={true}
+                />
               </Box>
-            )}
-          </Grid>
+              {anyTrackingNumbers() !== "" && (
+                <Box
+                  display="flex"
+                  justifyContent="flex-end"
+                  sx={{ marginTop: "15px" }}
+                >
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      width: "116px",
+                      borderRadius: "999em 999em 999em 999em",
+                      textTransform: "none",
+                    }}
+                    href={
+                      "https://withspoke.aftership.com/" + anyTrackingNumbers()
+                    }
+                    target="_blank"
+                  >
+                    Track
+                  </Button>
+                </Box>
+              )}
+            </Grid>
+          )}
         </Grid>
+        {client === "spokeops" && (
+          <Grid
+            container
+            spacing={2}
+            alignItems="center"
+            direction="row"
+            justifyContent="space-evenly"
+            sx={{ paddingLeft: 3, paddingTop: 2 }}
+          >
+            <Grid item md={4}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => setAdminedit(true)}
+                disabled={adminedit}
+              >
+                Edit
+              </Button>
+            </Grid>
+            <Grid item md={4}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={saveTrackingNumbers}
+                disabled={!adminedit}
+              >
+                Save
+              </Button>
+            </Grid>
+            <Grid item md={4}>
+              <Button fullWidth variant="contained">
+                Mark Complete
+              </Button>
+            </Grid>
+          </Grid>
+        )}
       </AccordionDetails>
     </Accordion>
   );

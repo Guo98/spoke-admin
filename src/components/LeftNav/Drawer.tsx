@@ -27,6 +27,7 @@ import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { resetData } from "../../services/inventoryAPI";
 import "./Drawer.css";
+import Profile from "../Profile/Profile";
 
 interface IconMapping {
   Overview: JSX.Element;
@@ -174,6 +175,22 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   return (
     <>
+      <Hidden mdUp>
+        <AppBar position="static" sx={{ height: 56, width: "100%" }}>
+          <Toolbar>
+            <IconButton
+              onClick={() => setMobileOpen((prevOpen) => !prevOpen)}
+              edge="start"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Spoke Technology
+            </Typography>
+            <Profile mobile={true} />
+          </Toolbar>
+        </AppBar>
+      </Hidden>
       <Drawer
         variant="temporary"
         container={container}

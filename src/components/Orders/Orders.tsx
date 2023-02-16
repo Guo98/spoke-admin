@@ -77,7 +77,10 @@ const Orders = () => {
     };
 
     if (isAuthenticated && !isLoading && loading) {
-      if (clientData) fetchData(clientData).catch(console.error);
+      if (clientData) {
+        let client = clientData === "spokeops" ? "FLYR" : clientData;
+        fetchData(client).catch(console.error);
+      }
     }
   }, [isAuthenticated, isLoading, clientData]);
 
@@ -199,6 +202,9 @@ const Orders = () => {
                         email={order.email}
                         key={index}
                         shipping_status={order.shipping_status}
+                        client={clientData}
+                        actualClient={clientData === "spokeops" ? "FLYR" : ""}
+                        order_id={order.id}
                       />
                     );
                   })}
@@ -234,6 +240,9 @@ const Orders = () => {
                           email={order.email}
                           key={index}
                           shipping_status={order.shipping_status}
+                          client={clientData}
+                          actualClient={clientData === "spokeops" ? "FLYR" : ""}
+                          order_id={order.id}
                         />
                       );
                     })}
@@ -269,6 +278,9 @@ const Orders = () => {
                           email={order.email}
                           key={index}
                           shipping_status={order.shipping_status}
+                          client={clientData}
+                          actualClient={clientData === "spokeops" ? "FLYR" : ""}
+                          order_id={order.id}
                         />
                       );
                     })}
