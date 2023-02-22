@@ -12,6 +12,8 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  Modal,
+  Box,
 } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
@@ -23,9 +25,12 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import MenuIcon from "@mui/icons-material/Menu";
+import StoreIcon from "@mui/icons-material/Store";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useSelector } from "react-redux";
 import { resetData } from "../../services/inventoryAPI";
+import { RootState } from "../../app/store";
 import "./Drawer.css";
 import Profile from "../Profile/Profile";
 
@@ -39,6 +44,7 @@ interface IconMapping {
   Support: JSX.Element;
   Logout: JSX.Element;
   "Log In": JSX.Element;
+  Storefront: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -51,17 +57,33 @@ const iconMapping: IconMapping = {
   Support: <SupportAgentIcon />,
   Logout: <LogoutIcon />,
   "Log In": <LoginIcon />,
+  Storefront: <StoreIcon />,
 };
 
 interface DrawerProps {
   respwindow?: () => Window;
 }
 
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 600,
+  bgcolor: "background.paper",
+  borderRadius: "20px",
+  boxShadow: 24,
+  p: 4,
+};
+
 const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const { respwindow } = props;
   const [selectedIndex, setIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const clientData = useSelector((state: RootState) => state.client.data);
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -73,7 +95,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const drawerContent = (
     <>
       <List>
-        {["Orders", "Inventory"].map((text, index) => (
+        {["Orders", "Inventory", "Storefront"].map((text, index) => (
           <ListItem key={text} selected={index === selectedIndex}>
             <ListItemButton
               onClick={() => {
@@ -108,6 +130,13 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           setFooterOpen={setModalOpen}
         />
       )}
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box sx={style}>
+          <Typography>
+            Please reach out to info@withspoke.com to set up a storefront.
+          </Typography>
+        </Box>
+      </Modal>
     </>
   );
 
@@ -147,6 +176,15 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Team":
         window.location.href = "/team";
+        break;
+      case "Storefront":
+        if (clientData === "public" || clientData === "spokeops") {
+          window.open("https://withspoke.com/demo", "_blank");
+        } else if (clientData === "FLYR") {
+          window.open("https://withspoke.com/flyrlabs", "_blank");
+        } else {
+          setOpen(true);
+        }
         break;
       default:
         window.location.href = "/";

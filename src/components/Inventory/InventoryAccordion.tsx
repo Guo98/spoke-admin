@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import AssignModal from "./AssignModal";
 import ManageModal from "./ManageModal";
+import AddToStock from "./AddModalBoxes/AddToStock";
 import { InventorySummary } from "../../interfaces/inventory";
 
 const Accordion = styled((props: AccordionProps) => (
@@ -54,6 +55,7 @@ type Order = "asc" | "desc";
 
 interface InventoryAccordionProps extends InventorySummary {
   tabValue: number;
+  clientData?: string;
 }
 
 const InventoryAccordion = (props: InventoryAccordionProps) => {
@@ -251,7 +253,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 <TableRow>
                   <TableCell
                     key="SerialNumber"
-                    width="40%"
+                    width={tabValue === 2 ? "25%" : "40%"}
                     sortDirection={orderBy === "Serial Number" ? order : false}
                   >
                     <TableSortLabel
@@ -283,7 +285,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                   </TableCell>
                   <TableCell
                     key="Grade"
-                    width="20%"
+                    width={tabValue === 2 ? "15%" : "20%"}
                     sortDirection={orderBy === "Grade" ? order : false}
                   >
                     <TableSortLabel
@@ -300,6 +302,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       </Typography>
                     </TableSortLabel>
                   </TableCell>
+                  {tabValue === 2 && (
+                    <TableCell key="Date" width="20%">
+                      <Typography fontWeight="bold">Date Requested</Typography>
+                    </TableCell>
+                  )}
                   <TableCell key="Action" width="20%">
                     <Typography fontWeight="bold">Action</Typography>
                   </TableCell>
@@ -311,7 +318,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                     const { sn, condition } = item;
                     return (
                       <TableRow key={index}>
-                        <TableCell width="40%">
+                        <TableCell width={tabValue === 2 ? "25%" : "40%"}>
                           <Typography>{sn}</Typography>
                         </TableCell>
                         <TableCell width="20%">
@@ -323,7 +330,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               : item.status}
                           </Typography>
                         </TableCell>
-                        <TableCell width="20%">
+                        <TableCell width={tabValue === 2 ? "15%" : "40%"}>
                           <Typography>
                             {tabValue === 0
                               ? condition === "Used" && item.grade
@@ -332,6 +339,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               : item.quantity || 1}
                           </Typography>
                         </TableCell>
+                        {tabValue === 2 && (
+                          <TableCell width="20%">
+                            <Typography>{item.date_requested}</Typography>
+                          </TableCell>
+                        )}
                         <TableCell width="20%">
                           {tabValue === 0 && (
                             <AssignModal
@@ -368,6 +380,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               Track
                             </Button>
                           )}
+                          {tabValue === 2 &&
+                            props.clientData === "spokeops" &&
+                            item.quantity && (
+                              <AddToStock quantity={item.quantity!} />
+                            )}
                         </TableCell>
                       </TableRow>
                     );

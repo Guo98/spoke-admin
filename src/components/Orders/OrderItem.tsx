@@ -22,24 +22,16 @@ import {
   AccordionDetails,
   TextField,
 } from "@mui/material";
-import { postOrder } from "../../services/ordersAPI";
+import { updateOrders } from "../../app/slices/ordersSlice";
+import { useDispatch } from "react-redux";
+import { postOrder, getAllOrders } from "../../services/ordersAPI";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Item } from "../../interfaces/orders";
+import { Order } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
 
-interface OrderProps {
-  order_number: number;
-  first_name: string;
-  last_name: string;
-  city: string;
-  country: string;
-  items: Item[];
-  state: string;
-  email: string;
-  shipping_status: string;
-  client: string;
+interface OrderProps extends Order {
+  clientui?: string;
   actualClient?: string;
-  order_id?: string;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -73,18 +65,18 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 
 const OrderItem = (props: OrderProps) => {
   const {
-    order_number,
-    first_name,
-    last_name,
-    city,
-    country,
+    orderNo,
+    firstName,
+    lastName,
+    address: { subdivision, country },
     items,
-    state,
     email,
     shipping_status,
-    client,
+    clientui,
   } = props;
   let tempItems = JSON.parse(JSON.stringify(items));
+
+  const dispatch = useDispatch();
 
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
@@ -100,7 +92,10 @@ const OrderItem = (props: OrderProps) => {
       return "Order Received";
     } else if (shipping_status === "Incomplete") {
       return "Shipped";
-    } else if (shipping_status === "Completed") {
+    } else if (
+      shipping_status === "Completed" ||
+      shipping_status === "Complete"
+    ) {
       return "Completed";
     }
   };
@@ -110,7 +105,10 @@ const OrderItem = (props: OrderProps) => {
       return "#FFF8EF";
     } else if (shipping_status === "Incomplete") {
       return "#ECE7F1";
-    } else if (shipping_status === "Completed") {
+    } else if (
+      shipping_status === "Completed" ||
+      shipping_status === "Complete"
+    ) {
       return "#E8FDFF";
     }
   };
@@ -120,7 +118,10 @@ const OrderItem = (props: OrderProps) => {
       return "#DC282A";
     } else if (shipping_status === "Incomplete") {
       return "#6A37E8";
-    } else if (shipping_status === "Completed") {
+    } else if (
+      shipping_status === "Completed" ||
+      shipping_status === "Complete"
+    ) {
       return "#025DFE";
     }
   };
@@ -153,10 +154,10 @@ const OrderItem = (props: OrderProps) => {
     if (JSON.stringify(tempItems) !== JSON.stringify(items)) {
       const accessToken = await getAccessTokenSilently();
       const bodyObj = {
-        client: props.actualClient,
-        full_name: first_name + " " + last_name,
+        clientui: props.actualClient,
+        full_name: firstName + " " + lastName,
         items: tempItems,
-        order_id: props.order_id,
+        order_id: props.id,
         status: shipping_status,
       };
       const postOrderResp = await postOrder(
@@ -164,9 +165,31 @@ const OrderItem = (props: OrderProps) => {
         accessToken,
         bodyObj
       );
+
+      if (postOrderResp.status === "Success") {
+        const ordersResult = await getAllOrders(accessToken, props.client);
+        dispatch(updateOrders(ordersResult.data));
+      }
     }
 
     setAdminedit(false);
+  };
+
+  const completeOrder = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const bodyObj = { ...props };
+    delete bodyObj.clientui;
+    delete bodyObj.actualClient;
+    const completeOrderResp = await postOrder(
+      "completeOrder",
+      accessToken,
+      bodyObj
+    );
+
+    if (completeOrderResp.status === "Success") {
+      const ordersResult = await getAllOrders(accessToken, props.client);
+      dispatch(updateOrders(ordersResult.data));
+    }
   };
 
   return (
@@ -174,14 +197,14 @@ const OrderItem = (props: OrderProps) => {
       <AccordionSummary>
         <Grid container direction={{ md: "row", xs: "column" }}>
           <Grid item md={2}>
-            <Typography fontWeight="bold">Order #{order_number}</Typography>
+            <Typography fontWeight="bold">Order #{orderNo}</Typography>
             <Typography>
-              {first_name} {last_name}
+              {firstName} {lastName}
             </Typography>
           </Grid>
           <Grid item md={2}>
             <Typography>
-              {state}, {country}
+              {subdivision}, {country}
             </Typography>
           </Grid>
           <Grid item md={5}>
@@ -213,18 +236,23 @@ const OrderItem = (props: OrderProps) => {
           sx={{ paddingLeft: 3 }}
           alignItems="center"
         >
-          <Grid item xs={client === "spokeops" ? 12 : 9}>
+          <Grid item xs={clientui === "spokeops" ? 12 : 9}>
             <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
               <Table aria-label="items table">
                 <TableHead>
                   <TableRow>
-                    <TableCell width={client === "spokeops" ? "50%" : "70%"}>
+                    <TableCell width="50%">
                       <Typography fontWeight="bold">Item</Typography>
                     </TableCell>
-                    <TableCell width={client === "spokeops" ? "25%" : "30%"}>
+                    <TableCell width="25%">
                       <Typography fontWeight="bold">Quantity</Typography>
                     </TableCell>
-                    {client === "spokeops" && (
+                    {clientui !== "spokeops" && (
+                      <TableCell width="25%">
+                        <Typography fontWeight="bold">Price</Typography>
+                      </TableCell>
+                    )}
+                    {clientui === "spokeops" && (
                       <TableCell width="25%">
                         <Typography fontWeight="bold">
                           Tracking Number
@@ -237,17 +265,14 @@ const OrderItem = (props: OrderProps) => {
                   {items.map((item, index) => {
                     return (
                       <TableRow hover>
-                        <TableCell
-                          width={client === "spokeops" ? "50%" : "70%"}
-                        >
-                          {item.name}
-                        </TableCell>
-                        <TableCell
-                          width={client === "spokeops" ? "25%" : "30%"}
-                        >
-                          {item.quantity || 1}
-                        </TableCell>
-                        {client === "spokeops" && (
+                        <TableCell width="50%">{item.name}</TableCell>
+                        <TableCell width="25%">{item.quantity || 1}</TableCell>
+                        {clientui !== "spokeops" && (
+                          <TableCell width="25%">
+                            <Typography>{item.price}</Typography>
+                          </TableCell>
+                        )}
+                        {clientui === "spokeops" && (
                           <TableCell width="25%">
                             {adminedit && item.tracking_number === "" ? (
                               <TextField
@@ -270,12 +295,12 @@ const OrderItem = (props: OrderProps) => {
               </Table>
             </TableContainer>
           </Grid>
-          {client !== "spokeops" && (
+          {clientui !== "spokeops" && (
             <Grid item xs={3}>
               <Box display="flex" justifyContent="flex-end">
                 <ManageOrder
-                  order_no={order_number}
-                  name={first_name + " " + last_name}
+                  order_no={orderNo}
+                  name={firstName + " " + lastName}
                   items={items}
                   email={email}
                   order={true}
@@ -307,7 +332,7 @@ const OrderItem = (props: OrderProps) => {
             </Grid>
           )}
         </Grid>
-        {client === "spokeops" && (
+        {clientui === "spokeops" && (
           <Grid
             container
             spacing={2}
@@ -337,7 +362,15 @@ const OrderItem = (props: OrderProps) => {
               </Button>
             </Grid>
             <Grid item md={4}>
-              <Button fullWidth variant="contained">
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={completeOrder}
+                disabled={
+                  shipping_status === "Completed" ||
+                  shipping_status === "Complete"
+                }
+              >
                 Mark Complete
               </Button>
             </Grid>
