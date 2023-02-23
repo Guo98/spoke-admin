@@ -7,6 +7,7 @@ interface NewDevice {
   setColor: Function;
   setRefURL: Function;
   setLocation: Function;
+  setQuantity: Function;
 }
 
 const textFieldStyle = {
@@ -15,8 +16,14 @@ const textFieldStyle = {
 };
 
 const NewDeviceRequest = (props: NewDevice) => {
-  const { setDeviceName, setSpecifications, setColor, setRefURL, setLocation } =
-    props;
+  const {
+    setDeviceName,
+    setSpecifications,
+    setColor,
+    setRefURL,
+    setLocation,
+    setQuantity,
+  } = props;
 
   return (
     <Box>
@@ -31,6 +38,19 @@ const NewDeviceRequest = (props: NewDevice) => {
         size="small"
         placeholder="E.g. MacBook Pro 16' M1 2021"
         onChange={(event) => setDeviceName(event.target.value)}
+      />
+      <TextField
+        fullWidth
+        label="Quantity"
+        required
+        sx={textFieldStyle}
+        type="number"
+        defaultValue={1}
+        size="small"
+        InputProps={{
+          inputProps: { min: 1 },
+        }}
+        onChange={(event) => setQuantity(parseInt(event.target.value))}
       />
       <TextField
         fullWidth
