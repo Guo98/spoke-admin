@@ -60,7 +60,6 @@ export const inventorySlice = createSlice({
 
       inStock.sort((a, b) => b.serial_numbers.length - a.serial_numbers.length);
 
-      console.log("in stock redux ::::::::: ", inStock);
       state.pending = offboarding;
       state.deployed = deployed;
       state.in_stock = inStock;

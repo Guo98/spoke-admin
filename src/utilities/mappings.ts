@@ -16,6 +16,7 @@ const orgMapping: any = {
   org_wKzXsiuvUtF28Nm4: "spokeops",
   org_Ms31qwXGU58tAR0T: "spokeops",
   org_xtUPkRs5hJYlIXSj: "FLYR",
+  org_BMQjF5J2inNZ8PoQ: "FLYR",
 };
 
 export { imageMapping, orgMapping };
