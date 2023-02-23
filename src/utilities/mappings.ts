@@ -15,6 +15,7 @@ const orgMapping: any = {
   org_2cr6d5b5cEsEEtsR: "public",
   org_wKzXsiuvUtF28Nm4: "spokeops",
   org_Ms31qwXGU58tAR0T: "spokeops",
+  org_xtUPkRs5hJYlIXSj: "FLYR",
 };
 
 export { imageMapping, orgMapping };
