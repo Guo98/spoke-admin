@@ -13,6 +13,10 @@ const imageMapping: ImageMapping = {
 const orgMapping: any = {
   org_CxAEPTJ4kpVvkZ8G: "public",
   org_2cr6d5b5cEsEEtsR: "public",
+  org_wKzXsiuvUtF28Nm4: "spokeops",
+  org_Ms31qwXGU58tAR0T: "spokeops",
+  org_xtUPkRs5hJYlIXSj: "FLYR",
+  org_BMQjF5J2inNZ8PoQ: "FLYR",
 };
 
 export { imageMapping, orgMapping };

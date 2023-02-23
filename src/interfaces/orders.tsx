@@ -22,6 +22,7 @@ export interface Order {
   full_name: string;
   date: number;
   shipping_status: string;
+  id: string;
 }
 
 export interface Item {

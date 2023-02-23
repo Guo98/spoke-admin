@@ -15,7 +15,12 @@ import "./Profile.css";
 import { ColorModeContext } from "../../utilities/color-context";
 import { resetData } from "../../services/inventoryAPI";
 
-const Profile = () => {
+interface ProfileProps {
+  mobile: boolean;
+}
+
+const Profile = (props: ProfileProps) => {
+  const { mobile } = props;
   const { isAuthenticated, user, logout, getAccessTokenSilently } = useAuth0();
   const [username, setUsername] = useState<string | undefined>("");
   const [userpic, setPic] = useState<string | undefined>("");
@@ -45,13 +50,21 @@ const Profile = () => {
     <div className="profile-padding">
       <Grid container>
         <Grid item xs={8}>
-          <Typography sx={{ paddingTop: 1, textAlign: "right" }}>
-            Welcome, {username}
-          </Typography>
+          {!mobile && (
+            <Typography sx={{ paddingTop: 1, textAlign: "right" }}>
+              Welcome, {username}
+            </Typography>
+          )}
         </Grid>
         <Grid item xs={4}>
           <Button
-            sx={{ paddingTop: 0, paddingRight: 0, paddingLeft: 0 }}
+            sx={{
+              paddingTop: 0,
+              paddingRight: !mobile ? 0 : "",
+              paddingLeft: 0,
+              marginRight: mobile ? 10 : "",
+              marginBottom: mobile ? 2.5 : "",
+            }}
             onClick={handleClick}
             aria-controls={open ? "profile-menu" : undefined}
             id="profile-button"

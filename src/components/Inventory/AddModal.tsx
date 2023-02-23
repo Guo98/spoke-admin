@@ -139,7 +139,7 @@ const AddModal = (props: AddProps) => {
       return [
         {
           name: deviceName,
-          quantity: 1,
+          quantity,
           location,
           specifications,
           color,
@@ -231,6 +231,7 @@ const AddModal = (props: AddProps) => {
                   setColor={setColor}
                   setLocation={setLocation}
                   setRefURL={setRefURL}
+                  setQuantity={setQuantity}
                 />
               </TabPanel>
               <TabPanel value={tabValue} index={2} prefix="add-inv">

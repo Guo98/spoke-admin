@@ -9,6 +9,7 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  styled,
 } from "@mui/material";
 import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
@@ -82,12 +83,15 @@ const getDesignTokens = (mode: PaletteMode) => ({
   },
 });
 
+const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
+
 function App() {
   const { user } = useAuth0();
   const YbugContext = useYbugApi();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"dark" | "light">("light");
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -138,20 +142,13 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div>
-          <Box sx={{ display: "flex" }}>
+          <Box
+            //sx={{ display: "flex", flexDirection: "column" }}
+            display={{ sm: "block", md: "flex" }}
+            sx={{ overflowX: "hidden" }}
+          >
             {window.location.pathname.substring(1) !== "logout" && (
               <>
-                <Hidden mdUp>
-                  <AppBar position="fixed">
-                    <Toolbar>
-                      <IconButton
-                      // onClick={() => setMobileOpen((prevOpen) => !prevOpen)}
-                      >
-                        <MenuIcon />
-                      </IconButton>
-                    </Toolbar>
-                  </AppBar>
-                </Hidden>
                 <Box
                   component="nav"
                   sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}

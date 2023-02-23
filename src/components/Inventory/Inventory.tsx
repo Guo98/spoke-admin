@@ -69,7 +69,8 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const client = atob(localStorage.getItem("spokeclient")!);
+      let client = clientData === "spokeops" ? "FLYR" : clientData;
+      console.log("client ::::::::: ", client);
       const accessToken = await getAccessTokenSilently();
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
@@ -77,12 +78,13 @@ const Inventory: FC = (): ReactElement => {
     if (loading) {
       fetchData().catch(console.error);
     }
-  }, []);
+  }, [clientData]);
 
   useEffect(() => {
     const fetchData = async () => {
       const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(accessToken, clientData);
+      let client = clientData === "spokeops" ? "FLYR" : clientData;
+      const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
     };
 
@@ -404,6 +406,7 @@ const Inventory: FC = (): ReactElement => {
                                 {...device}
                                 tabValue={tabValue}
                                 key={index}
+                                clientData={clientData}
                               />
                             )
                           );

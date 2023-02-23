@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import AssignModal from "./AssignModal";
 import ManageModal from "./ManageModal";
+import AddToStock from "./AddModalBoxes/AddToStock";
 import { InventorySummary } from "../../interfaces/inventory";
 
 const Accordion = styled((props: AccordionProps) => (
@@ -54,6 +55,7 @@ type Order = "asc" | "desc";
 
 interface InventoryAccordionProps extends InventorySummary {
   tabValue: number;
+  clientData?: string;
 }
 
 const InventoryAccordion = (props: InventoryAccordionProps) => {
@@ -61,10 +63,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     name,
     location,
     serial_numbers,
-    index,
-    setFilters,
     image_source,
-    type,
     specs: { screen_size, cpu, ram, hard_drive } = {},
     tabValue,
   } = props;
@@ -118,16 +117,19 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
       <AccordionSummary>
         <Grid
           container
-          spacing={2}
-          justifyItems="space-between"
+          spacing={{ md: 2 }}
+          justifyItems={{ md: "space-between" }}
           justifyContent="center"
-          flexGrow={1}
+          flexGrow={{ md: 1 }}
           alignItems="center"
+          direction={{ md: "row", xs: "column" }}
+          flexDirection={{ xs: "column", md: "row" }}
+          display={{ md: "flex", xs: "block" }}
         >
           <Grid
             item
             xs={4}
-            sm={2.5}
+            md={2.5}
             justifyContent="center"
             alignContent="center"
           >
@@ -138,100 +140,103 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
               alt="laptop"
             />
           </Grid>
-          <Grid item xs={6} sm={6.5}>
-            <CardContent>
-              <Typography fontWeight="bold" fontSize="18px">
-                {(props.new_device ? "[Requested] " : "") + name}
-              </Typography>
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    Screen Size:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {screen_size}
-                  </Typography>
-                </div>
-              )}
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    CPU:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {cpu}
-                  </Typography>
-                </div>
-              )}
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    RAM:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {ram}
-                  </Typography>
-                </div>
-              )}
-              {!props.new_device && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                    fontSize="14px"
-                  >
-                    SSD:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span" fontSize="14px">
-                    {hard_drive}
-                  </Typography>
-                </div>
-              )}
-            </CardContent>
+          <Grid item xs={4} md={6.5}>
+            <Typography fontWeight="bold" fontSize="18px">
+              {(props.new_device ? "[Requested] " : "") + name}
+            </Typography>
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  Screen Size:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {screen_size}
+                </Typography>
+              </div>
+            )}
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  CPU:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {cpu}
+                </Typography>
+              </div>
+            )}
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  RAM:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {ram}
+                </Typography>
+              </div>
+            )}
+            {!props.new_device && (
+              <div>
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontWeight="bold"
+                  fontSize="14px"
+                >
+                  SSD:{" "}
+                </Typography>
+                <Typography display="inline" component="span" fontSize="14px">
+                  {hard_drive}
+                </Typography>
+              </div>
+            )}
           </Grid>
-          <Grid item xs={2} sm={3}>
-            <CardContent>
-              <Typography>{location}</Typography>
-              <Chip
-                label={
-                  serial_numbers.length === 0
-                    ? "Out of Stock"
-                    : serial_numbers.length +
-                      (tabValue === 0
-                        ? " in stock"
-                        : tabValue === 1
-                        ? " deployed"
-                        : " pending")
-                }
-                sx={{
-                  backgroundColor:
-                    serial_numbers.length < 10 && tabValue === 0
-                      ? "#ffefea"
-                      : "#ebebeb",
-                  color:
-                    serial_numbers.length < 10 && tabValue === 0
-                      ? "#DC0202"
-                      : "black",
-                  marginTop: "20px",
-                }}
-              />
-            </CardContent>
+          <Grid
+            item
+            xs={4}
+            md={3}
+            display={{ xs: "flex", md: "block" }}
+            justifyItems={{ xs: "space-evenly" }}
+          >
+            <Typography>{location}</Typography>
+            <Chip
+              label={
+                serial_numbers.length === 0
+                  ? "Out of Stock"
+                  : serial_numbers.length +
+                    (tabValue === 0
+                      ? " in stock"
+                      : tabValue === 1
+                      ? " deployed"
+                      : " pending")
+              }
+              sx={{
+                backgroundColor:
+                  serial_numbers.length < 10 && tabValue === 0
+                    ? "#ffefea"
+                    : "#ebebeb",
+                color:
+                  serial_numbers.length < 10 && tabValue === 0
+                    ? "#DC0202"
+                    : "black",
+                marginTop: { md: "20px" },
+                marginLeft: { md: "0px", xs: "15px" },
+              }}
+            />
           </Grid>
         </Grid>
       </AccordionSummary>
@@ -248,7 +253,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 <TableRow>
                   <TableCell
                     key="SerialNumber"
-                    width="40%"
+                    width={tabValue === 2 ? "25%" : "40%"}
                     sortDirection={orderBy === "Serial Number" ? order : false}
                   >
                     <TableSortLabel
@@ -280,7 +285,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                   </TableCell>
                   <TableCell
                     key="Grade"
-                    width="20%"
+                    width={tabValue === 2 ? "15%" : "20%"}
                     sortDirection={orderBy === "Grade" ? order : false}
                   >
                     <TableSortLabel
@@ -297,6 +302,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       </Typography>
                     </TableSortLabel>
                   </TableCell>
+                  {tabValue === 2 && (
+                    <TableCell key="Date" width="20%">
+                      <Typography fontWeight="bold">Date Requested</Typography>
+                    </TableCell>
+                  )}
                   <TableCell key="Action" width="20%">
                     <Typography fontWeight="bold">Action</Typography>
                   </TableCell>
@@ -308,7 +318,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                     const { sn, condition } = item;
                     return (
                       <TableRow key={index}>
-                        <TableCell width="40%">
+                        <TableCell width={tabValue === 2 ? "25%" : "40%"}>
                           <Typography>{sn}</Typography>
                         </TableCell>
                         <TableCell width="20%">
@@ -320,7 +330,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               : item.status}
                           </Typography>
                         </TableCell>
-                        <TableCell width="20%">
+                        <TableCell width={tabValue === 2 ? "15%" : "40%"}>
                           <Typography>
                             {tabValue === 0
                               ? condition === "Used" && item.grade
@@ -329,6 +339,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               : item.quantity || 1}
                           </Typography>
                         </TableCell>
+                        {tabValue === 2 && (
+                          <TableCell width="20%">
+                            <Typography>{item.date_requested}</Typography>
+                          </TableCell>
+                        )}
                         <TableCell width="20%">
                           {tabValue === 0 && (
                             <AssignModal
@@ -365,6 +380,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               Track
                             </Button>
                           )}
+                          {tabValue === 2 &&
+                            props.clientData === "spokeops" &&
+                            item.quantity && (
+                              <AddToStock quantity={item.quantity!} />
+                            )}
                         </TableCell>
                       </TableRow>
                     );

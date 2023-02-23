@@ -77,7 +77,10 @@ const Orders = () => {
     };
 
     if (isAuthenticated && !isLoading && loading) {
-      if (clientData) fetchData(clientData).catch(console.error);
+      if (clientData) {
+        let client = clientData === "spokeops" ? "FLYR" : clientData;
+        fetchData(client).catch(console.error);
+      }
     }
   }, [isAuthenticated, isLoading, clientData]);
 
@@ -99,7 +102,7 @@ const Orders = () => {
       setCompleted([...data.completed!].reverse());
       setAll(combinedOrders.sort((a, b) => b.orderNo - a.orderNo));
     }
-  }, [loading]);
+  }, [loading, data]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -189,16 +192,10 @@ const Orders = () => {
                   {allOrders?.map((order: Order, index) => {
                     return (
                       <OrderItem
-                        order_number={order.orderNo}
-                        first_name={order.firstName}
-                        last_name={order.lastName}
-                        city={order.address.city}
-                        country={order.address.country}
-                        state={order.address.subdivision}
-                        items={order.items}
-                        email={order.email}
+                        {...order}
                         key={index}
-                        shipping_status={order.shipping_status}
+                        clientui={clientData}
+                        actualClient={clientData === "spokeops" ? "FLYR" : ""}
                       />
                     );
                   })}
@@ -224,16 +221,10 @@ const Orders = () => {
                     inprog?.map((order, index) => {
                       return (
                         <OrderItem
-                          order_number={order.orderNo}
-                          first_name={order.firstName}
-                          last_name={order.lastName}
-                          city={order.address.city}
-                          state={order.address.subdivision}
-                          country={order.address.country}
-                          items={order.items}
-                          email={order.email}
+                          {...order}
                           key={index}
-                          shipping_status={order.shipping_status}
+                          clientui={clientData}
+                          actualClient={clientData === "spokeops" ? "FLYR" : ""}
                         />
                       );
                     })}
@@ -259,16 +250,10 @@ const Orders = () => {
                     completed?.map((order, index) => {
                       return (
                         <OrderItem
-                          order_number={order.orderNo}
-                          first_name={order.firstName}
-                          last_name={order.lastName}
-                          city={order.address.city}
-                          country={order.address.country}
-                          state={order.address.subdivision}
-                          items={order.items}
-                          email={order.email}
+                          {...order}
                           key={index}
-                          shipping_status={order.shipping_status}
+                          clientui={clientData}
+                          actualClient={clientData === "spokeops" ? "FLYR" : ""}
                         />
                       );
                     })}
