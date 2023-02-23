@@ -249,7 +249,9 @@ const OrderItem = (props: OrderProps) => {
                     </TableCell>
                     {clientui !== "spokeops" && (
                       <TableCell width="25%">
-                        <Typography fontWeight="bold">Price</Typography>
+                        <Typography fontWeight="bold" align="right">
+                          Price
+                        </Typography>
                       </TableCell>
                     )}
                     {clientui === "spokeops" && (
@@ -268,8 +270,13 @@ const OrderItem = (props: OrderProps) => {
                         <TableCell width="50%">{item.name}</TableCell>
                         <TableCell width="25%">{item.quantity || 1}</TableCell>
                         {clientui !== "spokeops" && (
-                          <TableCell width="25%">
-                            <Typography>{item.price}</Typography>
+                          <TableCell width="25%" align="right">
+                            <Typography>
+                              $
+                              {item.price.toString().indexOf(".") > -1
+                                ? item.price
+                                : item.price + ".00"}
+                            </Typography>
                           </TableCell>
                         )}
                         {clientui === "spokeops" && (
