@@ -212,6 +212,14 @@ const Inventory: FC = (): ReactElement => {
         device.location.toLowerCase().indexOf(text) > -1 ||
         device.serial_numbers.filter(
           (dev) => dev.sn.toLowerCase().indexOf(text) > -1
+        ).length > 0 ||
+        device.serial_numbers.filter(
+          (dev) =>
+            dev.first_name && dev.first_name.toLowerCase().indexOf(text) > -1
+        ).length > 0 ||
+        device.serial_numbers.filter(
+          (dev) =>
+            dev.last_name && dev.last_name.toLowerCase().indexOf(text) > -1
         ).length > 0
     );
   };
@@ -220,7 +228,7 @@ const Inventory: FC = (): ReactElement => {
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
         <Header
-          label="Search Inventory by device name, serial number, location"
+          label="Search Inventory by device name, serial number, location, employee name"
           textChange={searchFilter}
         />
         <Grid container direction="row" alignItems="center">
