@@ -383,7 +383,13 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                           {tabValue === 2 &&
                             props.clientData === "spokeops" &&
                             item.quantity && (
-                              <AddToStock quantity={item.quantity!} />
+                              <AddToStock
+                                quantity={item.quantity!}
+                                device_name={name}
+                                device_location={location}
+                                status={item.status}
+                                date_requested={item.date_requested!}
+                              />
                             )}
                         </TableCell>
                       </TableRow>

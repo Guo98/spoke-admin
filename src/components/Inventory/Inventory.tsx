@@ -70,7 +70,6 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {
     const fetchData = async () => {
       let client = clientData === "spokeops" ? "FLYR" : clientData;
-      console.log("client ::::::::: ", client);
       const accessToken = await getAccessTokenSilently();
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));

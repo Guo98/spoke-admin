@@ -62,7 +62,6 @@ export async function manageLaptop(
       return response.json();
     })
     .then((data) => {
-      console.log("testing auth data <<<<<<<<< ", data);
       return data;
     })
     .catch((err) => {
