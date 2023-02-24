@@ -59,6 +59,9 @@ export const inventorySlice = createSlice({
       });
 
       inStock.sort((a, b) => b.serial_numbers.length - a.serial_numbers.length);
+      deployed.sort(
+        (a, b) => b.serial_numbers.length - a.serial_numbers.length
+      );
 
       state.pending = offboarding;
       state.deployed = deployed;
