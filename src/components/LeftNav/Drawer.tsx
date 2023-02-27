@@ -29,6 +29,8 @@ import StoreIcon from "@mui/icons-material/Store";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
+import AppContainer from "../AppContainer/AppContainer";
+import { useNavigate } from "react-router-dom";
 import { resetData } from "../../services/inventoryAPI";
 import { RootState } from "../../app/store";
 import "./Drawer.css";
@@ -84,6 +86,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const [open, setOpen] = useState(false);
 
   const clientData = useSelector((state: RootState) => state.client.data);
+  // const navigate = useNavigate();
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -166,10 +169,12 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         window.location.href = "/";
         break;
       case "Orders":
-        window.location.href = "/orders";
+        AppContainer.navigate("/orders");
+        setIndex(0);
         break;
       case "Inventory":
-        window.location.href = "/inventory";
+        AppContainer.navigate("/inventory");
+        setIndex(1);
         break;
       case "Invoices":
         window.location.href = "/invoices";
@@ -262,7 +267,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
                 ? "https://spokeimages.blob.core.windows.net/image/fullspokeinvert.png"
                 : "https://spokeimages.blob.core.windows.net/image/fullspokenormal.png"
             }
-            style={{ height: "44px", width: "149px", justifyContent: "center" }}
+            style={{
+              height: "44px",
+              width: "149px",
+              justifyContent: "center",
+            }}
           />
         </div>
         {drawerContent}

@@ -7,10 +7,17 @@ import {
   Button,
   Menu,
   MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import { useSelector, useDispatch } from "react-redux";
+import { updateSelectedClient } from "../../app/store";
+import { RootState } from "../../app/store";
 import "./Profile.css";
 import { ColorModeContext } from "../../utilities/color-context";
 import { resetData } from "../../services/inventoryAPI";
@@ -25,6 +32,14 @@ const Profile = (props: ProfileProps) => {
   const [username, setUsername] = useState<string | undefined>("");
   const [userpic, setPic] = useState<string | undefined>("");
   const [mode, setMode] = useState(true);
+
+  const dispatch = useDispatch();
+  const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+  console.log("selected client data ::::::::::: ", selectedClientData);
+  const [client, setClient] = useState(selectedClientData);
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
@@ -44,6 +59,11 @@ const Profile = (props: ProfileProps) => {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setClient(event.target.value);
+    dispatch(updateSelectedClient(event.target.value));
   };
 
   return (
@@ -107,6 +127,21 @@ const Profile = (props: ProfileProps) => {
               <LogoutIcon />{" "}
               <Typography sx={{ paddingLeft: "5px" }}>Logout</Typography>
             </MenuItem>
+            {clientData === "spokeops" && (
+              <FormControl fullWidth>
+                <InputLabel id="client-select-label">Client</InputLabel>
+                <Select
+                  labelId="client-select-label"
+                  value={client}
+                  label="Client"
+                  onChange={handleChange}
+                >
+                  <MenuItem value="FLYR">FLYR USA</MenuItem>
+                  <MenuItem value="Bowery">Bowery</MenuItem>
+                  <MenuItem value="NurseDash">NurseDash</MenuItem>
+                </Select>
+              </FormControl>
+            )}
           </Menu>
         </Grid>
       </Grid>

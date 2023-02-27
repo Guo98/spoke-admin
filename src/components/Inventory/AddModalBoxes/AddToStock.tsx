@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button, Modal, Box, TextField, Typography } from "@mui/material";
 import { manageLaptop, getInventory } from "../../../services/inventoryAPI";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 import { updateInventory } from "../../../app/slices/inventorySlice";
 
 const style = {
@@ -28,7 +29,9 @@ interface StockProps {
 const AddToStock = (props: StockProps) => {
   const { quantity, device_location, device_name, status, date_requested } =
     props;
-
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
   const [open, setOpen] = useState(false);
   const [serial_numbers, setSNs] = useState(Array(quantity).fill(""));
   const [success, setSuccess] = useState(false);
@@ -45,7 +48,7 @@ const AddToStock = (props: StockProps) => {
   const addToStock = async () => {
     const accessToken = await getAccessTokenSilently();
     const reqBody = {
-      client: "FLYR",
+      client: selectedClientData,
       status,
       device_name,
       device_location,
@@ -55,7 +58,10 @@ const AddToStock = (props: StockProps) => {
     const stockRes = await manageLaptop(accessToken, reqBody, "addtostock");
 
     if (stockRes.status === "Success") {
-      const inventoryResult = await getInventory(accessToken, "FLYR");
+      const inventoryResult = await getInventory(
+        accessToken,
+        selectedClientData
+      );
       dispatch(updateInventory(inventoryResult.data));
       setSuccess(true);
     } else {

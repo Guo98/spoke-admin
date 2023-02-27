@@ -47,6 +47,9 @@ const Inventory: FC = (): ReactElement => {
     (state: RootState) => state.inventory.in_stock
   );
   const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
 
   const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -69,7 +72,7 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     const fetchData = async () => {
-      let client = clientData === "spokeops" ? "FLYR" : clientData;
+      let client = clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
@@ -82,7 +85,7 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {
     const fetchData = async () => {
       const accessToken = await getAccessTokenSilently();
-      let client = clientData === "spokeops" ? "FLYR" : clientData;
+      let client = clientData === "spokeops" ? selectedClientData : clientData;
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
     };
