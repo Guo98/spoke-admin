@@ -104,6 +104,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
               onClick={() => {
                 gotoPage(text);
               }}
+              id={text + "-leftnav"}
             >
               <ListItemIcon>
                 {iconMapping[text as keyof IconMapping]}
