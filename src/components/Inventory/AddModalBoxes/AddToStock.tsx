@@ -55,6 +55,7 @@ const AddToStock = (props: StockProps) => {
       date_requested,
       serial_numbers,
     };
+
     const stockRes = await manageLaptop(accessToken, reqBody, "addtostock");
 
     if (stockRes.status === "Success") {
