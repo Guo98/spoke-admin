@@ -12,7 +12,8 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
 import { manageLaptop, getInventory } from "../../services/inventoryAPI";
 import ConfirmationBody from "./ConfirmationBody";
@@ -78,6 +79,11 @@ const DeployModalContent = (props: DeployProps) => {
     image_source,
   } = props;
 
+  const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+
   const [edit, setEdit] = useState(false);
   const [fn, setFn] = useState(first_name);
   const [ln, setLn] = useState(last_name);
@@ -103,10 +109,10 @@ const DeployModalContent = (props: DeployProps) => {
   };
 
   const deploy = async () => {
-    const client = atob(localStorage.getItem("spokeclient")!);
+    const client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
     const deployObj = {
-      client: "public",
+      client: client,
       first_name: fn,
       last_name: ln,
       address: {
@@ -134,7 +140,8 @@ const DeployModalContent = (props: DeployProps) => {
     if (deployResult) {
       setConfirmation(true);
       setSuccess(true);
-      const client = atob(localStorage.getItem("spokeclient")!);
+      const client =
+        clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));
