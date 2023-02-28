@@ -12,6 +12,8 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 import { manageLaptop } from "../../services/inventoryAPI";
 import ConfirmationBody from "./ConfirmationBody";
 
@@ -72,6 +74,11 @@ const OffboardBody = (props: OffboardProps) => {
     type,
   } = props;
 
+  const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+
   const [disabled, setDisabled] = useState(type !== "general");
   const [fn, setFn] = useState(name?.first_name || "");
   const [ln, setLn] = useState(name?.last_name || "");
@@ -92,7 +99,7 @@ const OffboardBody = (props: OffboardProps) => {
   const { getAccessTokenSilently, user } = useAuth0();
 
   const offboardLaptop = async () => {
-    const client = atob(localStorage.getItem("spokeclient")!);
+    const client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
     const bodyObj = {
       client: client,

@@ -33,6 +33,9 @@ const style = {
 const Orders = () => {
   const data = useSelector((state: RootState) => state.orders.data);
   const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
   const [allOrders, setAll] = useState<Order[]>([]);
@@ -78,11 +81,24 @@ const Orders = () => {
 
     if (isAuthenticated && !isLoading && loading) {
       if (clientData) {
-        let client = clientData === "spokeops" ? "FLYR" : clientData;
+        let client =
+          clientData === "spokeops" ? selectedClientData : clientData;
         fetchData(client).catch(console.error);
       }
     }
   }, [isAuthenticated, isLoading, clientData]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const accessToken = await getAccessTokenSilently();
+      const ordersResult = await getAllOrders(accessToken, selectedClientData);
+      dispatch(updateOrders(ordersResult.data));
+    };
+
+    if (clientData === "spokeops") {
+      fetchData().catch(console.error);
+    }
+  }, [selectedClientData]);
 
   useEffect(() => {
     if (Object.keys(data).length > 0) {
@@ -169,7 +185,7 @@ const Orders = () => {
         />
         <h2>
           Orders{" "}
-          <IconButton onClick={download}>
+          <IconButton onClick={download} id="export-orders-button">
             <FileDownloadIcon />
           </IconButton>
         </h2>
@@ -195,7 +211,10 @@ const Orders = () => {
                         {...order}
                         key={index}
                         clientui={clientData}
-                        actualClient={clientData === "spokeops" ? "FLYR" : ""}
+                        actualClient={
+                          clientData === "spokeops" ? selectedClientData : ""
+                        }
+                        index={index}
                       />
                     );
                   })}
@@ -224,7 +243,10 @@ const Orders = () => {
                           {...order}
                           key={index}
                           clientui={clientData}
-                          actualClient={clientData === "spokeops" ? "FLYR" : ""}
+                          actualClient={
+                            clientData === "spokeops" ? selectedClientData : ""
+                          }
+                          index={index}
                         />
                       );
                     })}
@@ -253,7 +275,10 @@ const Orders = () => {
                           {...order}
                           key={index}
                           clientui={clientData}
-                          actualClient={clientData === "spokeops" ? "FLYR" : ""}
+                          actualClient={
+                            clientData === "spokeops" ? selectedClientData : ""
+                          }
+                          index={index}
                         />
                       );
                     })}

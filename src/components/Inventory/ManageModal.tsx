@@ -9,7 +9,8 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
 import OffboardBody from "./OffboardBody";
 import { updateInventory } from "../../app/slices/inventorySlice";
@@ -62,13 +63,19 @@ const ManageModal = (props: ManageProps) => {
   const [loading, setLoading] = useState(false);
   const [device_names, setDeviceNames] = useState<string[]>([]);
 
+  const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+
   const dispatch = useDispatch();
 
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchData = async () => {
-      const client = atob(localStorage.getItem("spokeclient")!);
+      const client =
+        clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
       const inventoryResult = await getInventory(accessToken, client);
       dispatch(updateInventory(inventoryResult.data));

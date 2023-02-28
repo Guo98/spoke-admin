@@ -32,6 +32,7 @@ import ManageOrder from "./ManageOrder";
 interface OrderProps extends Order {
   clientui?: string;
   actualClient?: string;
+  index: number;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -73,7 +74,9 @@ const OrderItem = (props: OrderProps) => {
     email,
     shipping_status,
     clientui,
+    index,
   } = props;
+
   let tempItems = JSON.parse(JSON.stringify(items));
 
   const dispatch = useDispatch();
@@ -194,7 +197,7 @@ const OrderItem = (props: OrderProps) => {
 
   return (
     <Accordion>
-      <AccordionSummary>
+      <AccordionSummary id={"order-accordionsummary-" + index}>
         <Grid container direction={{ md: "row", xs: "column" }}>
           <Grid item md={2}>
             <Typography fontWeight="bold">Order #{orderNo}</Typography>
@@ -229,6 +232,7 @@ const OrderItem = (props: OrderProps) => {
           borderTop: "0px",
           backgroundColor: isDarkTheme ? "#465059" : "#F8F8F8",
         }}
+        id={"order-accordiondetails-" + index}
       >
         <Grid
           container
