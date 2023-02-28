@@ -35,6 +35,7 @@ const Header = (props: HeaderProps): ReactElement => {
                 sx={{
                   paddingLeft: "15px",
                 }}
+                id="header-searchbar-label"
               >
                 {label}
               </InputLabel>
@@ -56,7 +57,7 @@ const Header = (props: HeaderProps): ReactElement => {
                 endAdornment={
                   <InputAdornment position="end" sx={{ paddingRight: "25px" }}>
                     <IconButton
-                      aria-label="search orders, users, and accounts button"
+                      aria-label={label}
                       onClick={() => {
                         if (clear) {
                           setText("");

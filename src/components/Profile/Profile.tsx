@@ -38,7 +38,7 @@ const Profile = (props: ProfileProps) => {
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
   );
-  console.log("selected client data ::::::::::: ", selectedClientData);
+
   const [client, setClient] = useState(selectedClientData);
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);

@@ -237,7 +237,10 @@ const Inventory: FC = (): ReactElement => {
           <Grid item xs={7}>
             <h2>
               Inventory{" "}
-              <IconButton onClick={downloadInventory}>
+              <IconButton
+                onClick={downloadInventory}
+                id="inventory-export-button"
+              >
                 <FileDownloadIcon />
               </IconButton>
             </h2>
@@ -307,6 +310,7 @@ const Inventory: FC = (): ReactElement => {
                                 {...device}
                                 tabValue={tabValue}
                                 key={index}
+                                index={index}
                               />
                             )
                           );
@@ -353,6 +357,7 @@ const Inventory: FC = (): ReactElement => {
                                 {...device}
                                 tabValue={tabValue}
                                 key={index}
+                                index={index}
                               />
                             )
                           );
@@ -417,6 +422,7 @@ const Inventory: FC = (): ReactElement => {
                                 tabValue={tabValue}
                                 key={index}
                                 clientData={clientData}
+                                index={index}
                               />
                             )
                           );

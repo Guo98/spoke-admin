@@ -56,6 +56,7 @@ type Order = "asc" | "desc";
 interface InventoryAccordionProps extends InventorySummary {
   tabValue: number;
   clientData?: string;
+  index: number;
 }
 
 const InventoryAccordion = (props: InventoryAccordionProps) => {
@@ -66,6 +67,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     image_source,
     specs: { screen_size, cpu, ram, hard_drive } = {},
     tabValue,
+    index,
   } = props;
 
   const [orderBy, setOrderBy] = useState("");
@@ -114,7 +116,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
 
   return (
     <Accordion>
-      <AccordionSummary>
+      <AccordionSummary id={"inventory-accordionsummary-" + index}>
         <Grid
           container
           spacing={{ md: 2 }}
@@ -245,6 +247,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
           borderTop: "1px solid rgba(0, 0, 0, .125)",
           backgroundColor: isDarkTheme ? "#465059" : "#F8F8F8",
         }}
+        id={"inventory-accordiondetails-" + index}
       >
         {serial_numbers.length > 0 ? (
           <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>

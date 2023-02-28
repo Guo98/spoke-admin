@@ -185,7 +185,7 @@ const Orders = () => {
         />
         <h2>
           Orders{" "}
-          <IconButton onClick={download}>
+          <IconButton onClick={download} id="export-orders-button">
             <FileDownloadIcon />
           </IconButton>
         </h2>
@@ -214,6 +214,7 @@ const Orders = () => {
                         actualClient={
                           clientData === "spokeops" ? selectedClientData : ""
                         }
+                        index={index}
                       />
                     );
                   })}
@@ -245,6 +246,7 @@ const Orders = () => {
                           actualClient={
                             clientData === "spokeops" ? selectedClientData : ""
                           }
+                          index={index}
                         />
                       );
                     })}
@@ -276,6 +278,7 @@ const Orders = () => {
                           actualClient={
                             clientData === "spokeops" ? selectedClientData : ""
                           }
+                          index={index}
                         />
                       );
                     })}
