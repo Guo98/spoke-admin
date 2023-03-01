@@ -1,5 +1,7 @@
 import React from "react";
 import { Typography } from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 interface RequestProps {
@@ -8,6 +10,11 @@ interface RequestProps {
 
 const RequestConfirmation = (props: RequestProps) => {
   const { tabValue } = props;
+  const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+
   return (
     <>
       <Typography
@@ -33,7 +40,7 @@ const RequestConfirmation = (props: RequestProps) => {
             Please make sure to ship to the following address:
           </Typography>
           <Typography textAlign="center">
-            {atob(localStorage.getItem("spokeclient")!)}
+            {clientData === "spokeops" ? selectedClientData : clientData}
           </Typography>
           <Typography textAlign="center">c/o Spoke Technology</Typography>
           <Typography textAlign="center">2725 Northwoods Pkwy</Typography>
