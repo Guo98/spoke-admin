@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 import { InventorySummary } from "../../interfaces/inventory";
 import { manageLaptop } from "../../services/inventoryAPI";
 import TabPanel from "../common/TabPanel";
@@ -62,6 +64,10 @@ interface RequestedItem {
 
 const AddModal = (props: AddProps) => {
   const { open, setParentOpen, deviceNames } = props;
+  const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
   const [openModal, setOpen] = useState(open);
   const [tabValue, setTabValue] = useState(0);
   const [notes, setNotes] = useState("");
@@ -159,7 +165,7 @@ const AddModal = (props: AddProps) => {
 
   const requestLaptop = async () => {
     setLoading(true);
-    const client = atob(localStorage.getItem("spokeclient")!);
+    const client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
     const requestObj = {
       notes,

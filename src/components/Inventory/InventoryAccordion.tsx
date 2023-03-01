@@ -390,7 +390,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                                 quantity={item.quantity!}
                                 device_name={name}
                                 device_location={location}
-                                status={item.status}
+                                status={item.sn}
                                 date_requested={item.date_requested!}
                               />
                             )}
