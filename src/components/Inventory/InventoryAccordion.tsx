@@ -392,6 +392,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                                 device_location={location}
                                 status={item.sn}
                                 date_requested={item.date_requested!}
+                                new_device={props.new_device}
                               />
                             )}
                         </TableCell>
