@@ -285,7 +285,9 @@ const OrderItem = (props: OrderProps) => {
                         )}
                         {clientui === "spokeops" && (
                           <TableCell width="25%">
-                            {adminedit && item.tracking_number === "" ? (
+                            {adminedit &&
+                            (item.tracking_number === "" ||
+                              item.tracking_number[0] === " ") ? (
                               <TextField
                                 size="small"
                                 onChange={(event) =>
