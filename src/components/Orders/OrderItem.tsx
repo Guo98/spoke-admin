@@ -248,16 +248,14 @@ const OrderItem = (props: OrderProps) => {
                     <TableCell width="50%">
                       <Typography fontWeight="bold">Item</Typography>
                     </TableCell>
-                    <TableCell width="25%">
+                    <TableCell width={clientui === "spokeops" ? "5%" : "25%"}>
                       <Typography fontWeight="bold">Quantity</Typography>
                     </TableCell>
-                    {clientui !== "spokeops" && (
-                      <TableCell width="25%">
-                        <Typography fontWeight="bold" align="right">
-                          Price
-                        </Typography>
-                      </TableCell>
-                    )}
+                    <TableCell width={clientui === "spokeops" ? "20%" : "25%"}>
+                      <Typography fontWeight="bold" align="right">
+                        Price
+                      </Typography>
+                    </TableCell>
                     {clientui === "spokeops" && (
                       <TableCell width="25%">
                         <Typography fontWeight="bold">
@@ -272,24 +270,42 @@ const OrderItem = (props: OrderProps) => {
                     return (
                       <TableRow hover>
                         <TableCell width="50%">{item.name}</TableCell>
-                        <TableCell width="25%">{item.quantity || 1}</TableCell>
-                        {clientui !== "spokeops" && (
-                          <TableCell width="25%" align="right">
+                        <TableCell
+                          width={clientui === "spokeops" ? "5%" : "25%"}
+                        >
+                          {item.quantity || 1}
+                        </TableCell>
+                        <TableCell
+                          width={clientui === "spokeops" ? "20%" : "25%"}
+                          align="right"
+                        >
+                          {clientui === "spokeops" && adminedit ? (
+                            <TextField
+                              size="small"
+                              defaultValue={item.price}
+                              onChange={(event) =>
+                                (tempItems[index].price = event.target.value)
+                              }
+                            />
+                          ) : (
                             <Typography>
                               $
                               {item.price.toString().indexOf(".") > -1
                                 ? item.price
                                 : item.price + ".00"}
                             </Typography>
-                          </TableCell>
-                        )}
+                          )}
+                        </TableCell>
                         {clientui === "spokeops" && (
                           <TableCell width="25%">
-                            {adminedit &&
-                            (item.tracking_number === "" ||
-                              item.tracking_number[0] === " ") ? (
+                            {adminedit ? (
                               <TextField
                                 size="small"
+                                defaultValue={
+                                  item.tracking_number === ""
+                                    ? ""
+                                    : item.tracking_number[0]
+                                }
                                 onChange={(event) =>
                                   (tempItems[index].tracking_number = [
                                     event.target.value,
