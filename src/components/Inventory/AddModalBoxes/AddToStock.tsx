@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal, Box, TextField, Typography } from "@mui/material";
+import { Button, Modal, Box, TextField, Typography, Grid } from "@mui/material";
 import { manageLaptop, getInventory } from "../../../services/inventoryAPI";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +24,7 @@ interface StockProps {
   device_location: string;
   status: string;
   date_requested: string;
+  new_device?: boolean;
 }
 
 const AddToStock = (props: StockProps) => {
@@ -36,6 +37,10 @@ const AddToStock = (props: StockProps) => {
   const [serial_numbers, setSNs] = useState(Array(quantity).fill(""));
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [screen, setScreen] = useState("");
+  const [ram, setRam] = useState("");
+  const [cpu, setCpu] = useState("");
+  const [storage, setStorage] = useState("");
 
   const handleClose = () => {
     setOpen(false);
@@ -54,7 +59,17 @@ const AddToStock = (props: StockProps) => {
       device_location,
       date_requested,
       serial_numbers,
+      specs: {},
     };
+
+    if (props.new_device) {
+      reqBody.specs = {
+        screen_size: screen,
+        ram,
+        cpu,
+        hard_drive: storage,
+      };
+    }
 
     const stockRes = await manageLaptop(accessToken, reqBody, "addtostock");
 
@@ -84,6 +99,43 @@ const AddToStock = (props: StockProps) => {
         <Box sx={style}>
           {!success && !error ? (
             <>
+              {props.new_device && (
+                <>
+                  <Typography>Enter Specs:</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item>
+                      <TextField
+                        label="Screen Size"
+                        size="small"
+                        onChange={(e) => setScreen(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        label="RAM"
+                        size="small"
+                        onChange={(e) => setRam(e.target.value)}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item>
+                      <TextField
+                        label="CPU"
+                        size="small"
+                        onChange={(e) => setCpu(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        label="Storage"
+                        size="small"
+                        onChange={(e) => setStorage(e.target.value)}
+                      />
+                    </Grid>
+                  </Grid>
+                </>
+              )}
               <Typography>Enter Serial Numbers:</Typography>
               {Array.from({ length: quantity }, (_, index) => {
                 return (

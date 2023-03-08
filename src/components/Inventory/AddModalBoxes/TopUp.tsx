@@ -49,7 +49,7 @@ const TopUp = (props: TopUpProps) => {
   const [devicesState, setDevicesState] = useState(devices);
   const [deviceIndex, setDeviceIndex] = useState("");
   const [adding, setAdding] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(5);
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -81,7 +81,7 @@ const TopUp = (props: TopUpProps) => {
     addToRequestList({ name, quantity, location });
     setAdding(false);
     setDeviceIndex("");
-    setQuantity(1);
+    setQuantity(5);
 
     setDevicesState((prevDevState) => {
       return prevDevState.map((item, index) => {

@@ -5,7 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export const clientSlice = createSlice({
   name: "UpdateClient",
-  initialState: { data: "", selectedClient: "FLYR" },
+  initialState: { data: "", selectedClient: "public" },
   reducers: {
     updateClient: (state, action: PayloadAction<string>) => {
       state.data = action.payload;

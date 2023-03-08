@@ -86,6 +86,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const [open, setOpen] = useState(false);
 
   const clientData = useSelector((state: RootState) => state.client.data);
+  const selectedClientData = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
   // const navigate = useNavigate();
 
   const isDarkTheme = useTheme().palette.mode === "dark";
@@ -184,9 +187,15 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         window.location.href = "/team";
         break;
       case "Storefront":
-        if (clientData === "public" || clientData === "spokeops") {
+        if (
+          clientData === "public" ||
+          (clientData === "spokeops" && selectedClientData === "public")
+        ) {
           window.open("https://withspoke.com/demo", "_blank");
-        } else if (clientData === "FLYR") {
+        } else if (
+          clientData === "FLYR" ||
+          (clientData === "spokeops" && selectedClientData === "public")
+        ) {
           window.open("https://withspoke.com/flyrlabs", "_blank");
         } else {
           setOpen(true);
