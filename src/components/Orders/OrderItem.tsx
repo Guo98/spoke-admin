@@ -181,6 +181,14 @@ const OrderItem = (props: OrderProps) => {
   const completeOrder = async () => {
     const accessToken = await getAccessTokenSilently();
     const bodyObj = { ...props };
+    if (
+      bodyObj.shipping_status === "Completed" ||
+      bodyObj.shipping_status === "Complete"
+    ) {
+      bodyObj.shipping_status = "Incomplete";
+    } else {
+      bodyObj.shipping_status = "Complete";
+    }
     delete bodyObj.clientui;
     delete bodyObj.actualClient;
     const completeOrderResp = await postOrder(
@@ -190,7 +198,10 @@ const OrderItem = (props: OrderProps) => {
     );
 
     if (completeOrderResp.status === "Success") {
-      const ordersResult = await getAllOrders(accessToken, props.client);
+      const ordersResult = await getAllOrders(
+        accessToken,
+        props.client === "Mock" ? "public" : props.client
+      );
       dispatch(updateOrders(ordersResult.data));
     }
   };
@@ -391,16 +402,11 @@ const OrderItem = (props: OrderProps) => {
               </Button>
             </Grid>
             <Grid item md={4}>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={completeOrder}
-                disabled={
-                  shipping_status === "Completed" ||
-                  shipping_status === "Complete"
-                }
-              >
-                Mark Complete
+              <Button fullWidth variant="contained" onClick={completeOrder}>
+                {shipping_status === "Completed" ||
+                shipping_status === "Complete"
+                  ? "Mark Shipped"
+                  : "Mark Complete"}
               </Button>
             </Grid>
           </Grid>
