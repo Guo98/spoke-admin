@@ -5,13 +5,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export const clientSlice = createSlice({
   name: "UpdateClient",
-  initialState: { data: "", selectedClient: "public" },
+  initialState: { data: "", selectedClient: "public", selectedEntity: "" },
   reducers: {
     updateClient: (state, action: PayloadAction<string>) => {
       state.data = action.payload;
     },
     updateSelectedClient: (state, action: PayloadAction<string>) => {
       state.selectedClient = action.payload;
+    },
+    updateEntity: (state, action: PayloadAction<string>) => {
+      state.selectedEntity = action.payload;
     },
   },
 });
@@ -26,7 +29,8 @@ const store = configureStore({
 
 export default store;
 
-export const { updateClient, updateSelectedClient } = clientSlice.actions;
+export const { updateClient, updateSelectedClient, updateEntity } =
+  clientSlice.actions;
 
 export type RootState = ReturnType<typeof store.getState>;
 
