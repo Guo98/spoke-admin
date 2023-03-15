@@ -15,6 +15,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import CloseIcon from "@mui/icons-material/Close";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
 import * as FileSaver from "file-saver";
@@ -232,6 +233,18 @@ const Orders = () => {
               value={entity}
               label="Entity"
               onChange={handleEntityChange}
+              endAdornment={
+                entity !== "" && (
+                  <IconButton
+                    onClick={() => {
+                      setEntity("");
+                      dispatch(filterEntity(""));
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                )
+              }
             >
               {hasEntity().map((e: any) => (
                 <MenuItem value={e}>{e}</MenuItem>
