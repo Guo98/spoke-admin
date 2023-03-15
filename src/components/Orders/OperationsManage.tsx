@@ -57,7 +57,7 @@ const OperationsManage = (props: OperationsOrder) => {
     if (JSON.stringify(tempItems) !== JSON.stringify(items)) {
       const accessToken = await getAccessTokenSilently();
       const bodyObj = {
-        clientui: selectedClient,
+        client: selectedClient,
         full_name: firstName + " " + lastName,
         items: tempItems,
         order_id: props.id,
