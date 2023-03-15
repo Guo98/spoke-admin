@@ -23,6 +23,7 @@ export interface Order {
   date: number;
   shipping_status: string;
   id: string;
+  entity?: string;
 }
 
 export interface Item {

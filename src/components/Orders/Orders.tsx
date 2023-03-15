@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, Tabs, Tab, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Tabs,
+  Tab,
+  IconButton,
+  Typography,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+  SelectChangeEvent,
+  Grid,
+} from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -9,11 +21,12 @@ import * as FileSaver from "file-saver";
 import { downloadOrders, getAllOrders } from "../../services/ordersAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { updateOrders } from "../../app/slices/ordersSlice";
+import { updateOrders, filterEntity } from "../../app/slices/ordersSlice";
 import { Order } from "../../interfaces/orders";
 import OrderItem from "./OrderItem";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
+import { entityMappings } from "../../app/utility/constants";
 import "./Orders.css";
 
 function a11yProps(index: number) {
@@ -43,6 +56,8 @@ const Orders = () => {
   const [inprog, setInprog] = useState<Order[]>([]);
   const [completed, setCompleted] = useState<Order[]>([]);
   const [filtered, setFiltered] = useState(false);
+  const [entities, setEntities] = useState([]);
+  const [entity, setEntity] = useState("");
 
   const dispatch = useDispatch();
 
@@ -180,6 +195,22 @@ const Orders = () => {
     );
   };
 
+  const hasEntity = () => {
+    if (clientData === "spokeops") {
+      if (entityMappings[selectedClientData]) {
+        return entityMappings[selectedClientData];
+      }
+    } else if (entityMappings[clientData]) {
+      return entityMappings[clientData];
+    }
+    return false;
+  };
+
+  const handleEntityChange = (event: SelectChangeEvent) => {
+    setEntity(event.target.value);
+    dispatch(filterEntity(event.target.value));
+  };
+
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
@@ -193,6 +224,21 @@ const Orders = () => {
             <FileDownloadIcon />
           </IconButton>
         </h2>
+        {hasEntity() && (
+          <FormControl fullWidth>
+            <InputLabel id="client-select-label">Entity</InputLabel>
+            <Select
+              labelId="client-select-label"
+              value={entity}
+              label="Entity"
+              onChange={handleEntityChange}
+            >
+              {hasEntity().map((e: any) => (
+                <MenuItem value={e}>{e}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}
