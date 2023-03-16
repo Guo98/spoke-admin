@@ -101,7 +101,10 @@ const Inventory: FC = (): ReactElement => {
 
   const downloadInventory = async () => {
     const accessToken = await getAccessTokenSilently();
-    const downloadResult = await download(accessToken, clientData);
+    const downloadResult = await download(
+      accessToken,
+      clientData === "spokeops" ? selectedClientData : clientData
+    );
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
