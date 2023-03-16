@@ -13,6 +13,11 @@ import {
   Typography,
   Grid,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
@@ -112,6 +117,10 @@ const OperationsManage = (props: OperationsOrder) => {
     }
   };
 
+  const handleChange = (event: SelectChangeEvent, index: number) => {
+    tempItems[index].courier = event.target.value;
+  };
+
   return (
     <>
       <Button
@@ -149,6 +158,11 @@ const OperationsManage = (props: OperationsOrder) => {
                   <TableCell>
                     <Typography fontWeight="bold" align="right">
                       Tracking #
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography fontWeight="bold" align="right">
+                      Courier
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -194,6 +208,28 @@ const OperationsManage = (props: OperationsOrder) => {
                           />
                         ) : (
                           item.tracking_number
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {edit ? (
+                          <>
+                            <FormControl fullWidth size="small">
+                              <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={tempItems[index].courier}
+                                label="Courier"
+                                onChange={(e) => handleChange(e, index)}
+                              >
+                                <MenuItem value="UPS">UPS</MenuItem>
+                                <MenuItem value="Fedex">Fedex</MenuItem>
+                                <MenuItem value="USPS">USPS</MenuItem>
+                                <MenuItem value="DHL">DHL</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </>
+                        ) : (
+                          item.courier
                         )}
                       </TableCell>
                     </TableRow>
