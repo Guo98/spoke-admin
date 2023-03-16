@@ -19,6 +19,7 @@ const orgMapping: any = {
   org_BMQjF5J2inNZ8PoQ: "FLYR",
   org_cTljsU08cE8ECjBp: "Bowery",
   org_ZQAwXjMDnevrYYIr: "NurseDash",
+  org_gaFIEnwpsXXm8z0D: "Intersect Power",
 };
 
 export { imageMapping, orgMapping };
