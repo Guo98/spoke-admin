@@ -189,6 +189,7 @@ const ManageModal = (props: ManageProps) => {
                 devices={props.devices}
                 manageOpen={true}
                 handleParentClose={handleClose}
+                disabled={false}
               />
             )}
           </>

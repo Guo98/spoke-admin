@@ -48,6 +48,7 @@ interface AssignProps {
   devices?: InventorySummary[];
   manageOpen?: boolean;
   handleParentClose?: Function;
+  disabled: boolean;
 }
 
 interface ValidateAddress {
@@ -128,6 +129,7 @@ const AssignModal = (props: AssignProps) => {
             alignItems: "center",
           }}
           onClick={handleOpen}
+          disabled={props.disabled}
         >
           Assign
         </Button>

@@ -70,26 +70,24 @@ const Inventory: FC = (): ReactElement => {
 
   const { getAccessTokenSilently } = useAuth0();
 
+  const fetchData = async () => {
+    let client = clientData === "spokeops" ? selectedClientData : clientData;
+    const accessToken = await getAccessTokenSilently();
+    const inventoryResult = await getInventory(accessToken, client);
+    dispatch(updateInventory(inventoryResult.data));
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      let client = clientData === "spokeops" ? selectedClientData : clientData;
-      const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(accessToken, client);
-      dispatch(updateInventory(inventoryResult.data));
-    };
     if (loading) {
       fetchData().catch(console.error);
     }
   }, [clientData]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const accessToken = await getAccessTokenSilently();
-      let client = clientData === "spokeops" ? selectedClientData : clientData;
-      const inventoryResult = await getInventory(accessToken, client);
-      dispatch(updateInventory(inventoryResult.data));
-    };
+    fetchData().catch(console.error);
+  }, [selectedClientData]);
 
+  useEffect(() => {
     if (!openAdd && data.length > 0) {
       fetchData().catch(console.error);
     }

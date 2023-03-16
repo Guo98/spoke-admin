@@ -126,7 +126,11 @@ const Orders = () => {
 
   const download = async () => {
     const accessToken = await getAccessTokenSilently();
-    const downloadResult = await downloadOrders(accessToken, clientData);
+
+    const downloadResult = await downloadOrders(
+      accessToken,
+      clientData === "spokeops" ? selectedClientData : clientData
+    );
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
