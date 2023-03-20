@@ -11,7 +11,21 @@ export const ordersSlice = createSlice({
   initialState: initialState,
   reducers: {
     updateOrders: (state, action: PayloadAction<OrdersSummary>) => {
-      state.data = action.payload;
+      let completed = [] as any[];
+      let in_progress = [...(action.payload.in_progress as any[])];
+
+      if (action.payload.completed && action.payload.completed.length > 0) {
+        action.payload.completed.forEach((order) => {
+          if (order.shipping_status === "Incomplete") {
+            in_progress.push(order);
+          } else {
+            completed.push(order);
+          }
+        });
+      }
+
+      state.data.completed = completed;
+      state.data.in_progress = in_progress;
     },
   },
 });
