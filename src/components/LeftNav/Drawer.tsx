@@ -30,7 +30,6 @@ import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import AppContainer from "../AppContainer/AppContainer";
-import { useNavigate } from "react-router-dom";
 import { resetData } from "../../services/inventoryAPI";
 import { RootState } from "../../app/store";
 import "./Drawer.css";
@@ -84,6 +83,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [links, setLinks] = useState<string[]>([
+    "Orders",
+    "Inventory",
+    "Storefront",
+  ]);
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -98,10 +102,26 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const container =
     respwindow !== undefined ? () => respwindow().document.body : undefined;
 
+  useEffect(() => {
+    if (clientData !== "Intersect Power") {
+      setLinks(["Orders", "Inventory", "Storefront"]);
+    } else {
+      setLinks(["Orders", "Storefront"]);
+    }
+  }, [clientData]);
+
+  useEffect(() => {
+    if (selectedClientData !== "Intersect Power") {
+      setLinks(["Orders", "Inventory", "Storefront"]);
+    } else {
+      setLinks(["Orders", "Storefront"]);
+    }
+  }, [selectedClientData]);
+
   const drawerContent = (
     <>
       <List>
-        {["Orders", "Inventory", "Storefront"].map((text, index) => (
+        {links.map((text, index) => (
           <ListItem key={text} selected={index === selectedIndex}>
             <ListItemButton
               onClick={() => {
