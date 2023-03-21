@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Modal from "@mui/material/Modal";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import {
+  CircularProgress,
+  Modal,
+  Button,
+  Box,
+  TextField,
+  Typography,
+} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Item } from "../../interfaces/orders";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -42,6 +45,7 @@ const ManageOrder = (props: ManageProps) => {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const { user, getAccessTokenSilently } = useAuth0();
 
@@ -66,19 +70,29 @@ const ManageOrder = (props: ManageProps) => {
         support_message: content,
         support_subject: subject,
       };
+    } else {
+      supportObj = {
+        requestor_email: user?.email,
+        support_message: content,
+        support_subject: subject,
+        orderNo: order_no ? order_no : "General",
+      };
     }
     const accessToken = await getAccessTokenSilently();
     try {
+      setSending(true);
       const emailResp = await sendSupportEmail(accessToken, supportObj);
 
       if (emailResp.message === "Successful") {
         setSent(true);
+        setSending(false);
         if (props.setFooterOpen) {
           // props.setFooterOpen(false);
         }
       }
     } catch (e) {
       console.log("email support err ::::::::: ", e);
+      setSending(false);
     }
   };
 
@@ -133,8 +147,9 @@ const ManageOrder = (props: ManageProps) => {
                   variant="contained"
                   sx={{ borderRadius: "10px" }}
                   onClick={sendSupport}
+                  disabled={sending}
                 >
-                  Submit
+                  {sending ? <CircularProgress /> : "Submit"}
                 </Button>
               </div>
             </>
