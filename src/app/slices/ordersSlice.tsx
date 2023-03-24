@@ -19,21 +19,24 @@ export const ordersSlice = createSlice({
   initialState: initialState,
   reducers: {
     updateOrders: (state, action: PayloadAction<OrdersSummary>) => {
-      state.data = action.payload;
+      // state.data = action.payload;
       state.originalData = action.payload;
 
+      let completed = [] as any[];
+      let in_progress = [...(action.payload.in_progress as any[])];
+
       if (action.payload.completed && action.payload.completed.length > 0) {
-        if (action.payload.completed[0].entity) {
-          state.hasEntity = true;
-        }
-      } else if (
-        action.payload.in_progress &&
-        action.payload.in_progress.length > 0
-      ) {
-        if (action.payload.in_progress[0].entity) {
-          state.hasEntity = true;
-        }
+        action.payload.completed.forEach((order) => {
+          if (order.shipping_status === "Incomplete") {
+            in_progress.push(order);
+          } else {
+            completed.push(order);
+          }
+        });
       }
+
+      state.data.completed = completed;
+      state.data.in_progress = in_progress;
     },
     filterEntity: (state, action: PayloadAction<string>) => {
       if (action.payload !== "") {

@@ -57,8 +57,6 @@ const Orders = () => {
   const [inprog, setInprog] = useState<Order[]>([]);
   const [completed, setCompleted] = useState<Order[]>([]);
   const [filtered, setFiltered] = useState(false);
-  const [entities, setEntities] = useState([]);
-  const [entity, setEntity] = useState("");
 
   const dispatch = useDispatch();
 
@@ -196,22 +194,6 @@ const Orders = () => {
     );
   };
 
-  const hasEntity = () => {
-    if (clientData === "spokeops") {
-      if (entityMappings[selectedClientData]) {
-        return entityMappings[selectedClientData];
-      }
-    } else if (entityMappings[clientData]) {
-      return entityMappings[clientData];
-    }
-    return false;
-  };
-
-  const handleEntityChange = (event: SelectChangeEvent) => {
-    setEntity(event.target.value);
-    dispatch(filterEntity(event.target.value));
-  };
-
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
@@ -225,33 +207,6 @@ const Orders = () => {
             <FileDownloadIcon />
           </IconButton>
         </h2>
-        {hasEntity() && (
-          <FormControl fullWidth>
-            <InputLabel id="client-select-label">Entity</InputLabel>
-            <Select
-              labelId="client-select-label"
-              value={entity}
-              label="Entity"
-              onChange={handleEntityChange}
-              endAdornment={
-                entity !== "" && (
-                  <IconButton
-                    onClick={() => {
-                      setEntity("");
-                      dispatch(filterEntity(""));
-                    }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                )
-              }
-            >
-              {hasEntity().map((e: any) => (
-                <MenuItem value={e}>{e}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}

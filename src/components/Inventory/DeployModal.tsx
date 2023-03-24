@@ -11,6 +11,7 @@ import {
   Stack,
   Grid,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -99,6 +100,7 @@ const DeployModalContent = (props: DeployProps) => {
   const [checked, setChecked] = useState(false);
   const [success, setSuccess] = useState(false);
   const [editNote, setEditNote] = useState(note);
+  const [sending, setSending] = useState(false);
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -131,6 +133,7 @@ const DeployModalContent = (props: DeployProps) => {
       shipping: shipping,
       requestor_email: user?.email,
     };
+    setSending(true);
     const deployResult = await manageLaptop(
       accessToken,
       deployObj,
@@ -140,6 +143,7 @@ const DeployModalContent = (props: DeployProps) => {
     if (deployResult) {
       setConfirmation(true);
       setSuccess(true);
+      setSending(false);
       const client =
         clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
@@ -377,9 +381,9 @@ const DeployModalContent = (props: DeployProps) => {
                     borderRadius: "10px",
                   }}
                   onClick={async () => await deploy()}
-                  disabled={!checked}
+                  disabled={!checked || sending}
                 >
-                  Deploy
+                  {sending ? <CircularProgress /> : "Deploy"}
                 </Button>
               </div>
             </Grid>

@@ -34,6 +34,7 @@ export interface Item {
   supplier: string;
   tracking_number: string[] | string;
   type?: string;
+  courier?: string;
 }
 
 interface Variant {

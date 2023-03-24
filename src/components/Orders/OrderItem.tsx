@@ -191,15 +191,25 @@ const OrderItem = (props: OrderProps) => {
               <Table aria-label="items table">
                 <TableHead>
                   <TableRow>
-                    <TableCell width="50%">
+                    <TableCell>
                       <Typography fontWeight="bold">Item</Typography>
                     </TableCell>
-                    <TableCell width="25%">
+                    <TableCell>
                       <Typography fontWeight="bold">Quantity</Typography>
                     </TableCell>
-                    <TableCell width="25%">
+                    <TableCell>
                       <Typography fontWeight="bold" align="right">
                         Price
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography fontWeight="bold" align="right">
+                        Tracking Number
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography fontWeight="bold" align="right">
+                        Courier
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -208,9 +218,9 @@ const OrderItem = (props: OrderProps) => {
                   {items.map((item, index) => {
                     return (
                       <TableRow hover>
-                        <TableCell width="50%">{item.name}</TableCell>
-                        <TableCell width="25%">{item.quantity || 1}</TableCell>
-                        <TableCell width="25%" align="right">
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.quantity || 1}</TableCell>
+                        <TableCell align="right">
                           <Typography>
                             $
                             {item.price.toString().indexOf(".") > -1
@@ -218,6 +228,10 @@ const OrderItem = (props: OrderProps) => {
                               : item.price + ".00"}
                           </Typography>
                         </TableCell>
+                        <TableCell align="right">
+                          {item.tracking_number}
+                        </TableCell>
+                        <TableCell align="right">{item.courier}</TableCell>
                       </TableRow>
                     );
                   })}
