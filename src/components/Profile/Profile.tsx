@@ -137,7 +137,7 @@ const Profile = (props: ProfileProps) => {
                   onChange={handleChange}
                 >
                   <MenuItem value="public">Mock</MenuItem>
-                  <MenuItem value="FLYR">FLYR USA</MenuItem>
+                  <MenuItem value="FLYR">FLYR</MenuItem>
                   <MenuItem value="Bowery">Bowery</MenuItem>
                   <MenuItem value="NurseDash">NurseDash</MenuItem>
                   <MenuItem value="Intersect Power">Intersect Power</MenuItem>

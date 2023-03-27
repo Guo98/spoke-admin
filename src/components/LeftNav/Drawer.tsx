@@ -14,6 +14,11 @@ import {
   IconButton,
   Modal,
   Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
@@ -26,12 +31,17 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import MenuIcon from "@mui/icons-material/Menu";
 import StoreIcon from "@mui/icons-material/Store";
+import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { filterEntity } from "../../app/slices/ordersSlice";
+import { filterInventoryByEntity } from "../../app/slices/inventorySlice";
+import { updateEntity } from "../../app/store";
 import AppContainer from "../AppContainer/AppContainer";
 import { resetData } from "../../services/inventoryAPI";
 import { RootState } from "../../app/store";
+import { entityMappings } from "../../app/utility/constants";
 import "./Drawer.css";
 import Profile from "../Profile/Profile";
 
@@ -46,6 +56,7 @@ interface IconMapping {
   Logout: JSX.Element;
   "Log In": JSX.Element;
   Storefront: JSX.Element;
+  Misc: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -59,6 +70,7 @@ const iconMapping: IconMapping = {
   Logout: <LogoutIcon />,
   "Log In": <LoginIcon />,
   Storefront: <StoreIcon />,
+  Misc: <MiscellaneousServicesIcon />,
 };
 
 interface DrawerProps {
@@ -88,6 +100,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     "Inventory",
     "Storefront",
   ]);
+  const [entity, setEntity] = useState("");
+
+  const dispatch = useDispatch();
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -103,7 +118,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     respwindow !== undefined ? () => respwindow().document.body : undefined;
 
   useEffect(() => {
-    if (clientData !== "Intersect Power") {
+    if (clientData === "spokeops") {
+      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
+    } else if (clientData !== "Intersect Power") {
       setLinks(["Orders", "Inventory", "Storefront"]);
     } else {
       setLinks(["Orders", "Storefront"]);
@@ -112,11 +129,22 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (selectedClientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
     } else {
-      setLinks(["Orders", "Storefront"]);
+      setLinks(["Orders", "Storefront", "Misc"]);
     }
   }, [selectedClientData]);
+
+  const hasEntity = () => {
+    if (clientData === "spokeops") {
+      if (entityMappings[selectedClientData]) {
+        return entityMappings[selectedClientData];
+      }
+    } else if (entityMappings[clientData]) {
+      return entityMappings[clientData];
+    }
+    return false;
+  };
 
   const drawerContent = (
     <>
@@ -181,6 +209,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       case "team":
         setIndex(4);
         break;
+      case "misc":
+        setIndex(3);
+        break;
       default:
         setIndex(0);
         break;
@@ -200,6 +231,10 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         AppContainer.navigate("/inventory");
         setIndex(1);
         break;
+      case "Misc":
+        AppContainer.navigate("/misc");
+        setIndex(3);
+        break;
       case "Invoices":
         window.location.href = "/invoices";
         break;
@@ -214,9 +249,19 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           window.open("https://withspoke.com/demo", "_blank");
         } else if (
           clientData === "FLYR" ||
-          (clientData === "spokeops" && selectedClientData === "public")
+          (clientData === "spokeops" && selectedClientData === "FLYR")
         ) {
-          window.open("https://withspoke.com/flyrlabs", "_blank");
+          if (entity === "FLYR Poland" || entity === "FLYR EU") {
+            window.open("https://withspoke.com/flyrlabs-eu", "_blank");
+          } else {
+            window.open("https://withspoke.com/flyrlabs", "_blank");
+          }
+        } else if (
+          clientData === "Intersect Power" ||
+          (clientData === "spokeops" &&
+            selectedClientData === "Intersect Power")
+        ) {
+          window.open("https://withspoke.com/intersectpower", "_blank");
         } else {
           setOpen(true);
         }
@@ -246,6 +291,16 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     }
   };
 
+  const handleEntityChange = (event: SelectChangeEvent) => {
+    let entityValue = event.target.value;
+    setEntity(entityValue);
+
+    if (entityValue === "All") {
+      entityValue = "";
+    }
+    dispatch(updateEntity(entityValue));
+  };
+
   return (
     <>
       <Hidden mdUp>
@@ -267,9 +322,6 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       <Drawer
         variant="temporary"
         container={container}
-        // ModalProps={{
-        //   keepMounted: true, // Better open performance on mobile.
-        // }}
         sx={{
           display: { xs: "block", sm: "none" },
         }}
@@ -304,6 +356,30 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             }}
           />
         </div>
+        {hasEntity() && (
+          <FormControl
+            size="small"
+            variant="standard"
+            sx={{ paddingLeft: "32px", paddingRight: "20px" }}
+          >
+            <InputLabel
+              id="client-select-label"
+              sx={{ paddingLeft: "32px", paddingRight: "20px" }}
+            >
+              Organization
+            </InputLabel>
+            <Select
+              labelId="client-select-label"
+              value={entity}
+              label="Organization"
+              onChange={handleEntityChange}
+            >
+              {hasEntity().map((e: any) => (
+                <MenuItem value={e}>{e}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
         {drawerContent}
         <div className="bottom-version">
           <Typography fontSize="10px">Version 1.0.0-beta</Typography>

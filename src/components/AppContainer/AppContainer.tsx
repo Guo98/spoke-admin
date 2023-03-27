@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Inventory from "../Inventory/Inventory";
 import Orders from "../Orders/Orders";
 import Logout from "../Login/Logout";
+import OperationsMisc from "../Operations/OperationsMisc";
 
 const AppContainer = createBrowserRouter([
   {
@@ -10,6 +11,14 @@ const AppContainer = createBrowserRouter([
     element: (
       <>
         <Orders />
+      </>
+    ),
+  },
+  {
+    path: "/misc",
+    element: (
+      <>
+        <OperationsMisc />
       </>
     ),
   },
