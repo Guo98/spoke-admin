@@ -53,9 +53,6 @@ export const inventorySlice = createSlice({
           tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
           offboarding.push(tempOffboarding);
         }
-        // } else if (device.adding_stock) {
-        //   offboarding.push(device);
-        // }
       });
 
       inStock.sort((a, b) => b.serial_numbers.length - a.serial_numbers.length);
@@ -106,9 +103,6 @@ export const inventorySlice = createSlice({
               offboarding.push(tempOffboarding);
             }
           }
-          // } else if (device.adding_stock) {
-          //   offboarding.push(device);
-          // }
         });
 
         inStock.sort(
@@ -155,9 +149,6 @@ export const inventorySlice = createSlice({
             tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
             offboarding.push(tempOffboarding);
           }
-          // } else if (device.adding_stock) {
-          //   offboarding.push(device);
-          // }
         });
 
         inStock.sort(

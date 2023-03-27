@@ -36,6 +36,8 @@ import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
 import { filterEntity } from "../../app/slices/ordersSlice";
+import { filterInventoryByEntity } from "../../app/slices/inventorySlice";
+import { updateEntity } from "../../app/store";
 import AppContainer from "../AppContainer/AppContainer";
 import { resetData } from "../../services/inventoryAPI";
 import { RootState } from "../../app/store";
@@ -247,9 +249,13 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           window.open("https://withspoke.com/demo", "_blank");
         } else if (
           clientData === "FLYR" ||
-          (clientData === "spokeops" && selectedClientData === "public")
+          (clientData === "spokeops" && selectedClientData === "FLYR")
         ) {
-          window.open("https://withspoke.com/flyrlabs", "_blank");
+          if (entity === "FLYR Poland" || entity === "FLYR EU") {
+            window.open("https://withspoke.com/flyrlabs-eu", "_blank");
+          } else {
+            window.open("https://withspoke.com/flyrlabs", "_blank");
+          }
         } else if (
           clientData === "Intersect Power" ||
           (clientData === "spokeops" &&
@@ -292,7 +298,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     if (entityValue === "All") {
       entityValue = "";
     }
-    dispatch(filterEntity(entityValue));
+    dispatch(updateEntity(entityValue));
   };
 
   return (
@@ -316,9 +322,6 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       <Drawer
         variant="temporary"
         container={container}
-        // ModalProps={{
-        //   keepMounted: true, // Better open performance on mobile.
-        // }}
         sx={{
           display: { xs: "block", sm: "none" },
         }}
@@ -370,7 +373,6 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
               value={entity}
               label="Organization"
               onChange={handleEntityChange}
-              sx={{ paddingLeft: "32px", paddingRight: "20px" }}
             >
               {hasEntity().map((e: any) => (
                 <MenuItem value={e}>{e}</MenuItem>
