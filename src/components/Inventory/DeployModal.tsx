@@ -132,6 +132,7 @@ const DeployModalContent = (props: DeployProps) => {
       device_location: device_location,
       shipping: shipping,
       requestor_email: user?.email,
+      requestor_name: user?.name,
     };
     setSending(true);
     const deployResult = await manageLaptop(
