@@ -32,11 +32,11 @@ import LoginIcon from "@mui/icons-material/Login";
 import MenuIcon from "@mui/icons-material/Menu";
 import StoreIcon from "@mui/icons-material/Store";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useLocation } from "react-router-dom";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
-import { filterEntity } from "../../app/slices/ordersSlice";
-import { filterInventoryByEntity } from "../../app/slices/inventorySlice";
 import { updateEntity } from "../../app/store";
 import AppContainer from "../AppContainer/AppContainer";
 import { resetData } from "../../services/inventoryAPI";
@@ -57,6 +57,7 @@ interface IconMapping {
   "Log In": JSX.Element;
   Storefront: JSX.Element;
   Misc: JSX.Element;
+  Marketplace: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -71,6 +72,7 @@ const iconMapping: IconMapping = {
   "Log In": <LoginIcon />,
   Storefront: <StoreIcon />,
   Misc: <MiscellaneousServicesIcon />,
+  Marketplace: <ShoppingCartIcon />,
 };
 
 interface DrawerProps {
@@ -103,6 +105,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const [entity, setEntity] = useState("");
 
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -119,9 +122,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (clientData === "spokeops") {
-      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
     } else if (clientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
     } else {
       setLinks(["Orders", "Storefront"]);
     }
@@ -129,7 +132,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (selectedClientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
     } else {
       setLinks(["Orders", "Storefront", "Misc"]);
     }
@@ -210,13 +213,16 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         setIndex(4);
         break;
       case "misc":
+        setIndex(4);
+        break;
+      case "marketplace":
         setIndex(3);
         break;
       default:
         setIndex(0);
         break;
     }
-  }, []);
+  }, [window.location.pathname]);
 
   const gotoPage = (title: string): void => {
     switch (title) {
@@ -233,6 +239,10 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Misc":
         AppContainer.navigate("/misc");
+        setIndex(4);
+        break;
+      case "Marketplace":
+        AppContainer.navigate("/marketplace");
         setIndex(3);
         break;
       case "Invoices":

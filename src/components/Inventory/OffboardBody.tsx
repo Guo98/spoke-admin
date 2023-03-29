@@ -134,6 +134,7 @@ const OffboardBody = (props: OffboardProps) => {
       phone_num: pn,
       requestor_email: user?.email,
       note: note,
+      requestor_name: user?.name,
     };
 
     const offboardResult = await manageLaptop(
