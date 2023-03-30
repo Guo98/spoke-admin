@@ -90,9 +90,10 @@ const PurchaseModal = (props: PurchaseProps) => {
             value={type}
             required
           >
-            {Object.keys(types).map((brandtype) => {
-              return <MenuItem value={brandtype}>{brandtype}</MenuItem>;
-            })}
+            {types &&
+              Object.keys(types).map((brandtype) => {
+                return <MenuItem value={brandtype}>{brandtype}</MenuItem>;
+              })}
           </Select>
         </FormControl>
         <FormControl fullWidth sx={textFieldStyle} required size="small">
