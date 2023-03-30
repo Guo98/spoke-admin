@@ -1,5 +1,16 @@
-export async function getAllOrders(accessToken: string, client: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + `/getAllOrders/${client}`, {
+import { roleMapping } from "../utilities/mappings";
+
+export async function getAllOrders(
+  accessToken: string,
+  client: string,
+  entity: string = ""
+) {
+  let route = `/getAllOrders/${client}`;
+
+  if (entity !== "" && entity !== "admin") {
+    route = `/getAllOrders/${client}/${roleMapping[entity]}`;
+  }
+  return fetch(process.env.REACT_APP_SPOKE_API + route, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

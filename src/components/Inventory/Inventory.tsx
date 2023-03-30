@@ -58,6 +58,8 @@ const Inventory: FC = (): ReactElement => {
     (state: RootState) => state.client.selectedEntity
   );
 
+  const roles = useSelector((state: RootState) => state.client.roles);
+
   const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [stock, setStock] = useState(data);
@@ -80,7 +82,11 @@ const Inventory: FC = (): ReactElement => {
   const fetchData = async () => {
     let client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
-    const inventoryResult = await getInventory(accessToken, client);
+    const inventoryResult = await getInventory(
+      accessToken,
+      client,
+      roles.length > 0 ? roles[0] : ""
+    );
     dispatch(updateInventory(inventoryResult.data));
     if (selectedEntity !== "") {
       dispatch(filterInventoryByEntity(selectedEntity));
@@ -255,7 +261,11 @@ const Inventory: FC = (): ReactElement => {
               justifyItems="center"
               alignItems="center"
             >
-              <ManageModal type="general" devices={ogstock} />
+              <ManageModal
+                type="general"
+                devices={ogstock}
+                instock_quantity={stockTotal}
+              />
             </Box>
           </Grid>
         </Grid>

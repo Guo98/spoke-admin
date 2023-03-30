@@ -111,6 +111,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
   );
+  const roles = useSelector((state: RootState) => state.client.roles);
   // const navigate = useNavigate();
 
   const isDarkTheme = useTheme().palette.mode === "dark";
@@ -122,18 +123,18 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (clientData === "spokeops") {
-      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
     } else if (clientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
+      setLinks(["Orders", "Inventory", "Storefront"]);
     } else {
       setLinks(["Orders", "Storefront"]);
     }
   }, [clientData]);
 
   useEffect(() => {
-    if (selectedClientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
-    } else {
+    if (selectedClientData !== "Intersect Power" && clientData === "spokeops") {
+      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
+    } else if (clientData === "spokeops") {
       setLinks(["Orders", "Storefront", "Misc"]);
     }
   }, [selectedClientData]);
@@ -143,7 +144,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       if (entityMappings[selectedClientData]) {
         return entityMappings[selectedClientData];
       }
-    } else if (entityMappings[clientData]) {
+    } else if (
+      entityMappings[clientData] &&
+      roles.length > 0 &&
+      roles.indexOf("admin") > -1
+    ) {
       return entityMappings[clientData];
     }
     return false;
@@ -261,7 +266,12 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           clientData === "FLYR" ||
           (clientData === "spokeops" && selectedClientData === "FLYR")
         ) {
-          if (entity === "FLYR Poland" || entity === "FLYR EU") {
+          if (
+            entity === "FLYR Poland" ||
+            entity === "FLYR EU" ||
+            (roles.length > 0 &&
+              (roles[0] === "flyr-eu" || roles[0] === "flyr-poland"))
+          ) {
             window.open("https://withspoke.com/flyrlabs-eu", "_blank");
           } else {
             window.open("https://withspoke.com/flyrlabs", "_blank");
@@ -392,7 +402,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         )}
         {drawerContent}
         <div className="bottom-version">
-          <Typography fontSize="10px">Version 1.0.0-beta</Typography>
+          <Typography fontSize="10px">Version 1.1.0-beta</Typography>
         </div>
       </Drawer>
     </>

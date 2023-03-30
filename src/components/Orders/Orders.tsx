@@ -39,6 +39,8 @@ const Orders = () => {
   const selectedEntity = useSelector(
     (state: RootState) => state.client.selectedEntity
   );
+  const roles = useSelector((state: RootState) => state.client.roles);
+
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
   const [allOrders, setAll] = useState<Order[]>([]);
@@ -78,7 +80,12 @@ const Orders = () => {
   const fetchData = async () => {
     const accessToken = await getAccessTokenSilently();
     let client = clientData === "spokeops" ? selectedClientData : clientData;
-    const ordersResult = await getAllOrders(accessToken, client);
+
+    const ordersResult = await getAllOrders(
+      accessToken,
+      client,
+      roles.length > 0 ? roles[0] : ""
+    );
     dispatch(updateOrders(ordersResult.data));
     if (selectedEntity !== "") {
       dispatch(filterEntity(selectedEntity));

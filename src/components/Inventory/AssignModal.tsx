@@ -17,6 +17,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import DeployModalContent from "./DeployModal";
 import { validateAddress } from "../../services/address";
 import { InventorySummary } from "../../interfaces/inventory";
+import {
+  deviceLocationMappings,
+  locationMappings,
+} from "../../utilities/mappings";
 
 const style = {
   position: "absolute" as "absolute",
@@ -89,6 +93,7 @@ const AssignModal = (props: AssignProps) => {
     setForm(false);
     setShipping("");
     setSD("");
+    setError("");
 
     if (type === "general") props.handleParentClose!();
   };
@@ -106,16 +111,21 @@ const AssignModal = (props: AssignProps) => {
     const addressResult = await validateAddress(address, accessToken);
     if (addressResult.message === "Successful!") {
       if (
-        addressResult.data.country === "US" ||
-        addressResult.data.country === "USA"
+        addressResult.data.country &&
+        deviceLocationMappings[addressResult.data.country] &&
+        deviceLocationMappings[addressResult.data.country] !== device_location
       ) {
+        setError(
+          `This device is only deployable within ${
+            locationMappings[device_location!]
+          }. Please enter an address within the territory or select a new device to deploy.`
+        );
+      } else {
         setAddrObj(addressResult.data);
         setForm(false);
-      } else {
-        setError("Currently not supported outside of the US.");
       }
     } else {
-      setError("Currently not supported outside of the US.");
+      setError("Please confirm that the address was entered correctly.");
     }
   };
 

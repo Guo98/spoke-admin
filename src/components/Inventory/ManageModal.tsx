@@ -54,9 +54,11 @@ interface ManageProps {
   phone_number?: string;
   type: string;
   devices?: InventorySummary[];
+  instock_quantity?: number;
 }
 
 const ManageModal = (props: ManageProps) => {
+  const { instock_quantity } = props;
   const [open, setOpen] = useState(false);
   const [manageType, setManageType] = useState("");
   const [changeView, setChangeView] = useState(false);
@@ -67,6 +69,7 @@ const ManageModal = (props: ManageProps) => {
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
   );
+  const roles = useSelector((state: RootState) => state.client.roles);
 
   const dispatch = useDispatch();
 
@@ -77,7 +80,11 @@ const ManageModal = (props: ManageProps) => {
       const client =
         clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(accessToken, client);
+      const inventoryResult = await getInventory(
+        accessToken,
+        client,
+        roles.length > 0 ? roles[0] : ""
+      );
       dispatch(updateInventory(inventoryResult.data));
     };
 
@@ -148,7 +155,12 @@ const ManageModal = (props: ManageProps) => {
                     label="What do you want to do?"
                   >
                     {props.type === "general" && (
-                      <MenuItem value="Deployment">New Deployment</MenuItem>
+                      <MenuItem
+                        value="Deployment"
+                        disabled={instock_quantity! < 1}
+                      >
+                        New Deployment
+                      </MenuItem>
                     )}
                     <MenuItem value="Offboard">Offboard</MenuItem>
                     <MenuItem value="Return">Return</MenuItem>

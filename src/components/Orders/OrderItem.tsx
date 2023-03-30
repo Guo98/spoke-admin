@@ -142,7 +142,7 @@ const OrderItem = (props: OrderProps) => {
   }, [items]);
 
   return (
-    <Accordion>
+    <Accordion key={index}>
       <AccordionSummary id={"order-accordionsummary-" + index}>
         <Grid container direction={{ md: "row", xs: "column" }}>
           <Grid item md={2}>
