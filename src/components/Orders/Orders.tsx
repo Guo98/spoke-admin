@@ -9,7 +9,7 @@ import * as FileSaver from "file-saver";
 import { downloadOrders, getAllOrders } from "../../services/ordersAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { updateOrders } from "../../app/slices/ordersSlice";
+import { updateOrders, filterEntity } from "../../app/slices/ordersSlice";
 import { Order } from "../../interfaces/orders";
 import OrderItem from "./OrderItem";
 import TabPanel from "../common/TabPanel";
@@ -36,6 +36,11 @@ const Orders = () => {
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
   );
+  const selectedEntity = useSelector(
+    (state: RootState) => state.client.selectedEntity
+  );
+  const roles = useSelector((state: RootState) => state.client.roles);
+
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
   const [allOrders, setAll] = useState<Order[]>([]);
@@ -72,29 +77,30 @@ const Orders = () => {
     }
   }, [searchParams, isLoading, isAuthenticated]);
 
-  useEffect(() => {
-    const fetchData = async (client: string) => {
-      const accessToken = await getAccessTokenSilently();
-      const ordersResult = await getAllOrders(accessToken, client);
-      dispatch(updateOrders(ordersResult.data));
-    };
+  const fetchData = async () => {
+    const accessToken = await getAccessTokenSilently();
+    let client = clientData === "spokeops" ? selectedClientData : clientData;
 
+    const ordersResult = await getAllOrders(
+      accessToken,
+      client,
+      roles.length > 0 ? roles[0] : ""
+    );
+    dispatch(updateOrders(ordersResult.data));
+    if (selectedEntity !== "") {
+      dispatch(filterEntity(selectedEntity));
+    }
+  };
+
+  useEffect(() => {
     if (isAuthenticated && !isLoading && loading) {
       if (clientData) {
-        let client =
-          clientData === "spokeops" ? selectedClientData : clientData;
-        fetchData(client).catch(console.error);
+        fetchData().catch(console.error);
       }
     }
   }, [isAuthenticated, isLoading, clientData]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const accessToken = await getAccessTokenSilently();
-      const ordersResult = await getAllOrders(accessToken, selectedClientData);
-      dispatch(updateOrders(ordersResult.data));
-    };
-
     if (clientData === "spokeops") {
       fetchData().catch(console.error);
     }
@@ -105,6 +111,10 @@ const Orders = () => {
       setLoading(false);
     }
   }, [data]);
+
+  useEffect(() => {
+    dispatch(filterEntity(selectedEntity));
+  }, [selectedEntity]);
 
   useEffect(() => {
     if (!loading) {
@@ -129,7 +139,8 @@ const Orders = () => {
 
     const downloadResult = await downloadOrders(
       accessToken,
-      clientData === "spokeops" ? selectedClientData : clientData
+      clientData === "spokeops" ? selectedClientData : clientData,
+      selectedEntity
     );
 
     const blob = new Blob([new Buffer(downloadResult.data)], {

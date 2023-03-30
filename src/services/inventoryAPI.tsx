@@ -1,5 +1,16 @@
-export async function getInventory(accessToken: string, client: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + `/getInventory/${client}`, {
+import { roleMapping } from "../utilities/mappings";
+
+export async function getInventory(
+  accessToken: string,
+  client: string,
+  entity: string = ""
+) {
+  let route = `/getInventory/${client}`;
+
+  if (entity !== "" && entity !== "admin") {
+    route = `/getInventory/${client}/${roleMapping[entity]}`;
+  }
+  return fetch(process.env.REACT_APP_SPOKE_API + route, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -69,9 +80,16 @@ export async function manageLaptop(
     });
 }
 
-export async function download(accessToken: string, client: string) {
+export async function download(
+  accessToken: string,
+  client: string,
+  entity: string
+) {
   return fetch(
-    process.env.REACT_APP_SPOKE_API + `/downloadinventory/${client}`,
+    process.env.REACT_APP_SPOKE_API +
+      (entity !== ""
+        ? `/downloadinventory/${client}/${entity}`
+        : `/downloadinventory/${client}`),
     {
       method: "GET",
       headers: {

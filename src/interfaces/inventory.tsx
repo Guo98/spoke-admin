@@ -16,6 +16,7 @@ export interface InventorySummary {
   };
   hidden?: boolean;
   new_device?: boolean;
+  entity?: string;
 }
 
 interface SerialNumbers {
@@ -41,4 +42,18 @@ interface SerialNumbers {
   quantity?: number;
   tracking_number?: string;
   date_requested?: string;
+}
+
+export interface MarketplaceProducts {
+  id: string;
+  brand: {
+    [key: string]: {
+      name: string;
+      types?: {
+        [key: string]: string[];
+      };
+      imgSrc: string;
+    };
+  };
+  imgSrc: string;
 }

@@ -1,27 +1,17 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { RouterProvider } from "react-router-dom";
+import { RouterProvider, BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import {
-  CssBaseline,
-  PaletteMode,
-  useMediaQuery,
-  Hidden,
-  AppBar,
-  Toolbar,
-  IconButton,
-  styled,
-} from "@mui/material";
+import { CssBaseline, PaletteMode, useMediaQuery, styled } from "@mui/material";
 import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
-import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useYbugApi } from "ybug-react";
 import { useDispatch } from "react-redux";
 import { orgMapping } from "./utilities/mappings";
 import { ColorModeContext } from "./utilities/color-context";
 import { blueGrey } from "@mui/material/colors";
-import { updateClient } from "./app/store";
+import { updateClient, addRole } from "./app/store";
 import "./App.css";
 
 const getDesignTokens = (mode: PaletteMode) => ({
@@ -99,6 +89,7 @@ function App() {
       localStorage.setItem("orgId", user.org_id);
       localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
       dispatch(updateClient(orgMapping[user.org_id]));
+      dispatch(addRole(user.role));
 
       if (YbugContext?.Ybug) {
         YbugContext.init({
@@ -149,12 +140,14 @@ function App() {
           >
             {window.location.pathname.substring(1) !== "logout" && (
               <>
-                <Box
-                  component="nav"
-                  sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
-                >
-                  <SpokeDrawer />
-                </Box>
+                <BrowserRouter>
+                  <Box
+                    component="nav"
+                    sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+                  >
+                    <SpokeDrawer />
+                  </Box>
+                </BrowserRouter>
               </>
             )}
             <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>

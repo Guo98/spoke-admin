@@ -22,4 +22,29 @@ const orgMapping: any = {
   org_gaFIEnwpsXXm8z0D: "Intersect Power",
 };
 
-export { imageMapping, orgMapping };
+const roleMapping: any = {
+  "flyr-eu": "FLYR EU",
+  "flyr-poland": "FLYR Poland",
+  "flyr-usa": "FLYR USA",
+};
+
+const deviceLocationMappings: any = {
+  USA: "Georgia, USA",
+  POL: "Poland",
+  NLD: "Netherlands",
+  DEU: "Netherlands",
+};
+
+const locationMappings: any = {
+  "Georgia, USA": "the USA",
+  Poland: "Poland",
+  Netherlands: "the EU",
+};
+
+export {
+  imageMapping,
+  orgMapping,
+  roleMapping,
+  deviceLocationMappings,
+  locationMappings,
+};

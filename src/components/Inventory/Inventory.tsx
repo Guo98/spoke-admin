@@ -17,7 +17,10 @@ import * as FileSaver from "file-saver";
 import { Buffer } from "buffer";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
-import { updateInventory } from "../../app/slices/inventorySlice";
+import {
+  updateInventory,
+  filterInventoryByEntity,
+} from "../../app/slices/inventorySlice";
 import { download, getInventory } from "../../services/inventoryAPI";
 import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
@@ -51,6 +54,12 @@ const Inventory: FC = (): ReactElement => {
     (state: RootState) => state.client.selectedClient
   );
 
+  const selectedEntity = useSelector(
+    (state: RootState) => state.client.selectedEntity
+  );
+
+  const roles = useSelector((state: RootState) => state.client.roles);
+
   const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [stock, setStock] = useState(data);
@@ -73,8 +82,15 @@ const Inventory: FC = (): ReactElement => {
   const fetchData = async () => {
     let client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
-    const inventoryResult = await getInventory(accessToken, client);
+    const inventoryResult = await getInventory(
+      accessToken,
+      client,
+      roles.length > 0 ? roles[0] : ""
+    );
     dispatch(updateInventory(inventoryResult.data));
+    if (selectedEntity !== "") {
+      dispatch(filterInventoryByEntity(selectedEntity));
+    }
   };
 
   useEffect(() => {
@@ -103,7 +119,8 @@ const Inventory: FC = (): ReactElement => {
     const accessToken = await getAccessTokenSilently();
     const downloadResult = await download(
       accessToken,
-      clientData === "spokeops" ? selectedClientData : clientData
+      clientData === "spokeops" ? selectedClientData : clientData,
+      selectedEntity
     );
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
@@ -117,14 +134,7 @@ const Inventory: FC = (): ReactElement => {
     setTabValue(newValue);
   };
 
-  useEffect(() => {
-    setStock(stockRedux);
-    setOGStock(stockRedux);
-    setDeployed(deployedRedux);
-    setOGDeployed(deployedRedux);
-    setInprogress(pendingRedux);
-    setOGInprogress(pendingRedux);
-
+  const updateCount = () => {
     let deployedVar = 0;
     deployedRedux.forEach((d) => {
       deployedVar += d.serial_numbers.length;
@@ -142,26 +152,20 @@ const Inventory: FC = (): ReactElement => {
       stockVar += s.serial_numbers.length;
     });
     setStockTotal(stockVar);
+  };
+
+  useEffect(() => {
+    setStock(stockRedux);
+    setOGStock(stockRedux);
+    setDeployed(deployedRedux);
+    setOGDeployed(deployedRedux);
+    setInprogress(pendingRedux);
+    setOGInprogress(pendingRedux);
+    updateCount();
   }, [pendingRedux, deployedRedux, stockRedux]);
 
   useEffect(() => {
-    let deployedVar = 0;
-    deployed.forEach((d) => {
-      deployedVar += d.serial_numbers.length;
-    });
-    setDeployedTotal(deployedVar);
-
-    let inprogVar = 0;
-    inprogress.forEach((p) => {
-      inprogVar += p.serial_numbers.length;
-    });
-    setInprogTotal(inprogVar);
-
-    let stockVar = 0;
-    stock.forEach((s) => {
-      stockVar += s.serial_numbers.length;
-    });
-    setStockTotal(stockVar);
+    updateCount();
   }, [stock, deployed, inprogress]);
 
   useEffect(() => {
@@ -179,6 +183,10 @@ const Inventory: FC = (): ReactElement => {
       setInprogTotal(inprogVar);
     }
   }, [filtered]);
+
+  useEffect(() => {
+    dispatch(filterInventoryByEntity(selectedEntity));
+  }, [selectedEntity]);
 
   const searchFilter = (text: string) => {
     if (text !== "") {
@@ -253,7 +261,11 @@ const Inventory: FC = (): ReactElement => {
               justifyItems="center"
               alignItems="center"
             >
-              <ManageModal type="general" devices={ogstock} />
+              <ManageModal
+                type="general"
+                devices={ogstock}
+                instock_quantity={stockTotal}
+              />
             </Box>
           </Grid>
         </Grid>
@@ -301,7 +313,7 @@ const Inventory: FC = (): ReactElement => {
             >
               {!loading ? (
                 <>
-                  {stockTotal > 0 ? (
+                  {stockTotal >= 0 && !filtered ? (
                     <>
                       {stock?.length > 0 &&
                         stock.map((device, index) => {
@@ -318,18 +330,7 @@ const Inventory: FC = (): ReactElement => {
                         })}
                     </>
                   ) : (
-                    <>
-                      {!filtered ? (
-                        <Typography>
-                          Nothing in stock. To assign a laptop, please order
-                          more.
-                        </Typography>
-                      ) : (
-                        <Typography textAlign="center">
-                          No results found
-                        </Typography>
-                      )}
-                    </>
+                    <Typography textAlign="center">No results found</Typography>
                   )}
                 </>
               ) : (

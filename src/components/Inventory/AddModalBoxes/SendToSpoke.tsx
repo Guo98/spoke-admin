@@ -9,6 +9,8 @@ import {
   MenuItem,
   SelectChangeEvent,
 } from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 
 interface SendProps {
   setSendDeviceName: Function;
@@ -31,16 +33,22 @@ const SendToSpoke = (props: SendProps) => {
     setWarehouse(event.target.value);
   };
 
+  const roles = useSelector((state: RootState) => state.client.roles);
+
   return (
     <Box>
-      <Typography sx={{ paddingBottom: "15px" }}>
-        Send a device to Spoke:
-      </Typography>
+      <Typography>Send a device to Spoke:</Typography>
+      {roles.length > 0 &&
+        (roles[0] === "flyr-poland" || roles[0] === "flyr-eu") && (
+          <Typography variant="caption" color="red">
+            * This is currently only supported within the US.
+          </Typography>
+        )}
       <TextField
         fullWidth
         label="Device being sent"
         required
-        sx={textFieldStyle}
+        sx={{ ...textFieldStyle, marginTop: "15px" }}
         size="small"
         placeholder="E.g. MacBook Pro 16' M1 2021"
         onChange={(event) => setSendDeviceName(event.target.value)}

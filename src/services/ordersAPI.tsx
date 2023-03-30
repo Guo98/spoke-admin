@@ -1,5 +1,16 @@
-export async function getAllOrders(accessToken: string, client: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + `/getAllOrders/${client}`, {
+import { roleMapping } from "../utilities/mappings";
+
+export async function getAllOrders(
+  accessToken: string,
+  client: string,
+  entity: string = ""
+) {
+  let route = `/getAllOrders/${client}`;
+
+  if (entity !== "" && entity !== "admin") {
+    route = `/getAllOrders/${client}/${roleMapping[entity]}`;
+  }
+  return fetch(process.env.REACT_APP_SPOKE_API + route, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -20,14 +31,23 @@ export async function getAllOrders(accessToken: string, client: string) {
     });
 }
 
-export async function downloadOrders(accessToken: string, client: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + `/downloadorders/${client}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  })
+export async function downloadOrders(
+  accessToken: string,
+  client: string,
+  entity: string
+) {
+  return fetch(
+    process.env.REACT_APP_SPOKE_API +
+      `/downloadorders/${client}` +
+      (entity !== "" && `/${entity}`),
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
     .then((response) => {
       if (!response.ok) {
         throw new Error("Missing Body");
