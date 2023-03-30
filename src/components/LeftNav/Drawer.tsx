@@ -123,9 +123,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (clientData === "spokeops") {
-      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
     } else if (clientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
     } else {
       setLinks(["Orders", "Storefront"]);
     }
@@ -133,7 +133,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (selectedClientData !== "Intersect Power" && clientData === "spokeops") {
-      setLinks(["Orders", "Inventory", "Storefront", "Misc"]);
+      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
     } else if (clientData === "spokeops") {
       setLinks(["Orders", "Storefront", "Misc"]);
     }

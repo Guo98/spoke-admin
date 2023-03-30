@@ -10,7 +10,7 @@ interface ProductProps {
 
 const ProductCard = (props: ProductProps) => {
   const { label, imgSrc, cardAction, index } = props;
-  console.log("label :::::::::::: ", label);
+
   return (
     <Card
       sx={{
