@@ -50,7 +50,7 @@ export interface MarketplaceProducts {
     [key: string]: {
       name: string;
       types?: {
-        [key: string]: string[];
+        [key: string]: { specs: string[]; colors: string[] };
       };
       imgSrc: string;
     };

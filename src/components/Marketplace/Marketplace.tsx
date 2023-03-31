@@ -104,25 +104,12 @@ const Marketplace = () => {
                 />
               );
             })}
-          {pagenumber === 2 &&
-            brandtypes &&
-            Object.keys(brandtypes).map((type, index) => {
-              return (
-                <ProductCard
-                  label={type}
-                  imgSrc={
-                    "https://spokeimages.blob.core.windows.net/image/sotckmac.jpg"
-                  }
-                  index={index}
-                  cardAction={selectBrand}
-                />
-              );
-            })}
           <PurchaseModal
             open={openModal}
             handleClose={handleClose}
             imgSrc={modalimg}
             types={brandtypes}
+            brand={brandname}
           />
         </Box>
         {pagenumber > 0 && (
