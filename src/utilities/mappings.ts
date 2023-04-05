@@ -20,6 +20,8 @@ const orgMapping: any = {
   org_cTljsU08cE8ECjBp: "Bowery",
   org_ZQAwXjMDnevrYYIr: "NurseDash",
   org_gaFIEnwpsXXm8z0D: "Intersect Power",
+  org_mwy5eCy2IyrXOY1E: "Hidden Road",
+  org_qDm7WkSvmptg3jT1: "Hidden Road",
 };
 
 const roleMapping: any = {

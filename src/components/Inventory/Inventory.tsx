@@ -110,7 +110,7 @@ const Inventory: FC = (): ReactElement => {
   }, [openAdd]);
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (data.length >= 0) {
       setLoading(false);
     }
   }, [data]);
@@ -313,7 +313,7 @@ const Inventory: FC = (): ReactElement => {
             >
               {!loading ? (
                 <>
-                  {stockTotal >= 0 && !filtered ? (
+                  {stockTotal > 0 ? (
                     <>
                       {stock?.length > 0 &&
                         stock.map((device, index) => {
@@ -330,7 +330,17 @@ const Inventory: FC = (): ReactElement => {
                         })}
                     </>
                   ) : (
-                    <Typography textAlign="center">No results found</Typography>
+                    <>
+                      {!filtered ? (
+                        <Typography textAlign="center">
+                          No Inventory Currently In Stock
+                        </Typography>
+                      ) : (
+                        <Typography textAlign="center">
+                          No results found
+                        </Typography>
+                      )}
+                    </>
                   )}
                 </>
               ) : (

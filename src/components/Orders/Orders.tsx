@@ -86,6 +86,7 @@ const Orders = () => {
       client,
       roles.length > 0 ? roles[0] : ""
     );
+
     dispatch(updateOrders(ordersResult.data));
     if (selectedEntity !== "") {
       dispatch(filterEntity(selectedEntity));
