@@ -17,7 +17,13 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Backdrop,
+  LinearProgress,
 } from "@mui/material";
+import { useSelector } from "react-redux";
+import { useAuth0 } from "@auth0/auth0-react";
+import { RootState } from "../../app/store";
+import { postOrder } from "../../services/ordersAPI";
 
 interface PurchaseProps {
   open: boolean;
@@ -47,6 +53,10 @@ const textFieldStyle = {
 const PurchaseModal = (props: PurchaseProps) => {
   const { open, handleClose, imgSrc, types, brand } = props;
 
+  const client = useSelector((state: RootState) => state.client.data);
+
+  const { getAccessTokenSilently } = useAuth0();
+
   const [type, setType] = useState("");
   const [specs, setSpecs] = useState("");
   const [color, setColor] = useState("");
@@ -62,6 +72,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [pn, setPhone] = useState("");
   const [shipping, setShipping] = useState("");
   const [recipient_notes, setRNotes] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     setType(event.target.value);
@@ -79,15 +90,56 @@ const PurchaseModal = (props: PurchaseProps) => {
     setChecked(event.target.checked);
   };
 
-  const buyDeploy = () => {
+  const buyDeploy = async () => {
     if (activeStep === 0) {
       setComplete1(true);
       setActiveStep(1);
+    } else if (activeStep === 1) {
+      setComplete2(true);
+      await sendRequest("Deploy");
+      setLoading(true);
     }
   };
 
-  const buyHold = () => {
+  const buyHold = async () => {
     setComplete1(true);
+    await sendRequest("Hold");
+    setLoading(true);
+  };
+
+  const sendRequest = async (buyType: string) => {
+    let postBody: any = {
+      client,
+      device_type: type,
+      specs: specs === "Other" ? otherSpecs : specs,
+      color,
+      notes: {
+        device: notes,
+      },
+      order_type:
+        buyType === "Hold" ? "Hold in Inventory" : "Deploy Right Away",
+    };
+
+    if (buyType !== "Hold") {
+      postBody.recipient_name = recipient_name;
+      postBody.address = address;
+      postBody.email = email;
+      postBody.phone_number = pn;
+      postBody.shipping_rate = shipping;
+      postBody.notes.recipient = recipient_notes;
+    }
+
+    const accessToken = await getAccessTokenSilently();
+
+    const newPurchaseResp = await postOrder(
+      "newPurchase",
+      accessToken,
+      postBody
+    );
+
+    console.log("purchase resp :::::::::::: ", newPurchaseResp);
+
+    setLoading(false);
   };
 
   return (
@@ -107,6 +159,7 @@ const PurchaseModal = (props: PurchaseProps) => {
         setActiveStep(0);
         setComplete1(false);
         handleClose();
+        setLoading(false);
       }}
     >
       <Box sx={style}>
@@ -317,6 +370,12 @@ const PurchaseModal = (props: PurchaseProps) => {
             Buy & Hold in Inventory
           </Button>
         )}
+        {/* <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <LinearProgress color="inherit" />
+        </Backdrop> */}
       </Box>
     </Modal>
   );
