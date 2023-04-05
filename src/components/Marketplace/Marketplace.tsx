@@ -8,6 +8,7 @@ import { RootState } from "../../app/store";
 import { MarketplaceProducts } from "../../interfaces/inventory";
 import Header from "../Header/Header";
 import ProductCard from "./ProductCard";
+import PurchaseModal from "./PurchaseModal";
 
 const Marketplace = () => {
   const productRedux = useSelector(
@@ -24,6 +25,8 @@ const Marketplace = () => {
   );
   const [brandname, setBrand] = useState("");
   const [brandtypes, setTypes] = useState<any | null>(null);
+  const [openModal, setOpen] = useState(false);
+  const [modalimg, setImg] = useState("");
 
   const getProducts = async () => {
     const accessToken = await getAccessTokenSilently();
@@ -45,12 +48,18 @@ const Marketplace = () => {
   };
 
   const selectBrand = (brand_name: string) => {
-    setPagenumber(2);
+    // setPagenumber(2);
+    setOpen(true);
     setBrand(brand_name);
     setTypes(brands![brand_name].types);
+    setImg(brands![brand_name].imgSrc);
   };
 
   const searchFilter = (text: string) => {};
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
@@ -95,20 +104,13 @@ const Marketplace = () => {
                 />
               );
             })}
-          {pagenumber === 2 &&
-            brandtypes &&
-            Object.keys(brandtypes).map((type, index) => {
-              return (
-                <ProductCard
-                  label={type}
-                  imgSrc={
-                    "https://spokeimages.blob.core.windows.net/image/sotckmac.jpg"
-                  }
-                  index={index}
-                  cardAction={selectBrand}
-                />
-              );
-            })}
+          <PurchaseModal
+            open={openModal}
+            handleClose={handleClose}
+            imgSrc={modalimg}
+            types={brandtypes}
+            brand={brandname}
+          />
         </Box>
         {pagenumber > 0 && (
           <Button

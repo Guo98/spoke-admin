@@ -51,6 +51,16 @@ const getDesignTokens = (mode: PaletteMode) => ({
             },
             style: { color: "#ACB9FF" },
           },
+          {
+            props: {
+              color: "secondary" as
+                | "secondary"
+                | "success"
+                | "error"
+                | undefined,
+            },
+            style: { backgroundColor: "" },
+          },
         ],
       },
       MuiFab: {
