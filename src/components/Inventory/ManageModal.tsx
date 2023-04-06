@@ -83,7 +83,7 @@ const ManageModal = (props: ManageProps) => {
       const inventoryResult = await getInventory(
         accessToken,
         client,
-        roles.length > 0 ? roles[0] : ""
+        roles?.length > 0 ? roles[0] : ""
       );
       dispatch(updateInventory(inventoryResult.data));
     };

@@ -146,8 +146,8 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       }
     } else if (
       entityMappings[clientData] &&
-      roles.length > 0 &&
-      roles.indexOf("admin") > -1
+      roles?.length > 0 &&
+      roles?.indexOf("admin") > -1
     ) {
       return entityMappings[clientData];
     }
@@ -269,7 +269,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           if (
             entity === "FLYR Poland" ||
             entity === "FLYR EU" ||
-            (roles.length > 0 &&
+            (roles?.length > 0 &&
               (roles[0] === "flyr-eu" || roles[0] === "flyr-poland"))
           ) {
             window.open("https://withspoke.com/flyrlabs-eu", "_blank");
