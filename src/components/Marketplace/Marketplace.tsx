@@ -20,6 +20,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(false);
   const [pagenumber, setPagenumber] = useState(0);
   const [product, setProduct] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [brands, setBrands] = useState<MarketplaceProducts["brand"] | null>(
     null
   );
@@ -44,6 +45,7 @@ const Marketplace = () => {
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
     setProduct(product_name);
+    setSelectedProducts((prevProds) => [...prevProds, product_name]);
     setBrands(productRedux[item_index].brand);
   };
 
@@ -55,7 +57,13 @@ const Marketplace = () => {
     setImg(brands![brand_name].imgSrc);
   };
 
-  const searchFilter = (text: string) => {};
+  const searchFilter = (text: string) => {
+    if (text === "") {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts((prevProds) => [...prevProds, text]);
+    }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -71,8 +79,23 @@ const Marketplace = () => {
           <h2>Marketplace</h2>
         </Typography>
         <Stack direction="row" spacing={2}>
-          <Chip label="All" />
-          <Chip label="Laptops" />
+          <Chip
+            label="All"
+            variant={selectedProducts.length === 0 ? "filled" : "outlined"}
+            clickable
+            onClick={() => searchFilter("")}
+          />
+          {productRedux.length > 0 &&
+            productRedux.map((prod, index) => (
+              <Chip
+                label={prod.id}
+                clickable
+                variant={
+                  selectedProducts.indexOf(prod.id) > -1 ? "filled" : "outlined"
+                }
+                onClick={() => searchFilter(prod.id)}
+              />
+            ))}
         </Stack>
         <Box
           sx={{
@@ -117,6 +140,7 @@ const Marketplace = () => {
             onClick={() => {
               if (pagenumber !== 0) {
                 setPagenumber(pagenumber - 1);
+                setProduct("");
               }
             }}
           >

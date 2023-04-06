@@ -20,6 +20,8 @@ import {
   Backdrop,
   LinearProgress,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
@@ -73,6 +75,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [shipping, setShipping] = useState("");
   const [recipient_notes, setRNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     setType(event.target.value);
@@ -96,15 +99,15 @@ const PurchaseModal = (props: PurchaseProps) => {
       setActiveStep(1);
     } else if (activeStep === 1) {
       setComplete2(true);
-      await sendRequest("Deploy");
       setLoading(true);
+      await sendRequest("Deploy");
     }
   };
 
   const buyHold = async () => {
     setComplete1(true);
-    await sendRequest("Hold");
     setLoading(true);
+    await sendRequest("Hold");
   };
 
   const sendRequest = async (buyType: string) => {
@@ -137,7 +140,9 @@ const PurchaseModal = (props: PurchaseProps) => {
       postBody
     );
 
-    console.log("purchase resp :::::::::::: ", newPurchaseResp);
+    if (newPurchaseResp.status !== "Successful") {
+      setError(true);
+    }
 
     setLoading(false);
   };
@@ -158,224 +163,266 @@ const PurchaseModal = (props: PurchaseProps) => {
         setRNotes("");
         setActiveStep(0);
         setComplete1(false);
-        handleClose();
         setLoading(false);
+        setComplete2(false);
+        setError(false);
+        handleClose();
       }}
     >
       <Box sx={style}>
-        <Typography variant="h5">New Purchase - {brand}</Typography>
-        <Divider />
-        <CardMedia
-          image={imgSrc}
-          title={"laptop"}
-          component="img"
-          height="175px"
-          sx={{
-            objectFit: "contain",
-            paddingTop: "15px",
-          }}
-        />
-        <Stepper activeStep={activeStep} sx={{ paddingTop: "10px" }}>
-          <Step key="Device" completed={completed1}>
-            <StepLabel>
-              <Typography>Device</Typography>
-            </StepLabel>
-          </Step>
-          <Step completed={completed2}>
-            <StepLabel
-              optional={<Typography variant="caption">Optional</Typography>}
-            >
-              <Typography>Recipient</Typography>
-            </StepLabel>
-          </Step>
-        </Stepper>
-        {activeStep === 0 && (
+        {((!loading && !completed1) ||
+          (completed1 && !completed2 && !loading)) && (
           <>
-            <FormControl fullWidth sx={textFieldStyle} required size="small">
-              <InputLabel id="type-select-label">Device Type</InputLabel>
-              <Select
-                labelId="type-select-label"
-                id="type-select"
-                label="Device Type"
-                onChange={handleTypeChange}
-                value={type}
-                required
-              >
-                {types &&
-                  Object.keys(types).map((brandtype) => {
-                    return <MenuItem value={brandtype}>{brandtype}</MenuItem>;
-                  })}
-              </Select>
-            </FormControl>
-            <FormControl
-              fullWidth
-              sx={textFieldStyle}
-              required
-              size="small"
-              disabled={type === ""}
-            >
-              <InputLabel id="specs-select-label">Specs</InputLabel>
-              <Select
-                labelId="specs-select-label"
-                id="specs-select"
-                label="Specs"
-                onChange={handleSpecsChange}
-                value={specs}
-                required
-              >
-                {type !== "" &&
-                  types[type].specs.map((spec: string) => {
-                    return <MenuItem value={spec}>{spec}</MenuItem>;
-                  })}
-                <MenuItem value="Other">Other</MenuItem>
-              </Select>
-            </FormControl>
-            {specs === "Other" && (
-              <TextField
-                label="Other Specs"
-                sx={textFieldStyle}
-                fullWidth
-                size="small"
-                required
-                onChange={(event) => setOtherSpecs(event.target.value)}
-              />
+            <Typography variant="h5">New Purchase - {brand}</Typography>
+            <Divider />
+            <CardMedia
+              image={imgSrc}
+              title={"laptop"}
+              component="img"
+              height="175px"
+              sx={{
+                objectFit: "contain",
+                paddingTop: "15px",
+              }}
+            />
+            <Stepper activeStep={activeStep} sx={{ paddingTop: "10px" }}>
+              <Step key="Device" completed={completed1}>
+                <StepLabel>
+                  <Typography>Device</Typography>
+                </StepLabel>
+              </Step>
+              <Step completed={completed2}>
+                <StepLabel
+                  optional={<Typography variant="caption">Optional</Typography>}
+                >
+                  <Typography>Recipient</Typography>
+                </StepLabel>
+              </Step>
+            </Stepper>
+            {activeStep === 0 && (
+              <>
+                <FormControl
+                  fullWidth
+                  sx={textFieldStyle}
+                  required
+                  size="small"
+                >
+                  <InputLabel id="type-select-label">Device Type</InputLabel>
+                  <Select
+                    labelId="type-select-label"
+                    id="type-select"
+                    label="Device Type"
+                    onChange={handleTypeChange}
+                    value={type}
+                    required
+                  >
+                    {types &&
+                      Object.keys(types).map((brandtype) => {
+                        return (
+                          <MenuItem value={brandtype}>{brandtype}</MenuItem>
+                        );
+                      })}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  fullWidth
+                  sx={textFieldStyle}
+                  required
+                  size="small"
+                  disabled={type === ""}
+                >
+                  <InputLabel id="specs-select-label">Specs</InputLabel>
+                  <Select
+                    labelId="specs-select-label"
+                    id="specs-select"
+                    label="Specs"
+                    onChange={handleSpecsChange}
+                    value={specs}
+                    required
+                  >
+                    {type !== "" &&
+                      types[type].specs?.map((spec: string) => {
+                        return <MenuItem value={spec}>{spec}</MenuItem>;
+                      })}
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+                {specs === "Other" && (
+                  <TextField
+                    label="Other Specs"
+                    sx={textFieldStyle}
+                    fullWidth
+                    size="small"
+                    required
+                    onChange={(event) => setOtherSpecs(event.target.value)}
+                  />
+                )}
+                <FormControl
+                  fullWidth
+                  sx={textFieldStyle}
+                  required
+                  size="small"
+                  disabled={type === ""}
+                >
+                  <InputLabel id="color-select-label">Color</InputLabel>
+                  <Select
+                    labelId="color-select-label"
+                    id="color-select"
+                    label="Color"
+                    onChange={handleColorChange}
+                    value={color}
+                    required
+                  >
+                    {type !== "" &&
+                      types[type].colors?.map((color: string) => {
+                        return <MenuItem value={color}>{color}</MenuItem>;
+                      })}
+                  </Select>
+                </FormControl>
+                <TextField
+                  label="Notes"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setNotes(event.target.value)}
+                />
+                <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
+                <FormControlLabel
+                  control={<Checkbox required onChange={handleChecked} />}
+                  label={
+                    <div>
+                      By checking this box, I agree to have Spoke generate a
+                      quote on my behalf.
+                    </div>
+                  }
+                />
+              </>
             )}
-            <FormControl
+            {activeStep === 1 && (
+              <>
+                <TextField
+                  label="Recipient Name"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setName(event.target.value)}
+                  required
+                />
+                <TextField
+                  label="Address"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setAddress(event.target.value)}
+                  required
+                />
+                <TextField
+                  label="Email"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+                <TextField
+                  label="Phone Number"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setPhone(event.target.value)}
+                  required
+                />
+                <TextField
+                  label="Shipping Rate"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setShipping(event.target.value)}
+                  required
+                />
+                <TextField
+                  label="Notes"
+                  sx={textFieldStyle}
+                  fullWidth
+                  size="small"
+                  onChange={(event) => setRNotes(event.target.value)}
+                />
+              </>
+            )}
+            <Button
               fullWidth
-              sx={textFieldStyle}
-              required
-              size="small"
-              disabled={type === ""}
-            >
-              <InputLabel id="color-select-label">Color</InputLabel>
-              <Select
-                labelId="color-select-label"
-                id="color-select"
-                label="Color"
-                onChange={handleColorChange}
-                value={color}
-                required
-              >
-                {type !== "" &&
-                  types[type].colors.map((color: string) => {
-                    return <MenuItem value={color}>{color}</MenuItem>;
-                  })}
-              </Select>
-            </FormControl>
-            <TextField
-              label="Notes"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setNotes(event.target.value)}
-            />
-            <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
-            <FormControlLabel
-              control={<Checkbox required onChange={handleChecked} />}
-              label={
-                <div>
-                  By checking this box, I agree to have Spoke generate a quote
-                  on my behalf.
-                </div>
+              variant="contained"
+              sx={{
+                marginTop: "10px",
+                borderRadius: "999em 999em 999em 999em",
+                textTransform: "none",
+              }}
+              disabled={
+                ((!checked || specs === "" || color === "" || type === "") &&
+                  activeStep === 0) ||
+                (activeStep == 1 &&
+                  (recipient_name === "" ||
+                    address === "" ||
+                    email === "" ||
+                    pn === "" ||
+                    shipping === ""))
               }
-            />
+              onClick={buyDeploy}
+            >
+              Buy & Deploy Now
+            </Button>
+            {activeStep === 0 && (
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{
+                  marginTop: "10px",
+                  borderRadius: "999em 999em 999em 999em",
+                  textTransform: "none",
+                }}
+                color="secondary"
+                disabled={
+                  !checked || specs === "" || color === "" || type === ""
+                }
+                onClick={buyHold}
+              >
+                Buy & Hold in Inventory
+              </Button>
+            )}
           </>
         )}
-        {activeStep === 1 && (
+        {((completed1 && activeStep !== 1 && !loading) ||
+          (completed1 && completed2 && !loading)) && (
           <>
-            <TextField
-              label="Recipient Name"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setName(event.target.value)}
-              required
-            />
-            <TextField
-              label="Address"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setAddress(event.target.value)}
-              required
-            />
-            <TextField
-              label="Email"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-            <TextField
-              label="Phone Number"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setPhone(event.target.value)}
-              required
-            />
-            <TextField
-              label="Shipping Rate"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setShipping(event.target.value)}
-              required
-            />
-            <TextField
-              label="Notes"
-              sx={textFieldStyle}
-              fullWidth
-              size="small"
-              onChange={(event) => setRNotes(event.target.value)}
-            />
+            <Typography variant="h6" component="h4" textAlign="center">
+              {error
+                ? "There has been an error with your request"
+                : "Your request has been submitted!"}
+            </Typography>
+            <div className="center">
+              {error ? (
+                <ErrorIcon sx={{ height: "10%", width: "10%", color: "red" }} />
+              ) : (
+                <CheckCircleIcon
+                  sx={{ color: "#06BE08", height: "10%", width: "10%" }}
+                />
+              )}
+            </div>
+            <Typography textAlign="center">
+              {error ? "Please try again later." : "Thank you for your order!"}
+            </Typography>
           </>
         )}
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{
-            marginTop: "10px",
-            borderRadius: "999em 999em 999em 999em",
-            textTransform: "none",
-          }}
-          disabled={
-            ((!checked || specs === "" || color === "" || type === "") &&
-              activeStep === 0) ||
-            (activeStep == 1 &&
-              (recipient_name === "" ||
-                address === "" ||
-                email === "" ||
-                pn === "" ||
-                shipping === ""))
-          }
-          onClick={buyDeploy}
-        >
-          Buy & Deploy Now
-        </Button>
-        {activeStep === 0 && (
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{
-              marginTop: "10px",
-              borderRadius: "999em 999em 999em 999em",
-              textTransform: "none",
-            }}
-            color="secondary"
-            disabled={!checked || specs === "" || color === "" || type === ""}
-            onClick={buyHold}
-          >
-            Buy & Hold in Inventory
-          </Button>
-        )}
-        {/* <Backdrop
+        <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
-          <LinearProgress color="inherit" />
-        </Backdrop> */}
+          {loading && (
+            <Box sx={{ width: "50%" }}>
+              <LinearProgress />
+            </Box>
+          )}
+        </Backdrop>
       </Box>
     </Modal>
   );
