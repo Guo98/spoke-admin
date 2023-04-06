@@ -22,7 +22,9 @@ export const clientSlice = createSlice({
       state.selectedEntity = action.payload;
     },
     addRole: (state, action: PayloadAction<string[]>) => {
-      state.roles = action.payload;
+      if (action.payload) {
+        state.roles = action.payload;
+      }
     },
   },
 });
