@@ -84,7 +84,7 @@ const Orders = () => {
     const ordersResult = await getAllOrders(
       accessToken,
       client,
-      roles.length > 0 ? roles[0] : ""
+      roles?.length > 0 ? roles[0] : ""
     );
 
     dispatch(updateOrders(ordersResult.data));

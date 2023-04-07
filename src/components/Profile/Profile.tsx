@@ -142,6 +142,8 @@ const Profile = (props: ProfileProps) => {
                   <MenuItem value="NurseDash">NurseDash</MenuItem>
                   <MenuItem value="Intersect Power">Intersect Power</MenuItem>
                   <MenuItem value="Hidden Road">Hidden Road</MenuItem>
+                  <MenuItem value="Automox">Automox</MenuItem>
+                  <MenuItem value="Alma">Alma</MenuItem>
                 </Select>
               </FormControl>
             )}

@@ -20,6 +20,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(false);
   const [pagenumber, setPagenumber] = useState(0);
   const [product, setProduct] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [brands, setBrands] = useState<MarketplaceProducts["brand"] | null>(
     null
   );
@@ -44,6 +45,7 @@ const Marketplace = () => {
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
     setProduct(product_name);
+    setSelectedProducts((prevProds) => [...prevProds, product_name]);
     setBrands(productRedux[item_index].brand);
   };
 
@@ -55,7 +57,40 @@ const Marketplace = () => {
     setImg(brands![brand_name].imgSrc);
   };
 
-  const searchFilter = (text: string) => {};
+  const chipFilter = (text: string) => {
+    if (text === "") {
+      setSelectedProducts([]);
+      setPagenumber(0);
+    } else {
+      setSelectedProducts((prevProds) => [...prevProds, text]);
+      setPagenumber(0);
+    }
+  };
+
+  const searchFilter = (text: string) => {
+    const lowerCaseText = text.toLowerCase();
+    if (text !== "") {
+      let categoryFilter = productRedux.filter(
+        (prod) => prod.id.toLowerCase().indexOf(lowerCaseText) > -1
+      );
+
+      let productFilter = productRedux.filter(
+        (prod) =>
+          Object.keys(prod.brand).filter(
+            (key) => key.toLowerCase().indexOf(lowerCaseText) > -1
+          ).length > 0
+      );
+
+      if (productFilter.length > 1 || categoryFilter.length > 0) {
+        const categoryNames = productFilter.map((prod) => prod.id);
+        setSelectedProducts(categoryNames);
+        setPagenumber(0);
+      } else if (productFilter.length > 0) {
+        setSelectedProducts([productFilter[0].id]);
+        setPagenumber(1);
+      }
+    }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -71,8 +106,23 @@ const Marketplace = () => {
           <h2>Marketplace</h2>
         </Typography>
         <Stack direction="row" spacing={2}>
-          <Chip label="All" />
-          <Chip label="Laptops" />
+          <Chip
+            label="All"
+            variant={selectedProducts.length === 0 ? "filled" : "outlined"}
+            clickable
+            onClick={() => chipFilter("")}
+          />
+          {productRedux.length > 0 &&
+            productRedux.map((prod, index) => (
+              <Chip
+                label={prod.id}
+                clickable
+                variant={
+                  selectedProducts.indexOf(prod.id) > -1 ? "filled" : "outlined"
+                }
+                onClick={() => chipFilter(prod.id)}
+              />
+            ))}
         </Stack>
         <Box
           sx={{
@@ -80,18 +130,27 @@ const Marketplace = () => {
             flexWrap: "wrap",
             flexDirection: "row",
             justifyContent: "space-evenly",
+            paddingTop: "10px",
           }}
         >
           {pagenumber === 0 &&
             productRedux.length > 0 &&
-            productRedux.map((product, index) => (
-              <ProductCard
-                label={product.id}
-                imgSrc={product.imgSrc}
-                index={index}
-                cardAction={genericProduct}
-              />
-            ))}
+            productRedux.map((product, index) => {
+              if (
+                (selectedProducts.length !== 0 &&
+                  selectedProducts.indexOf(product.id) > -1) ||
+                selectedProducts.length === 0
+              ) {
+                return (
+                  <ProductCard
+                    label={product.id}
+                    imgSrc={product.imgSrc}
+                    index={index}
+                    cardAction={genericProduct}
+                  />
+                );
+              }
+            })}
           {pagenumber === 1 &&
             brands &&
             Object.keys(brands).map((brand, index) => {
@@ -114,9 +173,12 @@ const Marketplace = () => {
         </Box>
         {pagenumber > 0 && (
           <Button
+            sx={{ marginTop: "50px" }}
             onClick={() => {
               if (pagenumber !== 0) {
                 setPagenumber(pagenumber - 1);
+                setProduct("");
+                setSelectedProducts([]);
               }
             }}
           >

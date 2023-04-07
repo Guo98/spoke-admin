@@ -22,6 +22,8 @@ const orgMapping: any = {
   org_gaFIEnwpsXXm8z0D: "Intersect Power",
   org_mwy5eCy2IyrXOY1E: "Hidden Road",
   org_qDm7WkSvmptg3jT1: "Hidden Road",
+  org_sYEKDqL5lHPLnJ8e: "Automox",
+  org_H63xrX3lAC7uphzb: "Alma",
 };
 
 const roleMapping: any = {
