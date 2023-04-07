@@ -201,52 +201,66 @@ const PurchaseModal = (props: PurchaseProps) => {
             </Stepper>
             {activeStep === 0 && (
               <>
-                <FormControl
-                  fullWidth
-                  sx={textFieldStyle}
-                  required
-                  size="small"
-                >
-                  <InputLabel id="type-select-label">Device Type</InputLabel>
-                  <Select
-                    labelId="type-select-label"
-                    id="type-select"
+                {brand !== "Others" && (
+                  <FormControl
+                    fullWidth
+                    sx={textFieldStyle}
+                    required
+                    size="small"
+                  >
+                    <InputLabel id="type-select-label">Device Type</InputLabel>
+                    <Select
+                      labelId="type-select-label"
+                      id="type-select"
+                      label="Device Type"
+                      onChange={handleTypeChange}
+                      value={type}
+                      required
+                    >
+                      {types &&
+                        Object.keys(types).map((brandtype) => {
+                          return (
+                            <MenuItem value={brandtype}>{brandtype}</MenuItem>
+                          );
+                        })}
+                    </Select>
+                  </FormControl>
+                )}
+                {brand === "Others" && (
+                  <TextField
                     label="Device Type"
-                    onChange={handleTypeChange}
-                    value={type}
+                    size="small"
+                    sx={textFieldStyle}
+                    fullWidth
                     required
-                  >
-                    {types &&
-                      Object.keys(types).map((brandtype) => {
-                        return (
-                          <MenuItem value={brandtype}>{brandtype}</MenuItem>
-                        );
-                      })}
-                  </Select>
-                </FormControl>
-                <FormControl
-                  fullWidth
-                  sx={textFieldStyle}
-                  required
-                  size="small"
-                  disabled={type === ""}
-                >
-                  <InputLabel id="specs-select-label">Specs</InputLabel>
-                  <Select
-                    labelId="specs-select-label"
-                    id="specs-select"
-                    label="Specs"
-                    onChange={handleSpecsChange}
-                    value={specs}
+                    onChange={(e) => setType(e.target.value)}
+                  />
+                )}
+                {brand !== "Others" && (
+                  <FormControl
+                    fullWidth
+                    sx={textFieldStyle}
                     required
+                    size="small"
+                    disabled={type === ""}
                   >
-                    {type !== "" &&
-                      types[type].specs?.map((spec: string) => {
-                        return <MenuItem value={spec}>{spec}</MenuItem>;
-                      })}
-                    <MenuItem value="Other">Other</MenuItem>
-                  </Select>
-                </FormControl>
+                    <InputLabel id="specs-select-label">Specs</InputLabel>
+                    <Select
+                      labelId="specs-select-label"
+                      id="specs-select"
+                      label="Specs"
+                      onChange={handleSpecsChange}
+                      value={specs}
+                      required
+                    >
+                      {type !== "" &&
+                        types[type].specs?.map((spec: string) => {
+                          return <MenuItem value={spec}>{spec}</MenuItem>;
+                        })}
+                      <MenuItem value="Other">Other</MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
                 {specs === "Other" && (
                   <TextField
                     label="Other Specs"
@@ -257,28 +271,50 @@ const PurchaseModal = (props: PurchaseProps) => {
                     onChange={(event) => setOtherSpecs(event.target.value)}
                   />
                 )}
-                <FormControl
-                  fullWidth
-                  sx={textFieldStyle}
-                  required
-                  size="small"
-                  disabled={type === ""}
-                >
-                  <InputLabel id="color-select-label">Color</InputLabel>
-                  <Select
-                    labelId="color-select-label"
-                    id="color-select"
-                    label="Color"
-                    onChange={handleColorChange}
-                    value={color}
+                {brand === "Others" && (
+                  <TextField
+                    label="Device Specs"
+                    size="small"
+                    sx={textFieldStyle}
+                    fullWidth
                     required
+                    onChange={(e) => setSpecs(e.target.value)}
+                  />
+                )}
+                {brand !== "Others" && (
+                  <FormControl
+                    fullWidth
+                    sx={textFieldStyle}
+                    required
+                    size="small"
+                    disabled={type === ""}
                   >
-                    {type !== "" &&
-                      types[type].colors?.map((color: string) => {
-                        return <MenuItem value={color}>{color}</MenuItem>;
-                      })}
-                  </Select>
-                </FormControl>
+                    <InputLabel id="color-select-label">Color</InputLabel>
+                    <Select
+                      labelId="color-select-label"
+                      id="color-select"
+                      label="Color"
+                      onChange={handleColorChange}
+                      value={color}
+                      required
+                    >
+                      {type !== "" &&
+                        types[type].colors?.map((color: string) => {
+                          return <MenuItem value={color}>{color}</MenuItem>;
+                        })}
+                    </Select>
+                  </FormControl>
+                )}
+                {brand === "Others" && (
+                  <TextField
+                    label="Device Color"
+                    size="small"
+                    sx={textFieldStyle}
+                    onChange={(e) => setColor(e.target.value)}
+                    fullWidth
+                    required
+                  />
+                )}
                 <TextField
                   label="Notes"
                   sx={textFieldStyle}

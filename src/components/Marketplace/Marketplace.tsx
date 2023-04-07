@@ -57,13 +57,38 @@ const Marketplace = () => {
     setImg(brands![brand_name].imgSrc);
   };
 
-  const searchFilter = (text: string) => {
+  const chipFilter = (text: string) => {
     if (text === "") {
       setSelectedProducts([]);
       setPagenumber(0);
     } else {
       setSelectedProducts((prevProds) => [...prevProds, text]);
       setPagenumber(0);
+    }
+  };
+
+  const searchFilter = (text: string) => {
+    const lowerCaseText = text.toLowerCase();
+    if (text !== "") {
+      let categoryFilter = productRedux.filter(
+        (prod) => prod.id.toLowerCase().indexOf(lowerCaseText) > -1
+      );
+
+      let productFilter = productRedux.filter(
+        (prod) =>
+          Object.keys(prod.brand).filter(
+            (key) => key.toLowerCase().indexOf(lowerCaseText) > -1
+          ).length > 0
+      );
+
+      if (productFilter.length > 1 || categoryFilter.length > 0) {
+        const categoryNames = productFilter.map((prod) => prod.id);
+        setSelectedProducts(categoryNames);
+        setPagenumber(0);
+      } else if (productFilter.length > 0) {
+        setSelectedProducts([productFilter[0].id]);
+        setPagenumber(1);
+      }
     }
   };
 
@@ -85,7 +110,7 @@ const Marketplace = () => {
             label="All"
             variant={selectedProducts.length === 0 ? "filled" : "outlined"}
             clickable
-            onClick={() => searchFilter("")}
+            onClick={() => chipFilter("")}
           />
           {productRedux.length > 0 &&
             productRedux.map((prod, index) => (
@@ -95,7 +120,7 @@ const Marketplace = () => {
                 variant={
                   selectedProducts.indexOf(prod.id) > -1 ? "filled" : "outlined"
                 }
-                onClick={() => searchFilter(prod.id)}
+                onClick={() => chipFilter(prod.id)}
               />
             ))}
         </Stack>
@@ -105,6 +130,7 @@ const Marketplace = () => {
             flexWrap: "wrap",
             flexDirection: "row",
             justifyContent: "space-evenly",
+            paddingTop: "10px",
           }}
         >
           {pagenumber === 0 &&
@@ -147,10 +173,12 @@ const Marketplace = () => {
         </Box>
         {pagenumber > 0 && (
           <Button
+            sx={{ marginTop: "50px" }}
             onClick={() => {
               if (pagenumber !== 0) {
                 setPagenumber(pagenumber - 1);
                 setProduct("");
+                setSelectedProducts([]);
               }
             }}
           >
