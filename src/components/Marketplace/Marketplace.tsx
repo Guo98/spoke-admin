@@ -60,8 +60,10 @@ const Marketplace = () => {
   const searchFilter = (text: string) => {
     if (text === "") {
       setSelectedProducts([]);
+      setPagenumber(0);
     } else {
       setSelectedProducts((prevProds) => [...prevProds, text]);
+      setPagenumber(0);
     }
   };
 
@@ -107,14 +109,22 @@ const Marketplace = () => {
         >
           {pagenumber === 0 &&
             productRedux.length > 0 &&
-            productRedux.map((product, index) => (
-              <ProductCard
-                label={product.id}
-                imgSrc={product.imgSrc}
-                index={index}
-                cardAction={genericProduct}
-              />
-            ))}
+            productRedux.map((product, index) => {
+              if (
+                (selectedProducts.length !== 0 &&
+                  selectedProducts.indexOf(product.id) > -1) ||
+                selectedProducts.length === 0
+              ) {
+                return (
+                  <ProductCard
+                    label={product.id}
+                    imgSrc={product.imgSrc}
+                    index={index}
+                    cardAction={genericProduct}
+                  />
+                );
+              }
+            })}
           {pagenumber === 1 &&
             brands &&
             Object.keys(brands).map((brand, index) => {
