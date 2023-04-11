@@ -39,7 +39,9 @@ const SendToSpoke = (props: SendProps) => {
     <Box>
       <Typography>Send a device to Spoke:</Typography>
       {roles?.length > 0 &&
-        (roles[0] === "flyr-poland" || roles[0] === "flyr-eu") && (
+        (roles[0] === "flyr-poland" ||
+          roles[0] === "flyr-eu" ||
+          roles[0] === "prabis-eu") && (
           <Typography variant="caption" color="red">
             * This is currently only supported within the US.
           </Typography>

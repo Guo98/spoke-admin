@@ -12,14 +12,144 @@ import {
   TableBody,
   TableCell,
   Paper,
+  Collapse,
+  Menu,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getAllMarketplace } from "../../services/ordersAPI";
+import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
 
 interface MOProps {
   handleClose: Function;
 }
+
+interface RowProps {
+  order: {
+    client: string;
+    date: string;
+    device_type: string;
+    specs: string;
+    color: string;
+    order_type: string;
+    notes: {
+      device?: string;
+      recipient?: string;
+    };
+    status: string;
+    id: string;
+  };
+}
+
+const MarketRow = (props: RowProps) => {
+  const { order } = props;
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState(order.status);
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setStatus(event.target.value);
+  };
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  const updateStatus = async () => {
+    const accessToken = await getAccessTokenSilently();
+
+    if (status !== order.status) {
+      const bodyObj = {
+        client: order.client,
+        id: order.id,
+        status,
+      };
+      const updateRes = await postOrder(
+        "updateMarketOrder",
+        accessToken,
+        bodyObj
+      );
+    }
+  };
+
+  return (
+    <>
+      <TableRow>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.client}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.date}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.device_type}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.specs}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.color}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.order_type}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.notes.device}</Typography>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                spacing={2}
+                sx={{ display: "flex" }}
+              >
+                <Grid item xs={8}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="status-select-label">Status</InputLabel>
+                    <Select
+                      labelId="status-select-label"
+                      label="Status"
+                      value={status}
+                      defaultValue={order.status}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Received">Received</MenuItem>
+                      <MenuItem value="In Progress">In Progress</MenuItem>
+                      <MenuItem value="Completed">Completed</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button variant="contained" onClick={updateStatus}>
+                    Update Status
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
+};
 
 const MarketplaceOrders = (props: MOProps) => {
   const { handleClose } = props;
@@ -71,6 +201,7 @@ const MarketplaceOrders = (props: MOProps) => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell></TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Client</Typography>
                 </TableCell>
@@ -95,30 +226,8 @@ const MarketplaceOrders = (props: MOProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((order) => (
-                <TableRow>
-                  <TableCell>
-                    <Typography>{order.client}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{order.date}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{order.device_type}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{order.specs}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{order.color}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{order.order_type}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{order.notes.device}</Typography>
-                  </TableCell>
-                </TableRow>
+              {orders.map((order, index) => (
+                <MarketRow order={order} />
               ))}
             </TableBody>
           </Table>
