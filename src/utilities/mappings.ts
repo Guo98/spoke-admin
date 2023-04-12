@@ -30,6 +30,7 @@ const roleMapping: any = {
   "flyr-eu": "FLYR EU",
   "flyr-poland": "FLYR Poland",
   "flyr-usa": "FLYR USA",
+  "pribas-eu": "Pribas EU",
 };
 
 const deviceLocationMappings: any = {
