@@ -12,6 +12,7 @@ import { orgMapping } from "./utilities/mappings";
 import { ColorModeContext } from "./utilities/color-context";
 import { blueGrey } from "@mui/material/colors";
 import { updateClient, addRole } from "./app/store";
+import AuthRouter from "./components/AppContainer/AuthRouter";
 import "./App.css";
 
 const getDesignTokens = (mode: PaletteMode) => ({
@@ -86,7 +87,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
 const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
 
 function App() {
-  const { user } = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
   const YbugContext = useYbugApi();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -142,29 +143,35 @@ function App() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <div>
-          <Box
-            //sx={{ display: "flex", flexDirection: "column" }}
-            display={{ sm: "block", md: "flex" }}
-            sx={{ overflowX: "hidden" }}
-          >
-            {window.location.pathname.substring(1) !== "logout" && (
-              <>
-                <BrowserRouter>
-                  <Box
-                    component="nav"
-                    sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
-                  >
-                    <SpokeDrawer />
-                  </Box>
-                </BrowserRouter>
-              </>
-            )}
-            <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
-              <RouterProvider router={AppContainer} />
+        {isAuthenticated && (
+          <div>
+            <Box
+              //sx={{ display: "flex", flexDirection: "column" }}
+              display={{ sm: "block", md: "flex" }}
+              sx={{ overflowX: "hidden" }}
+            >
+              {window.location.pathname.substring(1) !== "logout" && (
+                <>
+                  <BrowserRouter>
+                    <Box
+                      component="nav"
+                      sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+                    >
+                      <SpokeDrawer />
+                    </Box>
+                  </BrowserRouter>
+                </>
+              )}
+              <Box
+                component="main"
+                sx={{ flexGrow: 1, paddingBottom: "125px" }}
+              >
+                <RouterProvider router={AppContainer} />
+              </Box>
             </Box>
-          </Box>
-        </div>
+          </div>
+        )}
+        {!isAuthenticated && <RouterProvider router={AuthRouter} />}
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
