@@ -36,18 +36,19 @@ export async function downloadOrders(
   client: string,
   entity: string
 ) {
-  return fetch(
-    process.env.REACT_APP_SPOKE_API +
-      `/downloadorders/${client}` +
-      (entity !== "" && `/${entity}`),
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    }
-  )
+  let route = `/downloadorders/${client}`;
+
+  if (entity !== "") {
+    route = `/downloadorders/${client}/${entity}`;
+  }
+
+  return fetch(process.env.REACT_APP_SPOKE_API + route, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  })
     .then((response) => {
       if (!response.ok) {
         throw new Error("Missing Body");
