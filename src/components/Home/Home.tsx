@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button, useTheme, Stack } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSearchParams } from "react-router-dom";
 
@@ -24,13 +24,14 @@ const Home = () => {
     }
   };
 
+  const signup = () => {
+    window.open("https://www.withspoke.com/register", "_self");
+  };
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
+
   return (
-    <div
-      style={{
-        backgroundImage:
-          "url(https://spokeimages.blob.core.windows.net/image/spokelogo.png)",
-      }}
-    >
+    <div>
       <Box
         sx={{
           top: "40%",
@@ -39,21 +40,50 @@ const Home = () => {
           position: "absolute",
         }}
       >
-        <Typography component="h1" variant="h3" textAlign="center">
-          Welcome to the Spoke Admin Portal
-        </Typography>
-        <Button
-          sx={{
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginTop: "20px",
-            borderRadius: "10px",
+        <img
+          src={
+            isDarkTheme
+              ? "https://spokeimages.blob.core.windows.net/image/fullspokeinvert.png"
+              : "https://spokeimages.blob.core.windows.net/image/fullspokenormal.png"
+          }
+          style={{
+            height: "50%",
+            width: "50%",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
-          variant="contained"
-          onClick={login}
+        />
+        <Typography component="h1" variant="h3" textAlign="center"></Typography>
+        <Stack
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+          sx={{ marginTop: "20px" }}
         >
-          Login
-        </Button>
+          <Button
+            sx={{
+              borderRadius: "10px",
+              textTransform: "none",
+              width: "100px",
+            }}
+            variant="contained"
+            onClick={login}
+          >
+            Login
+          </Button>
+          <Button
+            sx={{
+              borderRadius: "10px",
+              textTransform: "none",
+              width: "100px",
+            }}
+            variant="contained"
+            onClick={signup}
+          >
+            Sign Up
+          </Button>
+        </Stack>
       </Box>
     </div>
   );
