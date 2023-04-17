@@ -65,7 +65,7 @@ const Home = () => {
             sx={{
               borderRadius: "10px",
               textTransform: "none",
-              width: "100px",
+              width: "150px",
             }}
             variant="contained"
             onClick={login}
@@ -76,7 +76,7 @@ const Home = () => {
             sx={{
               borderRadius: "10px",
               textTransform: "none",
-              width: "100px",
+              width: "150px",
             }}
             variant="contained"
             onClick={signup}
