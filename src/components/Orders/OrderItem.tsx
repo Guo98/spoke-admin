@@ -138,6 +138,9 @@ const OrderItem = (props: OrderProps) => {
     if (itemFilter.length > 0) {
       setLaptopName(itemFilter[0].name);
       setLaptopTracking(itemFilter[0].tracking_number[0]);
+    } else {
+      setLaptopName("");
+      setLaptopTracking("");
     }
   }, [items]);
 
