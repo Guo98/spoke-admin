@@ -225,6 +225,7 @@ const OperationsManage = (props: OperationsOrder) => {
                                 <MenuItem value="Fedex">Fedex</MenuItem>
                                 <MenuItem value="USPS">USPS</MenuItem>
                                 <MenuItem value="DHL">DHL</MenuItem>
+                                <MenuItem value="Correios">Correios</MenuItem>
                               </Select>
                             </FormControl>
                           </>
