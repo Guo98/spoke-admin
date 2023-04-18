@@ -62,6 +62,7 @@ interface DeployProps {
   device_location: string;
   shipping: string;
   image_source: string | undefined;
+  id: string | undefined;
 }
 
 const DeployModalContent = (props: DeployProps) => {
@@ -78,6 +79,7 @@ const DeployModalContent = (props: DeployProps) => {
     device_location,
     shipping,
     image_source,
+    id,
   } = props;
 
   const clientData = useSelector((state: RootState) => state.client.data);
@@ -133,6 +135,7 @@ const DeployModalContent = (props: DeployProps) => {
       shipping: shipping,
       requestor_email: user?.email,
       requestor_name: user?.name,
+      id,
     };
     setSending(true);
     const deployResult = await manageLaptop(
