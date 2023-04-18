@@ -356,6 +356,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               device_location={location}
                               image_source={image_source}
                               type="individual"
+                              id={id}
                               disabled={
                                 item.condition !== "Used" &&
                                 item.condition !== "New"
