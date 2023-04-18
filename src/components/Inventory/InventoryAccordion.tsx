@@ -68,6 +68,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     specs: { screen_size, cpu, ram, hard_drive } = {},
     tabValue,
     index,
+    id,
   } = props;
 
   const [orderBy, setOrderBy] = useState("");
@@ -397,6 +398,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                                 status={item.sn}
                                 date_requested={item.date_requested!}
                                 new_device={props.new_device}
+                                id={id}
                               />
                             )}
                         </TableCell>

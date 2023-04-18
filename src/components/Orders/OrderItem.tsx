@@ -79,7 +79,7 @@ const OrderItem = (props: OrderProps) => {
   const isDarkTheme = useTheme().palette.mode === "dark";
 
   const orderStatus = () => {
-    if (!laptopTracking && shipping_status === "Incomplete") {
+    if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "Order Received";
     } else if (shipping_status === "Incomplete") {
       return "Shipped";
@@ -92,7 +92,7 @@ const OrderItem = (props: OrderProps) => {
   };
 
   const statusBgColor = () => {
-    if (!laptopTracking && shipping_status === "Incomplete") {
+    if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "#FFF8EF";
     } else if (shipping_status === "Incomplete") {
       return "#ECE7F1";
@@ -105,7 +105,7 @@ const OrderItem = (props: OrderProps) => {
   };
 
   const statusTextColor = () => {
-    if (!laptopTracking && shipping_status === "Incomplete") {
+    if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "#DC282A";
     } else if (shipping_status === "Incomplete") {
       return "#6A37E8";
