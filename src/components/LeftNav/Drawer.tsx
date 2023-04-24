@@ -287,6 +287,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             selectedClientData === "Intersect Power")
         ) {
           window.open("https://withspoke.com/intersectpower", "_blank");
+        } else if (
+          clientData === "Alma" ||
+          (clientData === "spokeops" && selectedClientData === "Alma")
+        ) {
+          window.open("https://withspoke.com/alma", "_blank");
         } else {
           setOpen(true);
         }
