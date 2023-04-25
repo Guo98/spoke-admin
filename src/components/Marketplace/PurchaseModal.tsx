@@ -26,7 +26,6 @@ import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
 import { postOrder } from "../../services/ordersAPI";
-import { cli } from "cypress";
 
 interface PurchaseProps {
   open: boolean;
@@ -63,7 +62,7 @@ const PurchaseModal = (props: PurchaseProps) => {
 
   const marketClient = client === "spokeops" ? selectedClient : client;
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const [type, setType] = useState("");
   const [specs, setSpecs] = useState("");
@@ -131,6 +130,7 @@ const PurchaseModal = (props: PurchaseProps) => {
 
   const sendRequest = async (buyType: string) => {
     let postBody: any = {
+      requestor_email: user?.email,
       client: marketClient,
       device_type: type,
       specs: specs === "Other" ? otherSpecs : specs,
@@ -453,7 +453,7 @@ const PurchaseModal = (props: PurchaseProps) => {
               }
               onClick={buyDeploy}
             >
-              Buy & Deploy Now
+              Request Quote
             </Button>
             {activeStep === 0 && (
               <Button
