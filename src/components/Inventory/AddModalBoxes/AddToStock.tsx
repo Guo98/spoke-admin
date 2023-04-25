@@ -25,10 +25,11 @@ interface StockProps {
   status: string;
   date_requested: string;
   new_device?: boolean;
+  id: string;
 }
 
 const AddToStock = (props: StockProps) => {
-  const { quantity, device_location, device_name, status, date_requested } =
+  const { quantity, device_location, device_name, status, date_requested, id } =
     props;
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
@@ -60,6 +61,7 @@ const AddToStock = (props: StockProps) => {
       date_requested,
       serial_numbers,
       specs: {},
+      id,
     };
 
     if (props.new_device) {

@@ -91,7 +91,6 @@ const ManageOrder = (props: ManageProps) => {
         }
       }
     } catch (e) {
-      console.log("email support err ::::::::: ", e);
       setSending(false);
     }
   };

@@ -31,6 +31,28 @@ export async function getAllOrders(
     });
 }
 
+export async function getAllMarketplace(accessToken: string) {
+  return fetch(process.env.REACT_APP_SPOKE_API + "/getmarketplace", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Missing Body");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data;
+    })
+    .catch((err) => {
+      return [];
+    });
+}
+
 export async function downloadOrders(
   accessToken: string,
   client: string,

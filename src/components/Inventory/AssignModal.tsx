@@ -53,6 +53,7 @@ interface AssignProps {
   manageOpen?: boolean;
   handleParentClose?: Function;
   disabled: boolean;
+  id?: string;
 }
 
 interface ValidateAddress {
@@ -357,6 +358,11 @@ const AssignModal = (props: AssignProps) => {
               type === "general"
                 ? props.devices![parseInt(selectedDevice)]?.image_source
                 : image_source
+            }
+            id={
+              type === "general"
+                ? props.devices![parseInt(selectedDevice)]?.id
+                : props.id
             }
           />
         )}

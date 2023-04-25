@@ -18,25 +18,23 @@ const getOrgId = () => {
 };
 
 root.render(
-  <React.StrictMode>
-    <Auth0Provider
-      domain={process.env.REACT_APP_AUTH0_DOMAIN!}
-      clientId={process.env.REACT_APP_AUTH0_CLIENTID!}
-      redirectUri={window.location.origin}
-      audience={process.env.REACT_APP_AUTH0_AUDIENCE!}
-      scope="admin"
-      organization={getOrgId() === undefined ? undefined : getOrgId()}
-    >
-      <Provider store={store}>
-        <YbugProvider
-          ybugId="a3cazwp84q6jb5sjvmjj"
-          settings={{ launcher_position: "right-middle" }}
-        >
-          <App />
-        </YbugProvider>
-      </Provider>
-    </Auth0Provider>
-  </React.StrictMode>
+  <Auth0Provider
+    domain={process.env.REACT_APP_AUTH0_DOMAIN!}
+    clientId={process.env.REACT_APP_AUTH0_CLIENTID!}
+    redirectUri={window.location.origin}
+    audience={process.env.REACT_APP_AUTH0_AUDIENCE!}
+    scope="admin"
+    organization={getOrgId() === undefined ? undefined : getOrgId()}
+  >
+    <Provider store={store}>
+      <YbugProvider
+        ybugId="a3cazwp84q6jb5sjvmjj"
+        settings={{ launcher_position: "right-middle" }}
+      >
+        <App />
+      </YbugProvider>
+    </Provider>
+  </Auth0Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
