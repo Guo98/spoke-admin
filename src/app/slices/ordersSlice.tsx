@@ -40,7 +40,6 @@ export const ordersSlice = createSlice({
     },
     filterEntity: (state, action: PayloadAction<string>) => {
       if (action.payload !== "") {
-        console.log("should be in here");
         if (
           state.originalData.completed &&
           state.originalData.completed.length > 0
