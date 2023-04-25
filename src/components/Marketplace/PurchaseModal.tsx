@@ -108,6 +108,10 @@ const PurchaseModal = (props: PurchaseProps) => {
     setChecked(event.target.checked);
   };
 
+  const handleShipping = (event: SelectChangeEvent) => {
+    setShipping(event.target.value);
+  };
+
   const buyDeploy = async () => {
     if (activeStep === 0) {
       setComplete1(true);
@@ -398,14 +402,28 @@ const PurchaseModal = (props: PurchaseProps) => {
                   onChange={(event) => setPhone(event.target.value)}
                   required
                 />
-                <TextField
-                  label="Shipping Rate"
-                  sx={textFieldStyle}
+                <FormControl
                   fullWidth
-                  size="small"
-                  onChange={(event) => setShipping(event.target.value)}
+                  sx={textFieldStyle}
                   required
-                />
+                  size="small"
+                >
+                  <InputLabel id="shipping-select-label">
+                    Shipping Rate
+                  </InputLabel>
+                  <Select
+                    labelId="shipping-select-label"
+                    id="shipping-select"
+                    label="Shipping Rate"
+                    onChange={handleShipping}
+                    value={shipping}
+                    required
+                  >
+                    <MenuItem value="Standard">Standard</MenuItem>
+                    <MenuItem value="2 Day">2 Day</MenuItem>
+                    <MenuItem value="Overnight">Overnight</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
                   label="Notes"
                   sx={textFieldStyle}
