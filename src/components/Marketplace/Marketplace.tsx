@@ -14,6 +14,14 @@ const Marketplace = () => {
   const productRedux = useSelector(
     (state: RootState) => state.inventory.products
   );
+
+  const client = useSelector((state: RootState) => state.client.data);
+  const selectedClient = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+
+  let marketClient = client === "spokeops" ? selectedClient : client;
+
   const dispatch = useDispatch();
   const { getAccessTokenSilently } = useAuth0();
 
@@ -154,14 +162,18 @@ const Marketplace = () => {
           {pagenumber === 1 &&
             brands &&
             Object.keys(brands).map((brand, index) => {
-              return (
-                <ProductCard
-                  label={brands[brand as keyof {}].name}
-                  imgSrc={brands[brand as keyof {}].imgSrc}
-                  index={index}
-                  cardAction={selectBrand}
-                />
-              );
+              if (
+                brands[brand as keyof {}].clients.indexOf(marketClient) > -1
+              ) {
+                return (
+                  <ProductCard
+                    label={brands[brand as keyof {}].name}
+                    imgSrc={brands[brand as keyof {}].imgSrc}
+                    index={index}
+                    cardAction={selectBrand}
+                  />
+                );
+              }
             })}
           <PurchaseModal
             open={openModal}

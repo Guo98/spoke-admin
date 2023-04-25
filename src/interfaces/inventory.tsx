@@ -51,10 +51,25 @@ export interface MarketplaceProducts {
     [key: string]: {
       name: string;
       types?: {
-        [key: string]: { specs: string[]; colors: string[] };
+        [key: string]: {
+          specs: DeviceSpecs[];
+          colors: string[];
+          clients: string[];
+        };
       };
       imgSrc: string;
+      clients: string[];
     };
   };
   imgSrc: string;
+}
+
+interface DeviceSpecs {
+  spec: string;
+  clients: [
+    {
+      client: string;
+      locations: string[];
+    }
+  ];
 }

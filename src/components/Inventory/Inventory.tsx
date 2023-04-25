@@ -73,6 +73,7 @@ const Inventory: FC = (): ReactElement => {
   const [inprogTotal, setInprogTotal] = useState(0);
   const [deployedTotal, setDeployedTotal] = useState(0);
   const [stockTotal, setStockTotal] = useState(0);
+  const [deviceTotal, setDeviceTotal] = useState(0);
   const [filtered, setFiltered] = useState(false);
 
   const dispatch = useDispatch();
@@ -152,6 +153,8 @@ const Inventory: FC = (): ReactElement => {
       stockVar += s.serial_numbers.length;
     });
     setStockTotal(stockVar);
+
+    setDeviceTotal(stockRedux.length);
   };
 
   useEffect(() => {
@@ -313,7 +316,7 @@ const Inventory: FC = (): ReactElement => {
             >
               {!loading ? (
                 <>
-                  {stockTotal > 0 ? (
+                  {deviceTotal > 0 ? (
                     <>
                       {stock?.length > 0 &&
                         stock.map((device, index) => {
@@ -331,16 +334,13 @@ const Inventory: FC = (): ReactElement => {
                     </>
                   ) : (
                     <>
-                      {!filtered ? (
-                        <Typography textAlign="center">
-                          No Inventory Currently In Stock
-                        </Typography>
-                      ) : (
-                        <Typography textAlign="center">
-                          No results found
-                        </Typography>
-                      )}
+                      <Typography textAlign="center">
+                        No Inventory Currently In Stock
+                      </Typography>
                     </>
+                  )}
+                  {stockTotal === 0 && filtered && (
+                    <Typography textAlign="center">No results found</Typography>
                   )}
                 </>
               ) : (

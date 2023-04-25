@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
 import { postOrder } from "../../services/ordersAPI";
+import { cli } from "cypress";
 
 interface PurchaseProps {
   open: boolean;
@@ -56,6 +57,11 @@ const PurchaseModal = (props: PurchaseProps) => {
   const { open, handleClose, imgSrc, types, brand } = props;
 
   const client = useSelector((state: RootState) => state.client.data);
+  const selectedClient = useSelector(
+    (state: RootState) => state.client.selectedClient
+  );
+
+  const marketClient = client === "spokeops" ? selectedClient : client;
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -63,6 +69,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [specs, setSpecs] = useState("");
   const [color, setColor] = useState("");
   const [otherSpecs, setOtherSpecs] = useState("");
+  const [specIndex, setSpecIndex] = useState(0);
   const [notes, setNotes] = useState("");
   const [checked, setChecked] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -82,6 +89,14 @@ const PurchaseModal = (props: PurchaseProps) => {
   };
 
   const handleSpecsChange = (event: SelectChangeEvent) => {
+    if (event.target.value === "Others") {
+      setSpecIndex(-1);
+    } else {
+      const specIndex = types[type].specs
+        ?.map((spec: any) => spec.spec)
+        .indexOf(event.target.value);
+      setSpecIndex(specIndex);
+    }
     setSpecs(event.target.value);
   };
 
@@ -112,7 +127,7 @@ const PurchaseModal = (props: PurchaseProps) => {
 
   const sendRequest = async (buyType: string) => {
     let postBody: any = {
-      client,
+      client: marketClient,
       device_type: type,
       specs: specs === "Other" ? otherSpecs : specs,
       color,
@@ -219,9 +234,13 @@ const PurchaseModal = (props: PurchaseProps) => {
                     >
                       {types &&
                         Object.keys(types).map((brandtype) => {
-                          return (
-                            <MenuItem value={brandtype}>{brandtype}</MenuItem>
-                          );
+                          if (
+                            types[brandtype].clients.indexOf(marketClient) > -1
+                          ) {
+                            return (
+                              <MenuItem value={brandtype}>{brandtype}</MenuItem>
+                            );
+                          }
                         })}
                     </Select>
                   </FormControl>
@@ -254,8 +273,17 @@ const PurchaseModal = (props: PurchaseProps) => {
                       required
                     >
                       {type !== "" &&
-                        types[type].specs?.map((spec: string) => {
-                          return <MenuItem value={spec}>{spec}</MenuItem>;
+                        types[type].specs?.map((spec: any) => {
+                          if (
+                            spec.clients.filter(
+                              (specClient: any) =>
+                                specClient.client === marketClient
+                            ).length > 0
+                          ) {
+                            return (
+                              <MenuItem value={spec.spec}>{spec.spec}</MenuItem>
+                            );
+                          }
                         })}
                       <MenuItem value="Other">Other</MenuItem>
                     </Select>
@@ -299,13 +327,15 @@ const PurchaseModal = (props: PurchaseProps) => {
                       required
                     >
                       {type !== "" &&
-                        types[type].colors?.map((color: string) => {
-                          return <MenuItem value={color}>{color}</MenuItem>;
+                        types[type].colors.map((specColor: string) => {
+                          return (
+                            <MenuItem value={specColor}>{specColor}</MenuItem>
+                          );
                         })}
                     </Select>
                   </FormControl>
                 )}
-                {brand === "Others" && (
+                {(brand === "Others" || specIndex === -1) && (
                   <TextField
                     label="Device Color"
                     size="small"

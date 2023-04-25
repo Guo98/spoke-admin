@@ -124,8 +124,10 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   useEffect(() => {
     if (clientData === "spokeops") {
       setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
-    } else if (clientData !== "Intersect Power") {
+    } else if (clientData === "Hidden Road") {
       setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
+    } else if (clientData !== "Intersect Power") {
+      setLinks(["Orders", "Inventory", "Storefront"]);
     } else {
       setLinks(["Orders", "Storefront"]);
     }
@@ -287,6 +289,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             selectedClientData === "Intersect Power")
         ) {
           window.open("https://withspoke.com/intersectpower", "_blank");
+        } else if (
+          clientData === "Alma" ||
+          (clientData === "spokeops" && selectedClientData === "Alma")
+        ) {
+          window.open("https://withspoke.com/alma", "_blank");
         } else {
           setOpen(true);
         }
