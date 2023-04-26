@@ -320,16 +320,20 @@ const Inventory: FC = (): ReactElement => {
                     <>
                       {stock?.length > 0 &&
                         stock.map((device, index) => {
-                          return (
-                            !device.new_device && (
-                              <InventoryAccordion
-                                {...device}
-                                tabValue={tabValue}
-                                key={index}
-                                index={index}
-                              />
-                            )
-                          );
+                          if (
+                            device.serial_numbers.length > 0 ||
+                            !device.hide_out_of_stock
+                          )
+                            return (
+                              !device.new_device && (
+                                <InventoryAccordion
+                                  {...device}
+                                  tabValue={tabValue}
+                                  key={index}
+                                  index={index}
+                                />
+                              )
+                            );
                         })}
                     </>
                   ) : (

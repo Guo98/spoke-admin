@@ -18,6 +18,7 @@ export interface InventorySummary {
   new_device?: boolean;
   entity?: string;
   id: string;
+  hide_out_of_stock?: boolean;
 }
 
 interface SerialNumbers {
