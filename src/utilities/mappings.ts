@@ -46,10 +46,17 @@ const locationMappings: any = {
   Netherlands: "the EU",
 };
 
+const countryMappings: any = {
+  "United States": ["us", "usa", "united states", "united states of america"],
+  Singapore: ["singapore", "sg", "sgp"],
+  Brazil: ["brazil", "br", "bra"],
+};
+
 export {
   imageMapping,
   orgMapping,
   roleMapping,
   deviceLocationMappings,
   locationMappings,
+  countryMappings,
 };
