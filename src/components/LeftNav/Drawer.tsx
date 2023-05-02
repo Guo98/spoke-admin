@@ -33,6 +33,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import StoreIcon from "@mui/icons-material/Store";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ApprovalIcon from "@mui/icons-material/Approval";
 import { useLocation } from "react-router-dom";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -58,6 +59,7 @@ interface IconMapping {
   Storefront: JSX.Element;
   Misc: JSX.Element;
   Marketplace: JSX.Element;
+  Approvals: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -73,6 +75,7 @@ const iconMapping: IconMapping = {
   Storefront: <StoreIcon />,
   Misc: <MiscellaneousServicesIcon />,
   Marketplace: <ShoppingCartIcon />,
+  Approvals: <ApprovalIcon />,
 };
 
 interface DrawerProps {
@@ -123,7 +126,14 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (clientData === "spokeops") {
-      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
+      setLinks([
+        "Orders",
+        "Inventory",
+        "Storefront",
+        "Marketplace",
+        "Approvals",
+        "Misc",
+      ]);
     } else if (clientData === "Hidden Road") {
       setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
     } else if (clientData !== "Intersect Power") {
@@ -135,7 +145,14 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
 
   useEffect(() => {
     if (selectedClientData !== "Intersect Power" && clientData === "spokeops") {
-      setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
+      setLinks([
+        "Orders",
+        "Inventory",
+        "Storefront",
+        "Marketplace",
+        "Approvals",
+        "Misc",
+      ]);
     } else if (clientData === "spokeops") {
       setLinks(["Orders", "Storefront", "Misc"]);
     }
@@ -220,10 +237,13 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         setIndex(4);
         break;
       case "misc":
-        setIndex(4);
+        setIndex(5);
         break;
       case "marketplace":
         setIndex(3);
+        break;
+      case "approvals":
+        setIndex(4);
         break;
       default:
         setIndex(0);
@@ -246,11 +266,15 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Misc":
         AppContainer.navigate("/misc");
-        setIndex(4);
+        setIndex(5);
         break;
       case "Marketplace":
         AppContainer.navigate("/marketplace");
         setIndex(3);
+        break;
+      case "Approvals":
+        AppContainer.navigate("/approvals");
+        setIndex(4);
         break;
       case "Invoices":
         window.location.href = "/invoices";

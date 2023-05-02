@@ -31,7 +31,11 @@ export async function getAllOrders(
     });
 }
 
-export async function getAllMarketplace(accessToken: string) {
+export async function getAllMarketplace(
+  accessToken: string,
+  client: string = ""
+) {
+  let route = client === "" ? "/getmarketplace" : "/getmarketplace/" + client;
   return fetch(process.env.REACT_APP_SPOKE_API + "/getmarketplace", {
     method: "GET",
     headers: {
