@@ -1,4 +1,7 @@
-import { DefaultAzureCredential } from "@azure/identity";
+import {
+  DefaultAzureCredential,
+  InteractiveBrowserCredential,
+} from "@azure/identity";
 import { BlobServiceClient } from "@azure/storage-blob";
 
 const uploadFile = async (filePath: string, fileName: string) => {
@@ -19,7 +22,7 @@ const uploadFile = async (filePath: string, fileName: string) => {
 export const downloadFile = async () => {
   const blobServiceClient = new BlobServiceClient(
     process.env.REACT_APP_STORAGE!,
-    new DefaultAzureCredential()
+    new InteractiveBrowserCredential()
   );
 
   const containerClient = blobServiceClient.getContainerClient("quotes");
