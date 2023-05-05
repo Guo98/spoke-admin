@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { getAllMarketplace } from "../../services/ordersAPI";
 import Header from "../Header/Header";
+import { downloadFile } from "../../services/azureblob";
 
 interface FormattedProps {
   text: string;
@@ -66,17 +67,33 @@ const QuoteRow = (props: QuoteProps) => {
         <FormattedCell text={status} />
       </TableRow>
       <TableRow>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <Box sx={{ margin: 1 }}>
-            <Button>View Quote</Button>
-            <Button color="success" variant="contained">
-              Approve
-            </Button>
-            <Button variant="outlined" color="secondary">
-              Deny
-            </Button>
-          </Box>
-        </Collapse>
+        <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                spacing={2}
+                sx={{ display: "flex" }}
+              >
+                <Grid item xs={4}>
+                  <Button onClick={downloadFile}>View Quote</Button>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button color="success" variant="contained">
+                    Approve
+                  </Button>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button variant="outlined" color="secondary">
+                    Deny
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          </Collapse>
+        </TableCell>
       </TableRow>
     </>
   );
