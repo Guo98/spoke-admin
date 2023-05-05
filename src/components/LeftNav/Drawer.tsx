@@ -124,7 +124,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   useEffect(() => {
     if (clientData === "spokeops") {
       setLinks(["Orders", "Inventory", "Storefront", "Marketplace", "Misc"]);
-    } else if (clientData === "Hidden Road") {
+    } else if (clientData === "Hidden Road" || clientData === "public") {
       setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
     } else if (clientData !== "Intersect Power") {
       setLinks(["Orders", "Inventory", "Storefront"]);
