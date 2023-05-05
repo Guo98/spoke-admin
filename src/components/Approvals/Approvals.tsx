@@ -21,7 +21,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { getAllMarketplace } from "../../services/ordersAPI";
 import Header from "../Header/Header";
-import { downloadFile } from "../../services/azureblob";
 
 interface FormattedProps {
   text: string;
@@ -48,6 +47,8 @@ const FormattedCell = (props: FormattedProps) => {
 const QuoteRow = (props: QuoteProps) => {
   const { date, recipient_name, device_type, status } = props;
   const [open, setOpen] = useState(false);
+
+  const downloadFile = () => {};
 
   return (
     <>

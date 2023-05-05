@@ -29,7 +29,6 @@ jobs:
           REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
           REACT_APP_AUTH0_CLIENTID: ${{ secrets.AUTH0_CLIENTID }}
           REACT_APP_AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
-          REACT_APP_STORAGE: https://spokeimages.blob.core.windows.net
         run: |
           npm install
           npm run build --if-present
