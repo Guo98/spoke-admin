@@ -105,7 +105,7 @@ function App() {
       if (orgMapping[user.org_id] === "Flo Health") {
         if (user.role.length > 0) {
           if (user.role[0] === "flo-uk-emp") {
-            window.open("https://withspoke.com", "_self");
+            window.open("https://withspoke.com/flo-health-uk", "_self");
           }
         }
       }
