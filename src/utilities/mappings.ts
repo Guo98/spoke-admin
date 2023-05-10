@@ -24,6 +24,7 @@ const orgMapping: any = {
   org_qDm7WkSvmptg3jT1: "Hidden Road",
   org_sYEKDqL5lHPLnJ8e: "Automox",
   org_H63xrX3lAC7uphzb: "Alma",
+  org_cf0BFkW7yuXi9lTo: "Flo Health",
 };
 
 const roleMapping: any = {
@@ -34,10 +35,11 @@ const roleMapping: any = {
 };
 
 const deviceLocationMappings: any = {
-  USA: "Georgia, USA",
-  POL: "Poland",
-  NLD: "Netherlands",
-  DEU: "Netherlands",
+  USA: ["United States", "Georgia, USA", "Nevada, USA"],
+  POL: ["Poland", "Gdańsk, Poland"],
+  NLD: ["Netherlands", "Maastricht, Netherlands"],
+  DEU: ["Netherlands", "Maastricht, Netherlands"],
+  US: ["United States", "Georgia, USA", "Nevada, USA"],
 };
 
 const locationMappings: any = {

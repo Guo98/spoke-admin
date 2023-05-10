@@ -20,6 +20,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { getAllMarketplace } from "../../services/ordersAPI";
+import { downloadFile } from "../../services/azureblob";
 import Header from "../Header/Header";
 
 interface FormattedProps {
@@ -48,7 +49,22 @@ const QuoteRow = (props: QuoteProps) => {
   const { date, recipient_name, device_type, status } = props;
   const [open, setOpen] = useState(false);
 
-  const downloadFile = () => {};
+  const { getAccessTokenSilently } = useAuth0();
+
+  const download = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const docResponse = await downloadFile(accessToken);
+
+    const fileBytes = docResponse.byteStream;
+    const arr = new Uint8Array(fileBytes.data);
+    const pdf = new Blob([arr], {
+      type: "application/pdf;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(pdf);
+
+    window.open(url);
+  };
 
   return (
     <>
@@ -79,7 +95,7 @@ const QuoteRow = (props: QuoteProps) => {
                 sx={{ display: "flex" }}
               >
                 <Grid item xs={4}>
-                  <Button onClick={downloadFile}>View Quote</Button>
+                  <Button onClick={download}>View Quote</Button>
                 </Grid>
                 <Grid item xs={4}>
                   <Button color="success" variant="contained">

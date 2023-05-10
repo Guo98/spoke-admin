@@ -20,12 +20,14 @@ import {
   Select,
   SelectChangeEvent,
   Button,
+  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
+import { uploadFile } from "../../services/azureblob";
 
 interface MOProps {
   handleClose: Function;
@@ -52,6 +54,7 @@ const MarketRow = (props: RowProps) => {
   const { order } = props;
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(order.status);
+  const [file, setFile] = useState<File | null>(null);
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value);
@@ -74,6 +77,28 @@ const MarketRow = (props: RowProps) => {
         bodyObj
       );
     }
+  };
+
+  const uploadFile3 = () => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(file);
+      };
+      reader.onerror = (err) => {
+        reject(err);
+      };
+      reader.readAsDataURL(file!);
+    });
+    // return Buffer.from(file, "base64");
+  };
+
+  const uploadFile2 = async () => {
+    const accessToken = await getAccessTokenSilently();
+    let formData = new FormData();
+    formData.append("file", file!);
+
+    const fileResp = await uploadFile(accessToken, formData);
   };
 
   return (
@@ -140,6 +165,30 @@ const MarketRow = (props: RowProps) => {
                 <Grid item xs={4}>
                   <Button variant="contained" onClick={updateStatus}>
                     Update Status
+                  </Button>
+                </Grid>
+              </Grid>
+              <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
+                <Grid item xs={8}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    label="File Path"
+                    type="file"
+                    name="file"
+                    inputProps={{ accept: "application/pdf" }}
+                    onChange={(e) => {
+                      setFile(
+                        (
+                          (e.target as HTMLInputElement).files as FileList
+                        )[0] as File
+                      );
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Button variant="contained" onClick={uploadFile2}>
+                    Upload Quote
                   </Button>
                 </Grid>
               </Grid>

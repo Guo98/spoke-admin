@@ -114,7 +114,9 @@ const AssignModal = (props: AssignProps) => {
       if (
         addressResult.data.country &&
         deviceLocationMappings[addressResult.data.country] &&
-        deviceLocationMappings[addressResult.data.country] !== device_location
+        deviceLocationMappings[addressResult.data.country].indexOf(
+          device_location
+        ) < 0
       ) {
         setError(
           `This device is only deployable within ${
