@@ -92,6 +92,7 @@ function App() {
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"dark" | "light">("light");
+  const [show, setShow] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -106,6 +107,7 @@ function App() {
         if (user.role.length > 0) {
           if (user.role[0] === "flo-uk-emp") {
             window.open("https://withspoke.com/flo-health-uk", "_self");
+            setShow(false);
           }
         }
       }
@@ -151,7 +153,7 @@ function App() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {isAuthenticated && (
+        {isAuthenticated && show && (
           <div>
             <Box
               //sx={{ display: "flex", flexDirection: "column" }}
