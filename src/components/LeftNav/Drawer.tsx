@@ -126,7 +126,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     respwindow !== undefined ? () => respwindow().document.body : undefined;
 
   useEffect(() => {
-    setLinks(navMappings[clientData]);
+    if (navMappings[clientData]) setLinks(navMappings[clientData]);
   }, [clientData]);
 
   // useEffect(() => {
