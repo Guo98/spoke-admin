@@ -24,7 +24,6 @@ root.render(
     redirectUri={window.location.origin}
     audience={process.env.REACT_APP_AUTH0_AUDIENCE!}
     scope="admin"
-    connection="email"
     organization={getOrgId() === undefined ? undefined : getOrgId()}
   >
     <Provider store={store}>
