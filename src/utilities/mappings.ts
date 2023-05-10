@@ -25,6 +25,7 @@ const orgMapping: any = {
   org_sYEKDqL5lHPLnJ8e: "Automox",
   org_H63xrX3lAC7uphzb: "Alma",
   org_cf0BFkW7yuXi9lTo: "Flo Health",
+  org_BmAU8UUBYjVbRMDD: "Flo Health",
 };
 
 const roleMapping: any = {
