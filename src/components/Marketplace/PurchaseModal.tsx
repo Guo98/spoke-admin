@@ -19,6 +19,7 @@ import {
   StepLabel,
   Backdrop,
   LinearProgress,
+  Alert,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -26,6 +27,8 @@ import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
 import { postOrder } from "../../services/ordersAPI";
+import { validateAddress } from "../../services/address";
+import { countryMappings } from "../../utilities/mappings";
 
 interface PurchaseProps {
   open: boolean;
@@ -82,6 +85,12 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [recipient_notes, setRNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [region, setRegion] = useState("");
+  const [wrongregion, setWrongregion] = useState(false);
+
+  const handleRegionChange = (event: SelectChangeEvent) => {
+    setRegion(event.target.value);
+  };
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     setType(event.target.value);
@@ -118,6 +127,7 @@ const PurchaseModal = (props: PurchaseProps) => {
     } else if (activeStep === 1) {
       setComplete2(true);
       setLoading(true);
+      setWrongregion(false);
       await sendRequest("Deploy");
     }
   };
@@ -129,6 +139,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   };
 
   const sendRequest = async (buyType: string) => {
+    const accessToken = await getAccessTokenSilently();
     let postBody: any = {
       requestor_email: user?.email,
       client: marketClient,
@@ -143,6 +154,21 @@ const PurchaseModal = (props: PurchaseProps) => {
     };
 
     if (buyType !== "Hold") {
+      if (region !== "Other") {
+        const addrResp = await validateAddress(address, accessToken);
+        if (addrResp.message === "Successful!") {
+          if (
+            addrResp.data.country &&
+            countryMappings[region].indexOf(
+              addrResp.data.country.toLowerCase()
+            ) < 0
+          ) {
+            setWrongregion(true);
+            setLoading(false);
+            return;
+          }
+        }
+      }
       postBody.recipient_name = recipient_name;
       postBody.address = address;
       postBody.email = email;
@@ -150,8 +176,6 @@ const PurchaseModal = (props: PurchaseProps) => {
       postBody.shipping_rate = shipping;
       postBody.notes.recipient = recipient_notes;
     }
-
-    const accessToken = await getAccessTokenSilently();
 
     const newPurchaseResp = await postOrder(
       "newPurchase",
@@ -185,12 +209,15 @@ const PurchaseModal = (props: PurchaseProps) => {
         setLoading(false);
         setComplete2(false);
         setError(false);
+        setWrongregion(false);
+        setRegion("");
         handleClose();
       }}
     >
       <Box sx={style}>
         {((!loading && !completed1) ||
-          (completed1 && !completed2 && !loading)) && (
+          (completed1 && !completed2 && !loading) ||
+          (!loading && wrongregion)) && (
           <>
             <Typography variant="h5">New Purchase - {brand}</Typography>
             <Divider />
@@ -218,6 +245,17 @@ const PurchaseModal = (props: PurchaseProps) => {
                 </StepLabel>
               </Step>
             </Stepper>
+            {wrongregion && (
+              <Alert severity="error">
+                You cannot deployed a laptop from {region} to this address.
+              </Alert>
+            )}
+            {region === "Other" && (
+              <Alert severity="warning">
+                Since this is a new deployment to a new region, it might take a
+                little longer.
+              </Alert>
+            )}
             {activeStep === 0 && (
               <>
                 {brand !== "Others" && (
@@ -349,6 +387,40 @@ const PurchaseModal = (props: PurchaseProps) => {
                     required
                   />
                 )}
+                <FormControl
+                  fullWidth
+                  sx={textFieldStyle}
+                  required
+                  size="small"
+                  disabled={specs === "" || specIndex < 0}
+                >
+                  <InputLabel id="region-select-label">
+                    Shipping Region
+                  </InputLabel>
+                  <Select
+                    labelId="region-select-label"
+                    id="region-select"
+                    label="Shipping Region"
+                    onChange={handleRegionChange}
+                    value={region}
+                    required
+                  >
+                    {specs !== "" &&
+                      types[type]?.specs[specIndex]?.clients?.map(
+                        (specClient: any) => {
+                          if (
+                            specClient &&
+                            specClient.client === marketClient
+                          ) {
+                            return specClient.locations.map((loc: string) => {
+                              return <MenuItem value={loc}>{loc}</MenuItem>;
+                            });
+                          }
+                        }
+                      )}
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
                   label="Notes"
                   sx={textFieldStyle}
@@ -375,6 +447,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
+                  value={recipient_name}
                   onChange={(event) => setName(event.target.value)}
                   required
                 />
@@ -383,6 +456,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
+                  value={address}
                   onChange={(event) => setAddress(event.target.value)}
                   required
                 />
@@ -391,6 +465,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
+                  value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
                 />
@@ -399,6 +474,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
+                  value={pn}
                   onChange={(event) => setPhone(event.target.value)}
                   required
                 />
@@ -429,6 +505,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
+                  value={notes}
                   onChange={(event) => setRNotes(event.target.value)}
                 />
               </>
@@ -444,7 +521,7 @@ const PurchaseModal = (props: PurchaseProps) => {
               disabled={
                 ((!checked || specs === "" || color === "" || type === "") &&
                   activeStep === 0) ||
-                (activeStep == 1 &&
+                (activeStep === 1 &&
                   (recipient_name === "" ||
                     address === "" ||
                     email === "" ||
@@ -475,8 +552,8 @@ const PurchaseModal = (props: PurchaseProps) => {
             )}
           </>
         )}
-        {((completed1 && activeStep !== 1 && !loading) ||
-          (completed1 && completed2 && !loading)) && (
+        {((completed1 && activeStep !== 1 && !loading && !wrongregion) ||
+          (completed1 && completed2 && !loading && !wrongregion)) && (
           <>
             <Typography variant="h6" component="h4" textAlign="center">
               {error

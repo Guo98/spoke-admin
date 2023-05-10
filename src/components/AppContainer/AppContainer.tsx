@@ -5,6 +5,7 @@ import Orders from "../Orders/Orders";
 import Logout from "../Login/Logout";
 import OperationsMisc from "../Operations/OperationsMisc";
 import Marketplace from "../Marketplace/Marketplace";
+import Approvals from "../Approvals/Approvals";
 
 const AppContainer = createBrowserRouter([
   {
@@ -44,6 +45,14 @@ const AppContainer = createBrowserRouter([
     element: (
       <>
         <Marketplace />
+      </>
+    ),
+  },
+  {
+    path: "/approvals",
+    element: (
+      <>
+        <Approvals />
       </>
     ),
   },
