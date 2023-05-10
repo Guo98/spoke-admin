@@ -54,6 +54,25 @@ const countryMappings: any = {
   Brazil: ["brazil", "br", "bra"],
 };
 
+const navMappings: any = {
+  "Intersect Power": ["Orders", "Storefront"],
+  "Flo Health": ["Orders", "Inventory", "Storefront", "Marketplace"],
+  public: ["Orders", "Inventory", "Storefront", "Marketplace"],
+  "Hidden Road": ["Orders", "Inventory", "Storefront", "Marketplace"],
+  Bowery: ["Orders", "Inventory", "Storefront"],
+  NurseDash: ["Orders", "Inventory", "Storefront"],
+  Alma: ["Orders", "Inventory", "Marketplace"],
+  Automox: ["Orders", "Inventory", "Storefront", "Marketplace"],
+  spokeops: [
+    "Orders",
+    "Inventory",
+    "Storefront",
+    "Marketplace",
+    "Approvals",
+    "Misc",
+  ],
+};
+
 export {
   imageMapping,
   orgMapping,
@@ -61,4 +80,5 @@ export {
   deviceLocationMappings,
   locationMappings,
   countryMappings,
+  navMappings,
 };

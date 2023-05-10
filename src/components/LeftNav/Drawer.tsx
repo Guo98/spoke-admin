@@ -43,6 +43,7 @@ import AppContainer from "../AppContainer/AppContainer";
 import { resetData } from "../../services/inventoryAPI";
 import { RootState } from "../../app/store";
 import { entityMappings } from "../../app/utility/constants";
+import { navMappings } from "../../utilities/mappings";
 import "./Drawer.css";
 import Profile from "../Profile/Profile";
 
@@ -125,38 +126,23 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     respwindow !== undefined ? () => respwindow().document.body : undefined;
 
   useEffect(() => {
-    if (clientData === "spokeops") {
-      setLinks([
-        "Orders",
-        "Inventory",
-        "Storefront",
-        "Marketplace",
-        "Approvals",
-        "Misc",
-      ]);
-    } else if (clientData === "Hidden Road" || clientData === "public") {
-      setLinks(["Orders", "Inventory", "Storefront", "Marketplace"]);
-    } else if (clientData !== "Intersect Power") {
-      setLinks(["Orders", "Inventory", "Storefront"]);
-    } else {
-      setLinks(["Orders", "Storefront"]);
-    }
+    setLinks(navMappings[clientData]);
   }, [clientData]);
 
-  useEffect(() => {
-    if (selectedClientData !== "Intersect Power" && clientData === "spokeops") {
-      setLinks([
-        "Orders",
-        "Inventory",
-        "Storefront",
-        "Marketplace",
-        "Approvals",
-        "Misc",
-      ]);
-    } else if (clientData === "spokeops") {
-      setLinks(["Orders", "Storefront", "Misc"]);
-    }
-  }, [selectedClientData]);
+  // useEffect(() => {
+  //   if (selectedClientData !== "Intersect Power" && clientData === "spokeops") {
+  //     setLinks([
+  //       "Orders",
+  //       "Inventory",
+  //       "Storefront",
+  //       "Marketplace",
+  //       "Approvals",
+  //       "Misc",
+  //     ]);
+  //   } else if (clientData === "spokeops") {
+  //     setLinks(["Orders", "Storefront", "Misc"]);
+  //   }
+  // }, [selectedClientData]);
 
   const hasEntity = () => {
     if (clientData === "spokeops") {
