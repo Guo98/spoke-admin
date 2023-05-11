@@ -1,5 +1,5 @@
-export async function downloadFile(accessToken: string) {
-  return fetch(process.env.REACT_APP_SPOKE_API + `/downloaddoc/testing.pdf`, {
+export async function downloadFile(accessToken: string, filename: string) {
+  return fetch(process.env.REACT_APP_SPOKE_API + `/downloaddoc/${filename}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

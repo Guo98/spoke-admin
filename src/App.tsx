@@ -108,6 +108,12 @@ function App() {
           if (user.role[0] === "flo-uk-emp") {
             setShow(false);
             window.open("https://withspoke.com/flo-health-uk", "_self");
+          } else if (user.role[0] === "flo-nl-emp") {
+            setShow(false);
+            window.open("https://withspoke.com/flo-health-nl", "_self");
+          } else if (user.role[0] === "flo-lt-emp") {
+            setShow(false);
+            window.open("https://withspoke.com/flo-health-lt", "_self");
           }
         }
       }

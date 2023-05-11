@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import DownloadIcon from "@mui/icons-material/Download";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -33,6 +34,7 @@ interface QuoteProps {
   device_type: string;
   date: string;
   status: string;
+  quote?: string;
 }
 
 const FormattedCell = (props: FormattedProps) => {
@@ -53,7 +55,7 @@ const QuoteRow = (props: QuoteProps) => {
 
   const download = async () => {
     const accessToken = await getAccessTokenSilently();
-    const docResponse = await downloadFile(accessToken);
+    const docResponse = await downloadFile(accessToken, props.quote!);
 
     const fileBytes = docResponse.byteStream;
     const arr = new Uint8Array(fileBytes.data);
@@ -70,48 +72,54 @@ const QuoteRow = (props: QuoteProps) => {
     <>
       <TableRow>
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          {props.quote && (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          )}
         </TableCell>
         <FormattedCell text={date} />
         <FormattedCell text={recipient_name} />
         <FormattedCell text={device_type} />
         <FormattedCell text={status} />
       </TableRow>
-      <TableRow>
-        <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-between"
-                spacing={2}
-                sx={{ display: "flex" }}
-              >
-                <Grid item xs={4}>
-                  <Button onClick={download}>View Quote</Button>
+      {props.quote && (
+        <TableRow>
+          <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  spacing={2}
+                  sx={{ display: "flex" }}
+                >
+                  <Grid item xs={8}>
+                    <Button onClick={download}>
+                      <DownloadIcon /> View Quote
+                    </Button>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button color="success" variant="contained">
+                      Approve
+                    </Button>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button variant="outlined" color="secondary">
+                      Deny
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                  <Button color="success" variant="contained">
-                    Approve
-                  </Button>
-                </Grid>
-                <Grid item xs={4}>
-                  <Button variant="outlined" color="secondary">
-                    Deny
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
     </>
   );
 };
