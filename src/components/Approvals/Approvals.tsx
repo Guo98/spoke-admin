@@ -35,6 +35,7 @@ interface QuoteProps {
   date: string;
   status: string;
   quote?: string;
+  quote_price?: string;
 }
 
 const FormattedCell = (props: FormattedProps) => {
@@ -90,27 +91,58 @@ const QuoteRow = (props: QuoteProps) => {
       {props.quote && (
         <TableRow>
           <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit component={Paper}>
               <Box sx={{ margin: 1 }}>
                 <Grid
                   container
-                  direction="row"
+                  spacing={3}
                   justifyContent="space-between"
-                  spacing={2}
                   sx={{ display: "flex" }}
                 >
-                  <Grid item xs={8}>
-                    <Button onClick={download}>
-                      <DownloadIcon /> View Quote
-                    </Button>
+                  <Grid item xs={9}>
+                    {props.quote_price && (
+                      <>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          Quoted Price:
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {" "}
+                          {props.quote_price}
+                        </Typography>
+                      </>
+                    )}
                   </Grid>
-                  <Grid item xs={2}>
-                    <Button color="success" variant="contained">
+                  <Grid item xs={3}>
+                    <Button
+                      color="success"
+                      variant="contained"
+                      sx={{ minWidth: "100px" }}
+                    >
                       Approve
                     </Button>
                   </Grid>
-                  <Grid item xs={2}>
-                    <Button variant="outlined" color="secondary">
+                </Grid>
+                <Grid
+                  container
+                  justifyContent="space-between"
+                  spacing={3}
+                  sx={{ display: "flex", paddingTop: "20px" }}
+                >
+                  <Grid item xs={9}>
+                    <Button onClick={download} variant="contained">
+                      <DownloadIcon /> View Quote
+                    </Button>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      sx={{ minWidth: "100px" }}
+                    >
                       Deny
                     </Button>
                   </Grid>

@@ -13,14 +13,15 @@ import {
   TableCell,
   Paper,
   Collapse,
-  Menu,
   MenuItem,
-  FormControl,
-  InputLabel,
   Select,
   SelectChangeEvent,
   Button,
   TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -48,7 +49,7 @@ interface RowProps {
     status: string;
     id: string;
     quote?: string;
-    price?: string;
+    quote_price?: string;
   };
 }
 
@@ -85,7 +86,10 @@ const MarketRow = (props: RowProps) => {
   const updatePrice = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    if ((order.price && price !== order.price) || !order.price) {
+    if (
+      (order.quote_price && price !== order.quote_price) ||
+      !order.quote_price
+    ) {
       const bodyObj = {
         client: order.client,
         id: order.id,
@@ -192,15 +196,22 @@ const MarketRow = (props: RowProps) => {
               </Grid>
               <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
                 <Grid item xs={8}>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    label="Price"
-                    onChange={(e) => {
-                      setPrice(e.target.value);
-                    }}
-                    value={order.price}
-                  />
+                  <FormControl fullWidth size="small">
+                    <InputLabel htmlFor="outlined-adornment-amount">
+                      Price
+                    </InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-amount"
+                      startAdornment={
+                        <InputAdornment position="start">$</InputAdornment>
+                      }
+                      label="Price"
+                      onChange={(e) => {
+                        setPrice(e.target.value);
+                      }}
+                      value={order.quote_price}
+                    />
+                  </FormControl>
                 </Grid>
                 <Grid item xs={4}>
                   <Button variant="contained" onClick={updatePrice}>
