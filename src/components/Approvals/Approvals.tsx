@@ -13,13 +13,15 @@ import {
   Grid,
   IconButton,
   Button,
+  Alert,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import DownloadIcon from "@mui/icons-material/Download";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { getAllMarketplace } from "../../services/ordersAPI";
+import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
 import { downloadFile } from "../../services/azureblob";
 import Header from "../Header/Header";
 
@@ -33,6 +35,12 @@ interface QuoteProps {
   device_type: string;
   date: string;
   status: string;
+  quote?: string;
+  quote_price?: string;
+  client: string;
+  id: string;
+  address: string;
+  approved?: boolean;
 }
 
 const FormattedCell = (props: FormattedProps) => {
@@ -46,14 +54,16 @@ const FormattedCell = (props: FormattedProps) => {
 };
 
 const QuoteRow = (props: QuoteProps) => {
-  const { date, recipient_name, device_type, status } = props;
+  const { date, recipient_name, device_type, status, client, id, address } =
+    props;
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
   const download = async () => {
     const accessToken = await getAccessTokenSilently();
-    const docResponse = await downloadFile(accessToken);
+    const docResponse = await downloadFile(accessToken, props.quote!);
 
     const fileBytes = docResponse.byteStream;
     const arr = new Uint8Array(fileBytes.data);
@@ -66,52 +76,122 @@ const QuoteRow = (props: QuoteProps) => {
     window.open(url);
   };
 
+  const approve_deny = async (approved: boolean) => {
+    const accessToken = await getAccessTokenSilently();
+
+    const bodyObj = {
+      client: client,
+      id: id,
+      approved,
+      recipient_name,
+      recipient_address: address,
+      item_name: device_type,
+    };
+
+    const postResp = await postOrder("updateMarketOrder", accessToken, bodyObj);
+
+    if (postResp.status && postResp.status !== "Successful") {
+      setError(true);
+    }
+  };
+
   return (
     <>
       <TableRow>
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          {props.quote && (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => {
+                setOpen(!open);
+                setError(false);
+              }}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          )}
         </TableCell>
         <FormattedCell text={date} />
         <FormattedCell text={recipient_name} />
         <FormattedCell text={device_type} />
         <FormattedCell text={status} />
       </TableRow>
-      <TableRow>
-        <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-between"
-                spacing={2}
-                sx={{ display: "flex" }}
-              >
-                <Grid item xs={4}>
-                  <Button onClick={download}>View Quote</Button>
+      {props.quote && (
+        <TableRow>
+          <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
+            <Collapse in={open} timeout="auto" unmountOnExit component={Paper}>
+              <Box sx={{ margin: 1 }}>
+                {error && (
+                  <Alert severity="error" sx={{ marginBottom: 1 }}>
+                    There was an error in responding to the market order.
+                  </Alert>
+                )}
+                <Grid
+                  container
+                  spacing={3}
+                  justifyContent="space-between"
+                  sx={{ display: "flex" }}
+                >
+                  <Grid item xs={9}>
+                    {props.quote_price && (
+                      <>
+                        <Typography
+                          display="inline"
+                          component="span"
+                          fontWeight="bold"
+                        >
+                          Quoted Price:
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {" "}
+                          {props.quote_price}
+                        </Typography>
+                      </>
+                    )}
+                  </Grid>
+                  <Grid item xs={3}>
+                    {props.approved === undefined && (
+                      <Button
+                        color="success"
+                        variant="contained"
+                        sx={{ minWidth: "100px" }}
+                        onClick={() => approve_deny(true)}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                  </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                  <Button color="success" variant="contained">
-                    Approve
-                  </Button>
+                <Grid
+                  container
+                  justifyContent="space-between"
+                  spacing={3}
+                  sx={{ display: "flex", paddingTop: "20px" }}
+                >
+                  <Grid item xs={9}>
+                    <Button onClick={download} variant="contained">
+                      <DownloadIcon /> View Quote
+                    </Button>
+                  </Grid>
+                  <Grid item xs={3}>
+                    {props.approved === undefined && (
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ minWidth: "100px" }}
+                        onClick={() => approve_deny(false)}
+                      >
+                        Deny
+                      </Button>
+                    )}
+                  </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                  <Button variant="outlined" color="secondary">
-                    Deny
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
     </>
   );
 };

@@ -13,21 +13,22 @@ import {
   TableCell,
   Paper,
   Collapse,
-  Menu,
   MenuItem,
-  FormControl,
-  InputLabel,
   Select,
   SelectChangeEvent,
   Button,
   TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
-import { uploadFile } from "../../services/azureblob";
+import { uploadFile, downloadFile } from "../../services/azureblob";
 
 interface MOProps {
   handleClose: Function;
@@ -47,6 +48,8 @@ interface RowProps {
     };
     status: string;
     id: string;
+    quote?: string;
+    quote_price?: string;
   };
 }
 
@@ -55,6 +58,7 @@ const MarketRow = (props: RowProps) => {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(order.status);
   const [file, setFile] = useState<File | null>(null);
+  const [price, setPrice] = useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value);
@@ -79,26 +83,48 @@ const MarketRow = (props: RowProps) => {
     }
   };
 
-  const uploadFile3 = () => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        resolve(file);
+  const updatePrice = async () => {
+    const accessToken = await getAccessTokenSilently();
+
+    if (
+      (order.quote_price && price !== order.quote_price) ||
+      !order.quote_price
+    ) {
+      const bodyObj = {
+        client: order.client,
+        id: order.id,
+        price,
       };
-      reader.onerror = (err) => {
-        reject(err);
-      };
-      reader.readAsDataURL(file!);
-    });
-    // return Buffer.from(file, "base64");
+      const updateRes = await postOrder(
+        "updateMarketOrder",
+        accessToken,
+        bodyObj
+      );
+    }
   };
 
-  const uploadFile2 = async () => {
+  const uploadFileOnOrder = async () => {
     const accessToken = await getAccessTokenSilently();
     let formData = new FormData();
     formData.append("file", file!);
-
+    formData.append("order_id", order.id);
+    formData.append("client", order.client);
     const fileResp = await uploadFile(accessToken, formData);
+  };
+
+  const download = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const docResponse = await downloadFile(accessToken, order.quote!);
+
+    const fileBytes = docResponse.byteStream;
+    const arr = new Uint8Array(fileBytes.data);
+    const pdf = new Blob([arr], {
+      type: "application/pdf;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(pdf);
+
+    window.open(url);
   };
 
   return (
@@ -170,28 +196,64 @@ const MarketRow = (props: RowProps) => {
               </Grid>
               <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
                 <Grid item xs={8}>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    label="File Path"
-                    type="file"
-                    name="file"
-                    inputProps={{ accept: "application/pdf" }}
-                    onChange={(e) => {
-                      setFile(
-                        (
-                          (e.target as HTMLInputElement).files as FileList
-                        )[0] as File
-                      );
-                    }}
-                  />
+                  <FormControl fullWidth size="small">
+                    <InputLabel htmlFor="outlined-adornment-amount">
+                      Price
+                    </InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-amount"
+                      startAdornment={
+                        <InputAdornment position="start">$</InputAdornment>
+                      }
+                      label="Price"
+                      onChange={(e) => {
+                        setPrice(e.target.value);
+                      }}
+                      value={order.quote_price}
+                    />
+                  </FormControl>
                 </Grid>
                 <Grid item xs={4}>
-                  <Button variant="contained" onClick={uploadFile2}>
-                    Upload Quote
+                  <Button variant="contained" onClick={updatePrice}>
+                    Update Price
                   </Button>
                 </Grid>
               </Grid>
+              {order.quote && (
+                <Button
+                  sx={{ marginTop: "20px" }}
+                  variant="contained"
+                  onClick={download}
+                >
+                  View Quote
+                </Button>
+              )}
+              {!order.quote && (
+                <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
+                  <Grid item xs={8}>
+                    <TextField
+                      size="small"
+                      fullWidth
+                      label="File Path"
+                      type="file"
+                      name="file"
+                      inputProps={{ accept: "application/pdf" }}
+                      onChange={(e) => {
+                        setFile(
+                          (
+                            (e.target as HTMLInputElement).files as FileList
+                          )[0] as File
+                        );
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button variant="contained" onClick={uploadFileOnOrder}>
+                      Upload Quote
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
             </Box>
           </Collapse>
         </TableCell>

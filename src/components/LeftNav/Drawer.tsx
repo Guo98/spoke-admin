@@ -107,6 +107,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     "Storefront",
   ]);
   const [entity, setEntity] = useState("");
+  const [popupText, setPopupText] = useState("");
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -201,7 +202,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box sx={style}>
           <Typography>
-            Please reach out to info@withspoke.com to set up a storefront.
+            {popupText === ""
+              ? "Please reach out to info@withspoke.com to set up a storefront."
+              : popupText}
           </Typography>
         </Box>
       </Modal>
@@ -304,6 +307,20 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           (clientData === "spokeops" && selectedClientData === "Alma")
         ) {
           window.open("https://withspoke.com/alma", "_blank");
+        } else if (
+          clientData === "Flo Health" ||
+          (clientData === "spokeops" && selectedClientData === "Flo Health")
+        ) {
+          if (entity === "UK") {
+            window.open("https://withspoke.com/flo-health-uk", "_blank");
+          } else if (entity === "Lithuania") {
+            window.open("https://withspoke.com/flo-health-lt", "_blank");
+          } else if (entity === "Netherlands") {
+            window.open("https://withspoke.com/flo-health-nl", "_blank");
+          } else {
+            setPopupText("Please select an entity first.");
+            setOpen(true);
+          }
         } else {
           setOpen(true);
         }
