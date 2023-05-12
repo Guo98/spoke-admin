@@ -72,6 +72,7 @@ const navMappings: any = {
     "Approvals",
     "Misc",
   ],
+  FLYR: ["Orders", "Inventory", "Storefront"],
 };
 
 export {
