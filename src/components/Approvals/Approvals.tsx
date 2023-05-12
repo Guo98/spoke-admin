@@ -13,6 +13,7 @@ import {
   Grid,
   IconButton,
   Button,
+  Alert,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -20,7 +21,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { getAllMarketplace } from "../../services/ordersAPI";
+import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
 import { downloadFile } from "../../services/azureblob";
 import Header from "../Header/Header";
 
@@ -36,6 +37,10 @@ interface QuoteProps {
   status: string;
   quote?: string;
   quote_price?: string;
+  client: string;
+  id: string;
+  address: string;
+  approved?: boolean;
 }
 
 const FormattedCell = (props: FormattedProps) => {
@@ -49,8 +54,10 @@ const FormattedCell = (props: FormattedProps) => {
 };
 
 const QuoteRow = (props: QuoteProps) => {
-  const { date, recipient_name, device_type, status } = props;
+  const { date, recipient_name, device_type, status, client, id, address } =
+    props;
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -69,6 +76,25 @@ const QuoteRow = (props: QuoteProps) => {
     window.open(url);
   };
 
+  const approve_deny = async (approved: boolean) => {
+    const accessToken = await getAccessTokenSilently();
+
+    const bodyObj = {
+      client: client,
+      id: id,
+      approved,
+      recipient_name,
+      recipient_address: address,
+      item_name: device_type,
+    };
+
+    const postResp = await postOrder("updateMarketOrder", accessToken, bodyObj);
+
+    if (postResp.status && postResp.status !== "Successful") {
+      setError(true);
+    }
+  };
+
   return (
     <>
       <TableRow>
@@ -77,7 +103,10 @@ const QuoteRow = (props: QuoteProps) => {
             <IconButton
               aria-label="expand row"
               size="small"
-              onClick={() => setOpen(!open)}
+              onClick={() => {
+                setOpen(!open);
+                setError(false);
+              }}
             >
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
@@ -93,6 +122,11 @@ const QuoteRow = (props: QuoteProps) => {
           <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit component={Paper}>
               <Box sx={{ margin: 1 }}>
+                {error && (
+                  <Alert severity="error" sx={{ marginBottom: 1 }}>
+                    There was an error in responding to the market order.
+                  </Alert>
+                )}
                 <Grid
                   container
                   spacing={3}
@@ -117,13 +151,16 @@ const QuoteRow = (props: QuoteProps) => {
                     )}
                   </Grid>
                   <Grid item xs={3}>
-                    <Button
-                      color="success"
-                      variant="contained"
-                      sx={{ minWidth: "100px" }}
-                    >
-                      Approve
-                    </Button>
+                    {props.approved === undefined && (
+                      <Button
+                        color="success"
+                        variant="contained"
+                        sx={{ minWidth: "100px" }}
+                        onClick={() => approve_deny(true)}
+                      >
+                        Approve
+                      </Button>
+                    )}
                   </Grid>
                 </Grid>
                 <Grid
@@ -138,13 +175,16 @@ const QuoteRow = (props: QuoteProps) => {
                     </Button>
                   </Grid>
                   <Grid item xs={3}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{ minWidth: "100px" }}
-                    >
-                      Deny
-                    </Button>
+                    {props.approved === undefined && (
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ minWidth: "100px" }}
+                        onClick={() => approve_deny(false)}
+                      >
+                        Deny
+                      </Button>
+                    )}
                   </Grid>
                 </Grid>
               </Box>
