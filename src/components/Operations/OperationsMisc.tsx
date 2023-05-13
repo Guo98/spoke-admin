@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Typography, Box, Button } from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
+import InviteUsers from "./InviteUsers";
 
 const boxStyle = {
   display: "flex",
@@ -31,13 +33,21 @@ const OperationsMisc = () => {
                 variant="contained"
                 onClick={() => setView("marketplace")}
               >
-                VIew Marketplace Orders
+                View Marketplace Orders
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setView("inviteusers")}
+              >
+                <PersonAddIcon sx={{ paddingRight: "5px" }} />
+                Invite Users
               </Button>
             </>
           )}
           {view === "marketplace" && (
             <MarketplaceOrders handleClose={handleClose} />
           )}
+          {view === "inviteusers" && <InviteUsers handleClose={handleClose} />}
         </Box>
       </Box>
     </>

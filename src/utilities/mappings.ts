@@ -75,6 +75,49 @@ const navMappings: any = {
   FLYR: ["Orders", "Inventory", "Storefront"],
 };
 
+const clientsList = [
+  "Alma",
+  "Automox",
+  "Bowery",
+  "Flo Health",
+  "FLYR",
+  "Hidden Road",
+  "Intersect Power",
+  "NurseDash",
+];
+
+const clientRoles: any = {
+  "Flo Health": [
+    "Admin",
+    "Flo Health Lithuania Employee",
+    "Flo Health Netherlands Employee",
+    "Flo Health UK Employee",
+  ],
+  FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
+};
+
+const clientRolesCode: any = {
+  Admin: "admin",
+  "Flo Health Lithuania Employee": "flo-lt-emp",
+  "Flo Health UK Employee": "flo-uk-emp",
+  "Flo Health Netherlands Employee": "flo-nl-emp",
+  "FLYR EU": "flyr-eu",
+  "FLYR Poland": "flyr-poland",
+  "FLYR USA": "flyr-usa",
+  "Pribas EU": "pribas-eu",
+};
+
+const connectionMappings: any = {
+  Alma: ["Username Password"],
+  Automox: ["Username Password"],
+  Bowery: ["Google", "Username Password"],
+  "Flo Health": ["Username Password"],
+  FLYR: ["Google", "Username Password"],
+  "Hidden Road": ["Google", "Username Password"],
+  "Intersect Power": ["Username Password"],
+  NurseDash: ["Google", "Username Password"],
+};
+
 export {
   imageMapping,
   orgMapping,
@@ -83,4 +126,8 @@ export {
   locationMappings,
   countryMappings,
   navMappings,
+  clientsList,
+  clientRoles,
+  clientRolesCode,
+  connectionMappings,
 };
