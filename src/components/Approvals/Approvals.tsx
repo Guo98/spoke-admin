@@ -14,16 +14,20 @@ import {
   IconButton,
   Button,
   Alert,
+  Stack,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import DownloadIcon from "@mui/icons-material/Download";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import DoneIcon from "@mui/icons-material/Done";
+import CloseIcon from "@mui/icons-material/Close";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
 import { downloadFile } from "../../services/azureblob";
 import Header from "../Header/Header";
+import DenyModal from "./DenyModal";
 
 interface FormattedProps {
   text: string;
@@ -41,6 +45,7 @@ interface QuoteProps {
   id: string;
   address: string;
   approved?: boolean;
+  setOrders: Function;
 }
 
 const FormattedCell = (props: FormattedProps) => {
@@ -58,6 +63,7 @@ const QuoteRow = (props: QuoteProps) => {
     props;
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
+  const [denyOpen, setDenyOpen] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -76,7 +82,11 @@ const QuoteRow = (props: QuoteProps) => {
     window.open(url);
   };
 
-  const approve_deny = async (approved: boolean) => {
+  const handleModalClose = () => {
+    setDenyOpen(false);
+  };
+
+  const approve_deny = async (approved: boolean, reason: string = "") => {
     const accessToken = await getAccessTokenSilently();
 
     const bodyObj = {
@@ -86,12 +96,15 @@ const QuoteRow = (props: QuoteProps) => {
       recipient_name,
       recipient_address: address,
       item_name: device_type,
+      reason,
     };
 
     const postResp = await postOrder("updateMarketOrder", accessToken, bodyObj);
 
     if (postResp.status && postResp.status !== "Successful") {
       setError(true);
+    } else {
+      await props.setOrders();
     }
   };
 
@@ -120,8 +133,8 @@ const QuoteRow = (props: QuoteProps) => {
       {props.quote && (
         <TableRow>
           <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
-            <Collapse in={open} timeout="auto" unmountOnExit component={Paper}>
-              <Box sx={{ margin: 1 }}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ marginY: 1, marginX: "8%" }}>
                 {error && (
                   <Alert severity="error" sx={{ marginBottom: 1 }}>
                     There was an error in responding to the market order.
@@ -136,55 +149,68 @@ const QuoteRow = (props: QuoteProps) => {
                   <Grid item xs={9}>
                     {props.quote_price && (
                       <>
+                        <Typography fontWeight="bold">Quoted Price:</Typography>
                         <Typography
+                          fontSize="300%"
                           display="inline"
                           component="span"
-                          fontWeight="bold"
                         >
-                          Quoted Price:
+                          ${props.quote_price}
                         </Typography>
-                        <Typography display="inline" component="span">
-                          {" "}
-                          {props.quote_price}
+                        <Typography component="span" display="inline">
+                          .00
                         </Typography>
                       </>
                     )}
                   </Grid>
                   <Grid item xs={3}>
-                    {props.approved === undefined && (
-                      <Button
-                        color="success"
-                        variant="contained"
-                        sx={{ minWidth: "100px" }}
-                        onClick={() => approve_deny(true)}
-                      >
-                        Approve
+                    <Stack
+                      direction="column"
+                      spacing={2}
+                      alignItems="center normal"
+                    >
+                      <Button onClick={download} variant="contained">
+                        <PictureAsPdfIcon sx={{ mr: 1 }} /> Quote
                       </Button>
-                    )}
-                  </Grid>
-                </Grid>
-                <Grid
-                  container
-                  justifyContent="space-between"
-                  spacing={3}
-                  sx={{ display: "flex", paddingTop: "20px" }}
-                >
-                  <Grid item xs={9}>
-                    <Button onClick={download} variant="contained">
-                      <DownloadIcon /> View Quote
-                    </Button>
-                  </Grid>
-                  <Grid item xs={3}>
-                    {props.approved === undefined && (
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        sx={{ minWidth: "100px" }}
-                        onClick={() => approve_deny(false)}
-                      >
-                        Deny
-                      </Button>
-                    )}
+                      {props.approved === undefined ? (
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          alignItems="center normal"
+                        >
+                          <Button
+                            variant="contained"
+                            sx={{
+                              borderRadius: "999em 999em 999em 999em",
+                              backgroundColor: "#cc0000",
+                            }}
+                            onClick={() => setDenyOpen(true)}
+                            fullWidth
+                            color="secondary"
+                          >
+                            <CloseIcon />
+                          </Button>
+                          <Button
+                            variant="contained"
+                            sx={{
+                              borderRadius: "999em 999em 999em 999em",
+                              backgroundColor: "#388e3c",
+                            }}
+                            onClick={() => approve_deny(true)}
+                            fullWidth
+                            color="success"
+                          >
+                            <DoneIcon />
+                          </Button>
+                        </Stack>
+                      ) : (
+                        <Typography>
+                          {props.approved
+                            ? "Request Approved"
+                            : "Request Rejected"}
+                        </Typography>
+                      )}
+                    </Stack>
                   </Grid>
                 </Grid>
               </Box>
@@ -192,6 +218,11 @@ const QuoteRow = (props: QuoteProps) => {
           </TableCell>
         </TableRow>
       )}
+      <DenyModal
+        open={denyOpen}
+        handleClose={handleModalClose}
+        handleDeny={approve_deny}
+      />
     </>
   );
 };
@@ -236,7 +267,7 @@ const Approvals = () => {
   return (
     <Box sx={{ width: "94%", paddingLeft: "3%" }}>
       <Header
-        label={"Search for requests, names"}
+        label={"Search for Approvals by requested items, names"}
         textChange={handleTextChange}
       />
       <Typography>
@@ -256,7 +287,7 @@ const Approvals = () => {
             </TableHead>
             <TableBody>
               {orders.map((order) => (
-                <QuoteRow {...order} />
+                <QuoteRow {...order} setOrders={getOrders} />
               ))}
             </TableBody>
           </Table>

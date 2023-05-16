@@ -50,6 +50,7 @@ interface RowProps {
     id: string;
     quote?: string;
     quote_price?: string;
+    approved?: boolean;
   };
 }
 
@@ -214,7 +215,11 @@ const MarketRow = (props: RowProps) => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={4}>
-                  <Button variant="contained" onClick={updatePrice}>
+                  <Button
+                    variant="contained"
+                    onClick={updatePrice}
+                    disabled={order.approved}
+                  >
                     Update Price
                   </Button>
                 </Grid>
