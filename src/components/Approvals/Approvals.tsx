@@ -235,6 +235,7 @@ const QuoteRow = (props: QuoteProps) => {
 const Approvals = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
+  const [dntOrders, setDntOrders] = useState<any[]>([]);
   const [error, setError] = useState(false);
 
   const client = useSelector((state: RootState) => state.client.data);
@@ -253,6 +254,7 @@ const Approvals = () => {
 
     if (ordersRes.status === "Successful") {
       setOrders(ordersRes.data.reverse());
+      setDntOrders(ordersRes.data.reverse());
       setLoading(false);
     } else {
       setError(true);
@@ -267,7 +269,23 @@ const Approvals = () => {
     }
   }, []);
 
-  const handleTextChange = () => {};
+  const handleTextChange = (text: string) => {
+    const lowerCaseText = text.toLowerCase();
+
+    if (text !== "") {
+      const filteredOrders = orders.filter(
+        (ord) =>
+          ord.recipient_name.toLowerCase().indexOf(lowerCaseText) > -1 ||
+          ord.device_type.toLowerCase().indexOf(lowerCaseText) > -1
+      );
+
+      if (filteredOrders.length > 0) {
+        setOrders(filteredOrders);
+      }
+    } else {
+      setOrders(dntOrders);
+    }
+  };
 
   return (
     <Box sx={{ width: "94%", paddingLeft: "3%" }}>

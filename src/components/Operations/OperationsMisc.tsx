@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Typography, Box, Button } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
 import InviteUsers from "./InviteUsers";
@@ -43,6 +44,13 @@ const OperationsMisc = () => {
               >
                 <PersonAddIcon sx={{ paddingRight: "5px" }} />
                 Invite Users
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setView("newmarketplaceitem")}
+              >
+                <AddShoppingCartIcon sx={{ pr: "5px" }} />
+                Add New Marketplace Item
               </Button>
             </>
           )}
