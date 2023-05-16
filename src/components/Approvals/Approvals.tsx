@@ -155,10 +155,15 @@ const QuoteRow = (props: QuoteProps) => {
                           display="inline"
                           component="span"
                         >
-                          ${props.quote_price}
+                          $
+                          {props.quote_price.indexOf(".") > -1
+                            ? props.quote_price.split(".")[0]
+                            : props.quote_price}
                         </Typography>
                         <Typography component="span" display="inline">
-                          .00
+                          {props.quote_price.indexOf(".") > -1
+                            ? props.quote_price.split(".")[1]
+                            : ".00"}
                         </Typography>
                       </>
                     )}

@@ -51,6 +51,7 @@ interface RowProps {
     quote?: string;
     quote_price?: string;
     approved?: boolean;
+    requestor_email?: string;
   };
 }
 
@@ -166,6 +167,11 @@ const MarketRow = (props: RowProps) => {
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
+              {order.requestor_email && (
+                <Typography sx={{ pb: 2 }}>
+                  Requested By: {order.requestor_email}
+                </Typography>
+              )}
               <Grid
                 container
                 direction="row"
