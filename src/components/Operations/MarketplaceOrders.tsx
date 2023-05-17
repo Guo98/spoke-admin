@@ -84,7 +84,8 @@ const MarketRow = (props: RowProps) => {
   const updateMarketplaceOrder = async (
     updateStatus: boolean = false,
     updatePrice: boolean = false,
-    updateClient: boolean = false
+    updateClient: boolean = false,
+    updateEntity: boolean = false
   ) => {
     let bodyObj: any = {
       id: order.id,
@@ -104,6 +105,10 @@ const MarketRow = (props: RowProps) => {
       }
     } else if (updateClient) {
       bodyObj.updateClient = changeClient;
+    } else if (updateEntity) {
+      bodyObj.client = order.client;
+      if (!bodyObj.entity || bodyObj.entity !== selectEntity)
+        bodyObj.entity = selectEntity;
     }
 
     const accessToken = await getAccessTokenSilently();
@@ -244,9 +249,11 @@ const MarketRow = (props: RowProps) => {
                   <Grid item xs={4}>
                     <Button
                       variant="contained"
-                      onClick={() => updateMarketplaceOrder(false, false, true)}
+                      onClick={() =>
+                        updateMarketplaceOrder(false, false, false, true)
+                      }
                     >
-                      Update Client
+                      Update Entity
                     </Button>
                   </Grid>
                 </Grid>
