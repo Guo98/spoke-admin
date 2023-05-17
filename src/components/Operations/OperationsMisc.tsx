@@ -6,6 +6,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
 import InviteUsers from "./InviteUsers";
+import NewMarketplaceItem from "./NewMarketplaceItem";
 
 const boxStyle = {
   display: "flex",
@@ -58,6 +59,9 @@ const OperationsMisc = () => {
             <MarketplaceOrders handleClose={handleClose} />
           )}
           {view === "inviteusers" && <InviteUsers handleClose={handleClose} />}
+          {view === "newmarketplaceitem" && (
+            <NewMarketplaceItem handleClose={handleClose} />
+          )}
         </Box>
       </Box>
     </>

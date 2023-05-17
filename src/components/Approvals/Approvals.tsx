@@ -15,6 +15,7 @@ import {
   Button,
   Alert,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -183,30 +184,34 @@ const QuoteRow = (props: QuoteProps) => {
                           spacing={2}
                           alignItems="center normal"
                         >
-                          <Button
-                            variant="contained"
-                            sx={{
-                              borderRadius: "999em 999em 999em 999em",
-                              backgroundColor: "#cc0000",
-                            }}
-                            onClick={() => setDenyOpen(true)}
-                            fullWidth
-                            color="secondary"
-                          >
-                            <CloseIcon />
-                          </Button>
-                          <Button
-                            variant="contained"
-                            sx={{
-                              borderRadius: "999em 999em 999em 999em",
-                              backgroundColor: "#388e3c",
-                            }}
-                            onClick={() => approve_deny(true)}
-                            fullWidth
-                            color="success"
-                          >
-                            <DoneIcon />
-                          </Button>
+                          <Tooltip title="Reject">
+                            <Button
+                              variant="contained"
+                              sx={{
+                                borderRadius: "999em 999em 999em 999em",
+                                backgroundColor: "#cc0000",
+                              }}
+                              onClick={() => setDenyOpen(true)}
+                              fullWidth
+                              color="secondary"
+                            >
+                              <CloseIcon />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip title="Approve">
+                            <Button
+                              variant="contained"
+                              sx={{
+                                borderRadius: "999em 999em 999em 999em",
+                                backgroundColor: "#388e3c",
+                              }}
+                              onClick={() => approve_deny(true)}
+                              fullWidth
+                              color="success"
+                            >
+                              <DoneIcon />
+                            </Button>
+                          </Tooltip>
                         </Stack>
                       ) : (
                         <Typography>

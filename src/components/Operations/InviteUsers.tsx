@@ -12,8 +12,12 @@ import {
   MenuItem,
   Button,
   Stack,
+  LinearProgress,
+  Alert,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   clientsList,
@@ -37,6 +41,9 @@ const InviteUsers = (props: IUProps) => {
   const [selectedRole, setRole] = useState("");
   const [connection, setConnection] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -53,6 +60,7 @@ const InviteUsers = (props: IUProps) => {
   };
 
   const inviteUser = async () => {
+    setLoading(true);
     const inviteObj = {
       client: client,
       connection: connection,
@@ -63,23 +71,58 @@ const InviteUsers = (props: IUProps) => {
     const accessToken = await getAccessTokenSilently();
 
     const postResp = await postOrder("inviteusers", accessToken, inviteObj);
+
+    if (postResp.status === "Successful") {
+      setLoading(false);
+      setSuccess(true);
+    } else {
+      setLoading(false);
+      setError(true);
+    }
   };
 
   return (
     <Box>
       <Grid container direction="row">
-        <Grid item xs={11} sx={{ paddingLeft: "15px" }}>
+        <Grid item xs={10} sx={{ paddingLeft: "15px" }}>
           <Typography>
             <h3>Invite Users</h3>
           </Typography>
         </Grid>
         <Grid item xs={1} sx={{ paddingTop: "10px", paddingLeft: "20px" }}>
-          <IconButton onClick={() => handleClose()}>
-            <CloseIcon />
-          </IconButton>
+          <Tooltip title="Clear All">
+            <IconButton
+              onClick={() => {
+                setClient("");
+                setRole("");
+                setConnection("");
+                setEmail("");
+                setError(false);
+                setSuccess(false);
+              }}
+            >
+              <ClearAllIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1} sx={{ paddingTop: "10px", paddingLeft: "20px" }}>
+          <Tooltip title="Exit">
+            <IconButton onClick={() => handleClose()}>
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
       </Grid>
       <Stack spacing={2}>
+        {loading && <LinearProgress />}
+        {!loading && success && (
+          <Alert severity="success">Invite successfully sent!</Alert>
+        )}
+        {!loading && error && (
+          <Alert severity="error">
+            Something went wrong... Please reach out to Andy
+          </Alert>
+        )}
         <FormControl fullWidth sx={textFieldStyle} required size="small">
           <InputLabel id="client-select-label">Client</InputLabel>
           <Select
@@ -136,7 +179,9 @@ const InviteUsers = (props: IUProps) => {
             </Select>
           </FormControl>
         )}
-        <Button onClick={inviteUser}>Invite</Button>
+        <Button onClick={inviteUser} disabled={loading}>
+          Invite
+        </Button>
       </Stack>
     </Box>
   );

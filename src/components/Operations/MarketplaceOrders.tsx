@@ -29,6 +29,8 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
 import { uploadFile, downloadFile } from "../../services/azureblob";
+import { clientsList } from "../../utilities/mappings";
+import { entityMappings } from "../../app/utility/constants";
 
 interface MOProps {
   handleClose: Function;
@@ -53,6 +55,7 @@ interface RowProps {
     approved?: boolean;
     requestor_email?: string;
   };
+  refresh: Function;
 }
 
 const MarketRow = (props: RowProps) => {
@@ -61,47 +64,57 @@ const MarketRow = (props: RowProps) => {
   const [status, setStatus] = useState(order.status);
   const [file, setFile] = useState<File | null>(null);
   const [price, setPrice] = useState("");
+  const [changeClient, setClient] = useState("");
+  const [selectEntity, setEntity] = useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value);
   };
 
-  const { getAccessTokenSilently } = useAuth0();
-
-  const updateStatus = async () => {
-    const accessToken = await getAccessTokenSilently();
-
-    if (status !== order.status) {
-      const bodyObj = {
-        client: order.client,
-        id: order.id,
-        status,
-      };
-      const updateRes = await postOrder(
-        "updateMarketOrder",
-        accessToken,
-        bodyObj
-      );
-    }
+  const handleClientChange = (event: SelectChangeEvent) => {
+    setClient(event.target.value);
   };
 
-  const updatePrice = async () => {
-    const accessToken = await getAccessTokenSilently();
+  const handleEntityChange = (event: SelectChangeEvent) => {
+    setEntity(event.target.value);
+  };
 
-    if (
-      (order.quote_price && price !== order.quote_price) ||
-      !order.quote_price
-    ) {
-      const bodyObj = {
-        client: order.client,
-        id: order.id,
-        price,
-      };
-      const updateRes = await postOrder(
-        "updateMarketOrder",
-        accessToken,
-        bodyObj
-      );
+  const { getAccessTokenSilently } = useAuth0();
+
+  const updateMarketplaceOrder = async (
+    updateStatus: boolean = false,
+    updatePrice: boolean = false,
+    updateClient: boolean = false
+  ) => {
+    let bodyObj: any = {
+      id: order.id,
+    };
+    if (updateStatus) {
+      bodyObj.client = order.client;
+      if (status !== order.status) {
+        bodyObj.status = status;
+      }
+    } else if (updatePrice) {
+      bodyObj.client = order.client;
+      if (
+        (order.quote_price && price !== order.quote_price) ||
+        !order.quote_price
+      ) {
+        bodyObj.price = price;
+      }
+    } else if (updateClient) {
+      bodyObj.updateClient = changeClient;
+    }
+
+    const accessToken = await getAccessTokenSilently();
+    const updateRes = await postOrder(
+      "updateMarketOrder",
+      accessToken,
+      bodyObj
+    );
+
+    if (updateRes.status === "Successful") {
+      await props.refresh();
     }
   };
 
@@ -172,6 +185,72 @@ const MarketRow = (props: RowProps) => {
                   Requested By: {order.requestor_email}
                 </Typography>
               )}
+              {!order.client && (
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  spacing={2}
+                  sx={{ display: "flex", mb: 2 }}
+                >
+                  <Grid item xs={8}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="client-select-label">Client</InputLabel>
+                      <Select
+                        labelId="client-select-label"
+                        label="Client"
+                        value={changeClient}
+                        onChange={handleClientChange}
+                      >
+                        {clientsList.map((c) => (
+                          <MenuItem value={c}>{c}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      variant="contained"
+                      onClick={() => updateMarketplaceOrder(false, false, true)}
+                    >
+                      Update Client
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
+              {order.client && entityMappings[order.client] && (
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  spacing={2}
+                  sx={{ display: "flex", mb: 2 }}
+                >
+                  <Grid item xs={8}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="entity-select-label">Entity</InputLabel>
+                      <Select
+                        labelId="entity-select-label"
+                        label="Entity"
+                        value={selectEntity}
+                        onChange={handleEntityChange}
+                      >
+                        {entityMappings[order.client].map((c: string) => (
+                          <MenuItem value={c}>{c}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      variant="contained"
+                      onClick={() => updateMarketplaceOrder(false, false, true)}
+                    >
+                      Update Client
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
               <Grid
                 container
                 direction="row"
@@ -196,7 +275,10 @@ const MarketRow = (props: RowProps) => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={4}>
-                  <Button variant="contained" onClick={updateStatus}>
+                  <Button
+                    variant="contained"
+                    onClick={() => updateMarketplaceOrder(true, false, false)}
+                  >
                     Update Status
                   </Button>
                 </Grid>
@@ -223,7 +305,7 @@ const MarketRow = (props: RowProps) => {
                 <Grid item xs={4}>
                   <Button
                     variant="contained"
-                    onClick={updatePrice}
+                    onClick={() => updateMarketplaceOrder(false, true, false)}
                     disabled={order.approved}
                   >
                     Update Price
@@ -349,7 +431,7 @@ const MarketplaceOrders = (props: MOProps) => {
             </TableHead>
             <TableBody>
               {orders.map((order, index) => (
-                <MarketRow order={order} />
+                <MarketRow order={order} refresh={getOrders} />
               ))}
             </TableBody>
           </Table>
