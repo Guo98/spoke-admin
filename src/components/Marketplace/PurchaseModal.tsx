@@ -87,6 +87,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [error, setError] = useState(false);
   const [region, setRegion] = useState("");
   const [wrongregion, setWrongregion] = useState(false);
+  const [includeyubikey, setIncludeYubikey] = useState(false);
 
   const handleRegionChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value);
@@ -114,6 +115,10 @@ const PurchaseModal = (props: PurchaseProps) => {
 
   const handleChecked = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
+  };
+
+  const handleYubikeyChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    setIncludeYubikey(event.target.checked);
   };
 
   const handleShipping = (event: SelectChangeEvent) => {
@@ -152,6 +157,10 @@ const PurchaseModal = (props: PurchaseProps) => {
       order_type:
         buyType === "Hold" ? "Hold in Inventory" : "Deploy Right Away",
     };
+
+    if (marketClient === "Automox") {
+      postBody.includeYubikey = includeyubikey;
+    }
 
     if (buyType !== "Hold") {
       if (region !== "Other") {
@@ -428,6 +437,14 @@ const PurchaseModal = (props: PurchaseProps) => {
                   size="small"
                   onChange={(event) => setNotes(event.target.value)}
                 />
+                {marketClient === "Automox" && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox required onChange={handleYubikeyChecked} />
+                    }
+                    label={<div>Include Yubikey</div>}
+                  />
+                )}
                 <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
                 <FormControlLabel
                   control={<Checkbox required onChange={handleChecked} />}

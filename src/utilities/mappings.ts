@@ -108,8 +108,8 @@ const clientRolesCode: any = {
 };
 
 const connectionMappings: any = {
-  Alma: ["Username Password"],
-  Automox: ["Username Password"],
+  Alma: ["Google", "Username Password"],
+  Automox: ["Google", "Username Password"],
   Bowery: ["Google", "Username Password"],
   "Flo Health": ["Username Password"],
   FLYR: ["Google", "Username Password"],
