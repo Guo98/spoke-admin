@@ -63,13 +63,14 @@ const navMappings: any = {
   Bowery: ["Orders", "Inventory", "Storefront"],
   NurseDash: ["Orders", "Inventory", "Storefront"],
   Alma: ["Orders", "Inventory", "Marketplace"],
-  Automox: ["Orders", "Inventory", "Storefront", "Marketplace"],
+  Automox: ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
   spokeops: [
     "Orders",
     "Inventory",
     "Storefront",
     "Marketplace",
     "Approvals",
+    "Invite",
     "Misc",
   ],
   FLYR: ["Orders", "Inventory", "Storefront"],
@@ -94,6 +95,7 @@ const clientRoles: any = {
     "Flo Health UK Employee",
   ],
   FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
+  Automox: ["Admin", "Technical", "Non-technical"],
 };
 
 const clientRolesCode: any = {
@@ -105,6 +107,8 @@ const clientRolesCode: any = {
   "FLYR Poland": "flyr-poland",
   "FLYR USA": "flyr-usa",
   "Pribas EU": "pribas-eu",
+  Technical: "technical",
+  "Non-technical": "nontechnical",
 };
 
 const connectionMappings: any = {

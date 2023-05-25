@@ -34,6 +34,7 @@ import StoreIcon from "@mui/icons-material/Store";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ApprovalIcon from "@mui/icons-material/Approval";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useLocation } from "react-router-dom";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -61,6 +62,7 @@ interface IconMapping {
   Misc: JSX.Element;
   Marketplace: JSX.Element;
   Approvals: JSX.Element;
+  Invite: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -77,6 +79,7 @@ const iconMapping: IconMapping = {
   Misc: <MiscellaneousServicesIcon />,
   Marketplace: <ShoppingCartIcon />,
   Approvals: <ApprovalIcon />,
+  Invite: <PersonAddIcon />,
 };
 
 interface DrawerProps {
@@ -226,13 +229,16 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         setIndex(4);
         break;
       case "misc":
-        setIndex(5);
+        setIndex(6);
         break;
       case "marketplace":
         setIndex(3);
         break;
       case "approvals":
         setIndex(4);
+        break;
+      case "invite":
+        setIndex(5);
         break;
       default:
         setIndex(0);
@@ -255,7 +261,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Misc":
         AppContainer.navigate("/misc");
-        setIndex(5);
+        setIndex(6);
         break;
       case "Marketplace":
         AppContainer.navigate("/marketplace");
@@ -270,6 +276,10 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Team":
         window.location.href = "/team";
+        break;
+      case "Invite":
+        AppContainer.navigate("/invite");
+        setIndex(5);
         break;
       case "Storefront":
         if (

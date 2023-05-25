@@ -6,6 +6,7 @@ import Logout from "../Login/Logout";
 import OperationsMisc from "../Operations/OperationsMisc";
 import Marketplace from "../Marketplace/Marketplace";
 import Approvals from "../Approvals/Approvals";
+import InviteUsers from "../Operations/InviteUsers";
 
 const AppContainer = createBrowserRouter([
   {
@@ -53,6 +54,14 @@ const AppContainer = createBrowserRouter([
     element: (
       <>
         <Approvals />
+      </>
+    ),
+  },
+  {
+    path: "/invite",
+    element: (
+      <>
+        <InviteUsers />
       </>
     ),
   },

@@ -19,6 +19,8 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 import {
   clientsList,
   clientRoles,
@@ -28,7 +30,7 @@ import {
 import { postOrder } from "../../services/ordersAPI";
 
 interface IUProps {
-  handleClose: Function;
+  handleClose?: Function;
 }
 
 const textFieldStyle = {
@@ -37,6 +39,8 @@ const textFieldStyle = {
 
 const InviteUsers = (props: IUProps) => {
   const { handleClose } = props;
+  const selectedClient = useSelector((state: RootState) => state.client.data);
+
   const [client, setClient] = useState("");
   const [selectedRole, setRole] = useState("");
   const [connection, setConnection] = useState("");
@@ -58,6 +62,12 @@ const InviteUsers = (props: IUProps) => {
   const handleConnectionChange = (event: SelectChangeEvent) => {
     setConnection(event.target.value as string);
   };
+
+  useEffect(() => {
+    if (selectedClient !== "spokeops") {
+      setClient(selectedClient);
+    }
+  }, [selectedClient]);
 
   const inviteUser = async () => {
     setLoading(true);
@@ -82,9 +92,9 @@ const InviteUsers = (props: IUProps) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ width: "94%", paddingLeft: "3%" }}>
       <Grid container direction="row">
-        <Grid item xs={10} sx={{ paddingLeft: "15px" }}>
+        <Grid item xs={11} sx={{ paddingLeft: "15px" }}>
           <Typography>
             <h3>Invite Users</h3>
           </Typography>
@@ -105,13 +115,13 @@ const InviteUsers = (props: IUProps) => {
             </IconButton>
           </Tooltip>
         </Grid>
-        <Grid item xs={1} sx={{ paddingTop: "10px", paddingLeft: "20px" }}>
+        {/* <Grid item xs={1} sx={{ paddingTop: "10px", paddingLeft: "20px" }}>
           <Tooltip title="Exit">
-            <IconButton onClick={() => handleClose()}>
+            <IconButton onClick={() => handleClose!()}>
               <CloseIcon />
             </IconButton>
           </Tooltip>
-        </Grid>
+        </Grid> */}
       </Grid>
       <Stack spacing={2}>
         {loading && <LinearProgress />}
@@ -123,7 +133,13 @@ const InviteUsers = (props: IUProps) => {
             Something went wrong... Please reach out to Andy
           </Alert>
         )}
-        <FormControl fullWidth sx={textFieldStyle} required size="small">
+        <FormControl
+          fullWidth
+          sx={textFieldStyle}
+          required
+          size="small"
+          disabled={selectedClient !== "spokeops"}
+        >
           <InputLabel id="client-select-label">Client</InputLabel>
           <Select
             labelId="client-select-label"
@@ -150,7 +166,12 @@ const InviteUsers = (props: IUProps) => {
               required
             >
               {clientRoles[client].map((clientRole: string) => {
-                return <MenuItem value={clientRole}>{clientRole}</MenuItem>;
+                if (clientRole === "Admin") {
+                  if (selectedClient === "spokeops")
+                    return <MenuItem value={clientRole}>{clientRole}</MenuItem>;
+                } else {
+                  return <MenuItem value={clientRole}>{clientRole}</MenuItem>;
+                }
               })}
             </Select>
           </FormControl>
