@@ -59,13 +59,13 @@ const countryMappings: any = {
 
 const navMappings: any = {
   "Intersect Power": ["Orders", "Storefront"],
-  "Flo Health": ["Orders", "Inventory", "Storefront", "Marketplace"],
+  "Flo Health": ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
   public: ["Orders", "Inventory", "Storefront", "Marketplace"],
   "Hidden Road": ["Orders", "Inventory", "Storefront", "Marketplace"],
   Bowery: ["Orders", "Inventory", "Storefront"],
   NurseDash: ["Orders", "Inventory", "Storefront"],
   Alma: ["Orders", "Inventory", "Marketplace"],
-  Automox: ["Orders", "Inventory", "Storefront", "Marketplace"],
+  Automox: ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
   spokeops: [
     "Orders",
     "Inventory",

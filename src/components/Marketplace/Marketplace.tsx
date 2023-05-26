@@ -163,7 +163,8 @@ const Marketplace = () => {
             brands &&
             Object.keys(brands).map((brand, index) => {
               if (
-                brands[brand as keyof {}].clients.indexOf(marketClient) > -1
+                brands[brand as keyof {}].clients.indexOf(marketClient) > -1 ||
+                brand === "Others"
               ) {
                 return (
                   <ProductCard
