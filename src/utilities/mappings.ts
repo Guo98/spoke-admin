@@ -38,7 +38,9 @@ const roleMapping: any = {
 const deviceLocationMappings: any = {
   USA: ["United States", "Georgia, USA", "Nevada, USA"],
   POL: ["Poland", "Gdańsk, Poland"],
+  PL: ["Poland", "Gdańsk, Poland"],
   NLD: ["Netherlands", "Maastricht, Netherlands"],
+  NL: ["Netherlands", "Maastricht, Netherlands"],
   DEU: ["Netherlands", "Maastricht, Netherlands"],
   US: ["United States", "Georgia, USA", "Nevada, USA"],
 };
@@ -63,7 +65,7 @@ const navMappings: any = {
   Bowery: ["Orders", "Inventory", "Storefront"],
   NurseDash: ["Orders", "Inventory", "Storefront"],
   Alma: ["Orders", "Inventory", "Marketplace"],
-  Automox: ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
+  Automox: ["Orders", "Inventory", "Storefront", "Marketplace"],
   spokeops: [
     "Orders",
     "Inventory",
