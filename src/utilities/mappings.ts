@@ -38,7 +38,9 @@ const roleMapping: any = {
 const deviceLocationMappings: any = {
   USA: ["United States", "Georgia, USA", "Nevada, USA"],
   POL: ["Poland", "Gdańsk, Poland"],
+  PL: ["Poland", "Gdańsk, Poland"],
   NLD: ["Netherlands", "Maastricht, Netherlands"],
+  NL: ["Netherlands", "Maastricht, Netherlands"],
   DEU: ["Netherlands", "Maastricht, Netherlands"],
   US: ["United States", "Georgia, USA", "Nevada, USA"],
 };
@@ -70,6 +72,7 @@ const navMappings: any = {
     "Storefront",
     "Marketplace",
     "Approvals",
+    "Invite",
     "Misc",
   ],
   FLYR: ["Orders", "Inventory", "Storefront"],
@@ -94,6 +97,7 @@ const clientRoles: any = {
     "Flo Health UK Employee",
   ],
   FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
+  Automox: ["Admin", "Technical", "Non-technical"],
 };
 
 const clientRolesCode: any = {
@@ -105,6 +109,8 @@ const clientRolesCode: any = {
   "FLYR Poland": "flyr-poland",
   "FLYR USA": "flyr-usa",
   "Pribas EU": "pribas-eu",
+  Technical: "technical",
+  "Non-technical": "nontechnical",
 };
 
 const connectionMappings: any = {

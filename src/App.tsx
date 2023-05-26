@@ -116,6 +116,16 @@ function App() {
             window.open("https://withspoke.com/flo-health-lt", "_self");
           }
         }
+      } else if (orgMapping[user.org_id] === "Automox") {
+        if (user.role.length > 0) {
+          if (user.role[0] === "technical") {
+            setShow(false);
+            window.open("http://withspoke.com/automox-t", "_self");
+          } else if (user.role[0] === "nontechnical") {
+            setShow(false);
+            window.open("http://withspoke.com/automox-nt", "_self");
+          }
+        }
       }
 
       if (YbugContext?.Ybug) {
