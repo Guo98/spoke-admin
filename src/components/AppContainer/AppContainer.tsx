@@ -6,7 +6,7 @@ import Logout from "../Login/Logout";
 import OperationsMisc from "../Operations/OperationsMisc";
 import Marketplace from "../Marketplace/Marketplace";
 import Approvals from "../Approvals/Approvals";
-import InviteUsers from "../Operations/InviteUsers";
+import InviteUsers from "../Invite/InviteUsers";
 
 const AppContainer = createBrowserRouter([
   {

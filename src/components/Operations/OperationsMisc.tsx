@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Typography, Box, Button } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
-import InviteUsers from "./InviteUsers";
+import ViewInvites from "./ViewInvites";
 import NewMarketplaceItem from "./NewMarketplaceItem";
 
 const boxStyle = {
@@ -43,8 +42,8 @@ const OperationsMisc = () => {
                 variant="contained"
                 onClick={() => setView("inviteusers")}
               >
-                <PersonAddIcon sx={{ paddingRight: "5px" }} />
-                Invite Users
+                <ListAltIcon sx={{ paddingRight: "5px" }} />
+                View Invites
               </Button>
               <Button
                 variant="contained"
@@ -58,7 +57,7 @@ const OperationsMisc = () => {
           {view === "marketplace" && (
             <MarketplaceOrders handleClose={handleClose} />
           )}
-          {view === "inviteusers" && <InviteUsers handleClose={handleClose} />}
+          {view === "inviteusers" && <ViewInvites handleClose={handleClose} />}
           {view === "newmarketplaceitem" && (
             <NewMarketplaceItem handleClose={handleClose} />
           )}
