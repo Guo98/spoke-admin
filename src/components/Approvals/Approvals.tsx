@@ -131,7 +131,7 @@ const QuoteRow = (props: QuoteProps) => {
         <FormattedCell text={device_type} />
         <FormattedCell text={status} />
       </TableRow>
-      {props.quote && (
+      {(props.quote || props.quote_price) && (
         <TableRow>
           <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
