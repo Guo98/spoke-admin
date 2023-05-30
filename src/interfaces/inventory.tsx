@@ -63,6 +63,7 @@ export interface MarketplaceProducts {
     };
   };
   imgSrc: string;
+  hide: boolean;
 }
 
 interface DeviceSpecs {
