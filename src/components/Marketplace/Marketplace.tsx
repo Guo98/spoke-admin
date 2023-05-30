@@ -121,16 +121,21 @@ const Marketplace = () => {
             onClick={() => chipFilter("")}
           />
           {productRedux.length > 0 &&
-            productRedux.map((prod, index) => (
-              <Chip
-                label={prod.id}
-                clickable
-                variant={
-                  selectedProducts.indexOf(prod.id) > -1 ? "filled" : "outlined"
-                }
-                onClick={() => chipFilter(prod.id)}
-              />
-            ))}
+            productRedux.map((prod, index) => {
+              if (!prod.hide)
+                return (
+                  <Chip
+                    label={prod.id}
+                    clickable
+                    variant={
+                      selectedProducts.indexOf(prod.id) > -1
+                        ? "filled"
+                        : "outlined"
+                    }
+                    onClick={() => chipFilter(prod.id)}
+                  />
+                );
+            })}
         </Stack>
         <Box
           sx={{
@@ -147,7 +152,7 @@ const Marketplace = () => {
               if (
                 (selectedProducts.length !== 0 &&
                   selectedProducts.indexOf(product.id) > -1) ||
-                selectedProducts.length === 0
+                (selectedProducts.length === 0 && !product.hide)
               ) {
                 return (
                   <ProductCard
