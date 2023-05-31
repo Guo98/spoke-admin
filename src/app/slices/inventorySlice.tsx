@@ -3,7 +3,7 @@ import InitialInventoryState, {
 } from "../../types/redux/inventory";
 import {
   InventorySummary,
-  MarketplaceProducts,
+  MarketplaceProducts2,
 } from "../../interfaces/inventory";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -116,7 +116,7 @@ export const inventorySlice = createSlice({
         state.in_stock = inStock;
       }
     },
-    addProducts: (state, action: PayloadAction<MarketplaceProducts[]>) => {
+    addProducts: (state, action: PayloadAction<MarketplaceProducts2[]>) => {
       state.products = action.payload;
     },
   },

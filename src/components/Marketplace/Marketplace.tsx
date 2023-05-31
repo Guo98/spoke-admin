@@ -4,8 +4,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProducts } from "../../app/slices/inventorySlice";
 import { getInventory } from "../../services/inventoryAPI";
+import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
-import { MarketplaceProducts } from "../../interfaces/inventory";
+import {
+  MarketplaceProducts,
+  MarketplaceProducts2,
+} from "../../interfaces/inventory";
 import Header from "../Header/Header";
 import ProductCard from "./ProductCard";
 import PurchaseModal from "./PurchaseModal";
@@ -29,9 +33,7 @@ const Marketplace = () => {
   const [pagenumber, setPagenumber] = useState(0);
   const [product, setProduct] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [brands, setBrands] = useState<MarketplaceProducts["brand"] | null>(
-    null
-  );
+  const [brands, setBrands] = useState<any[]>([]);
   const [brandname, setBrand] = useState("");
   const [brandtypes, setTypes] = useState<any | null>(null);
   const [openModal, setOpen] = useState(false);
@@ -40,7 +42,11 @@ const Marketplace = () => {
   const getProducts = async () => {
     const accessToken = await getAccessTokenSilently();
     const productRes = await getInventory(accessToken, "Marketplace");
-    dispatch(addProducts(productRes.data));
+    const marketplaceRes = await standardGet(
+      accessToken,
+      "getmarketplaceinventory/" + marketClient
+    );
+    dispatch(addProducts(marketplaceRes.data));
   };
 
   useEffect(() => {
@@ -53,23 +59,23 @@ const Marketplace = () => {
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
     setProduct(product_name);
-    setSelectedProducts((prevProds) => [...prevProds, product_name]);
-    setBrands(productRedux[item_index].brand);
+    setSelectedProducts([product_name]);
+    setBrands(productRedux[item_index].brands);
   };
 
-  const selectBrand = (brand_name: string) => {
+  const selectBrand = (brand_name: string, index: number) => {
     // setPagenumber(2);
     setOpen(true);
     setBrand(brand_name);
-    setTypes(brands![brand_name].types);
-    setImg(brands![brand_name].imgSrc);
+    setTypes(brands![index].types);
+    setImg(brands![index].imgSrc);
   };
 
   const chipFilter = (text: string) => {
     if (text === "") {
       setSelectedProducts([]);
       setPagenumber(0);
-    } else {
+    } else if (selectedProducts.indexOf(text) < 0) {
       setSelectedProducts((prevProds) => [...prevProds, text]);
       setPagenumber(0);
     }
@@ -79,25 +85,30 @@ const Marketplace = () => {
     const lowerCaseText = text.toLowerCase();
     if (text !== "") {
       let categoryFilter = productRedux.filter(
-        (prod) => prod.id.toLowerCase().indexOf(lowerCaseText) > -1
+        (prod) => prod.item_type.toLowerCase().indexOf(lowerCaseText) > -1
       );
 
       let productFilter = productRedux.filter(
         (prod) =>
-          Object.keys(prod.brand).filter(
-            (key) => key.toLowerCase().indexOf(lowerCaseText) > -1
+          prod.brands.filter(
+            (key) => key.brand.toLowerCase().indexOf(lowerCaseText) > -1
           ).length > 0
       );
 
       if (productFilter.length > 1 || categoryFilter.length > 0) {
-        const categoryNames = productFilter.map((prod) => prod.id);
+        const categoryNames = productFilter.map((prod) => prod.item_type);
         setSelectedProducts(categoryNames);
         setPagenumber(0);
       } else if (productFilter.length > 0) {
-        setSelectedProducts([productFilter[0].id]);
+        setSelectedProducts([productFilter[0].item_type]);
         setPagenumber(1);
       }
     }
+  };
+
+  const chipDelete = (item_type: string) => {
+    const prodIndex = selectedProducts.indexOf(item_type);
+    setSelectedProducts(selectedProducts.splice(prodIndex, 1));
   };
 
   const handleClose = () => {
@@ -125,14 +136,19 @@ const Marketplace = () => {
               if (!prod.hide)
                 return (
                   <Chip
-                    label={prod.id}
+                    label={prod.item_type}
                     clickable
                     variant={
-                      selectedProducts.indexOf(prod.id) > -1
+                      selectedProducts.indexOf(prod.item_type) > -1
                         ? "filled"
                         : "outlined"
                     }
-                    onClick={() => chipFilter(prod.id)}
+                    onClick={() => chipFilter(prod.item_type)}
+                    onDelete={
+                      selectedProducts.indexOf(prod.item_type) > -1
+                        ? () => chipDelete(prod.item_type)
+                        : undefined
+                    }
                   />
                 );
             })}
@@ -151,12 +167,12 @@ const Marketplace = () => {
             productRedux.map((product, index) => {
               if (
                 (selectedProducts.length !== 0 &&
-                  selectedProducts.indexOf(product.id) > -1) ||
+                  selectedProducts.indexOf(product.item_type) > -1) ||
                 (selectedProducts.length === 0 && !product.hide)
               ) {
                 return (
                   <ProductCard
-                    label={product.id}
+                    label={product.item_type}
                     imgSrc={product.imgSrc}
                     index={index}
                     cardAction={genericProduct}
@@ -165,21 +181,16 @@ const Marketplace = () => {
               }
             })}
           {pagenumber === 1 &&
-            brands &&
-            Object.keys(brands).map((brand, index) => {
-              if (
-                brands[brand as keyof {}].clients.indexOf(marketClient) > -1 ||
-                brand === "Others"
-              ) {
-                return (
-                  <ProductCard
-                    label={brands[brand as keyof {}].name}
-                    imgSrc={brands[brand as keyof {}].imgSrc}
-                    index={index}
-                    cardAction={selectBrand}
-                  />
-                );
-              }
+            brands.length > 0 &&
+            brands.map((brand, index) => {
+              return (
+                <ProductCard
+                  label={brand.brand}
+                  imgSrc={brand.imgSrc}
+                  index={index}
+                  cardAction={selectBrand}
+                />
+              );
             })}
           <PurchaseModal
             open={openModal}
