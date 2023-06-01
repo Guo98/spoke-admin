@@ -115,7 +115,9 @@ const AssignModal = (props: AssignProps) => {
         addressResult.data.country &&
         deviceLocationMappings[addressResult.data.country] &&
         deviceLocationMappings[addressResult.data.country].indexOf(
-          device_location
+          type === "general"
+            ? props.devices![parseInt(selectedDevice)]?.location
+            : device_location
         ) < 0
       ) {
         setError(
