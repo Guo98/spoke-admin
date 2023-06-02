@@ -36,7 +36,7 @@ export async function getAllMarketplace(
   client: string = ""
 ) {
   let route = client === "" ? "/getmarketplace" : "/getmarketplace/" + client;
-  return fetch(process.env.REACT_APP_SPOKE_API + "/getmarketplace", {
+  return fetch(process.env.REACT_APP_SPOKE_API + route, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
