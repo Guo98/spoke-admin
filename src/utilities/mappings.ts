@@ -55,6 +55,17 @@ const countryMappings: any = {
   "United States": ["us", "usa", "united states", "united states of america"],
   Singapore: ["singapore", "sg", "sgp"],
   Brazil: ["brazil", "br", "bra"],
+  "United Kingdom": [
+    "gb-eng",
+    "gb-nir",
+    "gb-sct",
+    "gb-wls",
+    "gb",
+    "gbr",
+    "united kingdom",
+  ],
+  Netherlands: ["nl", "nld", "netherlands"],
+  Lithuania: ["lt", "ltu", "lithuania"],
 };
 
 const navMappings: any = {

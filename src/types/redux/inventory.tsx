@@ -1,6 +1,6 @@
 import {
   InventorySummary,
-  MarketplaceProducts,
+  MarketplaceProducts2,
 } from "../../interfaces/inventory";
 
 interface InitialInventoryState {
@@ -8,7 +8,7 @@ interface InitialInventoryState {
   pending: InventorySummary[];
   deployed: InventorySummary[];
   in_stock: InventorySummary[];
-  products: MarketplaceProducts[];
+  products: MarketplaceProducts2[];
 }
 
 const UpdateInventoryAction: string = "UpdateInventory";

@@ -68,6 +68,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const { getAccessTokenSilently, user } = useAuth0();
 
   const [type, setType] = useState("");
+  const [typeIndex, setTypeIndex] = useState(-1);
   const [specs, setSpecs] = useState("");
   const [color, setColor] = useState("");
   const [otherSpecs, setOtherSpecs] = useState("");
@@ -95,13 +96,16 @@ const PurchaseModal = (props: PurchaseProps) => {
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     setType(event.target.value);
+    setTypeIndex(
+      types.map((type: any) => type.type).indexOf(event.target.value)
+    );
   };
 
   const handleSpecsChange = (event: SelectChangeEvent) => {
     if (event.target.value === "Others") {
       setSpecIndex(-1);
     } else {
-      const specIndex = types[type].specs
+      const specIndex = types[typeIndex].specs
         ?.map((spec: any) => spec.spec)
         .indexOf(event.target.value);
       setSpecIndex(specIndex);
@@ -284,14 +288,13 @@ const PurchaseModal = (props: PurchaseProps) => {
                       required
                     >
                       {types &&
-                        Object.keys(types).map((brandtype) => {
-                          if (
-                            types[brandtype].clients.indexOf(marketClient) > -1
-                          ) {
-                            return (
-                              <MenuItem value={brandtype}>{brandtype}</MenuItem>
-                            );
-                          }
+                        types.length > 0 &&
+                        types.map((brandtype: any) => {
+                          return (
+                            <MenuItem value={brandtype.type}>
+                              {brandtype.type}
+                            </MenuItem>
+                          );
                         })}
                     </Select>
                   </FormControl>
@@ -324,17 +327,11 @@ const PurchaseModal = (props: PurchaseProps) => {
                       required
                     >
                       {type !== "" &&
-                        types[type].specs?.map((spec: any) => {
-                          if (
-                            spec.clients.filter(
-                              (specClient: any) =>
-                                specClient.client === marketClient
-                            ).length > 0
-                          ) {
-                            return (
-                              <MenuItem value={spec.spec}>{spec.spec}</MenuItem>
-                            );
-                          }
+                        typeIndex !== -1 &&
+                        types[typeIndex].specs?.map((spec: any) => {
+                          return (
+                            <MenuItem value={spec.spec}>{spec.spec}</MenuItem>
+                          );
                         })}
                       <MenuItem value="Other">Other</MenuItem>
                     </Select>
@@ -378,7 +375,8 @@ const PurchaseModal = (props: PurchaseProps) => {
                       required
                     >
                       {type !== "" &&
-                        types[type].colors.map((specColor: string) => {
+                        typeIndex !== -1 &&
+                        types[typeIndex].colors.map((specColor: string) => {
                           return (
                             <MenuItem value={specColor}>{specColor}</MenuItem>
                           );
@@ -415,16 +413,13 @@ const PurchaseModal = (props: PurchaseProps) => {
                     required
                   >
                     {specs !== "" &&
-                      types[type]?.specs[specIndex]?.clients?.map(
-                        (specClient: any) => {
-                          if (
-                            specClient &&
-                            specClient.client === marketClient
-                          ) {
-                            return specClient.locations.map((loc: string) => {
-                              return <MenuItem value={loc}>{loc}</MenuItem>;
-                            });
-                          }
+                      types[typeIndex]?.specs[specIndex]?.locations.map(
+                        (specLocation: string) => {
+                          return (
+                            <MenuItem value={specLocation}>
+                              {specLocation}
+                            </MenuItem>
+                          );
                         }
                       )}
                     <MenuItem value="Other">Other</MenuItem>
@@ -522,7 +517,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
-                  value={notes}
+                  value={recipient_notes}
                   onChange={(event) => setRNotes(event.target.value)}
                 />
               </>

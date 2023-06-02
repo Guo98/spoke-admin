@@ -75,3 +75,29 @@ interface DeviceSpecs {
     }
   ];
 }
+
+export interface MarketplaceProducts2 {
+  id: string;
+  item_type: string;
+  client: string;
+  brands: [
+    {
+      brand: string;
+      types: [
+        {
+          type: string;
+          specs: [
+            {
+              spec: string;
+              locations: string[];
+            }
+          ];
+          colors: string[];
+        }
+      ];
+      imgSrc: string;
+    }
+  ];
+  imgSrc: string;
+  hide?: boolean;
+}

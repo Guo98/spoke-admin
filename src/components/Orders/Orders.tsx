@@ -174,9 +174,10 @@ const Orders = () => {
         data.in_progress!,
         data.completed!
       );
-      setAll(combinedOrders.reverse());
-      setInprog(data.in_progress!);
-      setCompleted(data.completed!);
+
+      setAll(combinedOrders.sort((a, b) => b.orderNo - a.orderNo));
+      setInprog(data.in_progress!.sort((a, b) => b.orderNo - a.orderNo));
+      setCompleted(data.completed!.sort((a, b) => b.orderNo - a.orderNo));
     }
   };
 
@@ -184,11 +185,12 @@ const Orders = () => {
     return objs.filter(
       (order) =>
         order.orderNo.toString().indexOf(text) > -1 ||
-        order.full_name.toLowerCase().indexOf(text) > -1 ||
-        order.address.country.toLowerCase().indexOf(text) > -1 ||
-        order.address.subdivision.toLowerCase().indexOf(text) > -1 ||
-        order.items.filter((item) => item.name.toLowerCase().indexOf(text) > -1)
-          .length > 0
+        order.full_name?.toLowerCase().indexOf(text) > -1 ||
+        order.address.country?.toLowerCase().indexOf(text) > -1 ||
+        order.address.subdivision?.toLowerCase().indexOf(text) > -1 ||
+        order.items.filter(
+          (item) => item.name?.toLowerCase().indexOf(text) > -1
+        ).length > 0
     );
   };
 

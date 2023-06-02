@@ -20,10 +20,14 @@ import {
   Paper,
   useTheme,
   AccordionDetails,
+  Stack,
+  Modal,
 } from "@mui/material";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Order } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
 import OperationsManage from "./OperationsManage";
+import DeleteModal from "../Operations/DeleteModal";
 
 interface OrderProps extends Order {
   clientui?: string;
@@ -63,20 +67,26 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 const OrderItem = (props: OrderProps) => {
   const {
     orderNo,
-    firstName,
-    lastName,
     address: { subdivision, country },
     items,
     email,
     shipping_status,
     clientui,
     index,
+    full_name,
   } = props;
 
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
 
   const isDarkTheme = useTheme().palette.mode === "dark";
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  const deleteOrder = async () => {
+    // const accessToken = await getAccessTokenSilently();
+    console.log("props :::::::::: ", props);
+  };
 
   const orderStatus = () => {
     if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
@@ -121,7 +131,7 @@ const OrderItem = (props: OrderProps) => {
     let anyTrackingNumbers = "";
 
     for (let i = 0; i < items.length; i++) {
-      if (items[i].tracking_number !== "") {
+      if (items[i].tracking_number && items[i].tracking_number !== "") {
         anyTrackingNumbers = items[i].tracking_number[0];
         break;
       }
@@ -150,9 +160,7 @@ const OrderItem = (props: OrderProps) => {
         <Grid container direction={{ md: "row", xs: "column" }}>
           <Grid item md={2}>
             <Typography fontWeight="bold">Order #{orderNo}</Typography>
-            <Typography>
-              {firstName} {lastName}
-            </Typography>
+            <Typography>{full_name}</Typography>
           </Grid>
           <Grid item md={2}>
             <Typography>
@@ -247,13 +255,22 @@ const OrderItem = (props: OrderProps) => {
               {clientui !== "spokeops" ? (
                 <ManageOrder
                   order_no={orderNo}
-                  name={firstName + " " + lastName}
+                  name={full_name}
                   items={items}
                   email={email}
                   order={true}
                 />
               ) : (
-                <OperationsManage {...props} />
+                <>
+                  <Stack direction="column" spacing={2}>
+                    <OperationsManage {...props} />
+                    <DeleteModal
+                      id={props.id}
+                      client={props.client}
+                      full_name={props.full_name}
+                    />
+                  </Stack>
+                </>
               )}
             </Box>
             {anyTrackingNumbers() !== "" && (
