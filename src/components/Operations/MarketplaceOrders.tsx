@@ -305,7 +305,7 @@ const MarketRow = (props: RowProps) => {
                       onChange={(e) => {
                         setPrice(e.target.value);
                       }}
-                      value={order.quote_price}
+                      defaultValue={order.quote_price}
                     />
                   </FormControl>
                 </Grid>
