@@ -113,7 +113,7 @@ const QuoteRow = (props: QuoteProps) => {
     <>
       <TableRow>
         <TableCell>
-          {props.quote && (
+          {(props.quote || props.quote_price) && (
             <IconButton
               aria-label="expand row"
               size="small"
@@ -175,7 +175,11 @@ const QuoteRow = (props: QuoteProps) => {
                       spacing={2}
                       alignItems="center normal"
                     >
-                      <Button onClick={download} variant="contained">
+                      <Button
+                        onClick={download}
+                        variant="contained"
+                        disabled={!props.quote}
+                      >
                         <PictureAsPdfIcon sx={{ mr: 1 }} /> Quote
                       </Button>
                       {props.approved === undefined ? (

@@ -517,7 +517,7 @@ const PurchaseModal = (props: PurchaseProps) => {
                   sx={textFieldStyle}
                   fullWidth
                   size="small"
-                  value={notes}
+                  value={recipient_notes}
                   onChange={(event) => setRNotes(event.target.value)}
                 />
               </>
