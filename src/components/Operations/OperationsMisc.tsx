@@ -2,16 +2,22 @@ import React, { useState } from "react";
 import { Typography, Box, Button } from "@mui/material";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
 import ViewInvites from "./ViewInvites";
 import NewMarketplaceItem from "./NewMarketplaceItem";
+import UpdateInventory from "./UpdateInventory/UpdateInventory";
 
 const boxStyle = {
   display: "flex",
   flexWrap: "wrap",
   flexDirection: "row",
   justifyContent: "space-evenly",
+};
+
+const buttonPadding = {
+  marginTop: "15px",
 };
 
 const OperationsMisc = () => {
@@ -34,6 +40,7 @@ const OperationsMisc = () => {
               <Button
                 variant="contained"
                 onClick={() => setView("marketplace")}
+                sx={buttonPadding}
               >
                 <ListAltIcon sx={{ paddingRight: "5px" }} />
                 View Marketplace Orders
@@ -41,6 +48,7 @@ const OperationsMisc = () => {
               <Button
                 variant="contained"
                 onClick={() => setView("inviteusers")}
+                sx={buttonPadding}
               >
                 <ListAltIcon sx={{ paddingRight: "5px" }} />
                 View Invites
@@ -48,9 +56,18 @@ const OperationsMisc = () => {
               <Button
                 variant="contained"
                 onClick={() => setView("newmarketplaceitem")}
+                sx={buttonPadding}
               >
                 <AddShoppingCartIcon sx={{ pr: "5px" }} />
                 Add New Marketplace Item
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setView("updateinventory")}
+                sx={buttonPadding}
+              >
+                <InventoryIcon sx={{ pr: "5px" }} />
+                Update Inventory
               </Button>
             </>
           )}
@@ -60,6 +77,9 @@ const OperationsMisc = () => {
           {view === "inviteusers" && <ViewInvites handleClose={handleClose} />}
           {view === "newmarketplaceitem" && (
             <NewMarketplaceItem handleClose={handleClose} />
+          )}
+          {view === "updateinventory" && (
+            <UpdateInventory handleClose={handleClose} />
           )}
         </Box>
       </Box>

@@ -75,7 +75,7 @@ const navMappings: any = {
   "Hidden Road": ["Orders", "Inventory", "Storefront", "Marketplace"],
   Bowery: ["Orders", "Inventory", "Storefront"],
   NurseDash: ["Orders", "Inventory", "Storefront"],
-  Alma: ["Orders", "Inventory", "Marketplace"],
+  Alma: ["Orders", "Inventory", "Marketplace", "Approvals"],
   Automox: [
     "Orders",
     "Inventory",
