@@ -217,28 +217,28 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   useEffect(() => {
     switch (window.location.pathname.substring(1)) {
       case "orders":
-        setIndex(0);
+        setIndex(navMappings[clientData].indexOf("Orders"));
         break;
       case "inventory":
-        setIndex(1);
+        setIndex(navMappings[clientData].indexOf("Inventory"));
         break;
       case "invoices":
-        setIndex(3);
+        setIndex(navMappings[clientData].indexOf("Invoices"));
         break;
       case "team":
         setIndex(4);
         break;
       case "misc":
-        setIndex(6);
+        setIndex(navMappings[clientData].indexOf("Misc"));
         break;
       case "marketplace":
-        setIndex(3);
+        setIndex(navMappings[clientData].indexOf("Marketplace"));
         break;
       case "approvals":
-        setIndex(4);
+        setIndex(navMappings[clientData].indexOf("Approvals"));
         break;
       case "invite":
-        setIndex(5);
+        setIndex(navMappings[clientData].indexOf("Invite"));
         break;
       default:
         setIndex(0);
@@ -253,33 +253,34 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Orders":
         AppContainer.navigate("/orders");
-        setIndex(0);
+        setIndex(navMappings[clientData].indexOf("Orders"));
         break;
       case "Inventory":
         AppContainer.navigate("/inventory");
-        setIndex(1);
+        setIndex(navMappings[clientData].indexOf("Inventory"));
         break;
       case "Misc":
         AppContainer.navigate("/misc");
-        setIndex(6);
+        setIndex(navMappings[clientData].indexOf("Misc"));
         break;
       case "Marketplace":
         AppContainer.navigate("/marketplace");
-        setIndex(3);
+        setIndex(navMappings[clientData].indexOf("Marketplace"));
         break;
       case "Approvals":
         AppContainer.navigate("/approvals");
-        setIndex(4);
+        setIndex(navMappings[clientData].indexOf("Approvals"));
         break;
       case "Invoices":
         window.location.href = "/invoices";
+        setIndex(navMappings[clientData].indexOf("Invoices"));
         break;
       case "Team":
         window.location.href = "/team";
         break;
       case "Invite":
         AppContainer.navigate("/invite");
-        setIndex(5);
+        setIndex(navMappings[clientData].indexOf("Invite"));
         break;
       case "Storefront":
         if (
