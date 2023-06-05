@@ -26,7 +26,12 @@ const NewClient = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} variant="contained" size="large">
+      <Button
+        onClick={() => setOpen(true)}
+        variant="contained"
+        size="large"
+        sx={{ marginTop: "15px" }}
+      >
         <PersonAddIcon sx={{ paddingRight: "5px" }} />
         Add New Client
       </Button>

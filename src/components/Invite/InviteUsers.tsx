@@ -16,7 +16,6 @@ import {
   Alert,
   Tooltip,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
