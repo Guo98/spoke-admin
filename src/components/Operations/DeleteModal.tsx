@@ -99,6 +99,12 @@ const DeleteModal = (props: DeleteProps) => {
               </Stack>
             </>
           )}
+          {success && !error && (
+            <Typography textAlign="center">Successfully Deleted!</Typography>
+          )}
+          {error && !success && (
+            <Typography textAlign="center">Error in deleting</Typography>
+          )}
         </Box>
       </Modal>
     </>
