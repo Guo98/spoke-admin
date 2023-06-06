@@ -17,12 +17,13 @@ import {
   TableCell,
   Paper,
   Button,
+  LinearProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { useAuth0 } from "@auth0/auth0-react";
 import { entityMappings } from "../../../app/utility/constants";
-import { standardGet } from "../../../services/standard";
+import { standardGet, standardPost } from "../../../services/standard";
 import UpdateCollapse from "./UpdateCollapse";
 
 interface UpdateProps {
@@ -37,9 +38,12 @@ const UpdateInventory = (props: UpdateProps) => {
   const [inventory, setInventory] = useState<any>([]);
   const [page, setPage] = useState(0);
   const [inventoryIndex, setInventoryIndex] = useState(-1);
+  const [loading, setLoading] = useState(false);
+
   const { getAccessTokenSilently } = useAuth0();
 
   const getInventory = async (route: string) => {
+    setLoading(true);
     const accessToken = await getAccessTokenSilently();
 
     const resp = await standardGet(accessToken, route);
@@ -47,6 +51,7 @@ const UpdateInventory = (props: UpdateProps) => {
     if (resp.data.length > 0) {
       setInventory(resp.data);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -72,6 +77,41 @@ const UpdateInventory = (props: UpdateProps) => {
   const editDevice = (deviceIndex: number) => {
     setInventoryIndex(deviceIndex);
     setPage(1);
+  };
+
+  const handleSubmitChange = async (
+    sn: string,
+    device_index: number,
+    updated_status = "",
+    updated_sn = "",
+    updated_fn = "",
+    updated_ln = "",
+    grade = ""
+  ) => {
+    setLoading(true);
+    const accessToken = await getAccessTokenSilently();
+
+    const body = {
+      client,
+      device_id: inventory[inventoryIndex].id,
+      serial_number: sn,
+      device_index,
+      updated_status,
+      updated_fn,
+      updated_ln,
+      updated_sn,
+      grade,
+    };
+
+    const postResp = await standardPost(accessToken, "updateinventory", body);
+
+    if (postResp.status === "Successful") {
+      let newData = [...inventory];
+      newData[inventoryIndex] = postResp.data;
+      setInventory(newData);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -120,6 +160,11 @@ const UpdateInventory = (props: UpdateProps) => {
           </Select>
         </FormControl>
       )}
+      {page === 0 && client === "" && (
+        <Typography textAlign="center">
+          Select a client to get started
+        </Typography>
+      )}
       {page === 0 && client !== "" && entityMappings[client] && (
         <FormControl fullWidth size="small" sx={{ paddingBottom: "15px" }}>
           <InputLabel id="entity-select-label">Entity</InputLabel>
@@ -135,6 +180,7 @@ const UpdateInventory = (props: UpdateProps) => {
           </Select>
         </FormControl>
       )}
+      {loading && <LinearProgress />}
       {client !== "" && page === 0 && (
         <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
           <Table stickyHeader>
@@ -186,7 +232,10 @@ const UpdateInventory = (props: UpdateProps) => {
                         sn={sn.sn}
                         condition={sn.condition}
                         status={sn.status}
-                        full_name={sn.full_name}
+                        first_name={sn.first_name}
+                        last_name={sn.last_name}
+                        index={index}
+                        submitChanges={handleSubmitChange}
                       />
                     )
                   )}
@@ -198,7 +247,7 @@ const UpdateInventory = (props: UpdateProps) => {
               setPage(0);
               setInventoryIndex(-1);
             }}
-            sx={{ paddingTop: "25px" }}
+            sx={{ marginTop: "25px" }}
           >
             Back
           </Button>
