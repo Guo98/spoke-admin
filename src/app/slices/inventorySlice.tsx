@@ -32,6 +32,7 @@ const splitInventory = (
   let offboardingLaptops = device.serial_numbers.filter(
     (individual) =>
       individual.status === "Offboarding" ||
+      individual.status === "Offboard" ||
       individual.status === "Returning" ||
       individual.status === "Top Up" ||
       individual.status === "In Progress"

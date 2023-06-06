@@ -8,20 +8,57 @@ import {
   TextField,
   Grid,
   Stack,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Typography,
 } from "@mui/material";
 
 interface UpdateProps {
   sn: string;
   condition: string;
   status: string;
-  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  index: number;
+  submitChanges: Function;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
-  const { sn, condition, status, full_name } = props;
+  const { sn, condition, status, first_name, last_name, submitChanges, index } =
+    props;
   const [open, setOpen] = useState(false);
   const [updateSN, setSN] = useState(sn);
-  const [disableSN, setDisableSN] = useState(true);
+  const [updateStatus, setStatus] = useState(status);
+  const [updateFN, setFN] = useState(first_name || "");
+  const [updateLN, setLN] = useState(last_name || "");
+  const [grade, setGrade] = useState("");
+
+  const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStatus((event.target as HTMLInputElement).value);
+  };
+
+  const submit_changes = async () => {
+    await submitChanges(
+      sn,
+      index,
+      updateStatus !== status ? updateStatus : "",
+      updateSN !== sn ? updateSN : "",
+      updateFN !== first_name ? updateFN : "",
+      updateLN !== last_name ? updateLN : "",
+      grade
+    );
+  };
+
+  const handleClose = () => {
+    setSN(sn);
+    setStatus(status);
+    setLN(last_name || "");
+    setFN(first_name || "");
+    setGrade("");
+  };
 
   return (
     <>
@@ -30,10 +67,17 @@ const UpdateCollapse = (props: UpdateProps) => {
         <TableCell>{condition}</TableCell>
         <TableCell>{status}</TableCell>
         <TableCell>
-          {status === "Deployed" && full_name ? full_name : ""}
+          {status === "Deployed" && first_name && last_name
+            ? first_name + " " + last_name
+            : ""}
         </TableCell>
         <TableCell align="right">
-          <Button onClick={() => setOpen(!open)}>
+          <Button
+            onClick={() => {
+              if (open) handleClose();
+              setOpen(!open);
+            }}
+          >
             {!open ? "Edit" : "Done"}
           </Button>
         </TableCell>
@@ -43,30 +87,109 @@ const UpdateCollapse = (props: UpdateProps) => {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ marginY: 1 }}>
               <Stack direction="column" spacing={2}>
-                <Grid container spacing={2}>
-                  <Grid item xs={11}>
-                    <TextField
-                      fullWidth
-                      label="Serial Number"
-                      size="small"
-                      defaultValue={sn}
-                      value={updateSN}
-                      onChange={(e) => {
-                        setSN(e.target.value);
-                        setDisableSN(false);
-                      }}
+                <TextField
+                  fullWidth
+                  label="Serial Number"
+                  size="small"
+                  defaultValue={sn}
+                  value={updateSN}
+                  onChange={(e) => {
+                    setSN(e.target.value);
+                  }}
+                />
+                <FormControl>
+                  <FormLabel id="radio-group-label">Status</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-aria-labelledby="radio-group-label"
+                    name="status-radio-buttons-group"
+                    value={status}
+                    onChange={handleStatusChange}
+                  >
+                    <FormControlLabel
+                      value="In Stock"
+                      control={<Radio checked={updateStatus === "In Stock"} />}
+                      label="In Stock"
                     />
-                  </Grid>
-                  <Grid item xs={1}>
-                    <Button variant="contained" disabled={disableSN}>
-                      Save
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                  <Grid item></Grid>
-                  <Grid item></Grid>
-                </Grid>
+                    <FormControlLabel
+                      value="Deployed"
+                      control={<Radio checked={updateStatus === "Deployed"} />}
+                      label="Deployed"
+                    />
+                    <FormControlLabel
+                      value="Offboard"
+                      control={
+                        <Radio
+                          checked={
+                            updateStatus === "Offboard" ||
+                            updateStatus === "Offboarding"
+                          }
+                        />
+                      }
+                      label="Offboard"
+                    />
+                  </RadioGroup>
+                </FormControl>
+                {(status === "Deployed" || updateStatus === "Deployed") && (
+                  <>
+                    <Typography>Deployed Info:</Typography>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <TextField
+                        size="small"
+                        label="First Name"
+                        fullWidth
+                        defaultValue={updateFN}
+                        onChange={(e) => setFN(e.target.value)}
+                        disabled={updateStatus === "In Stock"}
+                      />
+                      <TextField
+                        size="small"
+                        label="Last Name"
+                        fullWidth
+                        defaultValue={updateLN}
+                        onChange={(e) => setLN(e.target.value)}
+                        disabled={updateStatus === "In Stock"}
+                      />
+                    </Stack>
+                  </>
+                )}
+                {updateStatus === "In Stock" &&
+                  (status === "Deployed" || status === "Offboard") && (
+                    <TextField
+                      label="Grade"
+                      size="small"
+                      fullWidth
+                      onChange={(e) => setGrade(e.target.value)}
+                    />
+                  )}
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Button
+                    variant="contained"
+                    disabled={
+                      sn === updateSN &&
+                      status === updateStatus &&
+                      first_name === updateFN &&
+                      last_name === updateLN
+                    }
+                    fullWidth
+                    onClick={submit_changes}
+                  >
+                    Submit Changes
+                  </Button>
+                  <Button
+                    variant="contained"
+                    disabled={
+                      sn === updateSN &&
+                      status === updateStatus &&
+                      first_name === updateFN &&
+                      last_name === updateLN
+                    }
+                    onClick={handleClose}
+                    fullWidth
+                  >
+                    Clear Changes
+                  </Button>
+                </Stack>
               </Stack>
             </Box>
           </Collapse>

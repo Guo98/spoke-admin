@@ -16,6 +16,7 @@ import {
   Alert,
   Stack,
   Tooltip,
+  Chip,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -38,6 +39,7 @@ interface FormattedProps {
 interface QuoteProps {
   recipient_name: string;
   device_type: string;
+  specs: string;
   date: string;
   status: string;
   quote?: string;
@@ -60,8 +62,16 @@ const FormattedCell = (props: FormattedProps) => {
 };
 
 const QuoteRow = (props: QuoteProps) => {
-  const { date, recipient_name, device_type, status, client, id, address } =
-    props;
+  const {
+    date,
+    recipient_name,
+    device_type,
+    status,
+    client,
+    id,
+    address,
+    specs,
+  } = props;
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
   const [denyOpen, setDenyOpen] = useState(false);
@@ -128,7 +138,7 @@ const QuoteRow = (props: QuoteProps) => {
         </TableCell>
         <FormattedCell text={date} />
         <FormattedCell text={recipient_name} />
-        <FormattedCell text={device_type} />
+        <FormattedCell text={device_type + (specs ? " " + specs : "")} />
         <FormattedCell text={status} />
       </TableRow>
       {(props.quote || props.quote_price) && (
@@ -218,11 +228,14 @@ const QuoteRow = (props: QuoteProps) => {
                           </Tooltip>
                         </Stack>
                       ) : (
-                        <Typography>
-                          {props.approved
-                            ? "Request Approved"
-                            : "Request Rejected"}
-                        </Typography>
+                        <Chip
+                          label={
+                            props.approved
+                              ? "Request Approved"
+                              : "Request Rejected"
+                          }
+                          color={props.approved ? "success" : "error"}
+                        />
                       )}
                     </Stack>
                   </Grid>
