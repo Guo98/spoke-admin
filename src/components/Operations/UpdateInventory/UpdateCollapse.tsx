@@ -24,6 +24,7 @@ interface UpdateProps {
   last_name?: string;
   index: number;
   submitChanges: Function;
+  handleDelete: Function;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
@@ -50,6 +51,10 @@ const UpdateCollapse = (props: UpdateProps) => {
       updateLN !== last_name ? updateLN : "",
       grade
     );
+  };
+
+  const handle_delete = async () => {
+    await props.handleDelete(sn, index);
   };
 
   const handleClose = () => {
@@ -101,7 +106,7 @@ const UpdateCollapse = (props: UpdateProps) => {
                   <FormLabel id="radio-group-label">Status</FormLabel>
                   <RadioGroup
                     row
-                    aria-aria-labelledby="radio-group-label"
+                    aria-labelledby="radio-group-label"
                     name="status-radio-buttons-group"
                     value={status}
                     onChange={handleStatusChange}
@@ -188,6 +193,14 @@ const UpdateCollapse = (props: UpdateProps) => {
                     fullWidth
                   >
                     Clear Changes
+                  </Button>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    color="warning"
+                    onClick={handle_delete}
+                  >
+                    Delete
                   </Button>
                 </Stack>
               </Stack>
