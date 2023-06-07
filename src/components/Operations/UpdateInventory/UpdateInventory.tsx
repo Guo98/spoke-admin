@@ -18,6 +18,7 @@ import {
   Paper,
   Button,
   LinearProgress,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
@@ -25,6 +26,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { entityMappings } from "../../../app/utility/constants";
 import { standardGet, standardPost } from "../../../services/standard";
 import UpdateCollapse from "./UpdateCollapse";
+import NewDeviceRow from "./NewDeviceRow";
 
 interface UpdateProps {
   handleClose: Function;
@@ -39,6 +41,8 @@ const UpdateInventory = (props: UpdateProps) => {
   const [page, setPage] = useState(0);
   const [inventoryIndex, setInventoryIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
+  const [newdata, setNewdata] = useState<any>([]);
+  const [addrow, setAddrow] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -65,6 +69,8 @@ const UpdateInventory = (props: UpdateProps) => {
     }
   }, [client, entity]);
 
+  useEffect(() => {}, [newdata]);
+
   const handleChange = (event: SelectChangeEvent) => {
     setClient(event.target.value);
     setEntity("");
@@ -77,6 +83,12 @@ const UpdateInventory = (props: UpdateProps) => {
   const editDevice = (deviceIndex: number) => {
     setInventoryIndex(deviceIndex);
     setPage(1);
+  };
+
+  const updatePage2Data = (updated_data: any) => {
+    let newData = [...inventory];
+    newData[inventoryIndex] = updated_data;
+    setInventory(newData);
   };
 
   const handleSubmitChange = async (
@@ -106,12 +118,65 @@ const UpdateInventory = (props: UpdateProps) => {
     const postResp = await standardPost(accessToken, "updateinventory", body);
 
     if (postResp.status === "Successful") {
-      let newData = [...inventory];
-      newData[inventoryIndex] = postResp.data;
-      setInventory(newData);
+      updatePage2Data(postResp.data);
     }
 
     setLoading(false);
+  };
+
+  const handleAddNewDevices = async () => {
+    setLoading(true);
+    const accessToken = await getAccessTokenSilently();
+
+    const body = {
+      client,
+      device_id: inventory[inventoryIndex].id,
+      new_devices: newdata,
+    };
+
+    const postResp = await standardPost(accessToken, "addinventory", body);
+
+    if (postResp.status === "Successful") {
+      updatePage2Data(postResp.data);
+    }
+    setNewdata([]);
+    setLoading(false);
+  };
+
+  const handleDeleteRow = async (sn: string, device_index: number) => {
+    setLoading(true);
+    const accessToken = await getAccessTokenSilently();
+
+    const body = {
+      client,
+      device_id: inventory[inventoryIndex].id,
+      serial_number: sn,
+      device_index,
+    };
+
+    const postResp = await standardPost(accessToken, "deleteinventory", body);
+
+    if (postResp.status === "Successful") {
+      updatePage2Data(postResp.data);
+    }
+    setLoading(false);
+  };
+
+  const addToList = (new_device: object) => {
+    setNewdata((prevData: any) => [...prevData, new_device]);
+    setAddrow(false);
+  };
+
+  const deleteFromList = (index: number) => {
+    if (index === 0 && newdata.length === 1) {
+      setNewdata([]);
+    } else {
+      setNewdata(newdata.splice(index, 1));
+    }
+  };
+
+  const addRow = () => {
+    setAddrow(true);
   };
 
   return (
@@ -236,21 +301,44 @@ const UpdateInventory = (props: UpdateProps) => {
                         last_name={sn.last_name}
                         index={index}
                         submitChanges={handleSubmitChange}
+                        handleDelete={handleDeleteRow}
                       />
                     )
                   )}
+                {newdata.length > 0 &&
+                  newdata.map((newdevice: any, index: number) => (
+                    <NewDeviceRow
+                      edit={false}
+                      {...newdevice}
+                      index={index}
+                      handleData={deleteFromList}
+                    />
+                  ))}
+                {addrow && <NewDeviceRow handleData={addToList} edit={true} />}
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <Button size="small" onClick={addRow} disabled={addrow}>
+                      Add Device
+                    </Button>
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
-          <Button
-            onClick={() => {
-              setPage(0);
-              setInventoryIndex(-1);
-            }}
-            sx={{ marginTop: "25px" }}
-          >
-            Back
-          </Button>
+          <Stack direction="row" spacing={3} justifyContent="space-between">
+            <Button
+              onClick={() => {
+                setPage(0);
+                setInventoryIndex(-1);
+              }}
+              sx={{ marginTop: "25px" }}
+            >
+              Back
+            </Button>
+            {newdata.length > 0 && (
+              <Button onClick={handleAddNewDevices}>Add New Devices</Button>
+            )}
+          </Stack>
         </>
       )}
     </Box>
