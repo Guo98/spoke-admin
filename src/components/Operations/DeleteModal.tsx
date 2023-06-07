@@ -42,6 +42,8 @@ const DeleteModal = (props: DeleteProps) => {
 
   const handleClose = () => {
     setOpen(false);
+    setError(false);
+    setSuccess(false);
   };
   return (
     <>

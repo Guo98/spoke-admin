@@ -5,7 +5,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
-import ViewInvites from "./ViewInvites";
+import ViewUsers from "./Users/ViewUsers";
 import NewMarketplaceItem from "./NewMarketplaceItem";
 import UpdateInventory from "./UpdateInventory/UpdateInventory";
 
@@ -47,11 +47,11 @@ const OperationsMisc = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={() => setView("inviteusers")}
+                onClick={() => setView("viewusers")}
                 sx={buttonPadding}
               >
                 <ListAltIcon sx={{ paddingRight: "5px" }} />
-                View Invites
+                View Users
               </Button>
               <Button
                 variant="contained"
@@ -74,7 +74,7 @@ const OperationsMisc = () => {
           {view === "marketplace" && (
             <MarketplaceOrders handleClose={handleClose} />
           )}
-          {view === "inviteusers" && <ViewInvites handleClose={handleClose} />}
+          {view === "viewusers" && <ViewUsers handleClose={handleClose} />}
           {view === "newmarketplaceitem" && (
             <NewMarketplaceItem handleClose={handleClose} />
           )}

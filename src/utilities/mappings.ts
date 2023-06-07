@@ -121,7 +121,7 @@ const clientRoles: any = {
     "Flo Health UK Employee",
   ],
   FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
-  Automox: ["Admin", "Technical", "Non-technical"],
+  Automox: ["Admin", "Technical", "Non-technical", "Approved Buyers"],
 };
 
 const clientRolesCode: any = {
@@ -135,6 +135,7 @@ const clientRolesCode: any = {
   "Pribas EU": "pribas-eu",
   Technical: "technical",
   "Non-technical": "nontechnical",
+  "Approved Buyers": "approvedbuyers",
 };
 
 const connectionMappings: any = {

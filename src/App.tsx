@@ -124,6 +124,9 @@ function App() {
           } else if (user.role[0] === "nontechnical") {
             setShow(false);
             window.open("http://withspoke.com/automox-nt", "_self");
+          } else if (user.role[0] === "approvedbuyers") {
+            setShow(false);
+            window.open("http://withspoke.com/automox-ab", "_self");
           }
         }
       }
