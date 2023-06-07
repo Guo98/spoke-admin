@@ -276,7 +276,8 @@ const UpdateInventory = (props: UpdateProps) => {
       {page === 1 && (
         <>
           <Typography sx={{ paddingBottom: "15px" }}>
-            Editing {inventory[inventoryIndex].name}
+            Editing {inventory[inventoryIndex].name} at{" "}
+            {inventory[inventoryIndex].location}
           </Typography>
           <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
             <Table stickyHeader>
