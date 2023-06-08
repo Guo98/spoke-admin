@@ -322,7 +322,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           clientData === "Automox" ||
           (clientData === "spokeops" && selectedClientData === "Automox")
         ) {
-          window.open("https://withspoke.com/automox", "_blank");
+          window.open("https://withspoke.com/automox-ab", "_blank");
         } else if (
           clientData === "Flo Health" ||
           (clientData === "spokeops" && selectedClientData === "Flo Health")
