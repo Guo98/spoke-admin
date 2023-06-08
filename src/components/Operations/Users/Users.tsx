@@ -75,7 +75,7 @@ const Users = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Emailr</TableCell>
+                <TableCell>Email</TableCell>
                 <TableCell>Date Invited</TableCell>
                 <TableCell>Last Login</TableCell>
                 <TableCell align="right">Actions</TableCell>

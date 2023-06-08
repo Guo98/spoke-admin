@@ -108,7 +108,11 @@ const Marketplace = () => {
 
   const chipDelete = (item_type: string) => {
     const prodIndex = selectedProducts.indexOf(item_type);
-    setSelectedProducts(selectedProducts.splice(prodIndex, 1));
+    if (prodIndex === 0 && selectedProducts.length === 1) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(selectedProducts.splice(prodIndex, 1));
+    }
   };
 
   const handleClose = () => {
