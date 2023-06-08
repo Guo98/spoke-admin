@@ -87,6 +87,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [region, setRegion] = useState("");
+  const [quantity, setQuantity] = useState("1");
   const [wrongregion, setWrongregion] = useState(false);
   const [includeyubikey, setIncludeYubikey] = useState(false);
 
@@ -154,6 +155,7 @@ const PurchaseModal = (props: PurchaseProps) => {
       client: marketClient,
       device_type: type,
       specs: specs === "Other" ? otherSpecs : specs,
+      quantity,
       color,
       notes: {
         device: notes,
@@ -224,6 +226,7 @@ const PurchaseModal = (props: PurchaseProps) => {
         setError(false);
         setWrongregion(false);
         setRegion("");
+        setQuantity("1");
         handleClose();
       }}
     >
@@ -394,6 +397,18 @@ const PurchaseModal = (props: PurchaseProps) => {
                     required
                   />
                 )}
+                <TextField
+                  label="Quantity"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  defaultValue={quantity}
+                  value={quantity}
+                  onChange={(e) => {
+                    setQuantity(e.target.value);
+                  }}
+                  type="number"
+                />
                 <FormControl
                   fullWidth
                   sx={textFieldStyle}
@@ -432,14 +447,14 @@ const PurchaseModal = (props: PurchaseProps) => {
                   size="small"
                   onChange={(event) => setNotes(event.target.value)}
                 />
-                {marketClient === "Automox" && (
+                {/* {marketClient === "Automox" && (
                   <FormControlLabel
                     control={
                       <Checkbox required onChange={handleYubikeyChecked} />
                     }
                     label={<div>Include Yubikey</div>}
                   />
-                )}
+                )} */}
                 <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
                 <FormControlLabel
                   control={<Checkbox required onChange={handleChecked} />}

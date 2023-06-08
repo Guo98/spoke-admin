@@ -28,6 +28,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
+import { standardPost } from "../../services/standard";
 import { uploadFile, downloadFile } from "../../services/azureblob";
 import { clientsList } from "../../utilities/mappings";
 import { entityMappings } from "../../app/utility/constants";
@@ -54,6 +55,7 @@ interface RowProps {
     quote_price?: string;
     approved?: boolean;
     requestor_email?: string;
+    email_sent?: boolean;
   };
   refresh: Function;
 }
@@ -66,6 +68,8 @@ const MarketRow = (props: RowProps) => {
   const [price, setPrice] = useState("");
   const [changeClient, setClient] = useState("");
   const [selectEntity, setEntity] = useState("");
+  const [replace, setReplace] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value);
@@ -124,12 +128,19 @@ const MarketRow = (props: RowProps) => {
   };
 
   const uploadFileOnOrder = async () => {
+    setLoading(true);
+    setReplace(true);
     const accessToken = await getAccessTokenSilently();
     let formData = new FormData();
     formData.append("file", file!);
     formData.append("order_id", order.id);
     formData.append("client", order.client);
     const fileResp = await uploadFile(accessToken, formData);
+
+    if (fileResp.status === "Success") {
+      await props.refresh();
+    }
+    setLoading(false);
   };
 
   const download = async () => {
@@ -145,6 +156,22 @@ const MarketRow = (props: RowProps) => {
     const url = URL.createObjectURL(pdf);
 
     window.open(url);
+  };
+
+  const sendApprovalEmail = async () => {
+    setLoading(true);
+    const accessToken = await getAccessTokenSilently();
+
+    const emailResp = await standardPost(
+      accessToken,
+      "sendemail/approvalemail",
+      order
+    );
+
+    if (emailResp.status === "Successful") {
+      await props.refresh();
+    }
+    setLoading(false);
   };
 
   return (
@@ -185,6 +212,7 @@ const MarketRow = (props: RowProps) => {
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
+              {loading && <LinearProgress />}
               {order.requestor_email && (
                 <Typography sx={{ pb: 2 }}>
                   Requested By: {order.requestor_email}
@@ -265,7 +293,7 @@ const MarketRow = (props: RowProps) => {
                 spacing={2}
                 sx={{ display: "flex" }}
               >
-                <Grid item xs={8}>
+                <Grid item xs={4}>
                   <FormControl fullWidth size="small">
                     <InputLabel id="status-select-label">Status</InputLabel>
                     <Select
@@ -281,7 +309,7 @@ const MarketRow = (props: RowProps) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={2}>
                   <Button
                     variant="contained"
                     onClick={() => updateMarketplaceOrder(true, false, false)}
@@ -289,9 +317,7 @@ const MarketRow = (props: RowProps) => {
                     Update Status
                   </Button>
                 </Grid>
-              </Grid>
-              <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
-                <Grid item xs={8}>
+                <Grid item xs={4}>
                   <FormControl fullWidth size="small">
                     <InputLabel htmlFor="outlined-adornment-amount">
                       Price
@@ -309,7 +335,7 @@ const MarketRow = (props: RowProps) => {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={2}>
                   <Button
                     variant="contained"
                     onClick={() => updateMarketplaceOrder(false, true, false)}
@@ -319,40 +345,60 @@ const MarketRow = (props: RowProps) => {
                   </Button>
                 </Grid>
               </Grid>
-              {order.quote && (
-                <Button
-                  sx={{ marginTop: "20px" }}
-                  variant="contained"
-                  onClick={download}
-                >
-                  View Quote
-                </Button>
-              )}
-              {!order.quote && (
-                <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
-                  <Grid item xs={8}>
-                    <TextField
-                      size="small"
-                      fullWidth
-                      label="File Path"
-                      type="file"
-                      name="file"
-                      inputProps={{ accept: "application/pdf" }}
-                      onChange={(e) => {
-                        setFile(
-                          (
-                            (e.target as HTMLInputElement).files as FileList
-                          )[0] as File
-                        );
+              <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
+                <Grid item xs={8}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    label="File Path"
+                    type="file"
+                    name="file"
+                    inputProps={{ accept: "application/pdf" }}
+                    onChange={(e) => {
+                      setFile(
+                        (
+                          (e.target as HTMLInputElement).files as FileList
+                        )[0] as File
+                      );
+                    }}
+                    disabled={order.quote !== undefined && replace}
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  {order.quote && replace ? (
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        setReplace(false);
                       }}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
+                    >
+                      Replace Quote
+                    </Button>
+                  ) : (
                     <Button variant="contained" onClick={uploadFileOnOrder}>
                       Upload Quote
                     </Button>
-                  </Grid>
+                  )}
                 </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    variant="contained"
+                    onClick={download}
+                    disabled={order.quote === undefined}
+                  >
+                    View Quote
+                  </Button>
+                </Grid>
+              </Grid>
+              {(order.quote || order.quote_price) && (
+                <Button
+                  sx={{ marginTop: "20px" }}
+                  variant="contained"
+                  onClick={sendApprovalEmail}
+                  disabled={order.email_sent}
+                >
+                  Send Approval Email
+                </Button>
               )}
             </Box>
           </Collapse>

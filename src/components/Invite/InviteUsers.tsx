@@ -79,7 +79,7 @@ const InviteUsers = (props: IUProps) => {
 
     const accessToken = await getAccessTokenSilently();
 
-    const postResp = await postOrder("inviteusers", accessToken, inviteObj);
+    const postResp = await postOrder("invites", accessToken, inviteObj);
 
     if (postResp.status === "Successful") {
       setLoading(false);
@@ -114,13 +114,6 @@ const InviteUsers = (props: IUProps) => {
             </IconButton>
           </Tooltip>
         </Grid>
-        {/* <Grid item xs={1} sx={{ paddingTop: "10px", paddingLeft: "20px" }}>
-          <Tooltip title="Exit">
-            <IconButton onClick={() => handleClose!()}>
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </Grid> */}
       </Grid>
       <Stack spacing={2}>
         {loading && <LinearProgress />}

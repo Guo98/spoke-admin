@@ -72,7 +72,13 @@ const navMappings: any = {
   "Intersect Power": ["Orders", "Storefront"],
   "Flo Health": ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
   public: ["Orders", "Inventory", "Storefront", "Marketplace"],
-  "Hidden Road": ["Orders", "Inventory", "Storefront", "Marketplace"],
+  "Hidden Road": [
+    "Orders",
+    "Inventory",
+    "Storefront",
+    "Marketplace",
+    "Approvals",
+  ],
   Bowery: ["Orders", "Inventory", "Storefront"],
   NurseDash: ["Orders", "Inventory", "Storefront"],
   Alma: ["Orders", "Inventory", "Marketplace", "Approvals"],
@@ -115,7 +121,7 @@ const clientRoles: any = {
     "Flo Health UK Employee",
   ],
   FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
-  Automox: ["Admin", "Technical", "Non-technical"],
+  Automox: ["Admin", "Technical", "Non-technical", "Approved Buyers"],
 };
 
 const clientRolesCode: any = {
@@ -129,6 +135,7 @@ const clientRolesCode: any = {
   "Pribas EU": "pribas-eu",
   Technical: "technical",
   "Non-technical": "nontechnical",
+  "Approved Buyers": "approvedbuyers",
 };
 
 const connectionMappings: any = {

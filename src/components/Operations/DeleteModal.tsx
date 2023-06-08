@@ -31,7 +31,7 @@ const DeleteModal = (props: DeleteProps) => {
       deleteObj
     );
 
-    if (deleteResp.status === "Succcessful") {
+    if (deleteResp.status === "Successful") {
       setLoading(false);
       setSuccess(true);
     } else {
@@ -42,6 +42,8 @@ const DeleteModal = (props: DeleteProps) => {
 
   const handleClose = () => {
     setOpen(false);
+    setError(false);
+    setSuccess(false);
   };
   return (
     <>
