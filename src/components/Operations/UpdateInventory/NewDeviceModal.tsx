@@ -15,10 +15,11 @@ import { standardPost } from "../../../services/standard";
 interface NewProps {
   client: string;
   entity: string;
+  refresh: Function;
 }
 
 const NewDeviceModal = (props: NewProps) => {
-  const { client, entity } = props;
+  const { client, entity, refresh } = props;
   const [open, setOpen] = useState(false);
   const [device, setDevice] = useState("");
   const [sku, setSKU] = useState("");
@@ -55,6 +56,7 @@ const NewDeviceModal = (props: NewProps) => {
 
     if (postResp.status === "Success") {
       setSuccess(true);
+      props.refresh();
     }
     setLoading(false);
   };

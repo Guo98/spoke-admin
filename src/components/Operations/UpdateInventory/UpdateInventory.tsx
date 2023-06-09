@@ -24,7 +24,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { useAuth0 } from "@auth0/auth0-react";
 import { entityMappings } from "../../../app/utility/constants";
-import { standardGet, standardPost } from "../../../services/standard";
+import {
+  standardGet,
+  standardPost,
+  standardDelete,
+  standardPut,
+  standardPatch,
+} from "../../../services/standard";
 import UpdateCollapse from "./UpdateCollapse";
 import NewDeviceRow from "./NewDeviceRow";
 import NewDeviceModal from "./NewDeviceModal";
@@ -47,8 +53,12 @@ const UpdateInventory = (props: UpdateProps) => {
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const getInventory = async (route: string) => {
+  const getInventory = async () => {
     setLoading(true);
+    let route = "inventory/" + client;
+    if (entity !== "") {
+      route = route + "/" + entity;
+    }
     const accessToken = await getAccessTokenSilently();
 
     const resp = await standardGet(accessToken, route);
@@ -61,12 +71,7 @@ const UpdateInventory = (props: UpdateProps) => {
 
   useEffect(() => {
     if (client !== "") {
-      let route = "getInventory/" + client;
-      if (entity !== "") {
-        route = route + "/" + entity;
-      }
-
-      getInventory(route).catch();
+      getInventory().catch();
     }
   }, [client, entity]);
 
@@ -116,7 +121,7 @@ const UpdateInventory = (props: UpdateProps) => {
       grade,
     };
 
-    const postResp = await standardPost(accessToken, "updateinventory", body);
+    const postResp = await standardPatch(accessToken, "inventory", body);
 
     if (postResp.status === "Successful") {
       updatePage2Data(postResp.data);
@@ -135,7 +140,7 @@ const UpdateInventory = (props: UpdateProps) => {
       new_devices: newdata,
     };
 
-    const postResp = await standardPost(accessToken, "addinventory", body);
+    const postResp = await standardPut(accessToken, "inventory", body);
 
     if (postResp.status === "Successful") {
       updatePage2Data(postResp.data);
@@ -148,17 +153,11 @@ const UpdateInventory = (props: UpdateProps) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
 
-    const body = {
-      client,
-      device_id: inventory[inventoryIndex].id,
-      serial_number: sn,
-      device_index,
-    };
+    const route = `inventory/${client}/${inventory[inventoryIndex].id}/${device_index}/${sn}`;
+    const deleteResp = await standardDelete(accessToken, route);
 
-    const postResp = await standardPost(accessToken, "deleteinventory", body);
-
-    if (postResp.status === "Successful") {
-      updatePage2Data(postResp.data);
+    if (deleteResp.status === "Successful") {
+      updatePage2Data(deleteResp.data);
     }
     setLoading(false);
   };
@@ -273,7 +272,11 @@ const UpdateInventory = (props: UpdateProps) => {
             </TableBody>
           </Table>
           <Stack>
-            <NewDeviceModal client={client} entity={entity} />
+            <NewDeviceModal
+              client={client}
+              entity={entity}
+              refresh={getInventory}
+            />
           </Stack>
         </TableContainer>
       )}
