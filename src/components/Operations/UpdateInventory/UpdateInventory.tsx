@@ -27,6 +27,7 @@ import { entityMappings } from "../../../app/utility/constants";
 import { standardGet, standardPost } from "../../../services/standard";
 import UpdateCollapse from "./UpdateCollapse";
 import NewDeviceRow from "./NewDeviceRow";
+import NewDeviceModal from "./NewDeviceModal";
 
 interface UpdateProps {
   handleClose: Function;
@@ -271,6 +272,9 @@ const UpdateInventory = (props: UpdateProps) => {
                 })}
             </TableBody>
           </Table>
+          <Stack>
+            <NewDeviceModal client={client} entity={entity} />
+          </Stack>
         </TableContainer>
       )}
       {page === 1 && (
