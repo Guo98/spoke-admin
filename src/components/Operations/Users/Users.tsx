@@ -74,6 +74,7 @@ const Users = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
+                <TableCell>Client</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Date Invited</TableCell>
@@ -85,6 +86,7 @@ const Users = () => {
               {users.map((user: any) => {
                 return (
                   <TableRow>
+                    <TableCell>{user.client}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
