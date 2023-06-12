@@ -80,6 +80,9 @@ const Inventory: FC = (): ReactElement => {
 
   const { getAccessTokenSilently } = useAuth0();
 
+  const marketClient =
+    clientData === "spokeops" ? selectedClientData : clientData;
+
   const fetchData = async () => {
     let client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
@@ -481,19 +484,26 @@ const Inventory: FC = (): ReactElement => {
               )}
             </Box>
           </TabPanel>
-          <Fab
-            color="primary"
-            sx={{ bottom: 15, position: "fixed" }}
-            onClick={() => setOpenAdd(true)}
-            variant="extended"
-          >
-            <Typography>Add Inventory</Typography>
-          </Fab>
-          <AddModal
-            open={openAdd}
-            setParentOpen={setOpenAdd}
-            deviceNames={ogstock}
-          />
+          {marketClient !== "Automox" &&
+            marketClient !== "Alma" &&
+            marketClient !== "Flo Health" &&
+            marketClient !== "Hidden Road" && (
+              <>
+                <Fab
+                  color="primary"
+                  sx={{ bottom: 15, position: "fixed" }}
+                  onClick={() => setOpenAdd(true)}
+                  variant="extended"
+                >
+                  <Typography>Add Inventory</Typography>
+                </Fab>
+                <AddModal
+                  open={openAdd}
+                  setParentOpen={setOpenAdd}
+                  deviceNames={ogstock}
+                />
+              </>
+            )}
           <Fab
             color="primary"
             sx={{ bottom: 15, right: 15, position: "fixed" }}

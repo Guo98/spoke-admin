@@ -376,6 +376,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                               device_location={location}
                               phone_number={item.phone_number!}
                               type="individual"
+                              id={id}
                             />
                           )}
                           {tabValue === 2 && item.tracking_number && (
