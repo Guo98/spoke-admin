@@ -37,7 +37,8 @@ interface OffboardProps {
   email?: string;
   phone_number?: string;
   type: string;
-  device_names?: string[];
+  device_names?: any[];
+  id?: string;
 }
 
 const textFieldStyle = {
@@ -98,6 +99,12 @@ const OffboardBody = (props: OffboardProps) => {
 
   const { getAccessTokenSilently, user } = useAuth0();
 
+  const getId = () => {
+    return props.device_names!.filter(
+      (dev) => dev.name === selectedDeviceName
+    )[0].id;
+  };
+
   const offboardLaptop = async () => {
     const client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
@@ -135,6 +142,12 @@ const OffboardBody = (props: OffboardProps) => {
       requestor_email: user?.email,
       note: note,
       requestor_name: user?.name,
+      id:
+        type !== "general"
+          ? props.id
+          : selectedDeviceName !== "Other"
+          ? getId()
+          : "",
     };
 
     const offboardResult = await manageLaptop(
@@ -174,7 +187,9 @@ const OffboardBody = (props: OffboardProps) => {
                 >
                   {props.device_names!.length > 0 &&
                     props.device_names!.map((devName) => {
-                      return <MenuItem value={devName}>{devName}</MenuItem>;
+                      return (
+                        <MenuItem value={devName.name}>{devName.name}</MenuItem>
+                      );
                     })}
                   <MenuItem value="Other">Other</MenuItem>
                 </Select>

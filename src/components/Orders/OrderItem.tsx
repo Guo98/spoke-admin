@@ -81,13 +81,6 @@ const OrderItem = (props: OrderProps) => {
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
-  const { getAccessTokenSilently } = useAuth0();
-
-  const deleteOrder = async () => {
-    // const accessToken = await getAccessTokenSilently();
-    console.log("props :::::::::: ", props);
-  };
-
   const orderStatus = () => {
     if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "Order Received";

@@ -5,10 +5,10 @@ export async function getInventory(
   client: string,
   entity: string = ""
 ) {
-  let route = `/getInventory/${client}`;
+  let route = `/inventory/${client}`;
 
   if (entity !== "" && entity !== "admin") {
-    route = `/getInventory/${client}/${roleMapping[entity]}`;
+    route = `/inventory/${client}/${roleMapping[entity]}`;
   }
   return fetch(process.env.REACT_APP_SPOKE_API + route, {
     method: "GET",

@@ -55,15 +55,17 @@ interface ManageProps {
   type: string;
   devices?: InventorySummary[];
   instock_quantity?: number;
+  id?: string;
 }
 
 const ManageModal = (props: ManageProps) => {
   const { instock_quantity } = props;
+
   const [open, setOpen] = useState(false);
   const [manageType, setManageType] = useState("");
   const [changeView, setChangeView] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [device_names, setDeviceNames] = useState<string[]>([]);
+  const [device_names, setDeviceNames] = useState<any[]>([]);
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -95,7 +97,13 @@ const ManageModal = (props: ManageProps) => {
 
   useEffect(() => {
     if (props.devices && props.devices.length > 0)
-      setDeviceNames([...new Set(props.devices!?.map((dev) => dev.name))]);
+      setDeviceNames([
+        ...new Set(
+          props.devices!?.map((dev) => {
+            return { name: dev.name, id: dev.id };
+          })
+        ),
+      ]);
   }, [props.devices]);
 
   const handleOpen = () => {

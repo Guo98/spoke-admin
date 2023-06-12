@@ -85,6 +85,7 @@ const AddModal = (props: AddProps) => {
   const [location, setLocation] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const { user, getAccessTokenSilently } = useAuth0();
 
@@ -191,6 +192,7 @@ const AddModal = (props: AddProps) => {
       setRequested(true);
     } else {
       console.error("Error in sending email");
+      setError(true);
       setRequested(true);
     }
     setLoading(false);

@@ -41,6 +41,7 @@ interface DevicesType {
   ram: string;
   location: string;
   hidden: boolean;
+  id: string;
 }
 
 const TopUp = (props: TopUpProps) => {
@@ -64,6 +65,7 @@ const TopUp = (props: TopUpProps) => {
       image_source,
       specs: { cpu, hard_drive, ram } = { cpu: "", hard_drive: "", ram: "" },
       location,
+      id,
     } = devicesState[deviceIntIndex];
 
     const deviceObj: DevicesType = {
@@ -75,10 +77,11 @@ const TopUp = (props: TopUpProps) => {
       ram,
       location,
       hidden: true,
+      id,
     };
 
     setDevices((prevDevices) => [...prevDevices, deviceObj]);
-    addToRequestList({ name, quantity, location });
+    addToRequestList({ name, quantity, location, id });
     setAdding(false);
     setDeviceIndex("");
     setQuantity(5);
