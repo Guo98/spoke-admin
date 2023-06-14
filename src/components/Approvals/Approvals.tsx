@@ -292,11 +292,18 @@ const Approvals = () => {
   };
 
   useEffect(() => {
-    if (orders.length === 0 && !loading) {
+    if (orders.length === 0 && !loading && client !== "") {
       setLoading(true);
       getOrders().catch();
     }
   }, []);
+
+  useEffect(() => {
+    if (client !== "") {
+      setLoading(true);
+      getOrders().catch();
+    }
+  }, [client]);
 
   const handleTextChange = (text: string) => {
     const lowerCaseText = text.toLowerCase();
