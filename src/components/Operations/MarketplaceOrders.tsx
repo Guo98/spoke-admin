@@ -22,6 +22,7 @@ import {
   FormControl,
   InputLabel,
   OutlinedInput,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -56,6 +57,8 @@ interface RowProps {
     approved?: boolean;
     requestor_email?: string;
     email_sent?: boolean;
+    recipient_name?: string;
+    entity?: string;
   };
   refresh: Function;
 }
@@ -70,6 +73,7 @@ const MarketRow = (props: RowProps) => {
   const [selectEntity, setEntity] = useState("");
   const [replace, setReplace] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [newReqEmail, setNewReqEmail] = useState(order.requestor_email);
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value);
@@ -89,7 +93,8 @@ const MarketRow = (props: RowProps) => {
     updateStatus: boolean = false,
     updatePrice: boolean = false,
     updateClient: boolean = false,
-    updateEntity: boolean = false
+    updateEntity: boolean = false,
+    updateEmail: boolean = false
   ) => {
     let bodyObj: any = {
       id: order.id,
@@ -111,8 +116,13 @@ const MarketRow = (props: RowProps) => {
       bodyObj.updateClient = changeClient;
     } else if (updateEntity) {
       bodyObj.client = order.client;
-      if (!bodyObj.entity || bodyObj.entity !== selectEntity)
+      if (!order.entity || order.entity !== selectEntity)
         bodyObj.entity = selectEntity;
+    } else if (updateEmail) {
+      bodyObj.client = order.client;
+      if (!order.requestor_email || order.requestor_email !== newReqEmail) {
+        bodyObj.requestor_email = newReqEmail;
+      }
     }
 
     const accessToken = await getAccessTokenSilently();
@@ -190,6 +200,9 @@ const MarketRow = (props: RowProps) => {
           <Typography>{order.client}</Typography>
         </TableCell>
         <TableCell>
+          <Typography>{order.recipient_name}</Typography>
+        </TableCell>
+        <TableCell>
           <Typography>{order.date}</Typography>
         </TableCell>
         <TableCell>
@@ -204,9 +217,6 @@ const MarketRow = (props: RowProps) => {
         <TableCell>
           <Typography>{order.order_type}</Typography>
         </TableCell>
-        <TableCell>
-          <Typography>{order.notes.device}</Typography>
-        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
@@ -214,8 +224,39 @@ const MarketRow = (props: RowProps) => {
             <Box sx={{ margin: 1 }}>
               {loading && <LinearProgress />}
               {order.requestor_email && (
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{ pb: 2, pt: 2 }}
+                  justifyContent="space-evenly"
+                >
+                  <TextField
+                    label="Requested By"
+                    fullWidth
+                    size="small"
+                    defaultValue={order.requestor_email}
+                    onChange={(e) => setNewReqEmail(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    size="small"
+                    fullWidth
+                    onClick={() =>
+                      updateMarketplaceOrder(false, false, false, false, true)
+                    }
+                  >
+                    Update Email
+                  </Button>
+                </Stack>
+              )}
+              {order.notes.device && (
                 <Typography sx={{ pb: 2 }}>
-                  Requested By: {order.requestor_email}
+                  Device Notes: {order.notes.device}
+                </Typography>
+              )}
+              {order.notes.recipient && (
+                <Typography sx={{ pb: 2 }}>
+                  Morte Notes: {order.notes.recipient}
                 </Typography>
               )}
               {!order.client && (
@@ -455,12 +496,15 @@ const MarketplaceOrders = (props: MOProps) => {
       {loading && <LinearProgress />}
       {!loading && orders.length > 0 && (
         <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
-          <Table>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Client</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold">Recipient Name</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Date Requested</Typography>
@@ -476,9 +520,6 @@ const MarketplaceOrders = (props: MOProps) => {
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Request Type</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Notes</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>

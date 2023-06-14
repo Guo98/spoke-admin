@@ -26,7 +26,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { entityMappings } from "../../../app/utility/constants";
 import {
   standardGet,
-  standardPost,
   standardDelete,
   standardPut,
   standardPatch,
@@ -34,6 +33,7 @@ import {
 import UpdateCollapse from "./UpdateCollapse";
 import NewDeviceRow from "./NewDeviceRow";
 import NewDeviceModal from "./NewDeviceModal";
+import ClientDropdown from "../../common/ClientDropdown";
 
 interface UpdateProps {
   handleClose: Function;
@@ -204,27 +204,7 @@ const UpdateInventory = (props: UpdateProps) => {
           </IconButton>
         </Grid>
       </Grid>
-      {page === 0 && (
-        <FormControl fullWidth size="small" sx={{ paddingBottom: "15px" }}>
-          <InputLabel id="client-select-label">Client</InputLabel>
-          <Select
-            labelId="client-select-label"
-            value={client}
-            label="Client"
-            onChange={handleChange}
-          >
-            <MenuItem value="public">Mock</MenuItem>
-            <MenuItem value="FLYR">FLYR</MenuItem>
-            <MenuItem value="Bowery">Bowery</MenuItem>
-            <MenuItem value="NurseDash">NurseDash</MenuItem>
-            <MenuItem value="Intersect Power">Intersect Power</MenuItem>
-            <MenuItem value="Hidden Road">Hidden Road</MenuItem>
-            <MenuItem value="Alma">Alma</MenuItem>
-            <MenuItem value="Automox">Automox</MenuItem>
-            <MenuItem value="Flo Health">Flo Health</MenuItem>
-          </Select>
-        </FormControl>
-      )}
+      {page === 0 && <ClientDropdown handleChange={handleChange} />}
       {page === 0 && client === "" && (
         <Typography textAlign="center">
           Select a client to get started
