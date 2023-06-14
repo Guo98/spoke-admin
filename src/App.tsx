@@ -98,7 +98,6 @@ function App() {
 
   useEffect(() => {
     if (user && user.org_id) {
-      console.log("setting client data in here ::::::::::", user);
       localStorage.setItem("orgId", user.org_id);
       localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
       dispatch(updateClient(orgMapping[user.org_id]));
