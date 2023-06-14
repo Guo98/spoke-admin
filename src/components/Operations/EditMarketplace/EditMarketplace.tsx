@@ -16,11 +16,11 @@ import {
   CardActions,
   Tooltip,
   Button,
+  Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ClientDropdown from "../../common/ClientDropdown";
-import { standardGet } from "../../../services/standard";
+import { standardGet, standardPatch } from "../../../services/standard";
 import AddNew from "./AddNew";
 import Delete from "./Delete";
 
@@ -39,6 +39,8 @@ const EditMarketplace = (props: EProps) => {
   const [brandIndex, setBrandIndex] = useState(-1);
   const [typeIndex, setTypeIndex] = useState(-1);
   const [specIndex, setSpecIndex] = useState(-1);
+  const [newlocations, setNewLocations] = useState<string[]>([]);
+  const [editlocation, setEditLocation] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -55,6 +57,7 @@ const EditMarketplace = (props: EProps) => {
       setItemIndex(-1);
       setBrandIndex(-1);
       setTypeIndex(-1);
+      setSpecIndex(-1);
       setStatus(0);
     } else {
       setStatus(1);
@@ -77,6 +80,30 @@ const EditMarketplace = (props: EProps) => {
 
   const selectBrand = (index: number) => {
     setBrandIndex(index);
+  };
+
+  const editLocations = async () => {
+    setLoading(true);
+    const accessToken = await getAccessTokenSilently();
+    const patchObj = {
+      client,
+      id: marketplace[itemIndex].id,
+      update_type: "editlocations",
+      spec: marketplace[itemIndex].brands[brandIndex].types[typeIndex].specs[
+        specIndex
+      ].spec,
+      brand: marketplace[itemIndex].brands[brandIndex].brand,
+      device_type:
+        marketplace[itemIndex].brands[brandIndex].types[typeIndex].type,
+      locations: newlocations,
+    };
+
+    const patchResp = await standardPatch(accessToken, "marketplace", patchObj);
+
+    if (patchResp.status === "Successful") {
+      await getMarketplace();
+    }
+    setLoading(false);
   };
 
   return (
@@ -228,16 +255,65 @@ const EditMarketplace = (props: EProps) => {
                       <CardContent>
                         <Typography>Spec: {s.spec}</Typography>
                         <br />
-                        <Typography>
-                          Locations:{" "}
-                          {s.locations.length > 1
-                            ? s.locations.join(", ")
-                            : s.locations}
-                        </Typography>
+                        {specIndex !== index && (
+                          <Typography>
+                            Locations:{" "}
+                            {s.locations.length > 1
+                              ? s.locations.join(", ")
+                              : s.locations}
+                          </Typography>
+                        )}
+                        {specIndex === index && (
+                          <TextField
+                            label="Locations"
+                            InputProps={{
+                              startAdornment: newlocations.map(
+                                (loc: string) => (
+                                  <Chip
+                                    label={loc}
+                                    onDelete={() => {
+                                      const locIndex =
+                                        newlocations.indexOf(loc);
+                                      newlocations.splice(locIndex, 1);
+                                      setNewLocations(newlocations);
+                                    }}
+                                  />
+                                )
+                              ),
+                            }}
+                            onChange={(e) => setEditLocation(e.target.value)}
+                            value={editlocation}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                setNewLocations([
+                                  ...newlocations,
+                                  editlocation,
+                                ]);
+                                setEditLocation("");
+                              }
+                            }}
+                          />
+                        )}
                       </CardContent>
                       <CardActions>
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <Button>Edit</Button>
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          justifyItems="center"
+                        >
+                          {specIndex !== index && (
+                            <Button
+                              onClick={() => {
+                                setSpecIndex(index);
+                                setNewLocations(s.locations);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                          )}
+                          {specIndex === index && (
+                            <Button onClick={editLocations}>Save</Button>
+                          )}
                           <Delete
                             type="spec"
                             client={client}

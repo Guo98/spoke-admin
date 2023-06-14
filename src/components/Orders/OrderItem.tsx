@@ -124,7 +124,12 @@ const OrderItem = (props: OrderProps) => {
     let anyTrackingNumbers = "";
 
     for (let i = 0; i < items.length; i++) {
-      if (items[i].tracking_number && items[i].tracking_number !== "") {
+      if (
+        items[i].tracking_number &&
+        items[i].tracking_number !== "" &&
+        items[i].tracking_number[0] !== "" &&
+        items[i].tracking_number[0] !== " "
+      ) {
         anyTrackingNumbers = items[i].tracking_number[0];
         break;
       }
