@@ -22,6 +22,7 @@ import {
   FormControl,
   InputLabel,
   OutlinedInput,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -57,6 +58,7 @@ interface RowProps {
     requestor_email?: string;
     email_sent?: boolean;
     recipient_name?: string;
+    entity?: string;
   };
   refresh: Function;
 }
@@ -71,6 +73,7 @@ const MarketRow = (props: RowProps) => {
   const [selectEntity, setEntity] = useState("");
   const [replace, setReplace] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [newReqEmail, setNewReqEmail] = useState(order.requestor_email);
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value);
@@ -90,7 +93,8 @@ const MarketRow = (props: RowProps) => {
     updateStatus: boolean = false,
     updatePrice: boolean = false,
     updateClient: boolean = false,
-    updateEntity: boolean = false
+    updateEntity: boolean = false,
+    updateEmail: boolean = false
   ) => {
     let bodyObj: any = {
       id: order.id,
@@ -112,8 +116,13 @@ const MarketRow = (props: RowProps) => {
       bodyObj.updateClient = changeClient;
     } else if (updateEntity) {
       bodyObj.client = order.client;
-      if (!bodyObj.entity || bodyObj.entity !== selectEntity)
+      if (!order.entity || order.entity !== selectEntity)
         bodyObj.entity = selectEntity;
+    } else if (updateEmail) {
+      bodyObj.client = order.client;
+      if (!order.requestor_email || order.requestor_email !== newReqEmail) {
+        bodyObj.requestor_email = newReqEmail;
+      }
     }
 
     const accessToken = await getAccessTokenSilently();
@@ -215,9 +224,30 @@ const MarketRow = (props: RowProps) => {
             <Box sx={{ margin: 1 }}>
               {loading && <LinearProgress />}
               {order.requestor_email && (
-                <Typography sx={{ pb: 2, pt: 2 }}>
-                  Requested By: {order.requestor_email}
-                </Typography>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{ pb: 2, pt: 2 }}
+                  justifyContent="space-evenly"
+                >
+                  <TextField
+                    label="Requested By"
+                    fullWidth
+                    size="small"
+                    defaultValue={order.requestor_email}
+                    onChange={(e) => setNewReqEmail(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    size="small"
+                    fullWidth
+                    onClick={() =>
+                      updateMarketplaceOrder(false, false, false, false, true)
+                    }
+                  >
+                    Update Email
+                  </Button>
+                </Stack>
               )}
               {order.notes.device && (
                 <Typography sx={{ pb: 2 }}>
