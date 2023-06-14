@@ -56,6 +56,7 @@ interface RowProps {
     approved?: boolean;
     requestor_email?: string;
     email_sent?: boolean;
+    recipient_name?: string;
   };
   refresh: Function;
 }
@@ -190,6 +191,9 @@ const MarketRow = (props: RowProps) => {
           <Typography>{order.client}</Typography>
         </TableCell>
         <TableCell>
+          <Typography>{order.recipient_name}</Typography>
+        </TableCell>
+        <TableCell>
           <Typography>{order.date}</Typography>
         </TableCell>
         <TableCell>
@@ -204,9 +208,6 @@ const MarketRow = (props: RowProps) => {
         <TableCell>
           <Typography>{order.order_type}</Typography>
         </TableCell>
-        <TableCell>
-          <Typography>{order.notes.device}</Typography>
-        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
@@ -214,8 +215,18 @@ const MarketRow = (props: RowProps) => {
             <Box sx={{ margin: 1 }}>
               {loading && <LinearProgress />}
               {order.requestor_email && (
-                <Typography sx={{ pb: 2 }}>
+                <Typography sx={{ pb: 2, pt: 2 }}>
                   Requested By: {order.requestor_email}
+                </Typography>
+              )}
+              {order.notes.device && (
+                <Typography sx={{ pb: 2 }}>
+                  Device Notes: {order.notes.device}
+                </Typography>
+              )}
+              {order.notes.recipient && (
+                <Typography sx={{ pb: 2 }}>
+                  Morte Notes: {order.notes.recipient}
                 </Typography>
               )}
               {!order.client && (
@@ -455,12 +466,15 @@ const MarketplaceOrders = (props: MOProps) => {
       {loading && <LinearProgress />}
       {!loading && orders.length > 0 && (
         <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
-          <Table>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Client</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold">Recipient Name</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Date Requested</Typography>
@@ -476,9 +490,6 @@ const MarketplaceOrders = (props: MOProps) => {
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Request Type</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Notes</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>

@@ -6,7 +6,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders";
 import ViewUsers from "./Users/ViewUsers";
-import NewMarketplaceItem from "./NewMarketplaceItem";
+import EditMarketplace from "./EditMarketplace/EditMarketplace";
 import UpdateInventory from "./UpdateInventory/UpdateInventory";
 
 const boxStyle = {
@@ -55,11 +55,11 @@ const OperationsMisc = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={() => setView("newmarketplaceitem")}
+                onClick={() => setView("editmarketplace")}
                 sx={buttonPadding}
               >
                 <AddShoppingCartIcon sx={{ pr: "5px" }} />
-                Add New Marketplace Item
+                Edit Marketplace
               </Button>
               <Button
                 variant="contained"
@@ -75,8 +75,8 @@ const OperationsMisc = () => {
             <MarketplaceOrders handleClose={handleClose} />
           )}
           {view === "viewusers" && <ViewUsers handleClose={handleClose} />}
-          {view === "newmarketplaceitem" && (
-            <NewMarketplaceItem handleClose={handleClose} />
+          {view === "editmarketplace" && (
+            <EditMarketplace handleClose={handleClose} />
           )}
           {view === "updateinventory" && (
             <UpdateInventory handleClose={handleClose} />

@@ -75,6 +75,7 @@ const QuoteRow = (props: QuoteProps) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
   const [denyOpen, setDenyOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -98,6 +99,7 @@ const QuoteRow = (props: QuoteProps) => {
   };
 
   const approve_deny = async (approved: boolean, reason: string = "") => {
+    setLoading(true);
     const accessToken = await getAccessTokenSilently();
 
     const bodyObj = {
@@ -116,7 +118,11 @@ const QuoteRow = (props: QuoteProps) => {
       setError(true);
     } else {
       await props.setOrders();
+      if (!approved) {
+        setDenyOpen(false);
+      }
     }
+    setLoading(false);
   };
 
   return (
@@ -249,6 +255,7 @@ const QuoteRow = (props: QuoteProps) => {
         open={denyOpen}
         handleClose={handleModalClose}
         handleDeny={approve_deny}
+        loading={loading}
       />
     </>
   );

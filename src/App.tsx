@@ -87,7 +87,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
 const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
 
 function App() {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const YbugContext = useYbugApi();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -98,6 +98,7 @@ function App() {
 
   useEffect(() => {
     if (user && user.org_id) {
+      console.log("setting client data in here ::::::::::", user);
       localStorage.setItem("orgId", user.org_id);
       localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
       dispatch(updateClient(orgMapping[user.org_id]));
@@ -140,7 +141,7 @@ function App() {
         });
       }
     }
-  }, [user]);
+  }, [user, isLoading]);
 
   useEffect(() => {
     const storageMode = localStorage.getItem("spoke-theme");
@@ -200,7 +201,9 @@ function App() {
             </Box>
           </div>
         )}
-        {!isAuthenticated && <RouterProvider router={AuthRouter} />}
+        {!isAuthenticated && !isLoading && (
+          <RouterProvider router={AuthRouter} />
+        )}
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

@@ -133,21 +133,6 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     if (navMappings[clientData]) setLinks(navMappings[clientData]);
   }, [clientData]);
 
-  // useEffect(() => {
-  //   if (selectedClientData !== "Intersect Power" && clientData === "spokeops") {
-  //     setLinks([
-  //       "Orders",
-  //       "Inventory",
-  //       "Storefront",
-  //       "Marketplace",
-  //       "Approvals",
-  //       "Misc",
-  //     ]);
-  //   } else if (clientData === "spokeops") {
-  //     setLinks(["Orders", "Storefront", "Misc"]);
-  //   }
-  // }, [selectedClientData]);
-
   const hasEntity = () => {
     if (clientData === "spokeops") {
       if (entityMappings[selectedClientData]) {
@@ -215,36 +200,35 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   );
 
   useEffect(() => {
-    switch (window.location.pathname.substring(1)) {
-      case "orders":
-        setIndex(navMappings[clientData].indexOf("Orders"));
-        break;
-      case "inventory":
-        setIndex(navMappings[clientData].indexOf("Inventory"));
-        break;
-      case "invoices":
-        setIndex(navMappings[clientData].indexOf("Invoices"));
-        break;
-      case "team":
-        setIndex(4);
-        break;
-      case "misc":
-        setIndex(navMappings[clientData].indexOf("Misc"));
-        break;
-      case "marketplace":
-        setIndex(navMappings[clientData].indexOf("Marketplace"));
-        break;
-      case "approvals":
-        setIndex(navMappings[clientData].indexOf("Approvals"));
-        break;
-      case "invite":
-        setIndex(navMappings[clientData].indexOf("Invite"));
-        break;
-      default:
-        setIndex(0);
-        break;
+    if (clientData) {
+      switch (window.location.pathname.substring(1)) {
+        case "orders":
+          setIndex(links.indexOf("Orders"));
+          break;
+        case "inventory":
+          setIndex(links.indexOf("Inventory"));
+          break;
+        case "team":
+          setIndex(4);
+          break;
+        case "misc":
+          setIndex(links.indexOf("Misc"));
+          break;
+        case "marketplace":
+          setIndex(links.indexOf("Marketplace"));
+          break;
+        case "approvals":
+          setIndex(links.indexOf("Approvals"));
+          break;
+        case "invite":
+          setIndex(links.indexOf("Invite"));
+          break;
+        default:
+          setIndex(0);
+          break;
+      }
     }
-  }, [window.location.pathname]);
+  }, [window.location.pathname, links]);
 
   const gotoPage = (title: string): void => {
     switch (title) {
@@ -253,34 +237,27 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         break;
       case "Orders":
         AppContainer.navigate("/orders");
-        setIndex(navMappings[clientData].indexOf("Orders"));
+        setIndex(links.indexOf("Orders"));
         break;
       case "Inventory":
         AppContainer.navigate("/inventory");
-        setIndex(navMappings[clientData].indexOf("Inventory"));
+        setIndex(links.indexOf("Inventory"));
         break;
       case "Misc":
         AppContainer.navigate("/misc");
-        setIndex(navMappings[clientData].indexOf("Misc"));
+        setIndex(links.indexOf("Misc"));
         break;
       case "Marketplace":
         AppContainer.navigate("/marketplace");
-        setIndex(navMappings[clientData].indexOf("Marketplace"));
+        setIndex(links.indexOf("Marketplace"));
         break;
       case "Approvals":
         AppContainer.navigate("/approvals");
-        setIndex(navMappings[clientData].indexOf("Approvals"));
-        break;
-      case "Invoices":
-        window.location.href = "/invoices";
-        setIndex(navMappings[clientData].indexOf("Invoices"));
-        break;
-      case "Team":
-        window.location.href = "/team";
+        setIndex(links.indexOf("Approvals"));
         break;
       case "Invite":
         AppContainer.navigate("/invite");
-        setIndex(navMappings[clientData].indexOf("Invite"));
+        setIndex(links.indexOf("Invite"));
         break;
       case "Storefront":
         if (
