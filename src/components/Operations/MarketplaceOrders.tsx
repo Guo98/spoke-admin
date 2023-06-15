@@ -222,33 +222,32 @@ const MarketRow = (props: RowProps) => {
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              {loading && <LinearProgress />}
-              {order.requestor_email && (
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  sx={{ pb: 2, pt: 2 }}
-                  justifyContent="space-evenly"
+              {loading && <LinearProgress />}(
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{ pb: 2, pt: 2 }}
+                justifyContent="space-evenly"
+              >
+                <TextField
+                  label="Requested By"
+                  fullWidth
+                  size="small"
+                  defaultValue={order.requestor_email || ""}
+                  onChange={(e) => setNewReqEmail(e.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  size="small"
+                  fullWidth
+                  onClick={() =>
+                    updateMarketplaceOrder(false, false, false, false, true)
+                  }
                 >
-                  <TextField
-                    label="Requested By"
-                    fullWidth
-                    size="small"
-                    defaultValue={order.requestor_email}
-                    onChange={(e) => setNewReqEmail(e.target.value)}
-                  />
-                  <Button
-                    variant="contained"
-                    size="small"
-                    fullWidth
-                    onClick={() =>
-                      updateMarketplaceOrder(false, false, false, false, true)
-                    }
-                  >
-                    Update Email
-                  </Button>
-                </Stack>
-              )}
+                  Update Email
+                </Button>
+              </Stack>
+              )
               {order.notes.device && (
                 <Typography sx={{ pb: 2 }}>
                   Device Notes: {order.notes.device}
