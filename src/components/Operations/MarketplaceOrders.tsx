@@ -222,7 +222,7 @@ const MarketRow = (props: RowProps) => {
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              {loading && <LinearProgress />}(
+              {loading && <LinearProgress />}
               <Stack
                 direction="row"
                 spacing={2}
@@ -247,7 +247,6 @@ const MarketRow = (props: RowProps) => {
                   Update Email
                 </Button>
               </Stack>
-              )
               {order.notes.device && (
                 <Typography sx={{ pb: 2 }}>
                   Device Notes: {order.notes.device}
