@@ -90,6 +90,7 @@ const PurchaseModal = (props: PurchaseProps) => {
   const [quantity, setQuantity] = useState("1");
   const [wrongregion, setWrongregion] = useState(false);
   const [includeyubikey, setIncludeYubikey] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleRegionChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value);
@@ -200,6 +201,8 @@ const PurchaseModal = (props: PurchaseProps) => {
 
     if (newPurchaseResp.status !== "Successful") {
       setError(true);
+    } else {
+      setSuccess(true);
     }
 
     setLoading(false);
@@ -227,227 +230,233 @@ const PurchaseModal = (props: PurchaseProps) => {
         setWrongregion(false);
         setRegion("");
         setQuantity("1");
+        setSuccess(false);
         handleClose();
       }}
     >
       <Box sx={style}>
         {((!loading && !completed1) ||
           (completed1 && !completed2 && !loading) ||
-          (!loading && wrongregion)) && (
-          <>
-            <Typography variant="h5">New Purchase - {brand}</Typography>
-            <Divider />
-            <CardMedia
-              image={imgSrc}
-              title={"laptop"}
-              component="img"
-              height="175px"
-              sx={{
-                objectFit: "contain",
-                paddingTop: "15px",
-              }}
-            />
-            <Stepper activeStep={activeStep} sx={{ paddingTop: "10px" }}>
-              <Step key="Device" completed={completed1}>
-                <StepLabel>
-                  <Typography>Device</Typography>
-                </StepLabel>
-              </Step>
-              <Step completed={completed2}>
-                <StepLabel
-                  optional={<Typography variant="caption">Optional</Typography>}
-                >
-                  <Typography>Recipient</Typography>
-                </StepLabel>
-              </Step>
-            </Stepper>
-            {wrongregion && (
-              <Alert severity="error">
-                You cannot deployed a laptop from {region} to this address.
-              </Alert>
-            )}
-            {region === "Other" && (
-              <Alert severity="warning">
-                Since this is a new deployment to a new region, it might take a
-                little longer.
-              </Alert>
-            )}
-            {activeStep === 0 && (
-              <>
-                {brand !== "Others" && (
-                  <FormControl
-                    fullWidth
-                    sx={textFieldStyle}
-                    required
-                    size="small"
+          (!loading && wrongregion)) &&
+          !success && (
+            <>
+              <Typography variant="h5">New Purchase - {brand}</Typography>
+              <Divider />
+              <CardMedia
+                image={imgSrc}
+                title={"laptop"}
+                component="img"
+                height="175px"
+                sx={{
+                  objectFit: "contain",
+                  paddingTop: "15px",
+                }}
+              />
+              <Stepper activeStep={activeStep} sx={{ paddingTop: "10px" }}>
+                <Step key="Device" completed={completed1}>
+                  <StepLabel>
+                    <Typography>Device</Typography>
+                  </StepLabel>
+                </Step>
+                <Step completed={completed2}>
+                  <StepLabel
+                    optional={
+                      <Typography variant="caption">Optional</Typography>
+                    }
                   >
-                    <InputLabel id="type-select-label">Device Type</InputLabel>
-                    <Select
-                      labelId="type-select-label"
-                      id="type-select"
+                    <Typography>Recipient</Typography>
+                  </StepLabel>
+                </Step>
+              </Stepper>
+              {wrongregion && (
+                <Alert severity="error">
+                  You cannot deployed a laptop from {region} to this address.
+                </Alert>
+              )}
+              {region === "Other" && (
+                <Alert severity="warning">
+                  Since this is a new deployment to a new region, it might take
+                  a little longer.
+                </Alert>
+              )}
+              {activeStep === 0 && (
+                <>
+                  {brand !== "Others" && (
+                    <FormControl
+                      fullWidth
+                      sx={textFieldStyle}
+                      required
+                      size="small"
+                    >
+                      <InputLabel id="type-select-label">
+                        Device Type
+                      </InputLabel>
+                      <Select
+                        labelId="type-select-label"
+                        id="type-select"
+                        label="Device Type"
+                        onChange={handleTypeChange}
+                        value={type}
+                        required
+                      >
+                        {types &&
+                          types.length > 0 &&
+                          types.map((brandtype: any) => {
+                            return (
+                              <MenuItem value={brandtype.type}>
+                                {brandtype.type}
+                              </MenuItem>
+                            );
+                          })}
+                      </Select>
+                    </FormControl>
+                  )}
+                  {brand === "Others" && (
+                    <TextField
                       label="Device Type"
-                      onChange={handleTypeChange}
-                      value={type}
+                      size="small"
+                      sx={textFieldStyle}
+                      fullWidth
                       required
+                      onChange={(e) => setType(e.target.value)}
+                    />
+                  )}
+                  {brand !== "Others" && (
+                    <FormControl
+                      fullWidth
+                      sx={textFieldStyle}
+                      required
+                      size="small"
+                      disabled={type === ""}
                     >
-                      {types &&
-                        types.length > 0 &&
-                        types.map((brandtype: any) => {
-                          return (
-                            <MenuItem value={brandtype.type}>
-                              {brandtype.type}
-                            </MenuItem>
-                          );
-                        })}
-                    </Select>
-                  </FormControl>
-                )}
-                {brand === "Others" && (
+                      <InputLabel id="specs-select-label">Specs</InputLabel>
+                      <Select
+                        labelId="specs-select-label"
+                        id="specs-select"
+                        label="Specs"
+                        onChange={handleSpecsChange}
+                        value={specs}
+                        required
+                      >
+                        {type !== "" &&
+                          typeIndex !== -1 &&
+                          types[typeIndex].specs?.map((spec: any) => {
+                            return (
+                              <MenuItem value={spec.spec}>{spec.spec}</MenuItem>
+                            );
+                          })}
+                        <MenuItem value="Other">Other</MenuItem>
+                      </Select>
+                    </FormControl>
+                  )}
+                  {specs === "Other" && (
+                    <TextField
+                      label="Other Specs"
+                      sx={textFieldStyle}
+                      fullWidth
+                      size="small"
+                      required
+                      onChange={(event) => setOtherSpecs(event.target.value)}
+                    />
+                  )}
+                  {brand === "Others" && (
+                    <TextField
+                      label="Device Specs"
+                      size="small"
+                      sx={textFieldStyle}
+                      fullWidth
+                      required
+                      onChange={(e) => setSpecs(e.target.value)}
+                    />
+                  )}
+                  {brand !== "Others" && (
+                    <FormControl
+                      fullWidth
+                      sx={textFieldStyle}
+                      required
+                      size="small"
+                      disabled={type === ""}
+                    >
+                      <InputLabel id="color-select-label">Color</InputLabel>
+                      <Select
+                        labelId="color-select-label"
+                        id="color-select"
+                        label="Color"
+                        onChange={handleColorChange}
+                        value={color}
+                        required
+                      >
+                        {type !== "" &&
+                          typeIndex !== -1 &&
+                          types[typeIndex].colors.map((specColor: string) => {
+                            return (
+                              <MenuItem value={specColor}>{specColor}</MenuItem>
+                            );
+                          })}
+                      </Select>
+                    </FormControl>
+                  )}
+                  {(brand === "Others" || specIndex === -1) && (
+                    <TextField
+                      label="Device Color"
+                      size="small"
+                      sx={textFieldStyle}
+                      onChange={(e) => setColor(e.target.value)}
+                      fullWidth
+                      required
+                    />
+                  )}
                   <TextField
-                    label="Device Type"
+                    label="Quantity"
                     size="small"
                     sx={textFieldStyle}
                     fullWidth
-                    required
-                    onChange={(e) => setType(e.target.value)}
+                    defaultValue={quantity}
+                    value={quantity}
+                    onChange={(e) => {
+                      setQuantity(e.target.value);
+                    }}
+                    type="number"
                   />
-                )}
-                {brand !== "Others" && (
                   <FormControl
                     fullWidth
                     sx={textFieldStyle}
                     required
                     size="small"
-                    disabled={type === ""}
+                    disabled={specs === "" || specIndex < 0}
                   >
-                    <InputLabel id="specs-select-label">Specs</InputLabel>
+                    <InputLabel id="region-select-label">
+                      Shipping Region
+                    </InputLabel>
                     <Select
-                      labelId="specs-select-label"
-                      id="specs-select"
-                      label="Specs"
-                      onChange={handleSpecsChange}
-                      value={specs}
+                      labelId="region-select-label"
+                      id="region-select"
+                      label="Shipping Region"
+                      onChange={handleRegionChange}
+                      value={region}
                       required
                     >
-                      {type !== "" &&
-                        typeIndex !== -1 &&
-                        types[typeIndex].specs?.map((spec: any) => {
-                          return (
-                            <MenuItem value={spec.spec}>{spec.spec}</MenuItem>
-                          );
-                        })}
+                      {specs !== "" &&
+                        types[typeIndex]?.specs[specIndex]?.locations.map(
+                          (specLocation: string) => {
+                            return (
+                              <MenuItem value={specLocation}>
+                                {specLocation}
+                              </MenuItem>
+                            );
+                          }
+                        )}
                       <MenuItem value="Other">Other</MenuItem>
                     </Select>
                   </FormControl>
-                )}
-                {specs === "Other" && (
                   <TextField
-                    label="Other Specs"
+                    label="Notes"
                     sx={textFieldStyle}
                     fullWidth
                     size="small"
-                    required
-                    onChange={(event) => setOtherSpecs(event.target.value)}
+                    onChange={(event) => setNotes(event.target.value)}
                   />
-                )}
-                {brand === "Others" && (
-                  <TextField
-                    label="Device Specs"
-                    size="small"
-                    sx={textFieldStyle}
-                    fullWidth
-                    required
-                    onChange={(e) => setSpecs(e.target.value)}
-                  />
-                )}
-                {brand !== "Others" && (
-                  <FormControl
-                    fullWidth
-                    sx={textFieldStyle}
-                    required
-                    size="small"
-                    disabled={type === ""}
-                  >
-                    <InputLabel id="color-select-label">Color</InputLabel>
-                    <Select
-                      labelId="color-select-label"
-                      id="color-select"
-                      label="Color"
-                      onChange={handleColorChange}
-                      value={color}
-                      required
-                    >
-                      {type !== "" &&
-                        typeIndex !== -1 &&
-                        types[typeIndex].colors.map((specColor: string) => {
-                          return (
-                            <MenuItem value={specColor}>{specColor}</MenuItem>
-                          );
-                        })}
-                    </Select>
-                  </FormControl>
-                )}
-                {(brand === "Others" || specIndex === -1) && (
-                  <TextField
-                    label="Device Color"
-                    size="small"
-                    sx={textFieldStyle}
-                    onChange={(e) => setColor(e.target.value)}
-                    fullWidth
-                    required
-                  />
-                )}
-                <TextField
-                  label="Quantity"
-                  size="small"
-                  sx={textFieldStyle}
-                  fullWidth
-                  defaultValue={quantity}
-                  value={quantity}
-                  onChange={(e) => {
-                    setQuantity(e.target.value);
-                  }}
-                  type="number"
-                />
-                <FormControl
-                  fullWidth
-                  sx={textFieldStyle}
-                  required
-                  size="small"
-                  disabled={specs === "" || specIndex < 0}
-                >
-                  <InputLabel id="region-select-label">
-                    Shipping Region
-                  </InputLabel>
-                  <Select
-                    labelId="region-select-label"
-                    id="region-select"
-                    label="Shipping Region"
-                    onChange={handleRegionChange}
-                    value={region}
-                    required
-                  >
-                    {specs !== "" &&
-                      types[typeIndex]?.specs[specIndex]?.locations.map(
-                        (specLocation: string) => {
-                          return (
-                            <MenuItem value={specLocation}>
-                              {specLocation}
-                            </MenuItem>
-                          );
-                        }
-                      )}
-                    <MenuItem value="Other">Other</MenuItem>
-                  </Select>
-                </FormControl>
-                <TextField
-                  label="Notes"
-                  sx={textFieldStyle}
-                  fullWidth
-                  size="small"
-                  onChange={(event) => setNotes(event.target.value)}
-                />
-                {/* {marketClient === "Automox" && (
+                  {/* {marketClient === "Automox" && (
                   <FormControlLabel
                     control={
                       <Checkbox required onChange={handleYubikeyChecked} />
@@ -455,130 +464,130 @@ const PurchaseModal = (props: PurchaseProps) => {
                     label={<div>Include Yubikey</div>}
                   />
                 )} */}
-                <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
-                <FormControlLabel
-                  control={<Checkbox required onChange={handleChecked} />}
-                  label={
-                    <div>
-                      By checking this box, I agree to have Spoke generate a
-                      quote on my behalf.
-                    </div>
-                  }
-                />
-              </>
-            )}
-            {activeStep === 1 && (
-              <>
-                <TextField
-                  label="Recipient Name"
-                  sx={textFieldStyle}
-                  fullWidth
-                  size="small"
-                  value={recipient_name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                />
-                <TextField
-                  label="Address"
-                  sx={textFieldStyle}
-                  fullWidth
-                  size="small"
-                  value={address}
-                  onChange={(event) => setAddress(event.target.value)}
-                  required
-                />
-                <TextField
-                  label="Email"
-                  sx={textFieldStyle}
-                  fullWidth
-                  size="small"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                />
-                <TextField
-                  label="Phone Number"
-                  sx={textFieldStyle}
-                  fullWidth
-                  size="small"
-                  value={pn}
-                  onChange={(event) => setPhone(event.target.value)}
-                  required
-                />
-                <FormControl
-                  fullWidth
-                  sx={textFieldStyle}
-                  required
-                  size="small"
-                >
-                  <InputLabel id="shipping-select-label">
-                    Shipping Rate
-                  </InputLabel>
-                  <Select
-                    labelId="shipping-select-label"
-                    id="shipping-select"
-                    label="Shipping Rate"
-                    onChange={handleShipping}
-                    value={shipping}
+                  <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
+                  <FormControlLabel
+                    control={<Checkbox required onChange={handleChecked} />}
+                    label={
+                      <div>
+                        By checking this box, I agree to have Spoke generate a
+                        quote on my behalf.
+                      </div>
+                    }
+                  />
+                </>
+              )}
+              {activeStep === 1 && (
+                <>
+                  <TextField
+                    label="Recipient Name"
+                    sx={textFieldStyle}
+                    fullWidth
+                    size="small"
+                    value={recipient_name}
+                    onChange={(event) => setName(event.target.value)}
                     required
+                  />
+                  <TextField
+                    label="Address"
+                    sx={textFieldStyle}
+                    fullWidth
+                    size="small"
+                    value={address}
+                    onChange={(event) => setAddress(event.target.value)}
+                    required
+                  />
+                  <TextField
+                    label="Email"
+                    sx={textFieldStyle}
+                    fullWidth
+                    size="small"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                  />
+                  <TextField
+                    label="Phone Number"
+                    sx={textFieldStyle}
+                    fullWidth
+                    size="small"
+                    value={pn}
+                    onChange={(event) => setPhone(event.target.value)}
+                    required
+                  />
+                  <FormControl
+                    fullWidth
+                    sx={textFieldStyle}
+                    required
+                    size="small"
                   >
-                    <MenuItem value="Standard">Standard</MenuItem>
-                    <MenuItem value="2 Day">2 Day</MenuItem>
-                    <MenuItem value="Overnight">Overnight</MenuItem>
-                  </Select>
-                </FormControl>
-                <TextField
-                  label="Notes"
-                  sx={textFieldStyle}
-                  fullWidth
-                  size="small"
-                  value={recipient_notes}
-                  onChange={(event) => setRNotes(event.target.value)}
-                />
-              </>
-            )}
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{
-                marginTop: "10px",
-                borderRadius: "999em 999em 999em 999em",
-                textTransform: "none",
-              }}
-              disabled={
-                ((!checked || specs === "" || color === "" || type === "") &&
-                  activeStep === 0) ||
-                (activeStep === 1 &&
-                  (recipient_name === "" ||
-                    address === "" ||
-                    email === "" ||
-                    pn === "" ||
-                    shipping === ""))
-              }
-              onClick={buyDeploy}
-            >
-              Request Quote
-            </Button>
-            {activeStep === 0 && (
+                    <InputLabel id="shipping-select-label">
+                      Shipping Rate
+                    </InputLabel>
+                    <Select
+                      labelId="shipping-select-label"
+                      id="shipping-select"
+                      label="Shipping Rate"
+                      onChange={handleShipping}
+                      value={shipping}
+                      required
+                    >
+                      <MenuItem value="Standard">Standard</MenuItem>
+                      <MenuItem value="2 Day">2 Day</MenuItem>
+                      <MenuItem value="Overnight">Overnight</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    label="Notes"
+                    sx={textFieldStyle}
+                    fullWidth
+                    size="small"
+                    value={recipient_notes}
+                    onChange={(event) => setRNotes(event.target.value)}
+                  />
+                </>
+              )}
               <Button
                 fullWidth
-                variant="outlined"
+                variant="contained"
                 sx={{
                   marginTop: "10px",
                   borderRadius: "999em 999em 999em 999em",
                   textTransform: "none",
                 }}
-                color="secondary"
                 disabled={
-                  !checked || specs === "" || color === "" || type === ""
+                  ((!checked || specs === "" || color === "" || type === "") &&
+                    activeStep === 0) ||
+                  (activeStep === 1 &&
+                    (recipient_name === "" ||
+                      address === "" ||
+                      email === "" ||
+                      pn === "" ||
+                      shipping === ""))
                 }
-                onClick={buyHold}
+                onClick={buyDeploy}
               >
-                Buy & Hold in Inventory
+                Request Quote
               </Button>
-            )}
-          </>
-        )}
+              {activeStep === 0 && (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  sx={{
+                    marginTop: "10px",
+                    borderRadius: "999em 999em 999em 999em",
+                    textTransform: "none",
+                  }}
+                  color="secondary"
+                  disabled={
+                    !checked || specs === "" || color === "" || type === ""
+                  }
+                  onClick={buyHold}
+                >
+                  Buy & Hold in Inventory
+                </Button>
+              )}
+            </>
+          )}
         {((completed1 && activeStep !== 1 && !loading && !wrongregion) ||
           (completed1 && completed2 && !loading && !wrongregion)) && (
           <>
