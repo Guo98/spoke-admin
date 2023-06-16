@@ -55,6 +55,7 @@ const UpdateCollapse = (props: UpdateProps) => {
 
   const handle_delete = async () => {
     await props.handleDelete(sn, index);
+    setOpen(false);
   };
 
   const handleClose = () => {
