@@ -159,7 +159,6 @@ const UpdateInventory = (props: UpdateProps) => {
     if (deleteResp.status === "Successful") {
       updatePage2Data(deleteResp.data);
     }
-    setInventoryIndex(-1);
     setLoading(false);
   };
 
