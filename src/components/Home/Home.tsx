@@ -9,6 +9,8 @@ const Home = () => {
 
   const login = () => {
     const paramsAsObj = Object.fromEntries([...searchParams]);
+    const portalUri = window.location.pathname.substring(1);
+
     if (
       Object.keys(paramsAsObj).indexOf("invitation") > -1 &&
       Object.keys(paramsAsObj).indexOf("organization") > -1 &&
@@ -20,7 +22,9 @@ const Home = () => {
         organization: paramsAsObj.organization,
       });
     } else if (!isAuthenticated && !isLoading) {
-      loginWithRedirect();
+      loginWithRedirect({
+        redirectUri: window.location.href,
+      });
     }
   };
 

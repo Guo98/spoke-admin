@@ -11,6 +11,14 @@ const AuthRouter = createBrowserRouter([
       </>
     ),
   },
+  {
+    path: "/approvals",
+    element: (
+      <>
+        <Home />
+      </>
+    ),
+  },
 ]);
 
 export default AuthRouter;
