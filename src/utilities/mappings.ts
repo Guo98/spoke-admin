@@ -26,6 +26,7 @@ const orgMapping: any = {
   org_H63xrX3lAC7uphzb: "Alma",
   org_cf0BFkW7yuXi9lTo: "Flo Health",
   org_BmAU8UUBYjVbRMDD: "Flo Health",
+  org_lgsM9ZWjP1GdrDoA: "Roivant",
 };
 
 const roleMapping: any = {
@@ -100,6 +101,7 @@ const navMappings: any = {
     "Misc",
   ],
   FLYR: ["Orders", "Inventory", "Storefront"],
+  Roivant: ["Orders", "Inventory", "Marketplace", "Approvals"],
 };
 
 const clientsList = [
@@ -147,6 +149,7 @@ const connectionMappings: any = {
   "Hidden Road": ["Google", "Username Password"],
   "Intersect Power": ["Username Password"],
   NurseDash: ["Google", "Username Password"],
+  Roivant: ["Username Password"],
 };
 
 export {
