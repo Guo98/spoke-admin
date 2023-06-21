@@ -54,7 +54,7 @@ interface RowProps {
     id: string;
     quote?: string;
     quote_price?: string;
-    approved?: boolean;
+    approved?: boolean | null;
     requestor_email?: string;
     email_sent?: boolean;
     recipient_name?: string;
@@ -94,7 +94,8 @@ const MarketRow = (props: RowProps) => {
     updatePrice: boolean = false,
     updateClient: boolean = false,
     updateEntity: boolean = false,
-    updateEmail: boolean = false
+    updateEmail: boolean = false,
+    reapprove: boolean = false
   ) => {
     let bodyObj: any = {
       id: order.id,
@@ -123,6 +124,9 @@ const MarketRow = (props: RowProps) => {
       if (!order.requestor_email || order.requestor_email !== newReqEmail) {
         bodyObj.requestor_email = newReqEmail;
       }
+    } else if (reapprove) {
+      bodyObj.client = order.client;
+      bodyObj.approved = null;
     }
 
     const accessToken = await getAccessTokenSilently();
@@ -254,7 +258,7 @@ const MarketRow = (props: RowProps) => {
               )}
               {order.notes.recipient && (
                 <Typography sx={{ pb: 2 }}>
-                  Morte Notes: {order.notes.recipient}
+                  More Notes: {order.notes.recipient}
                 </Typography>
               )}
               {!order.client && (
@@ -378,7 +382,7 @@ const MarketRow = (props: RowProps) => {
                   <Button
                     variant="contained"
                     onClick={() => updateMarketplaceOrder(false, true, false)}
-                    disabled={order.approved}
+                    disabled={order.approved === true}
                   >
                     Update Price
                   </Button>
@@ -429,16 +433,39 @@ const MarketRow = (props: RowProps) => {
                   </Button>
                 </Grid>
               </Grid>
-              {(order.quote || order.quote_price) && (
-                <Button
-                  sx={{ marginTop: "20px" }}
-                  variant="contained"
-                  onClick={sendApprovalEmail}
-                  disabled={order.email_sent}
-                >
-                  Send Approval Email
-                </Button>
-              )}
+              <Stack direction="row" sx={{ mt: "20px" }} spacing={2}>
+                {(order.quote || order.quote_price) && (
+                  <Button
+                    variant="contained"
+                    onClick={sendApprovalEmail}
+                    disabled={
+                      order.approved !== undefined && order.approved !== null
+                    }
+                  >
+                    Send Approval Email
+                  </Button>
+                )}
+                {order.approved !== undefined && !order.approved && (
+                  <Button
+                    variant="contained"
+                    disabled={
+                      order.approved === undefined || order.approved === null
+                    }
+                    onClick={() =>
+                      updateMarketplaceOrder(
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true
+                      )
+                    }
+                  >
+                    Reopen Approval
+                  </Button>
+                )}
+              </Stack>
             </Box>
           </Collapse>
         </TableCell>

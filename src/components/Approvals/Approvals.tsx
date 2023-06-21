@@ -145,7 +145,15 @@ const QuoteRow = (props: QuoteProps) => {
         <FormattedCell text={date} />
         <FormattedCell text={recipient_name} />
         <FormattedCell text={device_type + (specs ? " " + specs : "")} />
-        <FormattedCell text={status} />
+        <FormattedCell
+          text={
+            status === "Completed"
+              ? props.approved
+                ? "Approved"
+                : "Rejected"
+              : status
+          }
+        />
       </TableRow>
       {(props.quote || props.quote_price) && (
         <TableRow>
@@ -198,7 +206,8 @@ const QuoteRow = (props: QuoteProps) => {
                       >
                         <PictureAsPdfIcon sx={{ mr: 1 }} /> Quote
                       </Button>
-                      {props.approved === undefined ? (
+                      {props.approved === undefined ||
+                      props.approved === null ? (
                         <Stack
                           direction="row"
                           spacing={2}
@@ -283,7 +292,7 @@ const Approvals = () => {
 
     if (ordersRes.status === "Successful") {
       setOrders(ordersRes.data.reverse());
-      setDntOrders(ordersRes.data.reverse());
+      setDntOrders(ordersRes.data);
       setLoading(false);
     } else {
       setError(true);
