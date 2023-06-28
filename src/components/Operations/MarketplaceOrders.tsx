@@ -435,14 +435,10 @@ const MarketRow = (props: RowProps) => {
               </Grid>
               <Stack direction="row" sx={{ mt: "20px" }} spacing={2}>
                 {(order.quote || order.quote_price) && (
-                  <Button
-                    variant="contained"
-                    onClick={sendApprovalEmail}
-                    disabled={
-                      order.approved !== undefined && order.approved !== null
-                    }
-                  >
-                    Send Approval Email
+                  <Button variant="contained" onClick={sendApprovalEmail}>
+                    {order.email_sent
+                      ? "Send Approval Email Again"
+                      : "Send Approval Email"}
                   </Button>
                 )}
                 {order.approved !== undefined && !order.approved && (
