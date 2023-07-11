@@ -120,13 +120,23 @@ function App() {
         if (user.role.length > 0) {
           if (user.role[0] === "technical") {
             setShow(false);
-            window.open("http://withspoke.com/automox-t", "_self");
+            window.open("https://withspoke.com/automox-t", "_self");
           } else if (user.role[0] === "nontechnical") {
             setShow(false);
-            window.open("http://withspoke.com/automox-nt", "_self");
+            window.open("https://withspoke.com/automox-nt", "_self");
           } else if (user.role[0] === "approvedbuyers") {
             setShow(false);
-            window.open("http://withspoke.com/automox-ab", "_self");
+            window.open("https://withspoke.com/automox-ab", "_self");
+          }
+        }
+      } else if (orgMapping[user.org_id] === "Roivant") {
+        if (user.role.length > 0) {
+          if (user.role[0] === "windows") {
+            setShow(false);
+            window.open("https://www.withspoke.com/roivant-w", "_self");
+          } else if (user.role[0] === "mac") {
+            setShow(false);
+            window.open("https://www.withspoke.com/roivant-m", "_self");
           }
         }
       }

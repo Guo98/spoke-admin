@@ -130,7 +130,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     respwindow !== undefined ? () => respwindow().document.body : undefined;
 
   useEffect(() => {
-    if (navMappings[clientData]) setLinks(navMappings[clientData]);
+    if (clientData === "Roivant") {
+      setLinks(navMappings[clientData][roles[0]]);
+    } else if (navMappings[clientData]) {
+      setLinks(navMappings[clientData]);
+    }
   }, [clientData]);
 
   const hasEntity = () => {

@@ -39,6 +39,7 @@ const textFieldStyle = {
 const InviteUsers = (props: IUProps) => {
   const { handleClose } = props;
   const selectedClient = useSelector((state: RootState) => state.client.data);
+  const roles = useSelector((state: RootState) => state.client.roles);
 
   const [client, setClient] = useState("");
   const [selectedRole, setRole] = useState("");
@@ -160,6 +161,12 @@ const InviteUsers = (props: IUProps) => {
               {clientRoles[client].map((clientRole: string) => {
                 if (clientRole === "Admin") {
                   if (selectedClient === "spokeops")
+                    return <MenuItem value={clientRole}>{clientRole}</MenuItem>;
+                } else if (clientRole === "Hiring Manager") {
+                  if (
+                    selectedClient === "spokeops" ||
+                    (selectedClient === "Roivant" && roles[0] === "admin")
+                  )
                     return <MenuItem value={clientRole}>{clientRole}</MenuItem>;
                 } else {
                   return <MenuItem value={clientRole}>{clientRole}</MenuItem>;
