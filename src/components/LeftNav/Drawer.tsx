@@ -132,6 +132,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   useEffect(() => {
     if (clientData === "Roivant") {
       setLinks(navMappings[clientData][roles[0]]);
+      if (roles[0] === "manager") {
+        gotoPage("Invite");
+      }
     } else if (navMappings[clientData]) {
       setLinks(navMappings[clientData]);
     }
@@ -318,6 +321,8 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             setPopupText("Please select an entity first.");
             setOpen(true);
           }
+        } else if (clientData === "Roivant") {
+          window.open("https://withspoke.com/roivant-m", "_blank");
         } else {
           setOpen(true);
         }

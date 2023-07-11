@@ -17,6 +17,7 @@ import {
   Stack,
   Tooltip,
   Chip,
+  LinearProgress,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -341,6 +342,7 @@ const Approvals = () => {
       <Typography>
         <h2>Approvals</h2>
       </Typography>
+      {loading && <LinearProgress />}
       {!loading && orders.length > 0 && (
         <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
           <Table>
@@ -360,6 +362,9 @@ const Approvals = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      )}
+      {!loading && orders.length === 0 && (
+        <Typography textAlign="center">No approvals pending</Typography>
       )}
     </Box>
   );
