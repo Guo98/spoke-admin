@@ -101,7 +101,10 @@ const navMappings: any = {
     "Misc",
   ],
   FLYR: ["Orders", "Inventory", "Storefront"],
-  Roivant: ["Orders", "Inventory", "Marketplace", "Approvals"],
+  Roivant: {
+    admin: ["Orders", "Inventory", "Marketplace", "Approvals", "Invite"],
+    manager: ["Invite"],
+  },
 };
 
 const clientsList = [
@@ -113,6 +116,7 @@ const clientsList = [
   "Hidden Road",
   "Intersect Power",
   "NurseDash",
+  "Roivant",
 ];
 
 const clientRoles: any = {
@@ -124,6 +128,7 @@ const clientRoles: any = {
   ],
   FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
   Automox: ["Admin", "Technical", "Non-technical", "Approved Buyers"],
+  Roivant: ["Admin", "Hiring Manager", "New Hire (Windows)", "New Hire (Mac)"],
 };
 
 const clientRolesCode: any = {
@@ -138,6 +143,9 @@ const clientRolesCode: any = {
   Technical: "technical",
   "Non-technical": "nontechnical",
   "Approved Buyers": "approvedbuyers",
+  "New Hire (Windows)": "windows",
+  "New Hire (Mac)": "mac",
+  "Hiring Manager": "manager",
 };
 
 const connectionMappings: any = {
