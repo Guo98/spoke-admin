@@ -21,13 +21,15 @@ import {
   useTheme,
   AccordionDetails,
   Stack,
-  Modal,
+  Link,
+  Card,
+  CardContent,
 } from "@mui/material";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Order } from "../../interfaces/orders";
 import ManageOrder from "./ManageOrder";
 import OperationsManage from "./OperationsManage";
 import DeleteModal from "../Operations/DeleteModal";
+import AppContainer from "../AppContainer/AppContainer";
 
 interface OrderProps extends Order {
   clientui?: string;
@@ -74,10 +76,13 @@ const OrderItem = (props: OrderProps) => {
     clientui,
     index,
     full_name,
+    date,
   } = props;
 
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
+  const [serial_number, setSN] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -146,14 +151,42 @@ const OrderItem = (props: OrderProps) => {
     if (itemFilter.length > 0) {
       setLaptopName(itemFilter[0].name);
       setLaptopTracking(itemFilter[0].tracking_number[0]);
+      if (itemFilter[0].serial_number) setSN(itemFilter[0].serial_number);
     } else {
       setLaptopName("");
       setLaptopTracking("");
+      setSN("");
     }
   }, [items]);
 
+  const getCourierHost = (courier: string, tracking_number: string) => {
+    if (courier === "fedex") {
+      return "https://www.fedex.com/fedextrack/?trknbr=" + tracking_number;
+    } else if (courier === "ups") {
+      return (
+        "https://wwwapps.ups.com/tracking/tracking.cgi?tracknum=" +
+        tracking_number
+      );
+    } else if (courier === "usps") {
+      return (
+        "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=" +
+        tracking_number
+      );
+    } else if (courier === "dhl") {
+      return (
+        "http://www.dhl.com/en/express/tracking.html?AWB=" +
+        tracking_number +
+        "&brand=DHL"
+      );
+    } else if (courier === "correios") {
+      return "";
+    } else {
+      return "";
+    }
+  };
+
   return (
-    <Accordion key={index}>
+    <Accordion key={index} onChange={(e, expanded) => setExpanded(expanded)}>
       <AccordionSummary id={"order-accordionsummary-" + index}>
         <Grid container direction={{ md: "row", xs: "column" }}>
           <Grid item md={2}>
@@ -161,12 +194,22 @@ const OrderItem = (props: OrderProps) => {
             <Typography>{full_name}</Typography>
           </Grid>
           <Grid item md={2}>
-            <Typography>
-              {subdivision}, {country}
-            </Typography>
+            {!expanded && (
+              <>
+                <Typography>{date}</Typography>
+                <Typography>
+                  {subdivision}, {country}
+                </Typography>
+              </>
+            )}
           </Grid>
           <Grid item md={5}>
-            <Typography>{laptopName}</Typography>
+            {!expanded && (
+              <>
+                <Typography fontWeight="bold">{laptopName}</Typography>
+                <Typography>{serial_number}</Typography>
+              </>
+            )}
           </Grid>
           <Grid item md={3}>
             <Box display={{ md: "flex" }} justifyContent="flex-end">
@@ -189,13 +232,53 @@ const OrderItem = (props: OrderProps) => {
         }}
         id={"order-accordiondetails-" + index}
       >
+        <Card sx={{ ml: 3, mb: 2, borderRadius: "10px" }}>
+          <CardContent>
+            <Stack direction="column" spacing={1}>
+              <Typography fontWeight="bold">
+                Date Ordered:{" "}
+                <Typography display="inline" component="span">
+                  {date}
+                </Typography>
+              </Typography>
+              <Typography fontWeight="bold">
+                Order Location:{" "}
+                <Typography display="inline" component="span">
+                  {subdivision}, {country}
+                </Typography>
+              </Typography>
+              <Typography fontWeight="bold">
+                Employee Email:{" "}
+                <Typography display="inline" component="span">
+                  {email}
+                </Typography>
+              </Typography>
+              {laptopName !== "" && (
+                <Typography fontWeight="bold">
+                  Device:{" "}
+                  <Typography display="inline" component="span">
+                    {laptopName}
+                  </Typography>
+                </Typography>
+              )}
+              {serial_number !== "" && (
+                <Typography fontWeight="bold" sx={{ textIndent: "30px" }}>
+                  - Device Serial Number:{" "}
+                  <Typography display="inline" component="span">
+                    {serial_number}
+                  </Typography>
+                </Typography>
+              )}
+            </Stack>
+          </CardContent>
+        </Card>
         <Grid
           container
           justifyContent="space-evenly"
           sx={{ paddingLeft: 3 }}
           alignItems="center"
         >
-          <Grid item xs={9}>
+          <Grid item xs={10}>
             <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
               <Table aria-label="items table">
                 <TableHead>
@@ -227,7 +310,21 @@ const OrderItem = (props: OrderProps) => {
                   {items.map((item, index) => {
                     return (
                       <TableRow hover>
-                        <TableCell>{item.name}</TableCell>
+                        <TableCell>
+                          {item.serial_number ? (
+                            <Link
+                              onClick={() =>
+                                AppContainer.navigate(
+                                  "/inventory?sn=" + item.serial_number
+                                )
+                              }
+                            >
+                              {item.name}
+                            </Link>
+                          ) : (
+                            item.name
+                          )}
+                        </TableCell>
                         <TableCell>{item.quantity || 1}</TableCell>
                         <TableCell align="right">
                           <Typography>
@@ -238,7 +335,25 @@ const OrderItem = (props: OrderProps) => {
                           </Typography>
                         </TableCell>
                         <TableCell align="right">
-                          {item.tracking_number}
+                          {item.tracking_number.length > 0 &&
+                          item.courier &&
+                          getCourierHost(
+                            item.courier.toLowerCase(),
+                            item.tracking_number[0]
+                          ) !== "" ? (
+                            <Link
+                              href={getCourierHost(
+                                item.courier.toLowerCase(),
+                                item.tracking_number[0]
+                              )}
+                              aria-label="Tracking link that'll open in a new page"
+                              target="_blank"
+                            >
+                              {item.tracking_number}
+                            </Link>
+                          ) : (
+                            item.tracking_number
+                          )}
                         </TableCell>
                         <TableCell align="right">{item.courier}</TableCell>
                       </TableRow>
@@ -248,7 +363,7 @@ const OrderItem = (props: OrderProps) => {
               </Table>
             </TableContainer>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Box display="flex" justifyContent="flex-end">
               {clientui !== "spokeops" ? (
                 <ManageOrder

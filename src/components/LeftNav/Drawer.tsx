@@ -212,7 +212,8 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         case "orders":
           setIndex(links.indexOf("Orders"));
           break;
-        case "inventory":
+        case "inventory" ||
+          window.location.pathname.substring(1).includes("inventory"):
           setIndex(links.indexOf("Inventory"));
           break;
         case "team":

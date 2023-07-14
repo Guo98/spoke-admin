@@ -66,14 +66,6 @@ const AppContainer = createBrowserRouter([
     ),
   },
   {
-    path: "/invoices",
-    element: <div>Invoices Page</div>,
-  },
-  {
-    path: "/team",
-    element: <div>Team Page</div>,
-  },
-  {
     path: "/logout",
     element: <Logout />,
   },
