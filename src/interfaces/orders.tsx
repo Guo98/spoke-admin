@@ -35,6 +35,8 @@ export interface Item {
   tracking_number: string[] | string;
   type?: string;
   courier?: string;
+  serial_number?: string;
+  date_shipped?: string;
 }
 
 interface Variant {

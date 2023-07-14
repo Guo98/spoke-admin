@@ -1,5 +1,6 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
+import { Box } from "@mui/material";
 import Inventory from "../Inventory/Inventory";
 import Orders from "../Orders/Orders";
 import Logout from "../Login/Logout";
@@ -7,13 +8,22 @@ import OperationsMisc from "../Operations/OperationsMisc";
 import Marketplace from "../Marketplace/Marketplace";
 import Approvals from "../Approvals/Approvals";
 import InviteUsers from "../Invite/InviteUsers";
+import SpokeDrawer from "../LeftNav/Drawer";
 
 const AppContainer = createBrowserRouter([
   {
     path: "/",
     element: (
       <>
-        <Orders />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <Orders />
+        </Box>
       </>
     ),
   },
@@ -21,7 +31,15 @@ const AppContainer = createBrowserRouter([
     path: "/misc",
     element: (
       <>
-        <OperationsMisc />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <OperationsMisc />
+        </Box>
       </>
     ),
   },
@@ -29,7 +47,15 @@ const AppContainer = createBrowserRouter([
     path: "/orders",
     element: (
       <>
-        <Orders />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <Orders />
+        </Box>
       </>
     ),
   },
@@ -37,7 +63,15 @@ const AppContainer = createBrowserRouter([
     path: "/inventory",
     element: (
       <>
-        <Inventory />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <Inventory />
+        </Box>
       </>
     ),
   },
@@ -45,7 +79,15 @@ const AppContainer = createBrowserRouter([
     path: "/marketplace",
     element: (
       <>
-        <Marketplace />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <Marketplace />
+        </Box>
       </>
     ),
   },
@@ -53,7 +95,15 @@ const AppContainer = createBrowserRouter([
     path: "/approvals",
     element: (
       <>
-        <Approvals />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <Approvals />
+        </Box>
       </>
     ),
   },
@@ -61,17 +111,17 @@ const AppContainer = createBrowserRouter([
     path: "/invite",
     element: (
       <>
-        <InviteUsers />
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <InviteUsers />
+        </Box>
       </>
     ),
-  },
-  {
-    path: "/invoices",
-    element: <div>Invoices Page</div>,
-  },
-  {
-    path: "/team",
-    element: <div>Team Page</div>,
   },
   {
     path: "/logout",

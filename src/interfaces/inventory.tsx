@@ -44,6 +44,8 @@ interface SerialNumbers {
   quantity?: number;
   tracking_number?: string;
   date_requested?: string;
+  supplier?: string;
+  supplier_order_no?: string;
 }
 
 export interface MarketplaceProducts {

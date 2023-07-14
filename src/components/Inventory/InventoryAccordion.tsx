@@ -57,6 +57,8 @@ interface InventoryAccordionProps extends InventorySummary {
   tabValue: number;
   clientData?: string;
   index: number;
+  total_devices: number;
+  search_serial_number: string;
 }
 
 const InventoryAccordion = (props: InventoryAccordionProps) => {
@@ -116,7 +118,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
   };
 
   return (
-    <Accordion>
+    <Accordion defaultExpanded={props.total_devices === 1}>
       <AccordionSummary id={"inventory-accordionsummary-" + index}>
         <Grid
           container

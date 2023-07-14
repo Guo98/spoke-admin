@@ -35,7 +35,8 @@ import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { useLocation } from "react-router-dom";
+import SignpostIcon from "@mui/icons-material/Signpost";
+// import { useLocation } from "react-router-dom";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
@@ -63,6 +64,7 @@ interface IconMapping {
   Marketplace: JSX.Element;
   Approvals: JSX.Element;
   Invite: JSX.Element;
+  Roadmap: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -80,6 +82,7 @@ const iconMapping: IconMapping = {
   Marketplace: <ShoppingCartIcon />,
   Approvals: <ApprovalIcon />,
   Invite: <PersonAddIcon />,
+  Roadmap: <SignpostIcon />,
 };
 
 interface DrawerProps {
@@ -113,7 +116,6 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
   const [popupText, setPopupText] = useState("");
 
   const dispatch = useDispatch();
-  const location = useLocation();
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -174,7 +176,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           </ListItem>
         ))}
         <div className="bottomPush">
-          {["Support", "Logout"].map((text) => (
+          {["Support", "Roadmap", "Logout"].map((text) => (
             <ListItem key={text} className="noVerticalPadding">
               <ListItemButton onClick={async () => await footerAction(text)}>
                 <ListItemIcon>
@@ -347,6 +349,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       case "Support":
         setModalOpen(true);
         break;
+      case "Roadmap":
+        window.open("https://app.loopedin.io/spoke#/roadmap", "_blank");
+        break;
       default:
         break;
     }
@@ -443,7 +448,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         )}
         {drawerContent}
         <div className="bottom-version">
-          <Typography fontSize="10px">Version 1.4.1</Typography>
+          <Typography fontSize="10px">Version 1.5.0</Typography>
         </div>
       </Drawer>
     </>

@@ -15,6 +15,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useAuth0 } from "@auth0/auth0-react";
 import * as FileSaver from "file-saver";
 import { Buffer } from "buffer";
+import { useSearchParams, useLocation } from "react-router-dom";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -39,6 +40,8 @@ function a11yProps(index: number) {
 }
 
 const Inventory: FC = (): ReactElement => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const data = useSelector((state: RootState) => state.inventory.data);
   const pendingRedux = useSelector(
     (state: RootState) => state.inventory.pending
@@ -75,6 +78,7 @@ const Inventory: FC = (): ReactElement => {
   const [stockTotal, setStockTotal] = useState(0);
   const [deviceTotal, setDeviceTotal] = useState(0);
   const [filtered, setFiltered] = useState(false);
+  const [search_serial, setSearchSerial] = useState("");
 
   const dispatch = useDispatch();
 
@@ -104,7 +108,9 @@ const Inventory: FC = (): ReactElement => {
   }, [clientData]);
 
   useEffect(() => {
-    fetchData().catch(console.error);
+    if (selectedClientData !== "") {
+      fetchData().catch(console.error);
+    }
   }, [selectedClientData]);
 
   useEffect(() => {
@@ -161,18 +167,32 @@ const Inventory: FC = (): ReactElement => {
   };
 
   useEffect(() => {
-    setStock(stockRedux);
-    setOGStock(stockRedux);
-    setDeployed(deployedRedux);
     setOGDeployed(deployedRedux);
     setInprogress(pendingRedux);
     setOGInprogress(pendingRedux);
-    updateCount();
+    if (search_serial !== "") {
+      searchFilter(search_serial);
+    } else {
+      setStock(stockRedux);
+      setOGStock(stockRedux);
+      setDeployed(deployedRedux);
+      updateCount();
+    }
   }, [pendingRedux, deployedRedux, stockRedux]);
 
   useEffect(() => {
     updateCount();
   }, [stock, deployed, inprogress]);
+
+  useEffect(() => {
+    if (searchParams.get("sn")) {
+      setSearchSerial(searchParams.get("sn")!);
+    } else {
+      setSearchSerial("");
+      searchFilter("");
+      setTabValue(0);
+    }
+  }, [searchParams, location.pathname]);
 
   useEffect(() => {
     if (!filtered) {
@@ -196,10 +216,7 @@ const Inventory: FC = (): ReactElement => {
 
   const searchFilter = (text: string) => {
     if (text !== "") {
-      const searchStock = searchFilterFunction(
-        [...ogstock],
-        text.toLowerCase()
-      );
+      let searchStock = searchFilterFunction([...ogstock], text.toLowerCase());
       let searchInProg = searchFilterFunction(
         [...oginprogrss],
         text.toLowerCase()
@@ -214,6 +231,25 @@ const Inventory: FC = (): ReactElement => {
       setDeployed(searchDeployed);
       setInprogress(searchInProg);
       setFiltered(true);
+      if (
+        searchStock.length === 0 &&
+        searchDeployed.length === 0 &&
+        searchInProg.length > 0
+      ) {
+        setTabValue(2);
+      } else if (
+        searchStock.length === 0 &&
+        searchDeployed.length > 0 &&
+        searchInProg.length === 0
+      ) {
+        setTabValue(1);
+      } else if (
+        searchStock.length > 0 &&
+        searchDeployed.length === 0 &&
+        searchInProg.length === 0
+      ) {
+        setTabValue(0);
+      }
     } else {
       setFiltered(false);
       setStock(ogstock);
@@ -334,6 +370,8 @@ const Inventory: FC = (): ReactElement => {
                                   tabValue={tabValue}
                                   key={index}
                                   index={index}
+                                  total_devices={stock.length}
+                                  search_serial_number={search_serial}
                                 />
                               )
                             );
@@ -377,6 +415,8 @@ const Inventory: FC = (): ReactElement => {
                                 tabValue={tabValue}
                                 key={index}
                                 index={index}
+                                total_devices={deployed.length}
+                                search_serial_number={search_serial}
                               />
                             )
                           );
@@ -442,6 +482,8 @@ const Inventory: FC = (): ReactElement => {
                                 key={index}
                                 clientData={clientData}
                                 index={index}
+                                total_devices={inprogress.length}
+                                search_serial_number={search_serial}
                               />
                             )
                           );
