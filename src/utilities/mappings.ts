@@ -157,7 +157,7 @@ const connectionMappings: any = {
   "Hidden Road": ["Google", "Username Password"],
   "Intersect Power": ["Username Password"],
   NurseDash: ["Google", "Username Password"],
-  Roivant: ["Username Password"],
+  Roivant: ["Microsoft", "Google", "Username Password"],
 };
 
 export {
