@@ -89,20 +89,20 @@ const OrderItem = (props: OrderProps) => {
   const orderStatus = () => {
     if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "Order Received";
-    } else if (shipping_status === "Incomplete") {
-      return "Shipped";
     } else if (
       shipping_status === "Completed" ||
       shipping_status === "Complete"
     ) {
       return "Completed";
+    } else {
+      return shipping_status;
     }
   };
 
   const statusBgColor = () => {
     if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "#FFF8EF";
-    } else if (shipping_status === "Incomplete") {
+    } else if (shipping_status === "Shipped") {
       return "#ECE7F1";
     } else if (
       shipping_status === "Completed" ||
@@ -115,7 +115,7 @@ const OrderItem = (props: OrderProps) => {
   const statusTextColor = () => {
     if (anyTrackingNumbers() === "" && shipping_status === "Incomplete") {
       return "#DC282A";
-    } else if (shipping_status === "Incomplete") {
+    } else if (shipping_status === "Shipped") {
       return "#6A37E8";
     } else if (
       shipping_status === "Completed" ||

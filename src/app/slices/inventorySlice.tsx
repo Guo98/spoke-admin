@@ -35,7 +35,8 @@ const splitInventory = (
       individual.status === "Offboard" ||
       individual.status === "Returning" ||
       individual.status === "Top Up" ||
-      individual.status === "In Progress"
+      individual.status === "In Progress" ||
+      individual.status == "Shipping"
   );
 
   let tempInStock = { ...device };
