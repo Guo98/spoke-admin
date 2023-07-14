@@ -189,7 +189,7 @@ function App() {
               display={{ sm: "block", md: "flex" }}
               sx={{ overflowX: "hidden" }}
             >
-              {window.location.pathname.substring(1) !== "logout" && (
+              {/* {window.location.pathname.substring(1) !== "logout" && (
                 <>
                   <BrowserRouter>
                     <Box
@@ -204,9 +204,9 @@ function App() {
               <Box
                 component="main"
                 sx={{ flexGrow: 1, paddingBottom: "125px" }}
-              >
-                <RouterProvider router={AppContainer} />
-              </Box>
+              > */}
+              <RouterProvider router={AppContainer} />
+              {/* </Box> */}
             </Box>
           </div>
         )}

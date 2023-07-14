@@ -15,7 +15,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useAuth0 } from "@auth0/auth0-react";
 import * as FileSaver from "file-saver";
 import { Buffer } from "buffer";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -41,6 +41,7 @@ function a11yProps(index: number) {
 
 const Inventory: FC = (): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const data = useSelector((state: RootState) => state.inventory.data);
   const pendingRedux = useSelector(
     (state: RootState) => state.inventory.pending
@@ -188,8 +189,10 @@ const Inventory: FC = (): ReactElement => {
       setSearchSerial(searchParams.get("sn")!);
     } else {
       setSearchSerial("");
+      searchFilter("");
+      setTabValue(0);
     }
-  }, [searchParams]);
+  }, [searchParams, location.pathname]);
 
   useEffect(() => {
     if (!filtered) {

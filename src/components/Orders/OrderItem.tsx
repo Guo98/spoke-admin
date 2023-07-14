@@ -203,10 +203,16 @@ const OrderItem = (props: OrderProps) => {
               </>
             )}
           </Grid>
-          <Grid item md={5}>
+          <Grid item md={5} zeroMinWidth>
             {!expanded && (
               <>
-                <Typography fontWeight="bold">{laptopName}</Typography>
+                <Typography
+                  fontWeight="bold"
+                  noWrap
+                  sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
+                >
+                  {laptopName}
+                </Typography>
                 <Typography>{serial_number}</Typography>
               </>
             )}
@@ -318,6 +324,7 @@ const OrderItem = (props: OrderProps) => {
                                   "/inventory?sn=" + item.serial_number
                                 )
                               }
+                              aria-label="Go to selected device on inventory tab"
                             >
                               {item.name}
                             </Link>
