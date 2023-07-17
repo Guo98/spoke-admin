@@ -102,7 +102,14 @@ const navMappings: any = {
   ],
   FLYR: ["Orders", "Inventory", "Storefront"],
   Roivant: {
-    admin: ["Orders", "Inventory", "Marketplace", "Approvals", "Invite"],
+    admin: [
+      "Orders",
+      "Inventory",
+      "Storefront",
+      "Marketplace",
+      "Approvals",
+      "Invite",
+    ],
     manager: ["Invite"],
   },
 };
