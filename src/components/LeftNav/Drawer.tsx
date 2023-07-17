@@ -324,7 +324,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             setOpen(true);
           }
         } else if (clientData === "Roivant") {
-          window.open("https://withspoke.com/roivant-m", "_blank");
+          window.open("https://withspoke.com/roivant-ab", "_blank");
         } else {
           setOpen(true);
         }
