@@ -110,7 +110,7 @@ const navMappings: any = {
       "Approvals",
       "Invite",
     ],
-    manager: ["Invite"],
+    manager: ["Invite", "Storefront"],
   },
 };
 
