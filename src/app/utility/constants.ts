@@ -3,5 +3,5 @@ export const entityMappings: any = {
   Public: ["All", "Public Company 1", "Public Company 2"],
   FLYR: ["All", "FLYR USA", "FLYR Poland", "FLYR EU", "FLYR AUS", "Pribas EU"],
   "Flo Health": ["All", "UK", "Lithuania", "Netherlands"],
-  Roivant: ["Televant"],
+  Roivant: ["Telavant"],
 };
