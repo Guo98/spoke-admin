@@ -159,13 +159,17 @@ const OrderItem = (props: OrderProps) => {
     if (itemFilter.length > 0) {
       setLaptopName(itemFilter[0].name);
       setLaptopTracking(itemFilter[0].tracking_number[0]);
-      if (itemFilter[0].serial_number) setSN(itemFilter[0].serial_number);
+      if (itemFilter[0].serial_number) {
+        setSN(itemFilter[0].serial_number);
+      } else {
+        setSN("");
+      }
     } else {
       setLaptopName("");
       setLaptopTracking("");
       setSN("");
     }
-  }, [items]);
+  }, [items, clientui]);
 
   const getCourierHost = (courier: string, tracking_number: string) => {
     if (courier === "fedex") {
