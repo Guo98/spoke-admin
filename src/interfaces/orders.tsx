@@ -37,6 +37,8 @@ export interface Item {
   courier?: string;
   serial_number?: string;
   date_shipped?: string;
+  delivery_status?: string;
+  laptop_name?: string;
 }
 
 interface Variant {

@@ -72,7 +72,7 @@ const Inventory: FC = (): ReactElement => {
   const [ogstock, setOGStock] = useState(data);
   const [ogdeployed, setOGDeployed] = useState(data);
   const [openAdd, setOpenAdd] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [inprogTotal, setInprogTotal] = useState(0);
   const [deployedTotal, setDeployedTotal] = useState(0);
   const [stockTotal, setStockTotal] = useState(0);
@@ -88,6 +88,7 @@ const Inventory: FC = (): ReactElement => {
     clientData === "spokeops" ? selectedClientData : clientData;
 
   const fetchData = async () => {
+    setLoading(true);
     let client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
     const inventoryResult = await getInventory(
@@ -99,10 +100,11 @@ const Inventory: FC = (): ReactElement => {
     if (selectedEntity !== "") {
       dispatch(filterInventoryByEntity(selectedEntity));
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (loading) {
+    if (!loading) {
       fetchData().catch(console.error);
     }
   }, [clientData]);

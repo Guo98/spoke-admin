@@ -78,6 +78,7 @@ const Orders = () => {
   }, [searchParams, isLoading, isAuthenticated]);
 
   const fetchData = async () => {
+    setLoading(true);
     const accessToken = await getAccessTokenSilently();
     let client = clientData === "spokeops" ? selectedClientData : clientData;
 
@@ -91,6 +92,7 @@ const Orders = () => {
     if (selectedEntity !== "") {
       dispatch(filterEntity(selectedEntity));
     }
+    setLoading(false);
   };
 
   useEffect(() => {
