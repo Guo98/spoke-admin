@@ -250,7 +250,7 @@ const OrderItem = (props: OrderProps) => {
         }}
         id={"order-accordiondetails-" + index}
       >
-        <Card sx={{ ml: 3, mb: 2, borderRadius: "10px" }}>
+        <Card sx={{ mb: 2, borderRadius: "10px" }}>
           <CardContent>
             <Stack direction="column" spacing={1}>
               <Typography fontWeight="bold">
@@ -287,149 +287,146 @@ const OrderItem = (props: OrderProps) => {
                   </Typography>
                 </Typography>
               )}
+              {(items[0].name === "Offboarding" ||
+                items[0].name === "Returning") && (
+                <>
+                  {items[0].laptop_name && (
+                    <Typography fontWeight="bold">
+                      Returned Device:{" "}
+                      <Typography display="inline" component="span">
+                        {items[0].laptop_name}
+                      </Typography>
+                    </Typography>
+                  )}
+                  {items[0].serial_number && (
+                    <Typography fontWeight="bold" sx={{ textIndent: "30px" }}>
+                      - Device Serial Number:{" "}
+                      <Typography display="inline" component="span">
+                        {items[0].serial_number}
+                      </Typography>
+                    </Typography>
+                  )}
+                </>
+              )}
             </Stack>
           </CardContent>
         </Card>
-        <Grid
-          container
-          justifyContent="space-evenly"
-          sx={{ paddingLeft: 3 }}
-          alignItems="center"
-        >
-          <Grid item xs={10}>
-            <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
-              <Table aria-label="items table">
-                <TableHead>
-                  <TableRow>
+        <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
+          <Table aria-label="items table">
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography fontWeight="bold">Item</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold">Quantity</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold" align="right">
+                    Price
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold" align="right">
+                    Tracking Number
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold" align="right">
+                    Courier
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold" align="right">
+                    Delivery Status
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {items.map((item, index) => {
+                return (
+                  <TableRow hover>
                     <TableCell>
-                      <Typography fontWeight="bold">Item</Typography>
+                      {item.serial_number ? (
+                        <Link
+                          onClick={() =>
+                            AppContainer.navigate(
+                              "/inventory?sn=" + item.serial_number
+                            )
+                          }
+                          aria-label="Go to selected device on inventory tab"
+                        >
+                          {item.name}
+                        </Link>
+                      ) : (
+                        item.name
+                      )}
                     </TableCell>
-                    <TableCell>
-                      <Typography fontWeight="bold">Quantity</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography fontWeight="bold" align="right">
-                        Price
+                    <TableCell>{item.quantity || 1}</TableCell>
+                    <TableCell align="right">
+                      <Typography>
+                        $
+                        {item.price.toString().indexOf(".") > -1
+                          ? item.price
+                          : item.price + ".00"}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography fontWeight="bold" align="right">
-                        Tracking Number
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography fontWeight="bold" align="right">
-                        Courier
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {items.map((item, index) => {
-                    return (
-                      <TableRow hover>
-                        <TableCell>
-                          {item.serial_number ? (
-                            <Link
-                              onClick={() =>
-                                AppContainer.navigate(
-                                  "/inventory?sn=" + item.serial_number
-                                )
-                              }
-                              aria-label="Go to selected device on inventory tab"
-                            >
-                              {item.name}
-                            </Link>
-                          ) : (
-                            item.name
-                          )}
-                        </TableCell>
-                        <TableCell>{item.quantity || 1}</TableCell>
-                        <TableCell align="right">
-                          <Typography>
-                            $
-                            {item.price.toString().indexOf(".") > -1
-                              ? item.price
-                              : item.price + ".00"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          {item.tracking_number.length > 0 &&
-                          item.courier &&
-                          getCourierHost(
+                    <TableCell align="right">
+                      {item.tracking_number.length > 0 &&
+                      item.courier &&
+                      getCourierHost(
+                        item.courier.toLowerCase(),
+                        item.tracking_number[0]
+                      ) !== "" ? (
+                        <Link
+                          href={getCourierHost(
                             item.courier.toLowerCase(),
                             item.tracking_number[0]
-                          ) !== "" ? (
-                            <Link
-                              href={getCourierHost(
-                                item.courier.toLowerCase(),
-                                item.tracking_number[0]
-                              )}
-                              aria-label="Tracking link that'll open in a new page"
-                              target="_blank"
-                            >
-                              {item.tracking_number}
-                            </Link>
-                          ) : (
-                            item.tracking_number
                           )}
-                        </TableCell>
-                        <TableCell align="right">{item.courier}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-          <Grid item xs={2}>
-            <Box display="flex" justifyContent="flex-end">
-              {clientui !== "spokeops" ? (
-                <ManageOrder
-                  order_no={orderNo}
-                  name={full_name}
-                  items={items}
-                  email={email}
-                  order={true}
-                />
-              ) : (
-                <>
-                  <Stack direction="column" spacing={2}>
-                    <OperationsManage {...props} />
-                    <DeleteModal
-                      id={props.id}
-                      client={props.client}
-                      full_name={props.full_name}
-                    />
-                  </Stack>
-                </>
-              )}
-            </Box>
-            {anyTrackingNumbers() !== "" && (
-              <Box
-                display="flex"
-                justifyContent="flex-end"
-                sx={{ marginTop: "15px" }}
-              >
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    width: "116px",
-                    borderRadius: "999em 999em 999em 999em",
-                    textTransform: "none",
-                  }}
-                  href={
-                    "https://withspoke.aftership.com/" + anyTrackingNumbers()
-                  }
-                  target="_blank"
-                >
-                  Track
-                </Button>
-              </Box>
-            )}
-          </Grid>
-        </Grid>
+                          aria-label="Tracking link that'll open in a new page"
+                          target="_blank"
+                        >
+                          {item.tracking_number}
+                        </Link>
+                      ) : (
+                        item.tracking_number
+                      )}
+                    </TableCell>
+                    <TableCell align="right">{item.courier}</TableCell>
+                    <TableCell align="right">{item.delivery_status}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-evenly"
+          sx={{ pt: 2 }}
+        >
+          {clientui !== "spokeops" ? (
+            <ManageOrder
+              order_no={orderNo}
+              name={full_name}
+              items={items}
+              email={email}
+              order={true}
+            />
+          ) : (
+            <>
+              <OperationsManage {...props} />
+              <DeleteModal
+                id={props.id}
+                client={props.client}
+                full_name={props.full_name}
+              />
+            </>
+          )}
+        </Stack>
       </AccordionDetails>
     </Accordion>
   );
