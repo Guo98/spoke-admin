@@ -30,7 +30,15 @@ const style = {
   justifyContent: "space-evenly",
 };
 
+const sortOrder: any = {
+  Completed: 3,
+  Complete: 3,
+  Shipped: 2,
+  Incomplete: 1,
+};
+
 const Orders = () => {
+  const [searchParams] = useSearchParams();
   const data = useSelector((state: RootState) => state.orders.data);
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -50,8 +58,6 @@ const Orders = () => {
   const [filtered, setFiltered] = useState(false);
 
   const dispatch = useDispatch();
-
-  const [searchParams] = useSearchParams();
 
   const {
     getAccessTokenSilently,
@@ -127,9 +133,22 @@ const Orders = () => {
         data.in_progress!,
         data.completed!
       );
+
       setInprog([...data.in_progress!].reverse());
       setCompleted([...data.completed!].reverse());
-      setAll(combinedOrders.sort((a, b) => b.orderNo - a.orderNo));
+
+      setAll(
+        // @ts-ignore
+        combinedOrders.sort((a, b) => {
+          if (sortOrder[a.shipping_status] < sortOrder[b.shipping_status])
+            return -1;
+          if (sortOrder[a.shipping_status] > sortOrder[b.shipping_status])
+            return 1;
+
+          if (a.orderNo > b.orderNo) return -1;
+          if (a.orderNo < b.orderNo) return 1;
+        })
+      );
     }
   }, [loading, data]);
 

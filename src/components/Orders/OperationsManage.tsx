@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Button,
@@ -35,6 +35,7 @@ const style = {
   boxShadow: 24,
   p: 4,
   borderRadius: "20px",
+  width: "75%",
 };
 
 interface OperationsOrder extends Order {}
@@ -50,6 +51,16 @@ const OperationsManage = (props: OperationsOrder) => {
   let tempItems = JSON.parse(JSON.stringify(items));
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [updateShippingStatus, setShippingStatus] = useState(shipping_status);
+  const [loading, setLoading] = useState(false);
+  const [laptopIndex, setLaptopIndex] = useState(-1);
+
+  useEffect(() => {
+    const laptopFilter = items.findIndex((item) => item.type === "laptop");
+    if (laptopFilter > -1) {
+      setLaptopIndex(laptopFilter);
+    }
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -59,6 +70,7 @@ const OperationsManage = (props: OperationsOrder) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const saveTrackingNumbers = async () => {
+    setLoading(true);
     if (JSON.stringify(tempItems) !== JSON.stringify(items)) {
       const accessToken = await getAccessTokenSilently();
       const bodyObj = {
@@ -84,21 +96,16 @@ const OperationsManage = (props: OperationsOrder) => {
         dispatch(updateOrders(ordersResult.data));
       }
     }
-
+    setLoading(false);
     setEdit(false);
   };
 
   const completeOrder = async () => {
+    setLoading(true);
     const accessToken = await getAccessTokenSilently();
     const bodyObj = { ...props };
-    if (
-      bodyObj.shipping_status === "Completed" ||
-      bodyObj.shipping_status === "Complete"
-    ) {
-      bodyObj.shipping_status = "Incomplete";
-    } else {
-      bodyObj.shipping_status = "Complete";
-    }
+
+    bodyObj.shipping_status = updateShippingStatus;
 
     const completeOrderResp = await postOrder(
       "completeOrder",
@@ -115,10 +122,15 @@ const OperationsManage = (props: OperationsOrder) => {
       );
       dispatch(updateOrders(ordersResult.data));
     }
+    setLoading(false);
   };
 
   const handleChange = (event: SelectChangeEvent, index: number) => {
     tempItems[index].courier = event.target.value;
+  };
+
+  const handleStatusChange = (event: SelectChangeEvent) => {
+    setShippingStatus(event.target.value);
   };
 
   return (
@@ -127,8 +139,6 @@ const OperationsManage = (props: OperationsOrder) => {
         variant="contained"
         sx={{
           borderRadius: "999em 999em 999em 999em",
-          height: "32px",
-          width: "116px",
           textTransform: "none",
         }}
         onClick={() => setOpen(true)}
@@ -140,7 +150,10 @@ const OperationsManage = (props: OperationsOrder) => {
           <Typography component="h4" textAlign="center">
             Manage Order
           </Typography>
-          <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
+          <TableContainer
+            component={Paper}
+            sx={{ borderRadius: "10px", mt: 2 }}
+          >
             <Table aria-label="items table">
               <TableHead>
                 <TableRow>
@@ -191,7 +204,7 @@ const OperationsManage = (props: OperationsOrder) => {
                           </Typography>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="right">
                         {edit ? (
                           <TextField
                             size="small"
@@ -210,7 +223,7 @@ const OperationsManage = (props: OperationsOrder) => {
                           item.tracking_number
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="right">
                         {edit ? (
                           <>
                             <FormControl fullWidth size="small">
@@ -239,6 +252,34 @@ const OperationsManage = (props: OperationsOrder) => {
               </TableBody>
             </Table>
           </TableContainer>
+          {laptopIndex !== -1 && (
+            <TextField
+              sx={{ mt: 2 }}
+              label="Device Serial Number"
+              fullWidth
+              size="small"
+              onChange={(e) =>
+                (tempItems[laptopIndex].serial_number = e.target.value)
+              }
+              defaultValue={tempItems[laptopIndex].serial_number}
+              disabled={!edit}
+            />
+          )}
+          <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+            <InputLabel>Shipping Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              defaultValue={shipping_status}
+              value={updateShippingStatus}
+              label="Shipping Status"
+              onChange={(e) => handleStatusChange(e)}
+            >
+              <MenuItem value="Completed">Completed</MenuItem>
+              <MenuItem value="Shipped">Shipped</MenuItem>
+              <MenuItem value="Incomplete">Incomplete</MenuItem>
+            </Select>
+          </FormControl>
           <Grid
             container
             spacing={2}
@@ -252,7 +293,7 @@ const OperationsManage = (props: OperationsOrder) => {
                 fullWidth
                 variant="contained"
                 onClick={() => setEdit(true)}
-                disabled={edit}
+                disabled={edit || loading}
               >
                 Edit
               </Button>
@@ -262,17 +303,19 @@ const OperationsManage = (props: OperationsOrder) => {
                 fullWidth
                 variant="contained"
                 onClick={saveTrackingNumbers}
-                disabled={!edit}
+                disabled={!edit || loading}
               >
                 Save
               </Button>
             </Grid>
             <Grid item md={4}>
-              <Button fullWidth variant="contained" onClick={completeOrder}>
-                {shipping_status === "Completed" ||
-                shipping_status === "Complete"
-                  ? "Mark Shipped"
-                  : "Mark Complete"}
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={completeOrder}
+                disabled={loading}
+              >
+                Update Status
               </Button>
             </Grid>
           </Grid>
