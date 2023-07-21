@@ -60,7 +60,7 @@ const OperationsManage = (props: OperationsOrder) => {
     if (laptopFilter > -1) {
       setLaptopIndex(laptopFilter);
     }
-  }, []);
+  }, [items]);
 
   const handleClose = () => {
     setOpen(false);
