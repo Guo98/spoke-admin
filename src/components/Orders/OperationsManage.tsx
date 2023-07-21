@@ -261,7 +261,7 @@ const OperationsManage = (props: OperationsOrder) => {
               onChange={(e) =>
                 (tempItems[laptopIndex].serial_number = e.target.value)
               }
-              defaultValue={tempItems[laptopIndex].serial_number}
+              defaultValue={tempItems[laptopIndex].serial_number || ""}
               disabled={!edit}
             />
           )}
