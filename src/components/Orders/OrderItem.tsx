@@ -69,7 +69,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 const OrderItem = (props: OrderProps) => {
   const {
     orderNo,
-    address: { subdivision, country },
+    address,
     items,
     email,
     shipping_status,
@@ -210,9 +210,9 @@ const OrderItem = (props: OrderProps) => {
             {!expanded && (
               <>
                 <Typography>{date}</Typography>
-                {props.address && (
+                {address && (
                   <Typography>
-                    {subdivision}, {country}
+                    {address.subdivision}, {address.country}
                   </Typography>
                 )}
               </>
@@ -278,12 +278,14 @@ const OrderItem = (props: OrderProps) => {
                   {date}
                 </Typography>
               </Typography>
-              <Typography fontWeight="bold">
-                Order Location:{" "}
-                <Typography display="inline" component="span">
-                  {subdivision}, {country}
+              {address && (
+                <Typography fontWeight="bold">
+                  Order Location:{" "}
+                  <Typography display="inline" component="span">
+                    {address.subdivision}, {address.country}
+                  </Typography>
                 </Typography>
-              </Typography>
+              )}
               <Typography fontWeight="bold">
                 Employee Email:{" "}
                 <Typography display="inline" component="span">
