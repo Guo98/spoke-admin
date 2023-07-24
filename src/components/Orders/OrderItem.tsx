@@ -81,6 +81,7 @@ const OrderItem = (props: OrderProps) => {
 
   const [laptopName, setLaptopName] = useState("");
   const [laptopTracking, setLaptopTracking] = useState("");
+  const [returnedLaptop, setReturnedLaptop] = useState(items[0].laptop_name);
   const [serial_number, setSN] = useState("");
   const [expanded, setExpanded] = useState(false);
 
@@ -209,23 +210,41 @@ const OrderItem = (props: OrderProps) => {
             {!expanded && (
               <>
                 <Typography>{date}</Typography>
-                <Typography>
-                  {subdivision}, {country}
-                </Typography>
+                {props.address && (
+                  <Typography>
+                    {subdivision}, {country}
+                  </Typography>
+                )}
               </>
             )}
           </Grid>
           <Grid item md={5} zeroMinWidth>
             {!expanded && (
               <>
-                <Typography
-                  fontWeight="bold"
-                  noWrap
-                  sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
-                >
-                  {laptopName}
-                </Typography>
-                <Typography>{serial_number}</Typography>
+                {laptopName !== "" && (
+                  <>
+                    <Typography
+                      fontWeight="bold"
+                      noWrap
+                      sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
+                    >
+                      {laptopName}
+                    </Typography>
+                    <Typography>{serial_number}</Typography>
+                  </>
+                )}
+                {returnedLaptop && (
+                  <>
+                    <Typography
+                      fontWeight="bold"
+                      noWrap
+                      sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
+                    >
+                      {returnedLaptop}
+                    </Typography>
+                    <Typography>{items[0].serial_number}</Typography>
+                  </>
+                )}
               </>
             )}
           </Grid>
