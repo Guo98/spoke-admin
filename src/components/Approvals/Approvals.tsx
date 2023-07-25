@@ -313,7 +313,7 @@ const Approvals = () => {
       setLoading(true);
       getOrders().catch();
     }
-  }, [client]);
+  }, [client, selectedClient]);
 
   const handleTextChange = (text: string) => {
     const lowerCaseText = text.toLowerCase();
