@@ -24,10 +24,11 @@ import { resetData } from "../../services/inventoryAPI";
 
 interface ProfileProps {
   mobile: boolean;
+  showAll?: boolean;
 }
 
 const Profile = (props: ProfileProps) => {
-  const { mobile } = props;
+  const { mobile, showAll } = props;
   const { isAuthenticated, user, logout, getAccessTokenSilently } = useAuth0();
   const [username, setUsername] = useState<string | undefined>("");
   const [userpic, setPic] = useState<string | undefined>("");
@@ -146,6 +147,7 @@ const Profile = (props: ProfileProps) => {
                   <MenuItem value="Automox">Automox</MenuItem>
                   <MenuItem value="Flo Health">Flo Health</MenuItem>
                   <MenuItem value="Roivant">Roivant</MenuItem>
+                  {showAll && <MenuItem value="All">All</MenuItem>}
                 </Select>
               </FormControl>
             )}

@@ -446,6 +446,9 @@ const PurchaseModal = (props: PurchaseProps) => {
                             );
                           }
                         )}
+                      {brand === "Others" && (
+                        <MenuItem value="United States">United States</MenuItem>
+                      )}
                       <MenuItem value="Other">Other</MenuItem>
                     </Select>
                   </FormControl>

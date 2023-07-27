@@ -41,7 +41,7 @@ const Marketplace = () => {
 
   const getProducts = async () => {
     const accessToken = await getAccessTokenSilently();
-    const productRes = await getInventory(accessToken, "Marketplace");
+    // const productRes = await getInventory(accessToken, "Marketplace");
     const marketplaceRes = await standardGet(
       accessToken,
       "getmarketplaceinventory/" + marketClient

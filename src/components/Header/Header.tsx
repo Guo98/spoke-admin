@@ -17,6 +17,7 @@ import "./Header.css";
 interface HeaderProps {
   label: string;
   textChange: Function;
+  showAll?: boolean;
 }
 
 const Header = (props: HeaderProps): ReactElement => {
@@ -115,7 +116,7 @@ const Header = (props: HeaderProps): ReactElement => {
         <Hidden mdDown>
           <Grid item md={3}>
             <Box display="flex" justifyContent="flex-end">
-              <Profile mobile={false} />
+              <Profile mobile={false} showAll={props.showAll} />
             </Box>
           </Grid>
         </Hidden>

@@ -27,7 +27,10 @@ export const ordersSlice = createSlice({
 
       if (action.payload.completed && action.payload.completed.length > 0) {
         action.payload.completed.forEach((order) => {
-          if (order.shipping_status === "Incomplete") {
+          if (
+            order.shipping_status !== "Complete" &&
+            order.shipping_status !== "Completed"
+          ) {
             in_progress.push(order);
           } else {
             completed.push(order);

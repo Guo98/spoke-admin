@@ -240,7 +240,7 @@ const OrderItem = (props: OrderProps) => {
                       noWrap
                       sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
                     >
-                      {returnedLaptop}
+                      Returned Device: {returnedLaptop}
                     </Typography>
                     <Typography>{items[0].serial_number}</Typography>
                   </>

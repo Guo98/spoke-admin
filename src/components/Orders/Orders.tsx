@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Tabs, Tab, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Tabs,
+  Tab,
+  IconButton,
+  Typography,
+  Chip,
+  Stack,
+} from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -37,6 +45,14 @@ const sortOrder: any = {
   Incomplete: 1,
 };
 
+const sortOrders = (a: Order, b: Order) => {
+  if (sortOrder[a.shipping_status] < sortOrder[b.shipping_status]) return -1;
+  if (sortOrder[a.shipping_status] > sortOrder[b.shipping_status]) return 1;
+
+  if (a.orderNo > b.orderNo) return -1;
+  if (a.orderNo < b.orderNo) return 1;
+};
+
 const Orders = () => {
   const [searchParams] = useSearchParams();
   const data = useSelector((state: RootState) => state.orders.data);
@@ -56,6 +72,8 @@ const Orders = () => {
   const [inprog, setInprog] = useState<Order[]>([]);
   const [completed, setCompleted] = useState<Order[]>([]);
   const [filtered, setFiltered] = useState(false);
+  const [ordertypes, setOrderTypes] = useState<string[]>([]);
+  const [chip, setChip] = useState("");
 
   const dispatch = useDispatch();
 
@@ -139,16 +157,31 @@ const Orders = () => {
 
       setAll(
         // @ts-ignore
-        combinedOrders.sort((a, b) => {
-          if (sortOrder[a.shipping_status] < sortOrder[b.shipping_status])
-            return -1;
-          if (sortOrder[a.shipping_status] > sortOrder[b.shipping_status])
-            return 1;
-
-          if (a.orderNo > b.orderNo) return -1;
-          if (a.orderNo < b.orderNo) return 1;
-        })
+        combinedOrders.sort(sortOrders)
       );
+
+      let orderTypes = [] as string[];
+
+      combinedOrders.filter((o) => {
+        if (
+          orderTypes.indexOf("Laptop") < 0 &&
+          o.items.filter((i) => i.type === "laptop").length > 0
+        ) {
+          orderTypes.push("Laptop");
+        } else if (
+          orderTypes.indexOf("Offboarding") < 0 &&
+          o.items[0].name === "Offboarding"
+        ) {
+          orderTypes.push("Offboarding");
+        } else if (
+          orderTypes.indexOf("Returning") < 0 &&
+          o.items[0].name === "Returning"
+        ) {
+          orderTypes.push("Returning");
+        }
+      });
+
+      setOrderTypes(orderTypes);
     }
   }, [loading, data]);
 
@@ -196,9 +229,12 @@ const Orders = () => {
         data.completed!
       );
 
-      setAll(combinedOrders.sort((a, b) => b.orderNo - a.orderNo));
-      setInprog(data.in_progress!.sort((a, b) => b.orderNo - a.orderNo));
-      setCompleted(data.completed!.sort((a, b) => b.orderNo - a.orderNo));
+      setAll(
+        // @ts-ignore
+        combinedOrders.sort(sortOrders)
+      );
+      setInprog([...data.in_progress!].sort((a, b) => b.orderNo - a.orderNo));
+      setCompleted([...data.completed!].sort((a, b) => b.orderNo - a.orderNo));
     }
   };
 
@@ -207,10 +243,13 @@ const Orders = () => {
       (order) =>
         order.orderNo.toString().indexOf(text) > -1 ||
         order.full_name?.toLowerCase().indexOf(text) > -1 ||
-        order.address.country?.toLowerCase().indexOf(text) > -1 ||
-        order.address.subdivision?.toLowerCase().indexOf(text) > -1 ||
+        (order.address &&
+          order.address.formatted &&
+          order.address.formatted?.toLowerCase().indexOf(text) > -1) ||
         order.items.filter(
-          (item) => item.name?.toLowerCase().indexOf(text) > -1
+          (item) =>
+            item.name?.toLowerCase().indexOf(text) > -1 ||
+            (item.type && item.type?.toLowerCase().indexOf(text) > -1)
         ).length > 0
     );
   };
@@ -221,6 +260,7 @@ const Orders = () => {
         <Header
           label="Search Orders by order number, name, item, location"
           textChange={searchBar}
+          showAll={true}
         />
         <h2>
           Orders{" "}
@@ -228,6 +268,29 @@ const Orders = () => {
             <FileDownloadIcon />
           </IconButton>
         </h2>
+        {ordertypes.length > 0 && (
+          <Stack direction="row" spacing={2}>
+            {ordertypes.map((ot) => (
+              <Chip
+                clickable
+                label={ot}
+                onClick={() => {
+                  searchBar(ot);
+                  setChip(ot);
+                }}
+                onDelete={
+                  ot === chip
+                    ? () => {
+                        searchBar("");
+                        setChip("");
+                      }
+                    : undefined
+                }
+                variant={ot === chip ? "filled" : "outlined"}
+              />
+            ))}
+          </Stack>
+        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}

@@ -346,9 +346,9 @@ const MarketRow = (props: RowProps) => {
                       defaultValue={order.status}
                       onChange={handleChange}
                     >
-                      <MenuItem value="Received">Received</MenuItem>
                       <MenuItem value="In Progress">In Progress</MenuItem>
-                      <MenuItem value="Completed">Completed</MenuItem>
+                      <MenuItem value="Approved">Approved</MenuItem>
+                      <MenuItem value="Rejected">Rejected</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
