@@ -135,15 +135,24 @@ const QuoteRow = (props: QuoteProps) => {
             (specs ? " " + specs : "")
           }
         />
-        <FormattedCell
-          text={
-            status === "Completed" || status === "In Progress"
-              ? props.approved
-                ? "Approved"
-                : "Rejected"
-              : status
-          }
-        />
+        <TableCell>
+          <Chip
+            label={
+              status === "Completed" || status === "In Progress"
+                ? props.approved
+                  ? "Approved"
+                  : "Rejected"
+                : status
+            }
+            color={
+              status === "Completed" || status === "In Progress"
+                ? props.approved
+                  ? "success"
+                  : "error"
+                : "warning"
+            }
+          />
+        </TableCell>
       </TableRow>
       {(props.quote || props.quote_price) && (
         <TableRow>

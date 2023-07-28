@@ -79,6 +79,8 @@ const Approvals = () => {
     }
   }, [client, selectedClient]);
 
+  useEffect(() => {}, [dateFilter]);
+
   const handleTextChange = (text: string) => {
     dispatch(filterApprovals(text));
   };
@@ -90,7 +92,7 @@ const Approvals = () => {
   return (
     <Box sx={{ width: "94%", paddingLeft: "3%" }}>
       <Header
-        label={"Search for Approvals by requested items, names"}
+        label={"Search Approvals by requested items, names"}
         textChange={handleTextChange}
       />
       <Stack
@@ -102,7 +104,7 @@ const Approvals = () => {
         <Typography>
           <h2>Approvals</h2>
         </Typography>
-        <FormControl size="small">
+        <FormControl size="small" variant="standard">
           <InputLabel id="date-select-label">Approvals From</InputLabel>
           <Select
             labelId="date-select-label"

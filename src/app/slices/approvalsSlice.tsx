@@ -16,7 +16,7 @@ export const approvalsSlice = createSlice({
   initialState: initialState,
   reducers: {
     setApprovals: (state, action: PayloadAction<any[]>) => {
-      state.data = action.payload;
+      state.data = action.payload.reverse();
       let date = new Date(new Date().setDate(new Date().getDate() - 30));
       let defaultFilter = action.payload.filter(
         (appr) => new Date(appr.date) > date

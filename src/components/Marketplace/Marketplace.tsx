@@ -40,13 +40,15 @@ const Marketplace = () => {
   const [modalimg, setImg] = useState("");
 
   const getProducts = async () => {
-    const accessToken = await getAccessTokenSilently();
-    // const productRes = await getInventory(accessToken, "Marketplace");
-    const marketplaceRes = await standardGet(
-      accessToken,
-      "getmarketplaceinventory/" + marketClient
-    );
-    dispatch(addProducts(marketplaceRes.data));
+    if (marketClient) {
+      const accessToken = await getAccessTokenSilently();
+      // const productRes = await getInventory(accessToken, "Marketplace");
+      const marketplaceRes = await standardGet(
+        accessToken,
+        "getmarketplaceinventory/" + marketClient
+      );
+      dispatch(addProducts(marketplaceRes.data));
+    }
   };
 
   useEffect(() => {
@@ -54,7 +56,7 @@ const Marketplace = () => {
       getProducts().catch();
       setLoading(true);
     }
-  }, [loading]);
+  }, [loading, selectedClient, client]);
 
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
@@ -135,7 +137,8 @@ const Marketplace = () => {
             clickable
             onClick={() => chipFilter("")}
           />
-          {productRedux.length > 0 &&
+          {productRedux &&
+            productRedux.length > 0 &&
             productRedux.map((prod, index) => {
               if (!prod.hide)
                 return (
@@ -167,6 +170,7 @@ const Marketplace = () => {
           }}
         >
           {pagenumber === 0 &&
+            productRedux &&
             productRedux.length > 0 &&
             productRedux.map((product, index) => {
               if (
