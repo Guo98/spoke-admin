@@ -3,7 +3,6 @@ import { Box, Typography, Grid, Chip, Stack, Button } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProducts } from "../../app/slices/inventorySlice";
-import { getInventory } from "../../services/inventoryAPI";
 import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
 import {
@@ -42,7 +41,7 @@ const Marketplace = () => {
   const getProducts = async () => {
     if (marketClient) {
       const accessToken = await getAccessTokenSilently();
-      // const productRes = await getInventory(accessToken, "Marketplace");
+
       const marketplaceRes = await standardGet(
         accessToken,
         "getmarketplaceinventory/" + marketClient

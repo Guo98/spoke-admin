@@ -20,7 +20,7 @@ import { updateSelectedClient } from "../../app/store";
 import { RootState } from "../../app/store";
 import "./Profile.css";
 import { ColorModeContext } from "../../utilities/color-context";
-import { resetData } from "../../services/inventoryAPI";
+import { standardGet } from "../../services/standard";
 
 interface ProfileProps {
   mobile: boolean;
@@ -118,7 +118,7 @@ const Profile = (props: ProfileProps) => {
               onClick={async () => {
                 const accessToken = await getAccessTokenSilently();
                 try {
-                  await resetData(accessToken);
+                  await standardGet(accessToken, "resetdata");
                 } catch (e) {
                   console.error("Error in resetting data");
                 }

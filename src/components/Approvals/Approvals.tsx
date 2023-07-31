@@ -20,7 +20,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { getAllMarketplace } from "../../services/ordersAPI";
+import { standardGet } from "../../services/standard";
 import Header from "../Header/Header";
 import {
   setApprovals,
@@ -54,7 +54,10 @@ const Approvals = () => {
   const getOrders = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const ordersRes = await getAllMarketplace(accessToken, marketClient);
+    const ordersRes = await standardGet(
+      accessToken,
+      "getmarketplace/" + marketClient
+    );
 
     if (ordersRes.status === "Successful") {
       dispatch(setApprovals(ordersRes.data));

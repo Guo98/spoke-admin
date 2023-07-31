@@ -20,7 +20,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAuth0 } from "@auth0/auth0-react";
 import { downloadFile } from "../../services/azureblob";
-import { postOrder } from "../../services/ordersAPI";
+import { standardPost } from "../../services/standard";
 import DenyModal from "./DenyModal";
 import FormattedCell from "../common/FormattedCell";
 
@@ -92,7 +92,11 @@ const QuoteRow = (props: QuoteProps) => {
       reason,
     };
 
-    const postResp = await postOrder("updateMarketOrder", accessToken, bodyObj);
+    const postResp = await standardPost(
+      accessToken,
+      "updateMarketOrder",
+      bodyObj
+    );
 
     if (postResp.status && postResp.status !== "Successful") {
       setError(true);

@@ -7,14 +7,15 @@ import {
   Typography,
   Chip,
   Stack,
+  LinearProgress,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
-import CircularProgress from "@mui/material/CircularProgress";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
 import * as FileSaver from "file-saver";
-import { downloadOrders, getAllOrders } from "../../services/ordersAPI";
+import { standardGet } from "../../services/standard";
+import { roleMapping } from "../../utilities/mappings";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
 import { updateOrders, filterEntity } from "../../app/slices/ordersSlice";
@@ -106,11 +107,13 @@ const Orders = () => {
     const accessToken = await getAccessTokenSilently();
     let client = clientData === "spokeops" ? selectedClientData : clientData;
 
-    const ordersResult = await getAllOrders(
-      accessToken,
-      client,
-      roles?.length > 0 ? roles[0] : ""
-    );
+    let route = "orders/" + client;
+
+    if (roles?.length > 0 && roles[0] !== "admin") {
+      route = route + "/" + roleMapping[roles[0]];
+    }
+
+    const ordersResult = await standardGet(accessToken, route);
 
     dispatch(updateOrders(ordersResult.data));
     if (selectedEntity !== "") {
@@ -192,11 +195,14 @@ const Orders = () => {
   const download = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const downloadResult = await downloadOrders(
-      accessToken,
-      clientData === "spokeops" ? selectedClientData : clientData,
-      selectedEntity
-    );
+    let route = `downloadorders/${
+      clientData === "spokeops" ? selectedClientData : clientData
+    }`;
+
+    if (selectedEntity !== "") {
+      route = route + `/${selectedEntity}`;
+    }
+    const downloadResult = await standardGet(accessToken, route);
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
@@ -328,9 +334,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <Box sx={style}>
-              <CircularProgress />
-            </Box>
+            <LinearProgress />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={1} prefix="orders">
@@ -360,9 +364,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <Box sx={style}>
-              <CircularProgress />
-            </Box>
+            <LinearProgress />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={2} prefix="orders">
@@ -392,9 +394,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <Box sx={style}>
-              <CircularProgress />
-            </Box>
+            <LinearProgress />
           )}
         </TabPanel>
       </Box>

@@ -14,7 +14,8 @@ import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
 import OffboardBody from "./OffboardBody";
 import { updateInventory } from "../../app/slices/inventorySlice";
-import { getInventory } from "../../services/inventoryAPI";
+import { standardGet } from "../../services/standard";
+import { roleMapping } from "../../utilities/mappings";
 import { InventorySummary } from "../../interfaces/inventory";
 import AssignModal from "./AssignModal";
 
@@ -82,11 +83,14 @@ const ManageModal = (props: ManageProps) => {
       const client =
         clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(
-        accessToken,
-        client,
-        roles?.length > 0 ? roles[0] : ""
-      );
+
+      let route = `inventory/${client}`;
+
+      if (roles?.length > 0 && roles[0] !== "admin") {
+        route = route + `/${roleMapping[roles[0]]}`;
+      }
+
+      const inventoryResult = await standardGet(accessToken, route);
       dispatch(updateInventory(inventoryResult.data));
     };
 

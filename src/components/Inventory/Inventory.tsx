@@ -22,7 +22,8 @@ import {
   updateInventory,
   filterInventoryByEntity,
 } from "../../app/slices/inventorySlice";
-import { download, getInventory } from "../../services/inventoryAPI";
+import { standardGet } from "../../services/standard";
+import { roleMapping } from "../../utilities/mappings";
 import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
@@ -91,11 +92,14 @@ const Inventory: FC = (): ReactElement => {
     setLoading(true);
     let client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
-    const inventoryResult = await getInventory(
-      accessToken,
-      client,
-      roles?.length > 0 ? roles[0] : ""
-    );
+
+    let route = `inventory/${client}`;
+
+    if (roles?.length > 0 && roles[0] !== "admin") {
+      route = route + `/${roleMapping[roles[0]]}`;
+    }
+
+    const inventoryResult = await standardGet(accessToken, route);
     dispatch(updateInventory(inventoryResult.data));
     if (selectedEntity !== "") {
       dispatch(filterInventoryByEntity(selectedEntity));
@@ -129,11 +133,16 @@ const Inventory: FC = (): ReactElement => {
 
   const downloadInventory = async () => {
     const accessToken = await getAccessTokenSilently();
-    const downloadResult = await download(
-      accessToken,
-      clientData === "spokeops" ? selectedClientData : clientData,
-      selectedEntity
-    );
+
+    let route = `downloadinventory/${
+      clientData === "spokeops" ? selectedClientData : clientData
+    }`;
+
+    if (selectedEntity !== "") {
+      route = route + `/${selectedEntity}`;
+    }
+
+    const downloadResult = await standardGet(accessToken, route);
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",

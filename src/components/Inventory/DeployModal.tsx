@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
-import { manageLaptop, getInventory } from "../../services/inventoryAPI";
+import { standardPost, standardGet } from "../../services/standard";
 import ConfirmationBody from "./ConfirmationBody";
 import { updateInventory } from "../../app/slices/inventorySlice";
 
@@ -138,10 +138,11 @@ const DeployModalContent = (props: DeployProps) => {
       id,
     };
     setSending(true);
-    const deployResult = await manageLaptop(
+
+    const deployResult = await standardPost(
       accessToken,
-      deployObj,
-      "deployLaptop"
+      "deployLaptop",
+      deployObj
     );
 
     if (deployResult) {
@@ -151,7 +152,11 @@ const DeployModalContent = (props: DeployProps) => {
       const client =
         clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
-      const inventoryResult = await getInventory(accessToken, client);
+
+      const inventoryResult = await standardGet(
+        accessToken,
+        `inventory/${client}`
+      );
       dispatch(updateInventory(inventoryResult.data));
     }
   };

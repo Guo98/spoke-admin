@@ -26,7 +26,7 @@ import {
   connectionMappings,
   clientRolesCode,
 } from "../../utilities/mappings";
-import { postOrder } from "../../services/ordersAPI";
+import { standardPost } from "../../services/standard";
 
 interface IUProps {
   handleClose?: Function;
@@ -80,7 +80,7 @@ const InviteUsers = (props: IUProps) => {
 
     const accessToken = await getAccessTokenSilently();
 
-    const postResp = await postOrder("invites", accessToken, inviteObj);
+    const postResp = await standardPost(accessToken, "invites", inviteObj);
 
     if (postResp.status === "Successful") {
       setLoading(false);

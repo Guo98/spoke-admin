@@ -64,9 +64,10 @@ export const ordersSlice = createSlice({
         state.data = state.originalData;
       }
     },
+    filterDate: (state, action: PayloadAction<string>) => {},
   },
 });
 
-export const { updateOrders, filterEntity } = ordersSlice.actions;
+export const { updateOrders, filterEntity, filterDate } = ordersSlice.actions;
 
 export default ordersSlice.reducer;
