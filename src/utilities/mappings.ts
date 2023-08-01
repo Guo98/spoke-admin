@@ -37,13 +37,13 @@ const roleMapping: any = {
 };
 
 const deviceLocationMappings: any = {
-  USA: ["United States", "Georgia, USA", "Nevada, USA", "Las Vegas, USA"],
+  USA: ["United States", "Georgia, USA", "Nevada, USA", "Las Vegas, USA", "USA", "US"],
   POL: ["Poland", "Gdańsk, Poland"],
   PL: ["Poland", "Gdańsk, Poland"],
   NLD: ["Netherlands", "Maastricht, Netherlands"],
   NL: ["Netherlands", "Maastricht, Netherlands"],
   DEU: ["Netherlands", "Maastricht, Netherlands"],
-  US: ["United States", "Georgia, USA", "Nevada, USA", "Las Vegas, USA"],
+  US: ["United States", "Georgia, USA", "Nevada, USA", "Las Vegas, USA", "USA", "US"],
 };
 
 const locationMappings: any = {
