@@ -11,11 +11,7 @@ import {
   TableBody,
   Stack,
   LinearProgress,
-  FormControl,
-  InputLabel,
-  Select,
   SelectChangeEvent,
-  MenuItem,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
@@ -29,6 +25,7 @@ import {
 } from "../../app/slices/approvalsSlice";
 import QuoteRow from "./QuoteRow";
 import FormattedCell from "../common/FormattedCell";
+import DateFilter from "../common/DateFilter";
 
 const Approvals = () => {
   const [loading, setLoading] = useState(false);
@@ -107,19 +104,7 @@ const Approvals = () => {
         <Typography>
           <h2>Approvals</h2>
         </Typography>
-        <FormControl size="small" variant="standard">
-          <InputLabel id="date-select-label">Approvals From</InputLabel>
-          <Select
-            labelId="date-select-label"
-            label="Approvals From"
-            onChange={handleChange}
-            defaultValue={dateFilter}
-          >
-            <MenuItem value="30">Last 30 Days</MenuItem>
-            <MenuItem value="60">Last 60 Days</MenuItem>
-            <MenuItem value="All">All Time</MenuItem>
-          </Select>
-        </FormControl>
+        <DateFilter defaultValue={dateFilter} handleChange={handleChange} />
       </Stack>
       {loading && <LinearProgress />}
       {!loading && reduxData.length > 0 && (

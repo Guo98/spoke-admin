@@ -8,6 +8,7 @@ import {
   Chip,
   Stack,
   LinearProgress,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -18,11 +19,16 @@ import { standardGet } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { updateOrders, filterEntity } from "../../app/slices/ordersSlice";
+import {
+  setOrders as setOrdersRedux,
+  filterEntity,
+  filterDate,
+} from "../../app/slices/ordersSlice";
 import { Order } from "../../interfaces/orders";
 import OrderItem from "./OrderItem";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
+import DateFilter from "../common/DateFilter";
 import "./Orders.css";
 
 function a11yProps(index: number) {
@@ -31,13 +37,6 @@ function a11yProps(index: number) {
     "aria-controls": `orders-tabpanel-${index}`,
   };
 }
-
-const style = {
-  display: "flex",
-  flexWrap: "wrap",
-  flexDirection: "row",
-  justifyContent: "space-evenly",
-};
 
 const sortOrder: any = {
   Completed: 3,
@@ -65,6 +64,7 @@ const Orders = () => {
     (state: RootState) => state.client.selectedEntity
   );
   const roles = useSelector((state: RootState) => state.client.roles);
+  const dateFilter = useSelector((state: RootState) => state.orders.dateFilter);
 
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
@@ -115,7 +115,8 @@ const Orders = () => {
 
     const ordersResult = await standardGet(accessToken, route);
 
-    dispatch(updateOrders(ordersResult.data));
+    dispatch(setOrdersRedux(ordersResult.data));
+
     if (selectedEntity !== "") {
       dispatch(filterEntity(selectedEntity));
     }
@@ -145,6 +146,8 @@ const Orders = () => {
   useEffect(() => {
     dispatch(filterEntity(selectedEntity));
   }, [selectedEntity]);
+
+  useEffect(() => {}, [dateFilter]);
 
   useEffect(() => {
     if (!loading) {
@@ -190,6 +193,10 @@ const Orders = () => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  const handleDateChange = (event: SelectChangeEvent) => {
+    dispatch(filterDate(event.target.value));
   };
 
   const download = async () => {
@@ -268,12 +275,23 @@ const Orders = () => {
           textChange={searchBar}
           showAll={true}
         />
-        <h2>
-          Orders{" "}
-          <IconButton onClick={download} id="export-orders-button">
-            <FileDownloadIcon />
-          </IconButton>
-        </h2>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+          alignItems="center"
+        >
+          <h2>
+            Orders{" "}
+            <IconButton onClick={download} id="export-orders-button">
+              <FileDownloadIcon />
+            </IconButton>
+          </h2>
+          <DateFilter
+            defaultValue={dateFilter}
+            handleChange={handleDateChange}
+          />
+        </Stack>
         {ordertypes.length > 0 && (
           <Stack direction="row" spacing={2}>
             {ordertypes.map((ot) => (

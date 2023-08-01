@@ -6,7 +6,7 @@ import {
   Tabs,
   Tab,
   Fab,
-  CircularProgress,
+  LinearProgress,
   Typography,
   IconButton,
 } from "@mui/material";
@@ -400,7 +400,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <CircularProgress />
+                <LinearProgress />
               )}
             </Box>
           </TabPanel>
@@ -466,7 +466,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <CircularProgress />
+                <LinearProgress />
               )}
             </Box>
           </TabPanel>
@@ -533,7 +533,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <CircularProgress />
+                <LinearProgress />
               )}
             </Box>
           </TabPanel>
@@ -557,13 +557,13 @@ const Inventory: FC = (): ReactElement => {
                 />
               </>
             )}
-          <Fab
+          {/* <Fab
             color="primary"
             sx={{ bottom: 15, right: 15, position: "fixed" }}
             onClick={() => openFiltersDrawer(true)}
           >
             <FilterAltIcon />
-          </Fab>
+          </Fab> */}
         </Box>
       </Box>
     </>

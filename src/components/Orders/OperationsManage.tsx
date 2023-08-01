@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateOrders } from "../../app/slices/ordersSlice";
+import { setOrders } from "../../app/slices/ordersSlice";
 import { standardGet, standardPost } from "../../services/standard";
 import { RootState } from "../../app/store";
 import { Order } from "../../interfaces/orders";
@@ -93,7 +93,7 @@ const OperationsManage = (props: OperationsOrder) => {
             ? "public"
             : props.client;
         const ordersResult = await standardGet(accessToken, route);
-        dispatch(updateOrders(ordersResult.data));
+        dispatch(setOrders(ordersResult.data));
       }
     }
     setLoading(false);
@@ -119,7 +119,7 @@ const OperationsManage = (props: OperationsOrder) => {
           ? "public"
           : props.client;
       const ordersResult = await standardGet(accessToken, route);
-      dispatch(updateOrders(ordersResult.data));
+      dispatch(setOrders(ordersResult.data));
     }
     setLoading(false);
   };
