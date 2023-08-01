@@ -94,7 +94,7 @@ const QuoteRow = (props: QuoteProps) => {
 
     const postResp = await standardPost(
       accessToken,
-      "updateMarketOrder",
+      "marketplaceorders",
       bodyObj
     );
 

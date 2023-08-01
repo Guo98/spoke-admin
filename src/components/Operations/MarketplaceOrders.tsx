@@ -132,7 +132,7 @@ const MarketRow = (props: RowProps) => {
 
     const updateRes = await standardPost(
       accessToken,
-      "updateMarketOrder",
+      "marketplaceorders",
       bodyObj
     );
 
@@ -482,7 +482,7 @@ const MarketplaceOrders = (props: MOProps) => {
   const getOrders = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const ordersRes = await standardGet(accessToken, "getmarketplace");
+    const ordersRes = await standardGet(accessToken, "marketplaceorders");
 
     if (ordersRes.status === "Successful") {
       setOrders(ordersRes.data.reverse());
