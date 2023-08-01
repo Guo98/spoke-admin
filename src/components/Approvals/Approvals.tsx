@@ -56,7 +56,7 @@ const Approvals = () => {
 
     const ordersRes = await standardGet(
       accessToken,
-      "getmarketplace/" + marketClient
+      "marketplaceorders/" + marketClient
     );
 
     if (ordersRes.status === "Successful") {
