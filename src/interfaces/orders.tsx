@@ -6,7 +6,7 @@ export interface OrdersSummary {
 export interface Order {
   orderId: string;
   items: Item[];
-  orderNo: number;
+  orderNo: any;
   firstName: string;
   lastName: string;
   address: {

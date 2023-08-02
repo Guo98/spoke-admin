@@ -41,20 +41,28 @@ export const ordersSlice = createSlice({
       }
 
       let completedDefaultFilter = completed.filter(
-        (appr) => new Date(appr.date) > date
+        (appr) =>
+          new Date(appr.date) > date ||
+          (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
       );
 
       let ipDefaultFilter = in_progress.filter(
-        (appr) => new Date(appr.date) > date
+        (appr) =>
+          new Date(appr.date) > date ||
+          (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
       );
 
       if (completedDefaultFilter.length === 0 && ipDefaultFilter.length === 0) {
         date = new Date(new Date().setDate(new Date().getDate() - 60));
         completedDefaultFilter = completed.filter(
-          (appr) => new Date(appr.date) > date
+          (appr) =>
+            new Date(appr.date) > date ||
+            (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
         );
         ipDefaultFilter = in_progress.filter(
-          (appr) => new Date(appr.date) > date
+          (appr) =>
+            new Date(appr.date) > date ||
+            (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
         );
         state.dateFilter = "60";
 
@@ -99,20 +107,28 @@ export const ordersSlice = createSlice({
       if (action.payload === "30") {
         let date = new Date(new Date().setDate(new Date().getDate() - 30));
         state.data.completed = state.originalData.completed!.filter(
-          (appr) => new Date(appr.date) > date
+          (appr) =>
+            new Date(appr.date) > date ||
+            (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
         );
 
         state.data.in_progress = state.originalData.in_progress!.filter(
-          (appr) => new Date(appr.date) > date
+          (appr) =>
+            new Date(appr.date) > date ||
+            (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
         );
       } else if (action.payload === "60") {
         let date = new Date(new Date().setDate(new Date().getDate() - 60));
         state.data.completed = state.originalData.completed!.filter(
-          (appr) => new Date(appr.date) > date
+          (appr) =>
+            new Date(appr.date) > date ||
+            (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
         );
 
         state.data.in_progress = state.originalData.in_progress!.filter(
-          (appr) => new Date(appr.date) > date
+          (appr) =>
+            new Date(appr.date) > date ||
+            (isNaN(appr.orderNo) && appr.orderNo.includes("APR"))
         );
       } else {
         state.data = state.originalData;
