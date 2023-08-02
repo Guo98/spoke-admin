@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import inventoryReducer from "./slices/inventorySlice";
 import ordersReducer from "./slices/ordersSlice";
+import approvalsReducer from "./slices/approvalsSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export const clientSlice = createSlice({
@@ -34,6 +35,7 @@ const store = configureStore({
     inventory: inventoryReducer,
     orders: ordersReducer,
     client: clientSlice.reducer,
+    approvals: approvalsReducer,
   },
 });
 

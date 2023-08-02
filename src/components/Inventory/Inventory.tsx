@@ -6,9 +6,11 @@ import {
   Tabs,
   Tab,
   Fab,
-  CircularProgress,
+  LinearProgress,
   Typography,
   IconButton,
+  Stack,
+  Chip,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -19,10 +21,13 @@ import { useSearchParams, useLocation } from "react-router-dom";
 import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  updateInventory,
+  setInventory,
   filterInventoryByEntity,
+  filterByBrand,
+  resetInventory,
 } from "../../app/slices/inventorySlice";
-import { download, getInventory } from "../../services/inventoryAPI";
+import { standardGet } from "../../services/standard";
+import { roleMapping } from "../../utilities/mappings";
 import InventoryAccordion from "./InventoryAccordion";
 import Filter from "./Filter";
 import AddModal from "./AddModal";
@@ -63,14 +68,13 @@ const Inventory: FC = (): ReactElement => {
 
   const roles = useSelector((state: RootState) => state.client.roles);
 
-  const [filterdrawer, openFiltersDrawer] = useState(false);
+  const brands = useSelector((state: RootState) => state.inventory.brands);
+
+  // const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const [stock, setStock] = useState(data);
-  const [deployed, setDeployed] = useState(data);
-  const [inprogress, setInprogress] = useState(data);
-  const [oginprogrss, setOGInprogress] = useState(data);
-  const [ogstock, setOGStock] = useState(data);
-  const [ogdeployed, setOGDeployed] = useState(data);
+  const [stock, setStock] = useState(data.in_stock);
+  const [deployed, setDeployed] = useState(data.deployed);
+  const [inprogress, setInprogress] = useState(data.pending);
   const [openAdd, setOpenAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inprogTotal, setInprogTotal] = useState(0);
@@ -79,6 +83,7 @@ const Inventory: FC = (): ReactElement => {
   const [deviceTotal, setDeviceTotal] = useState(0);
   const [filtered, setFiltered] = useState(false);
   const [search_serial, setSearchSerial] = useState("");
+  const [chip, setChip] = useState("");
 
   const dispatch = useDispatch();
 
@@ -91,12 +96,15 @@ const Inventory: FC = (): ReactElement => {
     setLoading(true);
     let client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
-    const inventoryResult = await getInventory(
-      accessToken,
-      client,
-      roles?.length > 0 ? roles[0] : ""
-    );
-    dispatch(updateInventory(inventoryResult.data));
+
+    let route = `inventory/${client}`;
+
+    if (roles?.length > 0 && roles[0] !== "admin") {
+      route = route + `/${roleMapping[roles[0]]}`;
+    }
+
+    const inventoryResult = await standardGet(accessToken, route);
+    dispatch(setInventory(inventoryResult.data));
     if (selectedEntity !== "") {
       dispatch(filterInventoryByEntity(selectedEntity));
     }
@@ -116,24 +124,31 @@ const Inventory: FC = (): ReactElement => {
   }, [selectedClientData]);
 
   useEffect(() => {
-    if (!openAdd && data.length > 0) {
+    if (!openAdd && data.in_stock.length > 0) {
       fetchData().catch(console.error);
     }
   }, [openAdd]);
 
   useEffect(() => {
-    if (data.length >= 0) {
+    if (data.in_stock.length >= 0) {
       setLoading(false);
     }
   }, [data]);
 
+  useEffect(() => {}, [brands]);
+
   const downloadInventory = async () => {
     const accessToken = await getAccessTokenSilently();
-    const downloadResult = await download(
-      accessToken,
-      clientData === "spokeops" ? selectedClientData : clientData,
-      selectedEntity
-    );
+
+    let route = `downloadinventory/${
+      clientData === "spokeops" ? selectedClientData : clientData
+    }`;
+
+    if (selectedEntity !== "") {
+      route = route + `/${selectedEntity}`;
+    }
+
+    const downloadResult = await standardGet(accessToken, route);
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
@@ -169,14 +184,11 @@ const Inventory: FC = (): ReactElement => {
   };
 
   useEffect(() => {
-    setOGDeployed(deployedRedux);
     setInprogress(pendingRedux);
-    setOGInprogress(pendingRedux);
     if (search_serial !== "") {
       searchFilter(search_serial);
     } else {
       setStock(stockRedux);
-      setOGStock(stockRedux);
       setDeployed(deployedRedux);
       updateCount();
     }
@@ -218,14 +230,17 @@ const Inventory: FC = (): ReactElement => {
 
   const searchFilter = (text: string) => {
     if (text !== "") {
-      let searchStock = searchFilterFunction([...ogstock], text.toLowerCase());
+      let searchStock = searchFilterFunction(
+        [...data.in_stock],
+        text.toLowerCase()
+      );
       let searchInProg = searchFilterFunction(
-        [...oginprogrss],
+        [...data.pending],
         text.toLowerCase()
       );
 
       let searchDeployed = searchFilterFunction(
-        [...ogdeployed],
+        [...data.deployed],
         text.toLowerCase()
       );
 
@@ -254,9 +269,9 @@ const Inventory: FC = (): ReactElement => {
       }
     } else {
       setFiltered(false);
-      setStock(ogstock);
-      setDeployed(ogdeployed);
-      setInprogress(oginprogrss);
+      setStock(data.in_stock);
+      setDeployed(data.deployed);
+      setInprogress(data.pending);
     }
   };
 
@@ -307,13 +322,36 @@ const Inventory: FC = (): ReactElement => {
             >
               <ManageModal
                 type="general"
-                devices={ogstock}
+                devices={data.in_stock}
                 instock_quantity={stockTotal}
               />
             </Box>
           </Grid>
         </Grid>
-        <div className="right">
+        {brands.length > 0 && (
+          <Stack direction="row" spacing={2}>
+            {brands.map((b) => (
+              <Chip
+                clickable
+                label={b}
+                onClick={() => {
+                  setChip(b);
+                  dispatch(filterByBrand(b));
+                }}
+                onDelete={
+                  b === chip
+                    ? () => {
+                        setChip("");
+                        dispatch(resetInventory());
+                      }
+                    : undefined
+                }
+                variant={b === chip ? "filled" : "outlined"}
+              />
+            ))}
+          </Stack>
+        )}
+        {/* <div className="right">
           <Drawer
             anchor="right"
             open={filterdrawer}
@@ -333,7 +371,7 @@ const Inventory: FC = (): ReactElement => {
               />
             </div>
           </Drawer>
-        </div>
+        </div> */}
         <Box>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
@@ -391,7 +429,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <CircularProgress />
+                <LinearProgress />
               )}
             </Box>
           </TabPanel>
@@ -457,7 +495,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <CircularProgress />
+                <LinearProgress />
               )}
             </Box>
           </TabPanel>
@@ -524,7 +562,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <CircularProgress />
+                <LinearProgress />
               )}
             </Box>
           </TabPanel>
@@ -544,17 +582,17 @@ const Inventory: FC = (): ReactElement => {
                 <AddModal
                   open={openAdd}
                   setParentOpen={setOpenAdd}
-                  deviceNames={ogstock}
+                  deviceNames={data.in_stock}
                 />
               </>
             )}
-          <Fab
+          {/* <Fab
             color="primary"
             sx={{ bottom: 15, right: 15, position: "fixed" }}
             onClick={() => openFiltersDrawer(true)}
           >
             <FilterAltIcon />
-          </Fab>
+          </Fab> */}
         </Box>
       </Box>
     </>

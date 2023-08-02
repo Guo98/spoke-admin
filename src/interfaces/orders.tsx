@@ -13,6 +13,7 @@ export interface Order {
     city: string;
     country: string;
     subdivision: string;
+    formatted: string;
   };
   email: string;
   phone: string;

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Button, Modal, Box, TextField, Typography, Grid } from "@mui/material";
-import { manageLaptop, getInventory } from "../../../services/inventoryAPI";
+import { standardPost, standardGet } from "../../../services/standard";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
-import { updateInventory } from "../../../app/slices/inventorySlice";
+import { setInventory } from "../../../app/slices/inventorySlice";
 
 const style = {
   position: "absolute" as "absolute",
@@ -73,14 +73,13 @@ const AddToStock = (props: StockProps) => {
       };
     }
 
-    const stockRes = await manageLaptop(accessToken, reqBody, "addtostock");
+    const stockRes = await standardPost(accessToken, "addtostock", reqBody);
 
     if (stockRes.status === "Success") {
-      const inventoryResult = await getInventory(
-        accessToken,
-        selectedClientData
-      );
-      dispatch(updateInventory(inventoryResult.data));
+      let route = `inventory/${selectedClientData}`;
+
+      const inventoryResult = await standardGet(accessToken, route);
+      dispatch(setInventory(inventoryResult.data));
       setSuccess(true);
     } else {
       setError(true);

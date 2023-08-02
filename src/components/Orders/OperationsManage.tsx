@@ -21,8 +21,8 @@ import {
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateOrders } from "../../app/slices/ordersSlice";
-import { postOrder, getAllOrders } from "../../services/ordersAPI";
+import { setOrders } from "../../app/slices/ordersSlice";
+import { standardGet, standardPost } from "../../services/standard";
 import { RootState } from "../../app/store";
 import { Order } from "../../interfaces/orders";
 
@@ -80,20 +80,20 @@ const OperationsManage = (props: OperationsOrder) => {
         order_id: props.id,
         status: shipping_status,
       };
-      const postOrderResp = await postOrder(
-        "updateTrackingNumber",
+
+      const postOrderResp = await standardPost(
         accessToken,
+        "updateTrackingNumber",
         bodyObj
       );
 
       if (postOrderResp.status === "Success") {
-        const ordersResult = await getAllOrders(
-          accessToken,
-          props.client === "Public" || props.client === "Mock"
+        let route =
+          "orders/" + props.client === "Public" || props.client === "Mock"
             ? "public"
-            : props.client
-        );
-        dispatch(updateOrders(ordersResult.data));
+            : props.client;
+        const ordersResult = await standardGet(accessToken, route);
+        dispatch(setOrders(ordersResult.data));
       }
     }
     setLoading(false);
@@ -107,20 +107,19 @@ const OperationsManage = (props: OperationsOrder) => {
 
     bodyObj.shipping_status = updateShippingStatus;
 
-    const completeOrderResp = await postOrder(
-      "completeOrder",
+    const completeOrderResp = await standardPost(
       accessToken,
+      "completeOrder",
       bodyObj
     );
 
     if (completeOrderResp.status === "Success") {
-      const ordersResult = await getAllOrders(
-        accessToken,
-        props.client === "Mock" || props.client === "Public"
+      let route =
+        "orders/" + props.client === "Public" || props.client === "Mock"
           ? "public"
-          : props.client
-      );
-      dispatch(updateOrders(ordersResult.data));
+          : props.client;
+      const ordersResult = await standardGet(accessToken, route);
+      dispatch(setOrders(ordersResult.data));
     }
     setLoading(false);
   };

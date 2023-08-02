@@ -1,19 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { Box, Tabs, Tab, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Tabs,
+  Tab,
+  IconButton,
+  Typography,
+  Chip,
+  Stack,
+  LinearProgress,
+  SelectChangeEvent,
+} from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
-import CircularProgress from "@mui/material/CircularProgress";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
 import * as FileSaver from "file-saver";
-import { downloadOrders, getAllOrders } from "../../services/ordersAPI";
+import { standardGet } from "../../services/standard";
+import { roleMapping } from "../../utilities/mappings";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { updateOrders, filterEntity } from "../../app/slices/ordersSlice";
+import {
+  setOrders as setOrdersRedux,
+  filterEntity,
+  filterDate,
+} from "../../app/slices/ordersSlice";
 import { Order } from "../../interfaces/orders";
 import OrderItem from "./OrderItem";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
+import DateFilter from "../common/DateFilter";
 import "./Orders.css";
 
 function a11yProps(index: number) {
@@ -23,18 +38,19 @@ function a11yProps(index: number) {
   };
 }
 
-const style = {
-  display: "flex",
-  flexWrap: "wrap",
-  flexDirection: "row",
-  justifyContent: "space-evenly",
-};
-
 const sortOrder: any = {
   Completed: 3,
   Complete: 3,
   Shipped: 2,
   Incomplete: 1,
+};
+
+const sortOrders = (a: Order, b: Order) => {
+  if (sortOrder[a.shipping_status] < sortOrder[b.shipping_status]) return -1;
+  if (sortOrder[a.shipping_status] > sortOrder[b.shipping_status]) return 1;
+
+  if (a.orderNo > b.orderNo) return -1;
+  if (a.orderNo < b.orderNo) return 1;
 };
 
 const Orders = () => {
@@ -48,6 +64,7 @@ const Orders = () => {
     (state: RootState) => state.client.selectedEntity
   );
   const roles = useSelector((state: RootState) => state.client.roles);
+  const dateFilter = useSelector((state: RootState) => state.orders.dateFilter);
 
   const [tabValue, setTabValue] = useState(0);
   const [ordersData, setOrders] = useState(data);
@@ -56,6 +73,8 @@ const Orders = () => {
   const [inprog, setInprog] = useState<Order[]>([]);
   const [completed, setCompleted] = useState<Order[]>([]);
   const [filtered, setFiltered] = useState(false);
+  const [ordertypes, setOrderTypes] = useState<string[]>([]);
+  const [chip, setChip] = useState("");
 
   const dispatch = useDispatch();
 
@@ -88,13 +107,16 @@ const Orders = () => {
     const accessToken = await getAccessTokenSilently();
     let client = clientData === "spokeops" ? selectedClientData : clientData;
 
-    const ordersResult = await getAllOrders(
-      accessToken,
-      client,
-      roles?.length > 0 ? roles[0] : ""
-    );
+    let route = "orders/" + client;
 
-    dispatch(updateOrders(ordersResult.data));
+    if (roles?.length > 0 && roles[0] !== "admin") {
+      route = route + "/" + roleMapping[roles[0]];
+    }
+
+    const ordersResult = await standardGet(accessToken, route);
+
+    dispatch(setOrdersRedux(ordersResult.data));
+
     if (selectedEntity !== "") {
       dispatch(filterEntity(selectedEntity));
     }
@@ -125,6 +147,8 @@ const Orders = () => {
     dispatch(filterEntity(selectedEntity));
   }, [selectedEntity]);
 
+  useEffect(() => {}, [dateFilter]);
+
   useEffect(() => {
     if (!loading) {
       let combinedOrders = [] as Order[];
@@ -139,16 +163,31 @@ const Orders = () => {
 
       setAll(
         // @ts-ignore
-        combinedOrders.sort((a, b) => {
-          if (sortOrder[a.shipping_status] < sortOrder[b.shipping_status])
-            return -1;
-          if (sortOrder[a.shipping_status] > sortOrder[b.shipping_status])
-            return 1;
-
-          if (a.orderNo > b.orderNo) return -1;
-          if (a.orderNo < b.orderNo) return 1;
-        })
+        combinedOrders.sort(sortOrders)
       );
+
+      let orderTypes = [] as string[];
+
+      combinedOrders.filter((o) => {
+        if (
+          orderTypes.indexOf("Laptop") < 0 &&
+          o.items.filter((i) => i.type === "laptop").length > 0
+        ) {
+          orderTypes.push("Laptop");
+        } else if (
+          orderTypes.indexOf("Offboarding") < 0 &&
+          o.items[0].name === "Offboarding"
+        ) {
+          orderTypes.push("Offboarding");
+        } else if (
+          orderTypes.indexOf("Returning") < 0 &&
+          o.items[0].name === "Returning"
+        ) {
+          orderTypes.push("Returning");
+        }
+      });
+
+      setOrderTypes(orderTypes);
     }
   }, [loading, data]);
 
@@ -156,14 +195,21 @@ const Orders = () => {
     setTabValue(newValue);
   };
 
+  const handleDateChange = (event: SelectChangeEvent) => {
+    dispatch(filterDate(event.target.value));
+  };
+
   const download = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const downloadResult = await downloadOrders(
-      accessToken,
-      clientData === "spokeops" ? selectedClientData : clientData,
-      selectedEntity
-    );
+    let route = `downloadorders/${
+      clientData === "spokeops" ? selectedClientData : clientData
+    }`;
+
+    if (selectedEntity !== "") {
+      route = route + `/${selectedEntity}`;
+    }
+    const downloadResult = await standardGet(accessToken, route);
 
     const blob = new Blob([new Buffer(downloadResult.data)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
@@ -196,9 +242,12 @@ const Orders = () => {
         data.completed!
       );
 
-      setAll(combinedOrders.sort((a, b) => b.orderNo - a.orderNo));
-      setInprog(data.in_progress!.sort((a, b) => b.orderNo - a.orderNo));
-      setCompleted(data.completed!.sort((a, b) => b.orderNo - a.orderNo));
+      setAll(
+        // @ts-ignore
+        combinedOrders.sort(sortOrders)
+      );
+      setInprog([...data.in_progress!].sort((a, b) => b.orderNo - a.orderNo));
+      setCompleted([...data.completed!].sort((a, b) => b.orderNo - a.orderNo));
     }
   };
 
@@ -207,10 +256,13 @@ const Orders = () => {
       (order) =>
         order.orderNo.toString().indexOf(text) > -1 ||
         order.full_name?.toLowerCase().indexOf(text) > -1 ||
-        order.address.country?.toLowerCase().indexOf(text) > -1 ||
-        order.address.subdivision?.toLowerCase().indexOf(text) > -1 ||
+        (order.address &&
+          order.address.formatted &&
+          order.address.formatted?.toLowerCase().indexOf(text) > -1) ||
         order.items.filter(
-          (item) => item.name?.toLowerCase().indexOf(text) > -1
+          (item) =>
+            item.name?.toLowerCase().indexOf(text) > -1 ||
+            (item.type && item.type?.toLowerCase().indexOf(text) > -1)
         ).length > 0
     );
   };
@@ -221,13 +273,48 @@ const Orders = () => {
         <Header
           label="Search Orders by order number, name, item, location"
           textChange={searchBar}
+          showAll={true}
         />
-        <h2>
-          Orders{" "}
-          <IconButton onClick={download} id="export-orders-button">
-            <FileDownloadIcon />
-          </IconButton>
-        </h2>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+          alignItems="center"
+        >
+          <h2>
+            Orders{" "}
+            <IconButton onClick={download} id="export-orders-button">
+              <FileDownloadIcon />
+            </IconButton>
+          </h2>
+          <DateFilter
+            defaultValue={dateFilter}
+            handleChange={handleDateChange}
+          />
+        </Stack>
+        {ordertypes.length > 0 && (
+          <Stack direction="row" spacing={2}>
+            {ordertypes.map((ot) => (
+              <Chip
+                clickable
+                label={ot}
+                onClick={() => {
+                  searchBar(ot);
+                  setChip(ot);
+                }}
+                onDelete={
+                  ot === chip
+                    ? () => {
+                        searchBar("");
+                        setChip("");
+                      }
+                    : undefined
+                }
+                variant={ot === chip ? "filled" : "outlined"}
+              />
+            ))}
+          </Stack>
+        )}
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}
@@ -265,9 +352,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <Box sx={style}>
-              <CircularProgress />
-            </Box>
+            <LinearProgress />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={1} prefix="orders">
@@ -297,9 +382,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <Box sx={style}>
-              <CircularProgress />
-            </Box>
+            <LinearProgress />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={2} prefix="orders">
@@ -329,9 +412,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <Box sx={style}>
-              <CircularProgress />
-            </Box>
+            <LinearProgress />
           )}
         </TabPanel>
       </Box>

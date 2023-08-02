@@ -16,7 +16,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { InventorySummary } from "../../interfaces/inventory";
-import { manageLaptop } from "../../services/inventoryAPI";
+import { standardPost } from "../../services/standard";
 import TabPanel from "../common/TabPanel";
 import TopUp from "./AddModalBoxes/TopUp";
 import NewDeviceRequest from "./AddModalBoxes/NewDeviceRequest";
@@ -182,10 +182,10 @@ const AddModal = (props: AddProps) => {
       items: tabValue === 0 ? requestedItems : newSendDevice(),
     };
 
-    const apiResp = await manageLaptop(
+    const apiResp = await standardPost(
       accessToken,
-      requestObj,
-      "/requestInventory"
+      "requestInventory",
+      requestObj
     );
 
     if (apiResp.status === "Successful") {

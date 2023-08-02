@@ -9,278 +9,40 @@ import {
   TableHead,
   TableCell,
   TableBody,
-  Collapse,
-  Grid,
-  IconButton,
-  Button,
-  Alert,
   Stack,
-  Tooltip,
-  Chip,
   LinearProgress,
+  SelectChangeEvent,
 } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import DoneIcon from "@mui/icons-material/Done";
-import CloseIcon from "@mui/icons-material/Close";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
-import { downloadFile } from "../../services/azureblob";
+import { standardGet } from "../../services/standard";
 import Header from "../Header/Header";
-import DenyModal from "./DenyModal";
-
-interface FormattedProps {
-  text: string;
-  bold?: boolean;
-}
-
-interface QuoteProps {
-  recipient_name: string;
-  device_type: string;
-  specs: string;
-  date: string;
-  status: string;
-  quote?: string;
-  quote_price?: string;
-  client: string;
-  id: string;
-  address: string;
-  approved?: boolean;
-  setOrders: Function;
-}
-
-const FormattedCell = (props: FormattedProps) => {
-  return (
-    <TableCell>
-      <Typography fontWeight={props.bold ? "bold" : ""}>
-        {props.text}
-      </Typography>
-    </TableCell>
-  );
-};
-
-const QuoteRow = (props: QuoteProps) => {
-  const {
-    date,
-    recipient_name,
-    device_type,
-    status,
-    client,
-    id,
-    address,
-    specs,
-  } = props;
-  const [open, setOpen] = useState(false);
-  const [error, setError] = useState(false);
-  const [denyOpen, setDenyOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const { getAccessTokenSilently } = useAuth0();
-
-  const download = async () => {
-    const accessToken = await getAccessTokenSilently();
-    const docResponse = await downloadFile(accessToken, props.quote!);
-
-    const fileBytes = docResponse.byteStream;
-    const arr = new Uint8Array(fileBytes.data);
-    const pdf = new Blob([arr], {
-      type: "application/pdf;charset=utf-8",
-    });
-
-    const url = URL.createObjectURL(pdf);
-
-    window.open(url);
-  };
-
-  const handleModalClose = () => {
-    setDenyOpen(false);
-  };
-
-  const approve_deny = async (approved: boolean, reason: string = "") => {
-    setLoading(true);
-    const accessToken = await getAccessTokenSilently();
-
-    const bodyObj = {
-      client: client,
-      id: id,
-      approved,
-      recipient_name,
-      recipient_address: address,
-      item_name: device_type,
-      reason,
-    };
-
-    const postResp = await postOrder("updateMarketOrder", accessToken, bodyObj);
-
-    if (postResp.status && postResp.status !== "Successful") {
-      setError(true);
-    } else {
-      await props.setOrders();
-      if (!approved) {
-        setDenyOpen(false);
-      }
-    }
-    setLoading(false);
-  };
-
-  return (
-    <>
-      <TableRow>
-        <TableCell>
-          {(props.quote || props.quote_price) && (
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => {
-                setOpen(!open);
-                setError(false);
-              }}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          )}
-        </TableCell>
-        <FormattedCell text={date} />
-        <FormattedCell text={recipient_name} />
-        <FormattedCell text={device_type + (specs ? " " + specs : "")} />
-        <FormattedCell
-          text={
-            status === "Completed"
-              ? props.approved
-                ? "Approved"
-                : "Rejected"
-              : status
-          }
-        />
-      </TableRow>
-      {(props.quote || props.quote_price) && (
-        <TableRow>
-          <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ marginY: 1, marginX: "8%" }}>
-                {error && (
-                  <Alert severity="error" sx={{ marginBottom: 1 }}>
-                    There was an error in responding to the market order.
-                  </Alert>
-                )}
-                <Grid
-                  container
-                  spacing={3}
-                  justifyContent="space-between"
-                  sx={{ display: "flex" }}
-                >
-                  <Grid item xs={9}>
-                    {props.quote_price && (
-                      <>
-                        <Typography fontWeight="bold">Quoted Price:</Typography>
-                        <Typography
-                          fontSize="300%"
-                          display="inline"
-                          component="span"
-                        >
-                          $
-                          {props.quote_price.indexOf(".") > -1
-                            ? props.quote_price.split(".")[0]
-                            : props.quote_price}
-                        </Typography>
-                        <Typography component="span" display="inline">
-                          {props.quote_price.indexOf(".") > -1
-                            ? props.quote_price.split(".")[1]
-                            : ".00"}
-                        </Typography>
-                      </>
-                    )}
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Stack
-                      direction="column"
-                      spacing={2}
-                      alignItems="center normal"
-                    >
-                      <Button
-                        onClick={download}
-                        variant="contained"
-                        disabled={!props.quote}
-                      >
-                        <PictureAsPdfIcon sx={{ mr: 1 }} /> Quote
-                      </Button>
-                      {props.approved === undefined ||
-                      props.approved === null ? (
-                        <Stack
-                          direction="row"
-                          spacing={2}
-                          alignItems="center normal"
-                        >
-                          <Tooltip title="Reject">
-                            <Button
-                              variant="contained"
-                              sx={{
-                                borderRadius: "999em 999em 999em 999em",
-                                backgroundColor: "#cc0000",
-                              }}
-                              onClick={() => setDenyOpen(true)}
-                              fullWidth
-                              color="secondary"
-                            >
-                              <CloseIcon />
-                            </Button>
-                          </Tooltip>
-                          <Tooltip title="Approve">
-                            <Button
-                              variant="contained"
-                              sx={{
-                                borderRadius: "999em 999em 999em 999em",
-                                backgroundColor: "#388e3c",
-                              }}
-                              onClick={() => approve_deny(true)}
-                              fullWidth
-                              color="success"
-                            >
-                              <DoneIcon />
-                            </Button>
-                          </Tooltip>
-                        </Stack>
-                      ) : (
-                        <Chip
-                          label={
-                            props.approved
-                              ? "Request Approved"
-                              : "Request Rejected"
-                          }
-                          color={props.approved ? "success" : "error"}
-                        />
-                      )}
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      )}
-      <DenyModal
-        open={denyOpen}
-        handleClose={handleModalClose}
-        handleDeny={approve_deny}
-        loading={loading}
-      />
-    </>
-  );
-};
+import {
+  setApprovals,
+  updateApprovals,
+  filterApprovals,
+} from "../../app/slices/approvalsSlice";
+import QuoteRow from "./QuoteRow";
+import FormattedCell from "../common/FormattedCell";
+import DateFilter from "../common/DateFilter";
 
 const Approvals = () => {
   const [loading, setLoading] = useState(false);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [dntOrders, setDntOrders] = useState<any[]>([]);
   const [error, setError] = useState(false);
 
   const client = useSelector((state: RootState) => state.client.data);
   const selectedClient = useSelector(
     (state: RootState) => state.client.selectedClient
   );
+  const reduxData = useSelector(
+    (state: RootState) => state.approvals.filteredData
+  );
+  const dateFilter = useSelector(
+    (state: RootState) => state.approvals.dateFilter
+  );
+
+  const dispatch = useDispatch();
 
   let marketClient = client === "spokeops" ? selectedClient : client;
 
@@ -289,11 +51,13 @@ const Approvals = () => {
   const getOrders = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const ordersRes = await getAllMarketplace(accessToken, marketClient);
+    const ordersRes = await standardGet(
+      accessToken,
+      "marketplaceorders/" + marketClient
+    );
 
     if (ordersRes.status === "Successful") {
-      setOrders(ordersRes.data.reverse());
-      setDntOrders(ordersRes.data);
+      dispatch(setApprovals(ordersRes.data));
       setLoading(false);
     } else {
       setError(true);
@@ -302,7 +66,7 @@ const Approvals = () => {
   };
 
   useEffect(() => {
-    if (orders.length === 0 && !loading && client !== "") {
+    if (reduxData.length === 0 && !loading && client !== "") {
       setLoading(true);
       getOrders().catch();
     }
@@ -315,35 +79,33 @@ const Approvals = () => {
     }
   }, [client, selectedClient]);
 
+  useEffect(() => {}, [dateFilter]);
+
   const handleTextChange = (text: string) => {
-    const lowerCaseText = text.toLowerCase();
+    dispatch(filterApprovals(text));
+  };
 
-    if (text !== "") {
-      const filteredOrders = orders.filter(
-        (ord) =>
-          ord.recipient_name.toLowerCase().indexOf(lowerCaseText) > -1 ||
-          ord.device_type.toLowerCase().indexOf(lowerCaseText) > -1
-      );
-
-      if (filteredOrders.length > 0) {
-        setOrders(filteredOrders);
-      }
-    } else {
-      setOrders(dntOrders);
-    }
+  const handleChange = (event: SelectChangeEvent) => {
+    dispatch(updateApprovals(event.target.value));
   };
 
   return (
     <Box sx={{ width: "94%", paddingLeft: "3%" }}>
       <Header
-        label={"Search for Approvals by requested items, names"}
+        label={"Search Approvals by requested items, names"}
         textChange={handleTextChange}
       />
-      <Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        spacing={2}
+        alignItems="center"
+      >
         <h2>Approvals</h2>
-      </Typography>
+        <DateFilter defaultValue={dateFilter} handleChange={handleChange} />
+      </Stack>
       {loading && <LinearProgress />}
-      {!loading && orders.length > 0 && (
+      {!loading && reduxData.length > 0 && (
         <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
           <Table>
             <TableHead>
@@ -356,15 +118,22 @@ const Approvals = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((order) => (
+              {reduxData.map((order: any) => (
                 <QuoteRow {...order} setOrders={getOrders} />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
-      {!loading && orders.length === 0 && (
-        <Typography textAlign="center">No approvals pending</Typography>
+      {!loading && reduxData.length === 0 && (
+        <Typography textAlign="center">
+          No approvals{" "}
+          {dateFilter === "30"
+            ? "in the last 30 days"
+            : dateFilter === "60"
+            ? "in the last 60 days"
+            : "pending"}
+        </Typography>
       )}
     </Box>
   );

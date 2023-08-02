@@ -3,7 +3,6 @@ import { Box, Typography, Grid, Chip, Stack, Button } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProducts } from "../../app/slices/inventorySlice";
-import { getInventory } from "../../services/inventoryAPI";
 import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
 import {
@@ -40,13 +39,15 @@ const Marketplace = () => {
   const [modalimg, setImg] = useState("");
 
   const getProducts = async () => {
-    const accessToken = await getAccessTokenSilently();
-    const productRes = await getInventory(accessToken, "Marketplace");
-    const marketplaceRes = await standardGet(
-      accessToken,
-      "getmarketplaceinventory/" + marketClient
-    );
-    dispatch(addProducts(marketplaceRes.data));
+    if (marketClient) {
+      const accessToken = await getAccessTokenSilently();
+
+      const marketplaceRes = await standardGet(
+        accessToken,
+        "getmarketplaceinventory/" + marketClient
+      );
+      dispatch(addProducts(marketplaceRes.data));
+    }
   };
 
   useEffect(() => {
@@ -54,7 +55,7 @@ const Marketplace = () => {
       getProducts().catch();
       setLoading(true);
     }
-  }, [loading]);
+  }, [loading, selectedClient, client]);
 
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
@@ -135,7 +136,8 @@ const Marketplace = () => {
             clickable
             onClick={() => chipFilter("")}
           />
-          {productRedux.length > 0 &&
+          {productRedux &&
+            productRedux.length > 0 &&
             productRedux.map((prod, index) => {
               if (!prod.hide)
                 return (
@@ -167,6 +169,7 @@ const Marketplace = () => {
           }}
         >
           {pagenumber === 0 &&
+            productRedux &&
             productRedux.length > 0 &&
             productRedux.map((product, index) => {
               if (

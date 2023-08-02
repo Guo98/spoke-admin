@@ -28,8 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getAllMarketplace, postOrder } from "../../services/ordersAPI";
-import { standardPost } from "../../services/standard";
+import { standardPost, standardGet } from "../../services/standard";
 import { uploadFile, downloadFile } from "../../services/azureblob";
 import { clientsList } from "../../utilities/mappings";
 import { entityMappings } from "../../app/utility/constants";
@@ -130,9 +129,10 @@ const MarketRow = (props: RowProps) => {
     }
 
     const accessToken = await getAccessTokenSilently();
-    const updateRes = await postOrder(
-      "updateMarketOrder",
+
+    const updateRes = await standardPost(
       accessToken,
+      "marketplaceorders",
       bodyObj
     );
 
@@ -346,9 +346,9 @@ const MarketRow = (props: RowProps) => {
                       defaultValue={order.status}
                       onChange={handleChange}
                     >
-                      <MenuItem value="Received">Received</MenuItem>
                       <MenuItem value="In Progress">In Progress</MenuItem>
-                      <MenuItem value="Completed">Completed</MenuItem>
+                      <MenuItem value="Approved">Approved</MenuItem>
+                      <MenuItem value="Rejected">Rejected</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -482,7 +482,7 @@ const MarketplaceOrders = (props: MOProps) => {
   const getOrders = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const ordersRes = await getAllMarketplace(accessToken);
+    const ordersRes = await standardGet(accessToken, "marketplaceorders");
 
     if (ordersRes.status === "Successful") {
       setOrders(ordersRes.data.reverse());

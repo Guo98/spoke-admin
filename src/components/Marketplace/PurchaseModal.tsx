@@ -26,7 +26,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RootState } from "../../app/store";
-import { postOrder } from "../../services/ordersAPI";
+import { standardPost } from "../../services/standard";
 import { validateAddress } from "../../services/address";
 import { countryMappings } from "../../utilities/mappings";
 
@@ -193,9 +193,9 @@ const PurchaseModal = (props: PurchaseProps) => {
       postBody.notes.recipient = recipient_notes;
     }
 
-    const newPurchaseResp = await postOrder(
-      "newPurchase",
+    const newPurchaseResp = await standardPost(
       accessToken,
+      "newPurchase",
       postBody
     );
 
@@ -446,6 +446,9 @@ const PurchaseModal = (props: PurchaseProps) => {
                             );
                           }
                         )}
+                      {brand === "Others" && (
+                        <MenuItem value="United States">United States</MenuItem>
+                      )}
                       <MenuItem value="Other">Other</MenuItem>
                     </Select>
                   </FormControl>

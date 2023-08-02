@@ -8,11 +8,12 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: InitialInventoryState = {
-  data: [],
+  data: { in_stock: [], pending: [], deployed: [] },
   pending: [],
   deployed: [],
   in_stock: [],
   products: [],
+  brands: [],
 };
 
 const splitInventory = (
@@ -64,9 +65,7 @@ export const inventorySlice = createSlice({
   name: UpdateInventoryAction,
   initialState: initialState,
   reducers: {
-    updateInventory: (state, action: PayloadAction<InventorySummary[]>) => {
-      state.data = action.payload;
-
+    setInventory: (state, action: PayloadAction<InventorySummary[]>) => {
       let inStock: InventorySummary[] = [];
       let deployed: InventorySummary[] = [];
       let offboarding: InventorySummary[] = [];
@@ -76,55 +75,110 @@ export const inventorySlice = createSlice({
         if (device.serial_numbers) {
           splitInventory(device, inStock, deployed, offboarding);
         }
+        const devicename = device.name.toLowerCase();
+        if (
+          (devicename.includes("mac") || devicename.includes("apple")) &&
+          state.brands.indexOf("Apple") < 0
+        ) {
+          state.brands.push("Apple");
+        } else if (
+          devicename.includes("lenovo") &&
+          state.brands.indexOf("Lenovo") < 0
+        ) {
+          state.brands.push("Lenovo");
+        } else if (
+          devicename.includes("dell") &&
+          state.brands.indexOf("Dell") < 0
+        ) {
+          state.brands.push("Dell");
+        }
       });
 
       sortInventory(inStock, deployed);
 
       state.pending = offboarding;
+      state.data.pending = offboarding;
       state.deployed = deployed;
+      state.data.deployed = deployed;
       state.in_stock = inStock;
+      state.data.in_stock = inStock;
     },
     filterInventoryByEntity: (state, action: PayloadAction<string>) => {
-      const tempData = state.data;
       let inStock: InventorySummary[] = [];
       let deployed: InventorySummary[] = [];
-      let offboarding: InventorySummary[] = [];
+      let pending: InventorySummary[] = [];
 
       if (action.payload !== "") {
-        tempData.forEach((device) => {
-          if (device.entity === action.payload) {
-            if (device.serial_numbers) {
-              splitInventory(device, inStock, deployed, offboarding);
-            }
+        state.data.in_stock.forEach((dev) => {
+          if (dev.entity === action.payload) {
+            inStock.push(dev);
           }
         });
-
-        sortInventory(inStock, deployed);
-
-        state.pending = offboarding;
+        state.data.pending.forEach((dev) => {
+          if (dev.entity === action.payload) {
+            pending.push(dev);
+          }
+        });
+        state.data.deployed.forEach((dev) => {
+          if (dev.entity === action.payload) {
+            deployed.push(dev);
+          }
+        });
+        state.pending = pending;
         state.deployed = deployed;
         state.in_stock = inStock;
       } else {
-        tempData.forEach((device) => {
-          if (device.serial_numbers) {
-            splitInventory(device, inStock, deployed, offboarding);
-          }
-        });
-
-        sortInventory(inStock, deployed);
-
-        state.pending = offboarding;
-        state.deployed = deployed;
-        state.in_stock = inStock;
+        state.pending = state.data.pending;
+        state.deployed = state.data.deployed;
+        state.in_stock = state.data.in_stock;
       }
     },
     addProducts: (state, action: PayloadAction<MarketplaceProducts2[]>) => {
       state.products = action.payload;
     },
+    filterByBrand: (state, action: PayloadAction<string>) => {
+      if (action.payload === "Apple") {
+        state.in_stock = state.in_stock.filter(
+          (dev) =>
+            dev.name.toLowerCase().includes("mac") ||
+            dev.name.toLowerCase().includes("apple")
+        );
+        state.pending = state.pending.filter(
+          (dev) =>
+            dev.name.toLowerCase().includes("mac") ||
+            dev.name.toLowerCase().includes("apple")
+        );
+        state.deployed = state.deployed.filter(
+          (dev) =>
+            dev.name.toLowerCase().includes("mac") ||
+            dev.name.toLowerCase().includes("apple")
+        );
+      } else {
+        state.in_stock = state.in_stock.filter((dev) =>
+          dev.name.toLowerCase().includes(action.payload.toLowerCase())
+        );
+        state.pending = state.pending.filter((dev) =>
+          dev.name.toLowerCase().includes(action.payload.toLowerCase())
+        );
+        state.deployed = state.deployed.filter((dev) =>
+          dev.name.toLowerCase().includes(action.payload.toLowerCase())
+        );
+      }
+    },
+    resetInventory: (state) => {
+      state.pending = state.data.pending;
+      state.in_stock = state.data.in_stock;
+      state.deployed = state.data.deployed;
+    },
   },
 });
 
-export const { updateInventory, filterInventoryByEntity, addProducts } =
-  inventorySlice.actions;
+export const {
+  setInventory,
+  filterInventoryByEntity,
+  addProducts,
+  filterByBrand,
+  resetInventory,
+} = inventorySlice.actions;
 
 export default inventorySlice.reducer;

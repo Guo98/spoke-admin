@@ -15,7 +15,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { manageLaptop } from "../../services/inventoryAPI";
+import { standardPost } from "../../services/standard";
 import ConfirmationBody from "./ConfirmationBody";
 
 interface OffboardProps {
@@ -153,10 +153,10 @@ const OffboardBody = (props: OffboardProps) => {
           : "",
     };
 
-    const offboardResult = await manageLaptop(
+    const offboardResult = await standardPost(
       accessToken,
-      bodyObj,
-      "offboarding"
+      "offboarding",
+      bodyObj
     );
 
     if (offboardResult.status === "Success") {

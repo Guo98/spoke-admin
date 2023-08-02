@@ -42,7 +42,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateEntity } from "../../app/store";
 import AppContainer from "../AppContainer/AppContainer";
-import { resetData } from "../../services/inventoryAPI";
+import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
 import { entityMappings } from "../../app/utility/constants";
 import { navMappings } from "../../utilities/mappings";
@@ -340,7 +340,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       case "Logout":
         const accessToken = await getAccessTokenSilently();
         try {
-          await resetData(accessToken);
+          await standardGet(accessToken, "resetdata");
         } catch (e) {
           console.error("Error in resetting device");
         }

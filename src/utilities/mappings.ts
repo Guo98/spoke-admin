@@ -48,6 +48,7 @@ const deviceLocationMappings: any = {
 
 const locationMappings: any = {
   "Georgia, USA": "the USA",
+  USA: "the USA",
   Poland: "Poland",
   Netherlands: "the EU",
 };

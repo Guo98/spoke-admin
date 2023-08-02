@@ -10,7 +10,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Item } from "../../interfaces/orders";
 import { useAuth0 } from "@auth0/auth0-react";
-import { sendSupportEmail } from "../../services/ordersAPI";
+import { standardPost } from "../../services/standard";
 
 const style = {
   position: "absolute" as "absolute",
@@ -81,7 +81,11 @@ const ManageOrder = (props: ManageProps) => {
     const accessToken = await getAccessTokenSilently();
     try {
       setSending(true);
-      const emailResp = await sendSupportEmail(accessToken, supportObj);
+      const emailResp = await standardPost(
+        accessToken,
+        "supportEmail",
+        supportObj
+      );
 
       if (emailResp.message === "Successful") {
         setSent(true);
