@@ -160,6 +160,7 @@ const clientRoles: any = {
   FLYR: ["Admin", "FLYR EU", "FLYR Poland", "FLYR USA", "Pribas EU"],
   Automox: ["Admin", "Technical", "Non-technical", "Approved Buyers"],
   Roivant: ["Admin", "Hiring Manager", "New Hire (Windows)", "New Hire (Mac)"],
+  public: ["Admin", "Technical", "Non-technical"],
 };
 
 const clientRolesCode: any = {
@@ -189,6 +190,7 @@ const connectionMappings: any = {
   "Intersect Power": ["Username Password"],
   NurseDash: ["Google", "Username Password"],
   Roivant: ["Microsoft", "Google", "Username Password"],
+  public: ["Google", "Microsoft", "Username Password"],
 };
 
 export {
