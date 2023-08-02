@@ -37,13 +37,27 @@ const roleMapping: any = {
 };
 
 const deviceLocationMappings: any = {
-  USA: ["United States", "Georgia, USA", "Nevada, USA", "Las Vegas, USA", "USA", "US"],
+  USA: [
+    "United States",
+    "Georgia, USA",
+    "Nevada, USA",
+    "Las Vegas, USA",
+    "USA",
+    "US",
+  ],
   POL: ["Poland", "Gdańsk, Poland"],
   PL: ["Poland", "Gdańsk, Poland"],
   NLD: ["Netherlands", "Maastricht, Netherlands"],
   NL: ["Netherlands", "Maastricht, Netherlands"],
   DEU: ["Netherlands", "Maastricht, Netherlands"],
-  US: ["United States", "Georgia, USA", "Nevada, USA", "Las Vegas, USA", "USA", "US"],
+  US: [
+    "United States",
+    "Georgia, USA",
+    "Nevada, USA",
+    "Las Vegas, USA",
+    "USA",
+    "US",
+  ],
 };
 
 const locationMappings: any = {
@@ -51,6 +65,8 @@ const locationMappings: any = {
   USA: "the USA",
   Poland: "Poland",
   Netherlands: "the EU",
+  "Las Vegas, USA": "the USA",
+  "Nevada, USA": "the USA",
 };
 
 const countryMappings: any = {
@@ -73,7 +89,14 @@ const countryMappings: any = {
 const navMappings: any = {
   "Intersect Power": ["Orders", "Storefront"],
   "Flo Health": ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
-  public: ["Orders", "Inventory", "Storefront", "Marketplace"],
+  public: [
+    "Orders",
+    "Inventory",
+    "Storefront",
+    "Marketplace",
+    "Approvals",
+    "Invite",
+  ],
   "Hidden Road": [
     "Orders",
     "Inventory",

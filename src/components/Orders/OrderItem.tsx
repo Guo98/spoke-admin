@@ -240,12 +240,23 @@ const OrderItem = (props: OrderProps) => {
                 {returnedLaptop && (
                   <>
                     <Typography
+                      color="#AEDD6B"
+                      display="inline"
+                      component="span"
+                      fontWeight="bold"
+                    >
+                      Returned Device:{" "}
+                    </Typography>
+                    <Typography
                       fontWeight="bold"
                       noWrap
+                      display="inline"
+                      component="span"
                       sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
                     >
-                      Returned Device: {returnedLaptop}
+                      {returnedLaptop}
                     </Typography>
+
                     <Typography>{items[0].serial_number}</Typography>
                   </>
                 )}
