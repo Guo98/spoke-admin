@@ -4,7 +4,7 @@ import { standardPost, standardGet } from "../../../services/standard";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
-import { updateInventory } from "../../../app/slices/inventorySlice";
+import { setInventory } from "../../../app/slices/inventorySlice";
 
 const style = {
   position: "absolute" as "absolute",
@@ -79,7 +79,7 @@ const AddToStock = (props: StockProps) => {
       let route = `inventory/${selectedClientData}`;
 
       const inventoryResult = await standardGet(accessToken, route);
-      dispatch(updateInventory(inventoryResult.data));
+      dispatch(setInventory(inventoryResult.data));
       setSuccess(true);
     } else {
       setError(true);

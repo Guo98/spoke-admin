@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
 import OffboardBody from "./OffboardBody";
-import { updateInventory } from "../../app/slices/inventorySlice";
+import { setInventory } from "../../app/slices/inventorySlice";
 import { standardGet } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import { InventorySummary } from "../../interfaces/inventory";
@@ -91,7 +91,7 @@ const ManageModal = (props: ManageProps) => {
       }
 
       const inventoryResult = await standardGet(accessToken, route);
-      dispatch(updateInventory(inventoryResult.data));
+      dispatch(setInventory(inventoryResult.data));
     };
 
     if (!open && loading) {

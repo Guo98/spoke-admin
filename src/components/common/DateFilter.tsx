@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FormControl,
   Select,
@@ -14,6 +14,8 @@ interface DropdownProps {
 
 const DateFilter = (props: DropdownProps) => {
   const { handleChange, defaultValue } = props;
+
+  useEffect(() => {}, [defaultValue]);
   return (
     <FormControl size="small" variant="standard">
       <InputLabel id="date-select-label">Approvals From</InputLabel>

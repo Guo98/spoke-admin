@@ -18,7 +18,7 @@ import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardPost, standardGet } from "../../services/standard";
 import ConfirmationBody from "./ConfirmationBody";
-import { updateInventory } from "../../app/slices/inventorySlice";
+import { setInventory } from "../../app/slices/inventorySlice";
 
 const style = {
   position: "absolute" as "absolute",
@@ -157,7 +157,7 @@ const DeployModalContent = (props: DeployProps) => {
         accessToken,
         `inventory/${client}`
       );
-      dispatch(updateInventory(inventoryResult.data));
+      dispatch(setInventory(inventoryResult.data));
     }
   };
 

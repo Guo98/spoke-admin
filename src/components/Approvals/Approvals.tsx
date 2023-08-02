@@ -101,9 +101,7 @@ const Approvals = () => {
         spacing={2}
         alignItems="center"
       >
-        <Typography>
-          <h2>Approvals</h2>
-        </Typography>
+        <h2>Approvals</h2>
         <DateFilter defaultValue={dateFilter} handleChange={handleChange} />
       </Stack>
       {loading && <LinearProgress />}

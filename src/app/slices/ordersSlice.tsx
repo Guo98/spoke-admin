@@ -48,7 +48,7 @@ export const ordersSlice = createSlice({
         (appr) => new Date(appr.date) > date
       );
 
-      if (completedDefaultFilter.length === 0) {
+      if (completedDefaultFilter.length === 0 && ipDefaultFilter.length === 0) {
         date = new Date(new Date().setDate(new Date().getDate() - 60));
         completedDefaultFilter = completed.filter(
           (appr) => new Date(appr.date) > date
@@ -58,7 +58,10 @@ export const ordersSlice = createSlice({
         );
         state.dateFilter = "60";
 
-        if (completedDefaultFilter.length === 0) {
+        if (
+          completedDefaultFilter.length === 0 &&
+          ipDefaultFilter.length === 0
+        ) {
           state.dateFilter = "All";
           completedDefaultFilter = completed;
           ipDefaultFilter = in_progress;
