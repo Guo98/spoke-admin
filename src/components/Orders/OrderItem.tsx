@@ -157,6 +157,10 @@ const OrderItem = (props: OrderProps) => {
       (item) => item.type && item.type === "laptop"
     );
 
+    if (items[0].name !== "Offboarding" && items[0].name !== "Returning") {
+      setReturnedLaptop("");
+    }
+
     if (itemFilter.length > 0) {
       setLaptopName(itemFilter[0].name);
       setLaptopTracking(itemFilter[0].tracking_number[0]);
