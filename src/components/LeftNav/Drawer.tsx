@@ -448,7 +448,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         )}
         {drawerContent}
         <div className="bottom-version">
-          <Typography fontSize="10px">Version 1.5.0</Typography>
+          <Typography fontSize="10px">Version 1.5.2</Typography>
         </div>
       </Drawer>
     </>
