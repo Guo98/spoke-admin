@@ -65,7 +65,7 @@ const DeleteModal = (props: DeleteProps) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 450,
+            width: "40%",
             bgcolor: "background.paper",
             borderRadius: "20px",
             boxShadow: 24,

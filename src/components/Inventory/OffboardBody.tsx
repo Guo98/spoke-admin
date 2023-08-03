@@ -56,7 +56,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 450,
+  width: "40%",
   bgcolor: "background.paper",
   borderRadius: "20px",
   boxShadow: 24,
@@ -96,6 +96,7 @@ const OffboardBody = (props: OffboardProps) => {
   const [confirmation, setConfirmation] = useState(false);
   const [success, setSuccess] = useState(false);
   const [selectedDeviceName, setSelectedDeviceName] = useState("");
+  const [deviceCondition, setDeviceCondition] = useState("");
   const [otherName, setOtherName] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -122,6 +123,7 @@ const OffboardBody = (props: OffboardProps) => {
             : otherName
           : device_name,
       serial_number: serial_number,
+      device_condition: deviceCondition,
       recipient_name: fn + " " + ln,
       recipient_email: updatedemail,
       item:
@@ -169,6 +171,10 @@ const OffboardBody = (props: OffboardProps) => {
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedDeviceName(event.target.value);
+  };
+
+  const handleConditionChange = (event: SelectChangeEvent) => {
+    setDeviceCondition(event.target.value);
   };
 
   return (
@@ -371,6 +377,22 @@ const OffboardBody = (props: OffboardProps) => {
                     />
                   </Grid>
                 </Grid>
+                <FormControl fullWidth sx={textFieldStyle} size="small">
+                  <InputLabel id="condition-type-label">
+                    Device Condition
+                  </InputLabel>
+                  <Select
+                    labelId="condition-type-label"
+                    id="condition-select-standard"
+                    value={deviceCondition}
+                    onChange={handleConditionChange}
+                    label="Device Condition"
+                  >
+                    <MenuItem value="Working">Working</MenuItem>
+                    <MenuItem value="Damaged">Damaged</MenuItem>
+                    <MenuItem value="Unknown">Unknown</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
                   label="Note"
                   value={note}

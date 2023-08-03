@@ -27,7 +27,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 500,
+  width: "40%",
   bgcolor: "background.paper",
   borderRadius: "20px",
   boxShadow: 24,
@@ -161,7 +161,7 @@ const AssignModal = (props: AssignProps) => {
               id="modal-modal-title"
               variant="h5"
               component="h3"
-              sx={{ fontWeight: "bold", paddingBottom: "10px" }}
+              sx={{ fontWeight: "bold", paddingBottom: "15px" }}
             >
               New Deployment
             </Typography>
@@ -205,37 +205,28 @@ const AssignModal = (props: AssignProps) => {
                   </FormControl>
                 </div>
               )}
-              <Grid
-                container
-                spacing={2}
-                sx={{
-                  marginLeft: "-16px !important",
-                  marginTop: "0px !important",
-                }}
-              >
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    id="standard-fn"
-                    label="First Name"
-                    defaultValue=""
-                    onChange={(event) => setFirstname(event.target.value)}
-                    size="small"
-                    sx={textFieldStyle}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    id="standard-ln"
-                    label="Last Name"
-                    defaultValue=""
-                    sx={rightTextFieldStyle}
-                    onChange={(event) => setLastname(event.target.value)}
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  required
+                  id="standard-fn"
+                  label="First Name"
+                  defaultValue=""
+                  onChange={(event) => setFirstname(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                />
+                <TextField
+                  required
+                  id="standard-ln"
+                  label="Last Name"
+                  defaultValue=""
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setLastname(event.target.value)}
+                  size="small"
+                  fullWidth
+                />
+              </Stack>
               <div>
                 <TextField
                   required
@@ -250,37 +241,29 @@ const AssignModal = (props: AssignProps) => {
                   helperText={error}
                 />
               </div>
-              <Grid
-                container
-                spacing={2}
-                sx={{
-                  marginLeft: "-16px !important",
-                  marginTop: "0px !important",
-                }}
-              >
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    id="standard-email"
-                    label="Email"
-                    defaultValue=""
-                    onChange={(event) => setEmail(event.target.value)}
-                    size="small"
-                    sx={textFieldStyle}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    id="standard-phonenumber"
-                    label="Phone Number"
-                    defaultValue=""
-                    sx={rightTextFieldStyle}
-                    onChange={(event) => setPhonenumber(event.target.value)}
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
+              <Stack direction="row" spacing={2}>
+                {" "}
+                <TextField
+                  required
+                  id="standard-email"
+                  label="Email"
+                  defaultValue=""
+                  onChange={(event) => setEmail(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                />
+                <TextField
+                  required
+                  id="standard-phonenumber"
+                  label="Phone Number"
+                  defaultValue=""
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setPhonenumber(event.target.value)}
+                  size="small"
+                  fullWidth
+                />
+              </Stack>
               <div>
                 <FormControl
                   fullWidth
