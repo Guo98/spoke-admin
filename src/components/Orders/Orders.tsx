@@ -290,6 +290,7 @@ const Orders = () => {
           <DateFilter
             defaultValue={dateFilter}
             handleChange={handleDateChange}
+            label="Orders From"
           />
         </Stack>
         {ordertypes.length > 0 && (

@@ -148,6 +148,7 @@ const clientsList = [
   "Intersect Power",
   "NurseDash",
   "Roivant",
+  "public",
 ];
 
 const clientRoles: any = {
