@@ -102,7 +102,11 @@ const Approvals = () => {
         alignItems="center"
       >
         <h2>Approvals</h2>
-        <DateFilter defaultValue={dateFilter} handleChange={handleChange} />
+        <DateFilter
+          defaultValue={dateFilter}
+          handleChange={handleChange}
+          label="Approvals From"
+        />
       </Stack>
       {loading && <LinearProgress />}
       {!loading && reduxData.length > 0 && (
