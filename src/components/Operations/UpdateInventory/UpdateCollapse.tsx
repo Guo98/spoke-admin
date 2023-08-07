@@ -168,15 +168,16 @@ const UpdateCollapse = (props: UpdateProps) => {
                     </Stack>
                   </>
                 )}
-                {updateStatus === "In Stock" &&
-                  (status === "Deployed" || status === "Offboard") && (
-                    <TextField
-                      label="Grade"
-                      size="small"
-                      fullWidth
-                      onChange={(e) => setGrade(e.target.value)}
-                    />
-                  )}
+                {(condition === "Used" ||
+                  updatedCondition === "Used" ||
+                  updatedCondition === "Damaged") && (
+                  <TextField
+                    label="Grade"
+                    size="small"
+                    fullWidth
+                    onChange={(e) => setGrade(e.target.value)}
+                  />
+                )}
                 <FormControl>
                   <FormLabel id="radio-group-condition-label">
                     Condition
