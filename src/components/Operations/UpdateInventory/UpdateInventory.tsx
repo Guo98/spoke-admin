@@ -104,7 +104,8 @@ const UpdateInventory = (props: UpdateProps) => {
     updated_sn = "",
     updated_fn = "",
     updated_ln = "",
-    grade = ""
+    grade = "",
+    updated_condition = ""
   ) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
@@ -119,6 +120,7 @@ const UpdateInventory = (props: UpdateProps) => {
       updated_ln,
       updated_sn,
       grade,
+      updated_condition,
     };
 
     const postResp = await standardPatch(accessToken, "inventory", body);

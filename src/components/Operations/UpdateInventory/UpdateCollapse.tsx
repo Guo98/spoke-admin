@@ -36,9 +36,16 @@ const UpdateCollapse = (props: UpdateProps) => {
   const [updateFN, setFN] = useState(first_name || "");
   const [updateLN, setLN] = useState(last_name || "");
   const [grade, setGrade] = useState("");
+  const [updatedCondition, setCondition] = useState(condition);
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStatus((event.target as HTMLInputElement).value);
+  };
+
+  const handleConditionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCondition((event.target as HTMLInputElement).value);
   };
 
   const submit_changes = async () => {
@@ -49,7 +56,8 @@ const UpdateCollapse = (props: UpdateProps) => {
       updateSN !== sn ? updateSN : "",
       updateFN !== first_name ? updateFN : "",
       updateLN !== last_name ? updateLN : "",
-      grade
+      grade,
+      updatedCondition !== condition ? updatedCondition : ""
     );
   };
 
@@ -64,6 +72,7 @@ const UpdateCollapse = (props: UpdateProps) => {
     setLN(last_name || "");
     setFN(first_name || "");
     setGrade("");
+    setCondition(condition);
   };
 
   return (
@@ -159,15 +168,46 @@ const UpdateCollapse = (props: UpdateProps) => {
                     </Stack>
                   </>
                 )}
-                {updateStatus === "In Stock" &&
-                  (status === "Deployed" || status === "Offboard") && (
-                    <TextField
-                      label="Grade"
-                      size="small"
-                      fullWidth
-                      onChange={(e) => setGrade(e.target.value)}
+                {(condition === "Used" ||
+                  updatedCondition === "Used" ||
+                  updatedCondition === "Damaged") && (
+                  <TextField
+                    label="Grade"
+                    size="small"
+                    fullWidth
+                    onChange={(e) => setGrade(e.target.value)}
+                  />
+                )}
+                <FormControl>
+                  <FormLabel id="radio-group-condition-label">
+                    Condition
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="radio-group-condition-label"
+                    name="status-radio-buttons-group-condition"
+                    value={condition}
+                    onChange={handleConditionChange}
+                  >
+                    <FormControlLabel
+                      value="New"
+                      control={<Radio checked={updatedCondition === "New"} />}
+                      label="New"
                     />
-                  )}
+                    <FormControlLabel
+                      value="Used"
+                      control={<Radio checked={updatedCondition === "Used"} />}
+                      label="Used"
+                    />
+                    <FormControlLabel
+                      value="Damaged"
+                      control={
+                        <Radio checked={updatedCondition === "Damaged"} />
+                      }
+                      label="Damaged"
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Button
                     variant="contained"
@@ -175,7 +215,8 @@ const UpdateCollapse = (props: UpdateProps) => {
                       sn === updateSN &&
                       status === updateStatus &&
                       first_name === updateFN &&
-                      last_name === updateLN
+                      last_name === updateLN &&
+                      condition === updatedCondition
                     }
                     fullWidth
                     onClick={submit_changes}
@@ -188,7 +229,8 @@ const UpdateCollapse = (props: UpdateProps) => {
                       sn === updateSN &&
                       status === updateStatus &&
                       first_name === updateFN &&
-                      last_name === updateLN
+                      last_name === updateLN &&
+                      condition === updatedCondition
                     }
                     onClick={handleClose}
                     fullWidth
