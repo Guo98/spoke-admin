@@ -142,16 +142,14 @@ const QuoteRow = (props: QuoteProps) => {
         <TableCell>
           <Chip
             label={
-              (status === "Completed" || status === "In Progress") &&
-              props.approved !== undefined
+              status && props.approved !== undefined
                 ? props.approved
                   ? "Approved"
                   : "Rejected"
                 : status
             }
             color={
-              (status === "Completed" || status === "In Progress") &&
-              props.approved !== undefined
+              status && props.approved !== undefined
                 ? props.approved
                   ? "success"
                   : "error"
