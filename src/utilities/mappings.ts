@@ -27,6 +27,7 @@ const orgMapping: any = {
   org_cf0BFkW7yuXi9lTo: "Flo Health",
   org_BmAU8UUBYjVbRMDD: "Flo Health",
   org_lgsM9ZWjP1GdrDoA: "Roivant",
+  org_f0OJSheWDop7RPuc: "Sona",
 };
 
 const roleMapping: any = {
@@ -136,6 +137,7 @@ const navMappings: any = {
     ],
     manager: ["Invite", "Storefront"],
   },
+  Sona: ["Orders", "Inventory", "Marketplace", "Approvals"],
 };
 
 const clientsList = [
@@ -148,6 +150,7 @@ const clientsList = [
   "Intersect Power",
   "NurseDash",
   "Roivant",
+  "Sona",
   "public",
 ];
 
@@ -191,6 +194,7 @@ const connectionMappings: any = {
   "Intersect Power": ["Username Password"],
   NurseDash: ["Google", "Username Password"],
   Roivant: ["Microsoft", "Google", "Username Password"],
+  Sona: ["Google", "Username Password"],
   public: ["Google", "Microsoft", "Username Password"],
 };
 
