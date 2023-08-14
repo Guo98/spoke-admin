@@ -200,7 +200,7 @@ const Marketplace = () => {
                 />
               );
             })}
-          {selectedClient !== "public" ? (
+          {marketClient !== "public" ? (
             <PurchaseModal
               open={openModal}
               handleClose={handleClose}

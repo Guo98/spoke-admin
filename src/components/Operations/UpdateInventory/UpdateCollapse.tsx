@@ -23,13 +23,22 @@ interface UpdateProps {
   first_name?: string;
   last_name?: string;
   index: number;
+  warehouse?: string;
   submitChanges: Function;
   handleDelete: Function;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
-  const { sn, condition, status, first_name, last_name, submitChanges, index } =
-    props;
+  const {
+    sn,
+    condition,
+    status,
+    first_name,
+    last_name,
+    submitChanges,
+    index,
+    warehouse,
+  } = props;
   const [open, setOpen] = useState(false);
   const [updateSN, setSN] = useState(sn);
   const [updateStatus, setStatus] = useState(status);
@@ -37,6 +46,7 @@ const UpdateCollapse = (props: UpdateProps) => {
   const [updateLN, setLN] = useState(last_name || "");
   const [grade, setGrade] = useState("");
   const [updatedCondition, setCondition] = useState(condition);
+  const [updatedWarehouse, setWarehouse] = useState(warehouse ? warehouse : "");
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStatus((event.target as HTMLInputElement).value);
@@ -48,6 +58,12 @@ const UpdateCollapse = (props: UpdateProps) => {
     setCondition((event.target as HTMLInputElement).value);
   };
 
+  const handleWarehouseChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setWarehouse((event.target as HTMLInputElement).value);
+  };
+
   const submit_changes = async () => {
     await submitChanges(
       sn,
@@ -57,7 +73,8 @@ const UpdateCollapse = (props: UpdateProps) => {
       updateFN !== first_name ? updateFN : "",
       updateLN !== last_name ? updateLN : "",
       grade,
-      updatedCondition !== condition ? updatedCondition : ""
+      updatedCondition !== condition ? updatedCondition : "",
+      updatedWarehouse !== warehouse ? updatedWarehouse : ""
     );
   };
 
@@ -208,6 +225,31 @@ const UpdateCollapse = (props: UpdateProps) => {
                     />
                   </RadioGroup>
                 </FormControl>
+                {updateStatus === "In Stock" && (
+                  <FormControl>
+                    <FormLabel id="radio-group-warehouse-label">
+                      Warehouse
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="radio-group-warehouse-label"
+                      name="status-radio-buttons-group-warehouse"
+                      value={warehouse}
+                      onChange={handleWarehouseChange}
+                    >
+                      <FormControlLabel
+                        value="CTS"
+                        control={<Radio checked={updatedWarehouse === "CTS"} />}
+                        label="CTS"
+                      />
+                      <FormControlLabel
+                        value="CDW"
+                        control={<Radio checked={updatedWarehouse === "CDW"} />}
+                        label="CDW"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                )}
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Button
                     variant="contained"
