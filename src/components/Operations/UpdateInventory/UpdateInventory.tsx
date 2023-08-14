@@ -105,7 +105,8 @@ const UpdateInventory = (props: UpdateProps) => {
     updated_fn = "",
     updated_ln = "",
     grade = "",
-    updated_condition = ""
+    updated_condition = "",
+    updated_warehouse = ""
   ) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
@@ -121,6 +122,7 @@ const UpdateInventory = (props: UpdateProps) => {
       updated_sn,
       grade,
       updated_condition,
+      updated_warehouse,
     };
 
     const postResp = await standardPatch(accessToken, "inventory", body);
@@ -292,6 +294,7 @@ const UpdateInventory = (props: UpdateProps) => {
                         index={index}
                         submitChanges={handleSubmitChange}
                         handleDelete={handleDeleteRow}
+                        warehouse={sn.warehouse}
                       />
                     )
                   )}

@@ -13,6 +13,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardGet } from "../../../services/standard";
+import Recommendation from "./Recommendation";
 
 interface CheckStockProps {
   types: any;
@@ -34,6 +35,7 @@ const CheckStock = (props: CheckStockProps) => {
   const [loading, setBoxLoading] = useState(false);
   const [stock, setStock] = useState("");
   const [price, setPrice] = useState("");
+  const [rec, setRec] = useState<any | null>(null);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -69,6 +71,9 @@ const CheckStock = (props: CheckStockProps) => {
       console.log("stock resp ::::::::: ", stockResp.data);
       setStock(stockResp.data.stock_level);
       setPrice(stockResp.data.price);
+      if (stockResp.data.recommendation) {
+        setRec(stockResp.data.recommendation);
+      }
     }
     setLoading(false);
     setBoxLoading(false);
@@ -141,6 +146,14 @@ const CheckStock = (props: CheckStockProps) => {
           </Typography>
         </div>
       )}
+      {rec && (
+        <Recommendation
+          price={rec.price}
+          stock_level={rec.stock_level}
+          product_name={rec.product_name}
+          url_link={rec.url_link}
+        />
+      )}
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 2 }}>
         <Button
           disabled={specs === "" || type === "" || loading}
@@ -149,9 +162,9 @@ const CheckStock = (props: CheckStockProps) => {
         >
           {!loading ? "Check Stock" : <CircularProgress />}
         </Button>
-        {stock === "In Stock" && (
-          <Button variant="contained">Get Recommendations</Button>
-        )}
+        <Button variant="contained" disabled={stock === ""}>
+          Request Quote
+        </Button>
       </Stack>
     </>
   );
