@@ -19,6 +19,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { standardGet } from "../../../services/standard";
 import Recommendation from "./Recommendation";
 
+
 interface CheckStockProps {
   types: any;
   setLoading: Function;
@@ -46,6 +47,7 @@ const CheckStock = (props: CheckStockProps) => {
   const [aispecs, setAISpecs] = useState("");
   const [rec, setRec] = useState<any | null>(null);
   const [stock_checked, setStockChecked] = useState(false);
+
 
   const { getAccessTokenSilently } = useAuth0();
 
