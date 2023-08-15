@@ -13,6 +13,7 @@ import Header from "../Header/Header";
 import ProductCard from "./ProductCard";
 import PurchaseModal from "./PurchaseModal";
 import MarketAI from "./AI/MarketAI";
+import MarketplacePurchase from "./MarketplacePurchase";
 
 const Marketplace = () => {
   const productRedux = useSelector(
@@ -200,7 +201,7 @@ const Marketplace = () => {
                 />
               );
             })}
-          {marketClient !== "public" ? (
+          {/* {marketClient !== "public" ? (
             <PurchaseModal
               open={openModal}
               handleClose={handleClose}
@@ -215,8 +216,17 @@ const Marketplace = () => {
               imgSrc={modalimg}
               types={brandtypes}
               brand={brandname}
+              client={marketClient}
             />
-          )}
+          )} */}
+          <MarketplacePurchase
+            open={openModal}
+            handleClose={handleClose}
+            imgSrc={modalimg}
+            types={brandtypes}
+            brand={brandname}
+            client={marketClient}
+          />
         </Box>
         {pagenumber > 0 && (
           <Button

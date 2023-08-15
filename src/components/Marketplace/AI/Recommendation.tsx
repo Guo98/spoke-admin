@@ -74,7 +74,14 @@ const Recommendation = (props: RecommendationProps) => {
         <Tooltip title="Request Quote">
           <IconButton
             color="primary"
-            onClick={() => completeDeviceChoice(product_name, specs, url_link)}
+            onClick={() =>
+              completeDeviceChoice(
+                product_name,
+                specs,
+                url_link,
+                "United States"
+              )
+            }
           >
             <RequestQuoteIcon sx={{ mr: 2 }} />
           </IconButton>
