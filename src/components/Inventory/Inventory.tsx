@@ -569,7 +569,8 @@ const Inventory: FC = (): ReactElement => {
           {marketClient !== "Automox" &&
             marketClient !== "Alma" &&
             marketClient !== "Flo Health" &&
-            marketClient !== "Hidden Road" && (
+            marketClient !== "Hidden Road" &&
+            marketClient !== "Roivant" && (
               <>
                 <Fab
                   color="primary"

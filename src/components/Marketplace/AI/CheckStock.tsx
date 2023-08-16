@@ -104,7 +104,11 @@ const CheckStock = (props: CheckStockProps) => {
               <Typography display="inline" component="span" fontWeight="bold">
                 Stock Level:{" "}
               </Typography>
-              <Typography display="inline" component="span">
+              <Typography
+                display="inline"
+                component="span"
+                color={stock === "In Stock" ? "greenyellow" : "red"}
+              >
                 {stock}
               </Typography>
             </div>

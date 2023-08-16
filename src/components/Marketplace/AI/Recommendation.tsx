@@ -55,7 +55,11 @@ const Recommendation = (props: RecommendationProps) => {
             <Typography display="inline" component="span" fontWeight="bold">
               Stock Level:{" "}
             </Typography>
-            <Typography display="inline" component="span">
+            <Typography
+              display="inline"
+              component="span"
+              color={stock_level === "In Stock" ? "greenyellow" : "red"}
+            >
               {stock_level}
             </Typography>
           </div>
