@@ -16,6 +16,7 @@ interface RecommendationProps {
   url_link: string;
   specs: string;
   completeDeviceChoice: Function;
+  image_source: string;
 }
 
 const Recommendation = (props: RecommendationProps) => {
@@ -26,15 +27,13 @@ const Recommendation = (props: RecommendationProps) => {
     url_link,
     specs,
     completeDeviceChoice,
+    image_source,
   } = props;
   return (
     <>
-      <Divider sx={{ my: 2 }} />
       <Stack direction="row" justifyContent="space-between" spacing={2}>
-        <div>
-          <Typography fontWeight="bold" variant="h6" pb={2}>
-            Recommended Replacement:
-          </Typography>
+        <img src={image_source} />
+        <Stack spacing={1} justifyContent="center">
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
               Product Name:{" "}
@@ -74,7 +73,7 @@ const Recommendation = (props: RecommendationProps) => {
           <Link href={url_link} target="_blank">
             Link to Product
           </Link>
-        </div>
+        </Stack>
         <Tooltip title="Request Quote">
           <IconButton
             color="primary"
@@ -83,7 +82,10 @@ const Recommendation = (props: RecommendationProps) => {
                 product_name,
                 specs,
                 url_link,
-                "United States"
+                "United States",
+                price,
+                image_source,
+                stock_level
               )
             }
           >

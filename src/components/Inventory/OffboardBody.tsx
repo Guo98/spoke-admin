@@ -10,13 +10,13 @@ import {
   Stack,
   Box,
   SelectChangeEvent,
-  LinearProgress,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { standardPost } from "../../services/standard";
 import ConfirmationBody from "./ConfirmationBody";
+import LinearLoading from "../common/LinearLoading";
 
 interface OffboardProps {
   manageType: string;
@@ -446,7 +446,7 @@ const OffboardBody = (props: OffboardProps) => {
               </Stack>
             </>
           ) : (
-            <LinearProgress />
+            <LinearLoading />
           )}
         </Box>
       ) : (

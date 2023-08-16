@@ -147,6 +147,7 @@ const Profile = (props: ProfileProps) => {
                   <MenuItem value="Automox">Automox</MenuItem>
                   <MenuItem value="Flo Health">Flo Health</MenuItem>
                   <MenuItem value="Roivant">Roivant</MenuItem>
+                  <MenuItem value="Sona">Sona</MenuItem>
                   {showAll && <MenuItem value="All">All</MenuItem>}
                 </Select>
               </FormControl>

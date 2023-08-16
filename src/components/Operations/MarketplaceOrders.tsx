@@ -4,7 +4,6 @@ import {
   IconButton,
   Typography,
   Grid,
-  LinearProgress,
   Table,
   TableContainer,
   TableHead,
@@ -32,6 +31,7 @@ import { standardPost, standardGet } from "../../services/standard";
 import { uploadFile, downloadFile } from "../../services/azureblob";
 import { clientsList } from "../../utilities/mappings";
 import { entityMappings } from "../../app/utility/constants";
+import LinearLoading from "../common/LinearLoading";
 
 interface MOProps {
   handleClose: Function;
@@ -226,7 +226,7 @@ const MarketRow = (props: RowProps) => {
         <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              {loading && <LinearProgress />}
+              {loading && <LinearLoading />}
               <Stack
                 direction="row"
                 spacing={2}
@@ -514,7 +514,7 @@ const MarketplaceOrders = (props: MOProps) => {
           </IconButton>
         </Grid>
       </Grid>
-      {loading && <LinearProgress />}
+      {loading && <LinearLoading />}
       {!loading && orders.length > 0 && (
         <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
           <Table stickyHeader>

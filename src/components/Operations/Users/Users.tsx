@@ -8,7 +8,6 @@ import {
   TableCell,
   Paper,
   Button,
-  LinearProgress,
   Box,
   Alert,
 } from "@mui/material";
@@ -18,6 +17,7 @@ import {
   standardDelete,
   standardPost,
 } from "../../../services/standard";
+import LinearLoading from "../../common/LinearLoading";
 
 const Users = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -63,7 +63,7 @@ const Users = () => {
 
   return (
     <Box>
-      {loading && <LinearProgress />}
+      {loading && <LinearLoading />}
       {success && <Alert severity="success">{successMsg}</Alert>}
       {error && <Alert severity="error">{errorMsg}</Alert>}
       {users.length > 0 && (

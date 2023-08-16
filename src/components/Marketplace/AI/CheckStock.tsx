@@ -1,10 +1,5 @@
 import React, { useState } from "react";
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  SelectChangeEvent,
-  MenuItem,
   Button,
   Stack,
   CircularProgress,
@@ -13,11 +8,10 @@ import {
   Tooltip,
   Link,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardGet } from "../../../services/standard";
-import Recommendation from "./Recommendation";
+import Recommendations from "./Recommendations";
 
 interface CheckStockProps {
   type: string;
@@ -26,12 +20,6 @@ interface CheckStockProps {
   completeDeviceChoice: Function;
   spec: string;
 }
-
-const textFieldStyle = {
-  "& fieldset": { borderRadius: "10px" },
-  marginTop: "10px",
-  mb: 1,
-};
 
 const CheckStock = (props: CheckStockProps) => {
   const { type, spec, setLoading, brand, completeDeviceChoice } = props;
@@ -42,7 +30,7 @@ const CheckStock = (props: CheckStockProps) => {
   const [url_link, setUrlLink] = useState("");
   const [product_name, setProdName] = useState("");
   const [aispecs, setAISpecs] = useState("");
-  const [rec, setRec] = useState<any | null>(null);
+  const [recs, setRecs] = useState<any[]>([]);
   const [stock_checked, setStockChecked] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
@@ -63,8 +51,8 @@ const CheckStock = (props: CheckStockProps) => {
       setProdName(stockResp.data.product_name);
       setUrlLink(stockResp.data.url_link);
       setAISpecs(stockResp.data.specs);
-      if (stockResp.data.recommendation) {
-        setRec(stockResp.data.recommendation);
+      if (stockResp.data.recommendations) {
+        setRecs(stockResp.data.recommendations);
       }
     }
     setLoading(false);
@@ -136,14 +124,10 @@ const CheckStock = (props: CheckStockProps) => {
           </Tooltip>
         </Stack>
       )}
-      {rec && (
-        <Recommendation
-          price={rec.price}
-          stock_level={rec.stock_level}
-          product_name={rec.product_name}
-          url_link={rec.url_link}
-          specs={rec.specs}
+      {recs.length > 0 && (
+        <Recommendations
           completeDeviceChoice={completeDeviceChoice}
+          recommendations={recs}
         />
       )}
       {!stock_checked && (

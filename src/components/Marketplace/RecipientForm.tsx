@@ -9,15 +9,16 @@ import {
   TextField,
   Stack,
   Button,
-  LinearProgress,
   FormControlLabel,
   Checkbox,
   Divider,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
+import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardPost } from "../../services/standard";
+import LinearLoading from "../common/LinearLoading";
 
 interface RecipientProps {
   completeRecipientStep: Function;
@@ -27,6 +28,9 @@ interface RecipientProps {
   client: string;
   setParentLoading: Function;
   region: string;
+  image_source: string;
+  price: string;
+  stock_level: string;
 }
 
 const textFieldStyle = {
@@ -42,6 +46,9 @@ const RecipientForm = (props: RecipientProps) => {
     client,
     setParentLoading,
     region,
+    image_source,
+    price,
+    stock_level,
   } = props;
 
   const { user, getAccessTokenSilently } = useAuth0();
@@ -135,8 +142,41 @@ const RecipientForm = (props: RecipientProps) => {
           <Typography fontWeight="bold" variant="h6">
             Device Details
           </Typography>
-          <Typography>{device_name}</Typography>
-          <Typography>Specs: {device_specs}</Typography>
+          <Stack direction="row" spacing={2}>
+            <img src={image_source} alt="Laptop picture" />
+            <Stack justifyContent="center" spacing={1}>
+              <Typography fontWeight="bold">{device_name}</Typography>
+              <div>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Specs:{" "}
+                </Typography>
+                <Typography display="inline" component="span">
+                  {device_specs}
+                </Typography>
+              </div>
+              <div>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Stock Level:{" "}
+                </Typography>
+                <Typography
+                  display="inline"
+                  component="span"
+                  color={stock_level === "In Stock" ? "greenyellow" : "red"}
+                >
+                  {stock_level}
+                </Typography>
+              </div>
+              <div>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Estimated Price:{" "}
+                </Typography>
+                <Typography display="inline" component="span">
+                  {price}
+                </Typography>
+              </div>
+            </Stack>
+          </Stack>
+          <Divider />
           <Typography fontWeight="bold">Select Deployment Type:</Typography>
           <FormControl fullWidth sx={textFieldStyle} required size="small">
             <InputLabel id="deployment-select-label">
@@ -269,7 +309,7 @@ const RecipientForm = (props: RecipientProps) => {
           </Button>
         </Stack>
       )}
-      {loading && <LinearProgress sx={{ mt: 3 }} />}
+      {loading && <LinearLoading sx={{ mt: 3 }} />}
       {status === 0 && (
         <>
           <Typography variant="h6" component="h4" textAlign="center" pt={3}>
