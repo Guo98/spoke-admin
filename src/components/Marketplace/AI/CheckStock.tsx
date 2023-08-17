@@ -143,6 +143,7 @@ const CheckStock = (props: CheckStockProps) => {
         <Recommendations
           completeDeviceChoice={completeDeviceChoice}
           recommendations={recs}
+          requested_item={brand + " " + type + " " + spec}
         />
       )}
       {!stock_checked && (

@@ -7,10 +7,11 @@ import Recommendation from "./Recommendation";
 interface RecommendationsProps {
   recommendations: any;
   completeDeviceChoice: Function;
+  requested_item: string;
 }
 
 const Recommendations = (props: RecommendationsProps) => {
-  const { recommendations, completeDeviceChoice } = props;
+  const { recommendations, completeDeviceChoice, requested_item } = props;
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -39,6 +40,7 @@ const Recommendations = (props: RecommendationsProps) => {
               url_link={rec.url_link}
               product_name={rec.product_name}
               image_source={rec.image_source}
+              requested_item={requested_item}
             />
           )
       )}
@@ -59,7 +61,7 @@ const Recommendations = (props: RecommendationsProps) => {
             <KeyboardArrowLeftIcon />
           </Button>
         }
-        sx={{ paddingTop: 0 }}
+        sx={{ paddingTop: 2 }}
       />
     </>
   );

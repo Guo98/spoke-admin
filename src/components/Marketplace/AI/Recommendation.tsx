@@ -1,14 +1,6 @@
 import React from "react";
-import {
-  Typography,
-  Divider,
-  Link,
-  IconButton,
-  Stack,
-  Tooltip,
-  Button,
-} from "@mui/material";
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import { Typography, Link, Stack, Button } from "@mui/material";
+import RateSelection from "./RateSelection";
 
 interface RecommendationProps {
   price: string;
@@ -18,6 +10,7 @@ interface RecommendationProps {
   specs: string;
   completeDeviceChoice: Function;
   image_source: string;
+  requested_item: string;
 }
 
 const Recommendation = (props: RecommendationProps) => {
@@ -29,20 +22,37 @@ const Recommendation = (props: RecommendationProps) => {
     specs,
     completeDeviceChoice,
     image_source,
+    requested_item,
   } = props;
   return (
     <>
       <Stack direction="row" spacing={2}>
         <img src={image_source} />
         <Stack spacing={1} justifyContent="center" width="100%">
-          <div>
-            <Typography display="inline" component="span" fontWeight="bold">
-              Product Name:{" "}
-            </Typography>
-            <Typography display="inline" component="span">
-              {product_name}
-            </Typography>
-          </div>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <div>
+              <Typography
+                display="inline"
+                component="span"
+                fontWeight="bold"
+                fontSize="115%"
+              >
+                Product Name:{" "}
+              </Typography>
+              <Typography display="inline" component="span" fontSize="115%">
+                {product_name}
+              </Typography>
+            </div>
+            <RateSelection
+              recommended_item={product_name}
+              recommended_link={url_link}
+              requested_item={requested_item}
+            />
+          </Stack>
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
               Specs:{" "}
