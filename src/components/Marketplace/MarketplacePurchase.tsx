@@ -228,6 +228,7 @@ const MarketplacePurchase = (props: MPProps) => {
               completeDeviceChoice={completeDeviceStep}
               clear_device={clear_device}
               setClear={setClearDevice}
+              loading={loading}
             />
           </>
         )}

@@ -18,6 +18,7 @@ interface DeviceSelectionProps {
   completeDeviceChoice: Function;
   clear_device: boolean;
   setClear: Function;
+  loading: boolean;
 }
 
 const textFieldStyle = {
@@ -33,6 +34,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
     completeDeviceChoice,
     clear_device,
     setClear,
+    loading,
   } = props;
 
   const [other_brand, setOtherBrand] = useState("");

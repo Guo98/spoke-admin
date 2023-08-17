@@ -172,6 +172,16 @@ const CheckStock = (props: CheckStockProps) => {
           >
             {!loading ? "Check Stock" : <CircularProgress />}
           </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ borderRadius: "10px" }}
+            onClick={() =>
+              completeDeviceChoice(type, spec, "", "United States")
+            }
+          >
+            Request Quote
+          </Button>
         </Stack>
       )}
     </>
