@@ -164,6 +164,9 @@ const MarketplacePurchase = (props: MPProps) => {
       setClearDevice(true);
     } else {
       setClearDeployment(true);
+      setClearDevice(true);
+      setActiveStep(0);
+      setComplete1(false);
     }
   };
 

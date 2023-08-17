@@ -137,8 +137,8 @@ const CheckStock = (props: CheckStockProps) => {
                     aispecs,
                     url_link,
                     "United States",
-                    "",
                     price,
+                    img_src,
                     stock
                   )
                 }
@@ -164,7 +164,7 @@ const CheckStock = (props: CheckStockProps) => {
           sx={{ mt: 2 }}
         >
           <Button
-            disabled={stock_checked || loading}
+            disabled={loading}
             variant="contained"
             onClick={checkStock}
             fullWidth
@@ -179,6 +179,7 @@ const CheckStock = (props: CheckStockProps) => {
             onClick={() =>
               completeDeviceChoice(type, spec, "", "United States")
             }
+            disabled={loading}
           >
             Request Quote
           </Button>
