@@ -32,6 +32,7 @@ const CheckStock = (props: CheckStockProps) => {
   const [aispecs, setAISpecs] = useState("");
   const [recs, setRecs] = useState<any[]>([]);
   const [stock_checked, setStockChecked] = useState(false);
+  const [img_src, setImgSrc] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -51,6 +52,7 @@ const CheckStock = (props: CheckStockProps) => {
       setProdName(stockResp.data.product_name);
       setUrlLink(stockResp.data.url_link);
       setAISpecs(stockResp.data.specs);
+      setImgSrc(stockResp.data.image_source);
       if (stockResp.data.recommendations) {
         setRecs(stockResp.data.recommendations);
       }
@@ -62,12 +64,8 @@ const CheckStock = (props: CheckStockProps) => {
   return (
     <>
       {stock_checked && (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          spacing={2}
-          pt={2}
-        >
+        <Stack direction="row" spacing={2} pt={2}>
+          <img src={img_src} alt="Laptop Picture" />
           <div>
             <Typography fontWeight="bold" variant="h6" pb={2}>
               Requested Item:
@@ -88,40 +86,57 @@ const CheckStock = (props: CheckStockProps) => {
                 {aispecs}
               </Typography>
             </div>
-            <div style={{ paddingTop: 2 }}>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Stock Level:{" "}
-              </Typography>
-              <Typography
-                display="inline"
-                component="span"
-                color={stock === "In Stock" ? "greenyellow" : "red"}
-              >
-                {stock}
-              </Typography>
-            </div>
-            <div style={{ paddingTop: 2 }}>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Estimated Price:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {price}
-              </Typography>
-            </div>
-            <Link href={url_link} target="_blank">
-              Link to Product
-            </Link>
-          </div>
-          <Tooltip title="Request Quote">
-            <IconButton
-              color="primary"
-              onClick={() =>
-                completeDeviceChoice(product_name, aispecs, url_link)
-              }
+            {stock !== "" && (
+              <div style={{ paddingTop: 2 }}>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Stock Level:{" "}
+                </Typography>
+                <Typography
+                  display="inline"
+                  component="span"
+                  color={stock === "In Stock" ? "greenyellow" : "red"}
+                >
+                  {stock}
+                </Typography>
+              </div>
+            )}
+            {price !== "" && (
+              <div style={{ paddingTop: 2 }}>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Estimated Price:{" "}
+                </Typography>
+                <Typography display="inline" component="span">
+                  {price}
+                </Typography>
+              </div>
+            )}
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <RequestQuoteIcon sx={{ mr: 2 }} />
-            </IconButton>
-          </Tooltip>
+              <Link href={url_link} target="_blank">
+                Link to Product
+              </Link>
+              <Button
+                variant="contained"
+                sx={{ borderRadius: "10px", mt: 2 }}
+                onClick={() =>
+                  completeDeviceChoice(
+                    product_name,
+                    aispecs,
+                    url_link,
+                    "United States",
+                    "",
+                    price,
+                    stock
+                  )
+                }
+              >
+                Request Quote
+              </Button>
+            </Stack>
+          </div>
         </Stack>
       )}
       {recs.length > 0 && (

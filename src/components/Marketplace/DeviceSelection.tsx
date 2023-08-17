@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FormControl,
   InputLabel,
@@ -7,12 +7,7 @@ import {
   MenuItem,
   TextField,
   Button,
-  Stack,
-  CircularProgress,
-  Typography,
-  IconButton,
-  Tooltip,
-  Link,
+  Autocomplete,
 } from "@mui/material";
 import CheckStock from "./AI/CheckStock";
 
@@ -21,6 +16,8 @@ interface DeviceSelectionProps {
   setLoading: Function;
   brand: string;
   completeDeviceChoice: Function;
+  clear_device: boolean;
+  setClear: Function;
 }
 
 const textFieldStyle = {
@@ -29,7 +26,14 @@ const textFieldStyle = {
 };
 
 const DeviceSelection = (props: DeviceSelectionProps) => {
-  const { types, setLoading, brand, completeDeviceChoice } = props;
+  const {
+    types,
+    setLoading,
+    brand,
+    completeDeviceChoice,
+    clear_device,
+    setClear,
+  } = props;
 
   const [other_brand, setOtherBrand] = useState("");
 
@@ -43,6 +47,27 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   const [region, setRegion] = useState("");
   const [other_region, setOtherRegion] = useState("");
+
+  useEffect(() => {
+    if (clear_device) {
+      setClear(false);
+      if (brand !== "Others") {
+        setType("");
+        setTypeIndex(-1);
+        setOtherType("");
+        setSpecs("");
+        setSpecIndex(-1);
+        setOtherSpecs("");
+        setRegion("");
+        setOtherRegion("");
+      } else {
+        setOtherBrand("");
+        setOtherType("");
+        setOtherSpecs("");
+        setOtherRegion("");
+      }
+    }
+  }, [clear_device]);
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     setType(event.target.value);
@@ -97,18 +122,26 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
       )}
       {brand === "Others" && (
         <>
-          <TextField
-            label="Brand"
+          <Autocomplete
             sx={{ ...textFieldStyle, mt: 2 }}
-            fullWidth
+            id="solo-brand"
+            inputValue={other_brand}
+            onChange={(e, v) => setOtherBrand(v ? v : "")}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Brands"
+                onChange={(e) => setOtherBrand(e.target.value)}
+              />
+            )}
+            freeSolo
+            options={["Apple", "Lenovo", "Dell", "Microsoft"]}
             size="small"
-            required
-            value={other_brand}
-            onChange={(event) => setOtherBrand(event.target.value)}
           />
           <TextField
             label="Device Type"
             sx={textFieldStyle}
+            helperText="e.g. MacBook Pro, XPS, Latitude, ThinkPad X1"
             fullWidth
             size="small"
             required
@@ -147,6 +180,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
         <TextField
           label={brand === "Others" ? "Specs" : "Other Specs"}
           sx={textFieldStyle}
+          helperText='e.g. 13", M2 Pro, 32GB RAM, 512GB SSD'
           fullWidth
           size="small"
           required
@@ -209,8 +243,8 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           sx={{ borderRadius: "10px" }}
           onClick={() =>
             completeDeviceChoice(
-              type,
-              specs === "Other" ? other_specs : specs,
+              type === "" ? other_type : type,
+              specs === "Other" || specs === "" ? other_specs : specs,
               "",
               region === "Other" ? other_region : region
             )

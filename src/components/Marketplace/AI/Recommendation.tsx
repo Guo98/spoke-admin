@@ -6,6 +6,7 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  Button,
 } from "@mui/material";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 
@@ -31,9 +32,9 @@ const Recommendation = (props: RecommendationProps) => {
   } = props;
   return (
     <>
-      <Stack direction="row" justifyContent="space-between" spacing={2}>
+      <Stack direction="row" spacing={2}>
         <img src={image_source} />
-        <Stack spacing={1} justifyContent="center">
+        <Stack spacing={1} justifyContent="center" width="100%">
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
               Product Name:{" "}
@@ -70,28 +71,33 @@ const Recommendation = (props: RecommendationProps) => {
               {price}
             </Typography>
           </div>
-          <Link href={url_link} target="_blank">
-            Link to Product
-          </Link>
-        </Stack>
-        <Tooltip title="Request Quote">
-          <IconButton
-            color="primary"
-            onClick={() =>
-              completeDeviceChoice(
-                product_name,
-                specs,
-                url_link,
-                "United States",
-                price,
-                image_source,
-                stock_level
-              )
-            }
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
           >
-            <RequestQuoteIcon sx={{ mr: 2 }} />
-          </IconButton>
-        </Tooltip>
+            <Link href={url_link} target="_blank">
+              Link to Product
+            </Link>
+            <Button
+              variant="contained"
+              sx={{ borderRadius: "10px", mt: 2 }}
+              onClick={() =>
+                completeDeviceChoice(
+                  product_name,
+                  specs,
+                  url_link,
+                  "United States",
+                  price,
+                  image_source,
+                  stock_level
+                )
+              }
+            >
+              Request Quote
+            </Button>
+          </Stack>
+        </Stack>
       </Stack>
     </>
   );

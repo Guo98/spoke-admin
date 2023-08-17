@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import {
   Typography,
   FormControl,
@@ -31,6 +31,8 @@ interface RecipientProps {
   image_source: string;
   price: string;
   stock_level: string;
+  clear_deployment: boolean;
+  setClear: Function;
 }
 
 const textFieldStyle = {
@@ -49,6 +51,8 @@ const RecipientForm = (props: RecipientProps) => {
     image_source,
     price,
     stock_level,
+    clear_deployment,
+    setClear,
   } = props;
 
   const { user, getAccessTokenSilently } = useAuth0();
@@ -64,6 +68,21 @@ const RecipientForm = (props: RecipientProps) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(-1);
   const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    if (clear_deployment) {
+      setDeploymentType("Drop Ship");
+      setName("");
+      setAddr("");
+      setEmail("");
+      setPN("");
+      setShipping("");
+      setNotes("");
+      setQuantity(1);
+
+      setClear(false);
+    }
+  }, [clear_deployment]);
 
   const handleDeploymentChange = (event: SelectChangeEvent) => {
     setDeploymentType(event.target.value);
@@ -143,7 +162,7 @@ const RecipientForm = (props: RecipientProps) => {
             Device Details
           </Typography>
           <Stack direction="row" spacing={2}>
-            <img src={image_source} alt="Laptop picture" />
+            {image_source && <img src={image_source} alt="Laptop picture" />}
             <Stack justifyContent="center" spacing={1}>
               <Typography fontWeight="bold">{device_name}</Typography>
               <div>
@@ -154,26 +173,38 @@ const RecipientForm = (props: RecipientProps) => {
                   {device_specs}
                 </Typography>
               </div>
-              <div>
-                <Typography display="inline" component="span" fontWeight="bold">
-                  Stock Level:{" "}
-                </Typography>
-                <Typography
-                  display="inline"
-                  component="span"
-                  color={stock_level === "In Stock" ? "greenyellow" : "red"}
-                >
-                  {stock_level}
-                </Typography>
-              </div>
-              <div>
-                <Typography display="inline" component="span" fontWeight="bold">
-                  Estimated Price:{" "}
-                </Typography>
-                <Typography display="inline" component="span">
-                  {price}
-                </Typography>
-              </div>
+              {stock_level && (
+                <div>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Stock Level:{" "}
+                  </Typography>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    color={stock_level === "In Stock" ? "greenyellow" : "red"}
+                  >
+                    {stock_level}
+                  </Typography>
+                </div>
+              )}
+              {price && (
+                <div>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Estimated Price:{" "}
+                  </Typography>
+                  <Typography display="inline" component="span">
+                    {price}
+                  </Typography>
+                </div>
+              )}
             </Stack>
           </Stack>
           <Divider />

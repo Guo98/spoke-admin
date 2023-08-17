@@ -59,6 +59,12 @@ const Marketplace = () => {
     }
   }, [loading, selectedClient, client]);
 
+  useEffect(() => {
+    if (selectedProducts.length === 0) {
+      setPagenumber(0);
+    }
+  }, [selectedProducts]);
+
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
     setProduct(product_name);

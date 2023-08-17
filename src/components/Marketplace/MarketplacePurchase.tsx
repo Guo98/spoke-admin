@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -9,10 +9,15 @@ import {
   styled,
   StepConnector,
   StepIconProps,
+  Button,
+  Tooltip,
+  IconButton,
+  Stack,
 } from "@mui/material";
 import { stepConnectorClasses } from "@mui/material/StepConnector";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
 
@@ -120,6 +125,15 @@ const MarketplacePurchase = (props: MPProps) => {
   const [img_src, setSource] = useState("");
   const [stock_level, setStock] = useState("");
 
+  const [clear_device, setClearDevice] = useState(false);
+  const [clear_deployment, setClearDeployment] = useState(false);
+
+  useEffect(() => {
+    setActiveStep(0);
+    setComplete1(false);
+    setComplete2(false);
+  }, [brand]);
+
   const completeDeviceStep = (
     dn: string,
     ds: string,
@@ -145,6 +159,14 @@ const MarketplacePurchase = (props: MPProps) => {
     setLoading(true);
   };
 
+  const clearAll = () => {
+    if (activeStep === 0) {
+      setClearDevice(true);
+    } else {
+      setClearDeployment(true);
+    }
+  };
+
   return (
     <Modal
       onClose={() => {
@@ -160,9 +182,16 @@ const MarketplacePurchase = (props: MPProps) => {
       open={open}
     >
       <Box sx={style}>
-        <Typography variant="h5" fontWeight="bold">
-          New Purchase - {brand}
-        </Typography>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="h5" fontWeight="bold">
+            New Purchase - {brand}
+          </Typography>
+          <Tooltip title="Clear All">
+            <IconButton onClick={clearAll}>
+              <ClearAllIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
         <Stepper
           activeStep={activeStep}
           sx={{ paddingTop: "10px" }}
@@ -170,7 +199,18 @@ const MarketplacePurchase = (props: MPProps) => {
         >
           <Step key="Device" completed={completed1}>
             <StepLabel StepIconComponent={ColorStepIcon}>
-              <Typography>Device</Typography>
+              {activeStep === 0 ? (
+                <Typography>Device</Typography>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setActiveStep(0);
+                    setComplete1(false);
+                  }}
+                >
+                  <Typography sx={{ textTransform: "none" }}>Device</Typography>
+                </Button>
+              )}
             </StepLabel>
           </Step>
           <Step completed={completed2}>
@@ -186,6 +226,8 @@ const MarketplacePurchase = (props: MPProps) => {
               brand={brand}
               setLoading={setLoading}
               completeDeviceChoice={completeDeviceStep}
+              clear_device={clear_device}
+              setClear={setClearDevice}
             />
           </>
         )}
@@ -201,6 +243,8 @@ const MarketplacePurchase = (props: MPProps) => {
             price={price}
             stock_level={stock_level}
             image_source={img_src}
+            clear_deployment={clear_deployment}
+            setClear={setClearDeployment}
           />
         )}
       </Box>
