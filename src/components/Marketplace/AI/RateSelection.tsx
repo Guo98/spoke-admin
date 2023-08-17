@@ -24,20 +24,15 @@ const RateSelection = (props: RatingProps) => {
     setLoading(true);
     setLiked(like);
     const accessToken = await getAccessTokenSilently();
-    let message =
-      "Recommended replacement: " +
-      recommended_item +
-      " for requested item: " +
-      requested_item +
-      ". Link: " +
-      recommended_link;
-    if (like) {
-      message = "Good selection. " + message;
-    } else {
-      message = "Bad selection. " + message;
-    }
 
-    const messageResp = await standardPost(accessToken, "message", { message });
+    const body = {
+      rating: like,
+      requested_item,
+      recommended_item,
+      recommended_link,
+    };
+
+    const messageResp = await standardPost(accessToken, "message", body);
 
     if (messageResp.status === "Successful") {
       setRated(true);
