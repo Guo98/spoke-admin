@@ -66,76 +66,86 @@ const CheckStock = (props: CheckStockProps) => {
       {stock_checked && (
         <Stack direction="row" spacing={2} pt={2}>
           <img src={img_src} alt="Laptop Picture" />
-          <div>
-            <Typography fontWeight="bold" variant="h6" pb={2}>
-              Requested Item:
-            </Typography>
-            <div style={{ paddingTop: 2 }}>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Product Name:{" "}
+          <Stack spacing={1} justifyContent="center" width="100%">
+            <div>
+              <Typography fontWeight="bold" variant="h6" pb={2}>
+                Requested Item:
               </Typography>
-              <Typography display="inline" component="span">
-                {product_name}
-              </Typography>
-            </div>
-            <div style={{ paddingTop: 2 }}>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Specs:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {aispecs}
-              </Typography>
-            </div>
-            {stock !== "" && (
               <div style={{ paddingTop: 2 }}>
                 <Typography display="inline" component="span" fontWeight="bold">
-                  Stock Level:{" "}
-                </Typography>
-                <Typography
-                  display="inline"
-                  component="span"
-                  color={stock === "In Stock" ? "greenyellow" : "red"}
-                >
-                  {stock}
-                </Typography>
-              </div>
-            )}
-            {price !== "" && (
-              <div style={{ paddingTop: 2 }}>
-                <Typography display="inline" component="span" fontWeight="bold">
-                  Estimated Price:{" "}
+                  Product Name:{" "}
                 </Typography>
                 <Typography display="inline" component="span">
-                  {price}
+                  {product_name}
                 </Typography>
               </div>
-            )}
-          </div>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Link href={url_link} target="_blank">
-              Link to Product
-            </Link>
-            <Button
-              variant="contained"
-              sx={{ borderRadius: "10px", mt: 2 }}
-              onClick={() =>
-                completeDeviceChoice(
-                  product_name,
-                  aispecs,
-                  url_link,
-                  "United States",
-                  "",
-                  price,
-                  stock
-                )
-              }
+              <div style={{ paddingTop: 2 }}>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Specs:{" "}
+                </Typography>
+                <Typography display="inline" component="span">
+                  {aispecs}
+                </Typography>
+              </div>
+              {stock !== "" && (
+                <div style={{ paddingTop: 2 }}>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Stock Level:{" "}
+                  </Typography>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    color={stock === "In Stock" ? "greenyellow" : "red"}
+                  >
+                    {stock}
+                  </Typography>
+                </div>
+              )}
+              {price !== "" && (
+                <div style={{ paddingTop: 2 }}>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Estimated Price:{" "}
+                  </Typography>
+                  <Typography display="inline" component="span">
+                    {price}
+                  </Typography>
+                </div>
+              )}
+            </div>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              Request Quote
-            </Button>
+              <Link href={url_link} target="_blank">
+                Link to Product
+              </Link>
+              <Button
+                variant="contained"
+                sx={{ borderRadius: "10px", mt: 2 }}
+                onClick={() =>
+                  completeDeviceChoice(
+                    product_name,
+                    aispecs,
+                    url_link,
+                    "United States",
+                    "",
+                    price,
+                    stock
+                  )
+                }
+              >
+                Request Quote
+              </Button>
+            </Stack>
           </Stack>
         </Stack>
       )}

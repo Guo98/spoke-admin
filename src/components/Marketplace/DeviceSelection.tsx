@@ -172,7 +172,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
               types[typeIndex].specs?.map((spec: any) => {
                 return <MenuItem value={spec.spec}>{spec.spec}</MenuItem>;
               })}
-            <MenuItem value="Other">Other</MenuItem>
+            <MenuItem value="Other">Different Specs</MenuItem>
           </Select>
         </FormControl>
       )}
@@ -213,7 +213,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           {brand === "Others" && (
             <MenuItem value="United States">United States</MenuItem>
           )}
-          <MenuItem value="Other">Other</MenuItem>
+          <MenuItem value="Other">Different Region</MenuItem>
         </Select>
       </FormControl>
       {region === "Other" && (
