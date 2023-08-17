@@ -110,33 +110,33 @@ const CheckStock = (props: CheckStockProps) => {
                 </Typography>
               </div>
             )}
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Link href={url_link} target="_blank">
-                Link to Product
-              </Link>
-              <Button
-                variant="contained"
-                sx={{ borderRadius: "10px", mt: 2 }}
-                onClick={() =>
-                  completeDeviceChoice(
-                    product_name,
-                    aispecs,
-                    url_link,
-                    "United States",
-                    "",
-                    price,
-                    stock
-                  )
-                }
-              >
-                Request Quote
-              </Button>
-            </Stack>
           </div>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Link href={url_link} target="_blank">
+              Link to Product
+            </Link>
+            <Button
+              variant="contained"
+              sx={{ borderRadius: "10px", mt: 2 }}
+              onClick={() =>
+                completeDeviceChoice(
+                  product_name,
+                  aispecs,
+                  url_link,
+                  "United States",
+                  "",
+                  price,
+                  stock
+                )
+              }
+            >
+              Request Quote
+            </Button>
+          </Stack>
         </Stack>
       )}
       {recs.length > 0 && (
