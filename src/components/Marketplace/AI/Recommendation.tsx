@@ -91,7 +91,7 @@ const Recommendation = (props: RecommendationProps) => {
             </Link>
             <Button
               variant="contained"
-              sx={{ borderRadius: "10px", mt: 2 }}
+              sx={{ borderRadius: "10px" }}
               onClick={() =>
                 completeDeviceChoice(
                   product_name,

@@ -13,11 +13,13 @@ import {
   Tooltip,
   IconButton,
   Stack,
+  ButtonGroup,
 } from "@mui/material";
 import { stepConnectorClasses } from "@mui/material/StepConnector";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
 
@@ -189,11 +191,25 @@ const MarketplacePurchase = (props: MPProps) => {
           <Typography variant="h5" fontWeight="bold">
             New Purchase - {brand}
           </Typography>
-          <Tooltip title="Clear All">
-            <IconButton onClick={clearAll}>
-              <ClearAllIcon />
-            </IconButton>
-          </Tooltip>
+          <ButtonGroup>
+            {activeStep === 1 && (
+              <Tooltip title="Back">
+                <IconButton
+                  onClick={() => {
+                    setActiveStep(0);
+                    setComplete1(false);
+                  }}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Clear All">
+              <IconButton onClick={clearAll}>
+                <ClearAllIcon />
+              </IconButton>
+            </Tooltip>
+          </ButtonGroup>
         </Stack>
         <Stepper
           activeStep={activeStep}
@@ -202,18 +218,7 @@ const MarketplacePurchase = (props: MPProps) => {
         >
           <Step key="Device" completed={completed1}>
             <StepLabel StepIconComponent={ColorStepIcon}>
-              {activeStep === 0 ? (
-                <Typography>Device</Typography>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setActiveStep(0);
-                    setComplete1(false);
-                  }}
-                >
-                  <Typography sx={{ textTransform: "none" }}>Device</Typography>
-                </Button>
-              )}
+              <Typography>Device</Typography>
             </StepLabel>
           </Step>
           <Step completed={completed2}>
