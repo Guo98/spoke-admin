@@ -60,12 +60,12 @@ const CheckStock = (props: CheckStockProps) => {
         setUrlLink(stockResp.data.url_link);
         setAISpecs(stockResp.data.specs);
         setImgSrc(stockResp.data.image_source);
-        if (stockResp.data.recommendations) {
-          setRecs(stockResp.data.recommendations);
-        }
         setStatus(0);
       } else {
         setStatus(2);
+      }
+      if (stockResp.data.recommendations) {
+        setRecs(stockResp.data.recommendations);
       }
     } else {
       setStatus(1);

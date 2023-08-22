@@ -162,6 +162,7 @@ const MarketplacePurchase = (props: MPProps) => {
   };
 
   const clearAll = () => {
+    setLoading(false);
     if (activeStep === 0) {
       setClearDevice(true);
     } else {

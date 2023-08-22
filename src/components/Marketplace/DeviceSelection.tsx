@@ -88,6 +88,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
       setSpecIndex(specIndex);
     }
     setSpecs(event.target.value);
+    setOtherSpecs("");
   };
 
   const handleRegionChange = (event: SelectChangeEvent) => {
@@ -182,7 +183,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
         <TextField
           label={brand === "Others" ? "Specs" : "Other Specs"}
           sx={textFieldStyle}
-          helperText='e.g. 13", M2 Pro, 32GB RAM, 512GB SSD'
+          helperText='e.g. 13", M2 Pro, 32GB, 512GB (Screen Size, CPU, RAM, SSD)'
           fullWidth
           size="small"
           required
