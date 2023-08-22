@@ -1,64 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  SelectChangeEvent,
-  MenuItem,
   Button,
   Stack,
   CircularProgress,
   Typography,
+  Alert,
+  Link,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardGet } from "../../../services/standard";
-import Recommendation from "./Recommendation";
-
+import Recommendations from "./Recommendations";
 
 interface CheckStockProps {
-  types: any;
+  type: string;
   setLoading: Function;
+  brand: string;
+  completeDeviceChoice: Function;
+  spec: string;
 }
 
-const textFieldStyle = {
-  "& fieldset": { borderRadius: "10px" },
-  marginTop: "10px",
-  mb: 1,
-};
-
 const CheckStock = (props: CheckStockProps) => {
-  const { types, setLoading } = props;
-  const [type, setType] = useState("");
-  const [typeIndex, setTypeIndex] = useState(-1);
-  const [specs, setSpecs] = useState("");
-  const [specIndex, setSpecIndex] = useState(-1);
+  const { type, spec, setLoading, brand, completeDeviceChoice } = props;
+
+  const [status, setStatus] = useState(-1);
+
   const [loading, setBoxLoading] = useState(false);
   const [stock, setStock] = useState("");
   const [price, setPrice] = useState("");
-  const [rec, setRec] = useState<any | null>(null);
-
+  const [url_link, setUrlLink] = useState("");
+  const [product_name, setProdName] = useState("");
+  const [aispecs, setAISpecs] = useState("");
+  const [recs, setRecs] = useState<any[]>([]);
+  const [stock_checked, setStockChecked] = useState(false);
+  const [img_src, setImgSrc] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const handleTypeChange = (event: SelectChangeEvent) => {
-    setType(event.target.value);
-    setTypeIndex(
-      types.map((type: any) => type.type).indexOf(event.target.value)
-    );
-  };
-
-  const handleSpecsChange = (event: SelectChangeEvent) => {
-    if (event.target.value === "Others") {
-      setSpecIndex(-1);
-    } else {
-      const specIndex = types[typeIndex].specs
-        ?.map((spec: any) => spec.spec)
-        .indexOf(event.target.value);
-      setSpecIndex(specIndex);
-    }
-    setSpecs(event.target.value);
-  };
+  useEffect(() => {
+    setStockChecked(false);
+    setRecs([]);
+    setStatus(-1);
+  }, [spec, type]);
 
   const checkStock = async () => {
     setLoading(true);
@@ -66,16 +48,27 @@ const CheckStock = (props: CheckStockProps) => {
     const accessToken = await getAccessTokenSilently();
     const stockResp = await standardGet(
       accessToken,
-      "checkstock/" + type + " " + specs
+      "checkstock/" + brand + " " + type + " " + spec
     );
 
     if (stockResp.status === "Successful") {
-      console.log("stock resp ::::::::: ", stockResp.data);
-      setStock(stockResp.data.stock_level);
-      setPrice(stockResp.data.price);
-      if (stockResp.data.recommendation) {
-        setRec(stockResp.data.recommendation);
+      setStockChecked(true);
+      if (stockResp.data.stock_level !== "Not Found") {
+        setStock(stockResp.data.stock_level);
+        setPrice(stockResp.data.price);
+        setProdName(stockResp.data.product_name);
+        setUrlLink(stockResp.data.url_link);
+        setAISpecs(stockResp.data.specs);
+        setImgSrc(stockResp.data.image_source);
+        setStatus(0);
+      } else {
+        setStatus(2);
       }
+      if (stockResp.data.recommendations) {
+        setRecs(stockResp.data.recommendations);
+      }
+    } else {
+      setStatus(1);
     }
     setLoading(false);
     setBoxLoading(false);
@@ -83,91 +76,138 @@ const CheckStock = (props: CheckStockProps) => {
 
   return (
     <>
-      <FormControl fullWidth sx={textFieldStyle} required size="small">
-        <InputLabel id="type-select-label">Device Type</InputLabel>
-        <Select
-          labelId="type-select-label"
-          id="type-select"
-          label="Device Type"
-          onChange={handleTypeChange}
-          value={type}
-          required
-        >
-          {types &&
-            types.length > 0 &&
-            types.map((brandtype: any) => {
-              return (
-                <MenuItem value={brandtype.type}>{brandtype.type}</MenuItem>
-              );
-            })}
-        </Select>
-      </FormControl>
-      {type !== "" && (
-        <FormControl
-          fullWidth
-          sx={textFieldStyle}
-          required
-          size="small"
-          disabled={type === ""}
-        >
-          <InputLabel id="specs-select-label">Specs</InputLabel>
-          <Select
-            labelId="specs-select-label"
-            id="specs-select"
-            label="Specs"
-            onChange={handleSpecsChange}
-            value={specs}
-            required
-          >
-            {type !== "" &&
-              typeIndex !== -1 &&
-              types[typeIndex].specs?.map((spec: any) => {
-                return <MenuItem value={spec.spec}>{spec.spec}</MenuItem>;
-              })}
-            <MenuItem value="Other">Other</MenuItem>
-          </Select>
-        </FormControl>
+      {stock_checked && status === 1 && (
+        <Alert severity="error">
+          Issue with checking stock for this device, please try again later.
+        </Alert>
       )}
-      {stock !== "" && (
-        <div style={{ paddingTop: 2 }}>
-          <Typography display="inline" component="span" fontWeight="bold">
-            Stock Level:{" "}
-          </Typography>
-          <Typography display="inline" component="span">
-            {stock}
-          </Typography>
-        </div>
+      {stock_checked && status === 2 && (
+        <Typography>
+          No result found, please select a new configuration.
+        </Typography>
       )}
-      {price !== "" && (
-        <div style={{ paddingTop: 2 }}>
-          <Typography display="inline" component="span" fontWeight="bold">
-            Estimated Price:{" "}
-          </Typography>
-          <Typography display="inline" component="span">
-            {price}
-          </Typography>
-        </div>
+      {stock_checked && status === 0 && (
+        <Stack direction="row" spacing={2} pt={2}>
+          <img src={img_src} alt="Laptop Picture" />
+          <Stack spacing={1} justifyContent="center" width="100%">
+            <div>
+              <Typography fontWeight="bold" variant="h6" pb={2}>
+                Requested Item:
+              </Typography>
+              <div style={{ paddingTop: 2 }}>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Product Name:{" "}
+                </Typography>
+                <Typography display="inline" component="span">
+                  {product_name}
+                </Typography>
+              </div>
+              <div style={{ paddingTop: 2 }}>
+                <Typography display="inline" component="span" fontWeight="bold">
+                  Specs:{" "}
+                </Typography>
+                <Typography display="inline" component="span">
+                  {aispecs}
+                </Typography>
+              </div>
+              {stock !== "" && (
+                <div style={{ paddingTop: 2 }}>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Stock Level:{" "}
+                  </Typography>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    color={stock === "In Stock" ? "greenyellow" : "red"}
+                  >
+                    {stock}
+                  </Typography>
+                </div>
+              )}
+              {price !== "" && (
+                <div style={{ paddingTop: 2 }}>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Estimated Price:{" "}
+                  </Typography>
+                  <Typography display="inline" component="span">
+                    {price}
+                  </Typography>
+                </div>
+              )}
+            </div>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Link href={url_link} target="_blank">
+                Link to Product
+              </Link>
+              <Button
+                variant="contained"
+                sx={{ borderRadius: "10px" }}
+                onClick={() =>
+                  completeDeviceChoice(
+                    product_name,
+                    aispecs,
+                    url_link,
+                    "United States",
+                    price,
+                    img_src,
+                    stock
+                  )
+                }
+              >
+                Request Quote
+              </Button>
+            </Stack>
+          </Stack>
+        </Stack>
       )}
-      {rec && (
-        <Recommendation
-          price={rec.price}
-          stock_level={rec.stock_level}
-          product_name={rec.product_name}
-          url_link={rec.url_link}
+      {recs.length > 0 && (
+        <Recommendations
+          completeDeviceChoice={completeDeviceChoice}
+          recommendations={recs}
+          requested_item={brand + " " + type + " " + spec}
         />
       )}
-      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 2 }}>
-        <Button
-          disabled={specs === "" || type === "" || loading}
-          variant="contained"
-          onClick={checkStock}
+      {!stock_checked && (
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+          sx={{ mt: 2 }}
         >
-          {!loading ? "Check Stock" : <CircularProgress />}
-        </Button>
-        <Button variant="contained" disabled={stock === ""}>
-          Request Quote
-        </Button>
-      </Stack>
+          <Button
+            disabled={loading}
+            variant="contained"
+            onClick={checkStock}
+            fullWidth
+            sx={{ borderRadius: "10px" }}
+          >
+            {!loading ? "Check Stock" : <CircularProgress />}
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ borderRadius: "10px" }}
+            onClick={() =>
+              completeDeviceChoice(type, spec, "", "United States")
+            }
+            disabled={loading}
+          >
+            Request Quote
+          </Button>
+        </Stack>
+      )}
     </>
   );
 };

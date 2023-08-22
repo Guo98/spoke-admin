@@ -6,11 +6,11 @@ import {
   Typography,
   TextField,
   Stack,
-  LinearProgress,
   Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardPost } from "../../../services/standard";
+import LinearLoading from "../../common/LinearLoading";
 
 interface NewProps {
   client: string;
@@ -164,7 +164,7 @@ const NewDeviceModal = (props: NewProps) => {
               </Button>
             </>
           ) : (
-            <LinearProgress />
+            <LinearLoading />
           )}
         </Box>
       </Modal>

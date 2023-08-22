@@ -6,7 +6,6 @@ import {
   Tabs,
   Tab,
   Fab,
-  LinearProgress,
   Typography,
   IconButton,
   Stack,
@@ -36,6 +35,7 @@ import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
 import "./Inventory.css";
 import { InventorySummary } from "../../interfaces/inventory";
+import LinearLoading from "../common/LinearLoading";
 
 function a11yProps(index: number) {
   return {
@@ -429,7 +429,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <LinearProgress />
+                <LinearLoading />
               )}
             </Box>
           </TabPanel>
@@ -495,7 +495,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <LinearProgress />
+                <LinearLoading />
               )}
             </Box>
           </TabPanel>
@@ -562,7 +562,7 @@ const Inventory: FC = (): ReactElement => {
                   )}
                 </>
               ) : (
-                <LinearProgress />
+                <LinearLoading />
               )}
             </Box>
           </TabPanel>
@@ -570,7 +570,8 @@ const Inventory: FC = (): ReactElement => {
             marketClient !== "Alma" &&
             marketClient !== "Flo Health" &&
             marketClient !== "Hidden Road" &&
-            marketClient !== "Roivant" && marketClient !== "Sona" && (
+            marketClient !== "Roivant" &&
+            marketClient !== "Sona" && (
               <>
                 <Fab
                   color="primary"

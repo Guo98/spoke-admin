@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  Box,
-  TextField,
-  Button,
-  Stack,
-  LinearProgress,
-} from "@mui/material";
+import { Modal, Box, TextField, Button, Stack } from "@mui/material";
+import LinearLoading from "../common/LinearLoading";
 
 interface DenyProps {
   open: boolean;
@@ -69,7 +63,7 @@ const DenyModal = (props: DenyProps) => {
             </Stack>
           </>
         )}
-        {loading && <LinearProgress />}
+        {loading && <LinearLoading />}
       </Box>
     </Modal>
   );

@@ -12,7 +12,6 @@ import {
   MenuItem,
   Button,
   Stack,
-  LinearProgress,
   Alert,
   Tooltip,
 } from "@mui/material";
@@ -27,6 +26,7 @@ import {
   clientRolesCode,
 } from "../../utilities/mappings";
 import { standardPost } from "../../services/standard";
+import LinearLoading from "../common/LinearLoading";
 
 interface IUProps {
   handleClose?: Function;
@@ -117,7 +117,7 @@ const InviteUsers = (props: IUProps) => {
         </Grid>
       </Grid>
       <Stack spacing={2}>
-        {loading && <LinearProgress />}
+        {loading && <LinearLoading />}
         {!loading && success && (
           <Alert severity="success">Invite successfully sent!</Alert>
         )}

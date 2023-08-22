@@ -10,7 +10,6 @@ import {
   TableCell,
   TableBody,
   Stack,
-  LinearProgress,
   SelectChangeEvent,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -26,6 +25,7 @@ import {
 import QuoteRow from "./QuoteRow";
 import FormattedCell from "../common/FormattedCell";
 import DateFilter from "../common/DateFilter";
+import LinearLoading from "../common/LinearLoading";
 
 const Approvals = () => {
   const [loading, setLoading] = useState(false);
@@ -108,7 +108,7 @@ const Approvals = () => {
           label="Approvals From"
         />
       </Stack>
-      {loading && <LinearProgress />}
+      {loading && <LinearLoading />}
       {!loading && reduxData.length > 0 && (
         <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
           <Table>

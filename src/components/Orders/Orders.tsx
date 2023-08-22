@@ -7,7 +7,6 @@ import {
   Typography,
   Chip,
   Stack,
-  LinearProgress,
   SelectChangeEvent,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -29,6 +28,7 @@ import OrderItem from "./OrderItem";
 import TabPanel from "../common/TabPanel";
 import Header from "../Header/Header";
 import DateFilter from "../common/DateFilter";
+import LinearLoading from "../common/LinearLoading";
 import "./Orders.css";
 
 function a11yProps(index: number) {
@@ -353,7 +353,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <LinearProgress />
+            <LinearLoading />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={1} prefix="orders">
@@ -383,7 +383,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <LinearProgress />
+            <LinearLoading />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={2} prefix="orders">
@@ -413,7 +413,7 @@ const Orders = () => {
               )}
             </>
           ) : (
-            <LinearProgress />
+            <LinearLoading />
           )}
         </TabPanel>
       </Box>

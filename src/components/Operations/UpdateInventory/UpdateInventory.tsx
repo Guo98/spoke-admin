@@ -17,7 +17,6 @@ import {
   TableCell,
   Paper,
   Button,
-  LinearProgress,
   Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -34,6 +33,7 @@ import UpdateCollapse from "./UpdateCollapse";
 import NewDeviceRow from "./NewDeviceRow";
 import NewDeviceModal from "./NewDeviceModal";
 import ClientDropdown from "../../common/ClientDropdown";
+import LinearLoading from "../../common/LinearLoading";
 
 interface UpdateProps {
   handleClose: Function;
@@ -229,7 +229,7 @@ const UpdateInventory = (props: UpdateProps) => {
           </Select>
         </FormControl>
       )}
-      {loading && <LinearProgress />}
+      {loading && <LinearLoading />}
       {client !== "" && page === 0 && (
         <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
           <Table stickyHeader>
