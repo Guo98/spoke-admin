@@ -105,7 +105,7 @@ const navMappings: any = {
     "Marketplace",
     "Approvals",
   ],
-  Bowery: ["Orders", "Inventory", "Storefront"],
+  Bowery: ["Orders", "Inventory", "Storefront", "Marketplace", "Approvals"],
   NurseDash: ["Orders", "Inventory", "Storefront"],
   Alma: ["Orders", "Inventory", "Marketplace", "Approvals"],
   Automox: [
