@@ -212,7 +212,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                 return <MenuItem value={specLocation}>{specLocation}</MenuItem>;
               }
             )}
-          {brand === "Others" && (
+          {(brand === "Others" || specs === "Other") && (
             <MenuItem value="United States">United States</MenuItem>
           )}
           <MenuItem value="Other">Different Region</MenuItem>

@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Stack,
   CircularProgress,
   Typography,
-  IconButton,
-  Tooltip,
+  Alert,
   Link,
 } from "@mui/material";
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardGet } from "../../../services/standard";
 import Recommendations from "./Recommendations";
@@ -24,6 +22,8 @@ interface CheckStockProps {
 const CheckStock = (props: CheckStockProps) => {
   const { type, spec, setLoading, brand, completeDeviceChoice } = props;
 
+  const [status, setStatus] = useState(-1);
+
   const [loading, setBoxLoading] = useState(false);
   const [stock, setStock] = useState("");
   const [price, setPrice] = useState("");
@@ -36,6 +36,12 @@ const CheckStock = (props: CheckStockProps) => {
 
   const { getAccessTokenSilently } = useAuth0();
 
+  useEffect(() => {
+    setStockChecked(false);
+    setRecs([]);
+    setStatus(-1);
+  }, [spec, type]);
+
   const checkStock = async () => {
     setLoading(true);
     setBoxLoading(true);
@@ -47,15 +53,22 @@ const CheckStock = (props: CheckStockProps) => {
 
     if (stockResp.status === "Successful") {
       setStockChecked(true);
-      setStock(stockResp.data.stock_level);
-      setPrice(stockResp.data.price);
-      setProdName(stockResp.data.product_name);
-      setUrlLink(stockResp.data.url_link);
-      setAISpecs(stockResp.data.specs);
-      setImgSrc(stockResp.data.image_source);
-      if (stockResp.data.recommendations) {
-        setRecs(stockResp.data.recommendations);
+      if (stockResp.data.stock_level !== "Not Found") {
+        setStock(stockResp.data.stock_level);
+        setPrice(stockResp.data.price);
+        setProdName(stockResp.data.product_name);
+        setUrlLink(stockResp.data.url_link);
+        setAISpecs(stockResp.data.specs);
+        setImgSrc(stockResp.data.image_source);
+        if (stockResp.data.recommendations) {
+          setRecs(stockResp.data.recommendations);
+        }
+        setStatus(0);
+      } else {
+        setStatus(2);
       }
+    } else {
+      setStatus(1);
     }
     setLoading(false);
     setBoxLoading(false);
@@ -63,7 +76,17 @@ const CheckStock = (props: CheckStockProps) => {
 
   return (
     <>
-      {stock_checked && (
+      {stock_checked && status === 1 && (
+        <Alert severity="error">
+          Issue with checking stock for this device, please try again later.
+        </Alert>
+      )}
+      {stock_checked && status === 2 && (
+        <Typography>
+          No result found, please select a new configuration.
+        </Typography>
+      )}
+      {stock_checked && status === 0 && (
         <Stack direction="row" spacing={2} pt={2}>
           <img src={img_src} alt="Laptop Picture" />
           <Stack spacing={1} justifyContent="center" width="100%">
