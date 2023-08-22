@@ -117,7 +117,10 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
               types.length > 0 &&
               types.map((brandtype: any) => {
                 return (
-                  <MenuItem value={brandtype.type}>{brandtype.type}</MenuItem>
+                  <MenuItem value={brandtype.type}>
+                    {brandtype.type +
+                      (brandtype.generation ? " " + brandtype.generation : "")}
+                  </MenuItem>
                 );
               })}
           </Select>
