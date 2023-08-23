@@ -8,7 +8,7 @@ import {
   Link,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
-import { standardGet } from "../../../services/standard";
+import { standardGet, standardPost } from "../../../services/standard";
 import Recommendations from "./Recommendations";
 
 interface CheckStockProps {
@@ -46,10 +46,10 @@ const CheckStock = (props: CheckStockProps) => {
     setLoading(true);
     setBoxLoading(true);
     const accessToken = await getAccessTokenSilently();
-    const stockResp = await standardGet(
-      accessToken,
-      "checkstock/" + brand + " " + type + " " + spec
-    );
+    const stockResp = await standardPost(accessToken, "checkstock", {
+      item_name: brand + " " + type,
+      specs: spec,
+    });
 
     if (stockResp.status === "Successful") {
       setStockChecked(true);
