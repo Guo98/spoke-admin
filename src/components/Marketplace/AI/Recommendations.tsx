@@ -8,10 +8,16 @@ interface RecommendationsProps {
   recommendations: any;
   completeDeviceChoice: Function;
   requested_item: string;
+  chosen_specs: string;
 }
 
 const Recommendations = (props: RecommendationsProps) => {
-  const { recommendations, completeDeviceChoice, requested_item } = props;
+  const {
+    recommendations,
+    completeDeviceChoice,
+    requested_item,
+    chosen_specs,
+  } = props;
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -41,6 +47,7 @@ const Recommendations = (props: RecommendationsProps) => {
               product_name={rec.product_name}
               image_source={rec.image_source}
               requested_item={requested_item}
+              chosen_specs={chosen_specs}
             />
           )
       )}
