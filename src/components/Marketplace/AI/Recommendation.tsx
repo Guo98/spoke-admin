@@ -11,6 +11,7 @@ interface RecommendationProps {
   completeDeviceChoice: Function;
   image_source: string;
   requested_item: string;
+  chosen_specs: string;
 }
 
 const Recommendation = (props: RecommendationProps) => {
@@ -23,6 +24,7 @@ const Recommendation = (props: RecommendationProps) => {
     completeDeviceChoice,
     image_source,
     requested_item,
+    chosen_specs,
   } = props;
   return (
     <>
@@ -95,12 +97,13 @@ const Recommendation = (props: RecommendationProps) => {
               onClick={() =>
                 completeDeviceChoice(
                   product_name,
-                  specs,
+                  chosen_specs,
                   url_link,
                   "United States",
                   price,
                   image_source,
-                  stock_level
+                  stock_level,
+                  specs
                 )
               }
             >

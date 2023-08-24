@@ -157,12 +157,13 @@ const CheckStock = (props: CheckStockProps) => {
                 onClick={() =>
                   completeDeviceChoice(
                     product_name,
-                    aispecs,
+                    spec,
                     url_link,
                     "United States",
                     price,
                     img_src,
-                    stock
+                    stock,
+                    aispecs
                   )
                 }
               >
@@ -177,6 +178,7 @@ const CheckStock = (props: CheckStockProps) => {
           completeDeviceChoice={completeDeviceChoice}
           recommendations={recs}
           requested_item={brand + " " + type + " " + spec}
+          chosen_specs={spec}
         />
       )}
       {!stock_checked && (

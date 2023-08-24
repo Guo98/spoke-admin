@@ -126,6 +126,7 @@ const MarketplacePurchase = (props: MPProps) => {
   const [price, setPrice] = useState("");
   const [img_src, setSource] = useState("");
   const [stock_level, setStock] = useState("");
+  const [ai_specs, setAISpecs] = useState("");
 
   const [clear_device, setClearDevice] = useState(false);
   const [clear_deployment, setClearDeployment] = useState(false);
@@ -143,7 +144,8 @@ const MarketplacePurchase = (props: MPProps) => {
     region: string,
     price: string,
     image_source: string,
-    stock_level: string
+    stock_level: string,
+    ai_specs: string
   ) => {
     setActiveStep(1);
     setComplete1(true);
@@ -154,6 +156,7 @@ const MarketplacePurchase = (props: MPProps) => {
     setPrice(price);
     setSource(image_source);
     setStock(stock_level);
+    setAISpecs(ai_specs);
   };
 
   const completeDeploymentStep = () => {
@@ -255,6 +258,7 @@ const MarketplacePurchase = (props: MPProps) => {
             image_source={img_src}
             clear_deployment={clear_deployment}
             setClear={setClearDeployment}
+            ai_specs={device_specs}
           />
         )}
       </Box>
