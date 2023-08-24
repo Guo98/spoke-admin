@@ -54,6 +54,7 @@ const RecipientForm = (props: RecipientProps) => {
     stock_level,
     clear_deployment,
     setClear,
+    ai_specs,
   } = props;
 
   const { user, getAccessTokenSilently } = useAuth0();
@@ -125,7 +126,7 @@ const RecipientForm = (props: RecipientProps) => {
       ref_url: device_url,
       notes: {},
       region,
-      ai_specs: "",
+      ai_specs: ai_specs,
     };
     if (deployment_type === "Buy and Hold") {
       postBody.order_type = "Hold in Inventory";

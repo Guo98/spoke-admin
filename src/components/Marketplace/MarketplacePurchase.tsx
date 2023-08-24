@@ -258,7 +258,7 @@ const MarketplacePurchase = (props: MPProps) => {
             image_source={img_src}
             clear_deployment={clear_deployment}
             setClear={setClearDeployment}
-            ai_specs={device_specs}
+            ai_specs={ai_specs}
           />
         )}
       </Box>
