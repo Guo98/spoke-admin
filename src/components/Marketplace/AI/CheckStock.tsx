@@ -193,7 +193,7 @@ const CheckStock = (props: CheckStockProps) => {
             fullWidth
             sx={{ borderRadius: "10px" }}
           >
-            {!loading ? "Check Stock" : <CircularProgress />}
+            {!loading ? "Check Supplier's Stock" : <CircularProgress />}
           </Button>
           <Button
             fullWidth
