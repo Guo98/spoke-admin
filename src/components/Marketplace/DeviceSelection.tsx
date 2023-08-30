@@ -10,6 +10,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import CheckStock from "./AI/CheckStock";
+import { event } from "cypress/types/jquery";
 
 interface DeviceSelectionProps {
   types: any;
@@ -46,9 +47,12 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
   const [specs, setSpecs] = useState("");
   const [specIndex, setSpecIndex] = useState(-1);
   const [other_specs, setOtherSpecs] = useState("");
+  const [color, setColor] = useState("");
 
   const [region, setRegion] = useState("");
   const [other_region, setOtherRegion] = useState("");
+  const [supplier, setSupplier] = useState("");
+  const [product_link, setProductLink] = useState("");
 
   useEffect(() => {
     if (clear_device) {
@@ -62,6 +66,9 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
         setOtherSpecs("");
         setRegion("");
         setOtherRegion("");
+        setColor("");
+        setSupplier("");
+        setProductLink("");
       } else {
         setOtherBrand("");
         setOtherType("");
@@ -86,6 +93,12 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
         ?.map((spec: any) => spec.spec)
         .indexOf(event.target.value);
       setSpecIndex(specIndex);
+      setSupplier(
+        types[typeIndex]?.specs[specIndex]?.supplier &&
+          Object.keys(types[typeIndex]?.specs[specIndex]?.supplier)[0]
+          ? Object.keys(types[typeIndex]?.specs[specIndex]?.supplier)[0]
+          : ""
+      );
     }
     setSpecs(event.target.value);
     setOtherSpecs("");
@@ -93,6 +106,22 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   const handleRegionChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value);
+  };
+
+  const handleSupplierChange = (event: SelectChangeEvent) => {
+    setSupplier(event.target.value);
+    if (
+      types[typeIndex]?.specs[specIndex]?.supplier[event.target.value] &&
+      types[typeIndex]?.specs[specIndex]?.supplier[event.target.value][color]
+    ) {
+      setProductLink(
+        types[typeIndex]?.specs[specIndex]?.supplier[event.target.value][color]
+      );
+    }
+  };
+
+  const handleColorChange = (event: SelectChangeEvent) => {
+    setColor(event.target.value);
   };
 
   return (
@@ -191,6 +220,32 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           onChange={(event) => setOtherSpecs(event.target.value)}
         />
       )}
+      {type !== "" && (
+        <FormControl
+          fullWidth
+          sx={textFieldStyle}
+          required
+          size="small"
+          disabled={type === ""}
+        >
+          <InputLabel id="color-select-label">Color</InputLabel>
+          <Select
+            labelId="color-select-label"
+            id="color-select"
+            label="Color"
+            onChange={handleColorChange}
+            value={color}
+            required
+          >
+            {type !== "" &&
+              typeIndex !== -1 &&
+              types[typeIndex].colors?.map((c: string) => {
+                return <MenuItem value={c}>{c}</MenuItem>;
+              })}
+            <MenuItem value="Default">Default</MenuItem>
+          </Select>
+        </FormControl>
+      )}
       <FormControl
         fullWidth
         sx={textFieldStyle}
@@ -231,13 +286,43 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
         />
       )}
       {region === "United States" && (
-        <CheckStock
-          type={brand === "Others" ? other_type : type}
-          spec={specs === "Other" || brand === "Others" ? other_specs : specs}
-          brand={brand === "Others" ? other_brand : brand}
-          completeDeviceChoice={completeDeviceChoice}
-          setLoading={setLoading}
-        />
+        <>
+          {types[typeIndex]?.specs[specIndex]?.supplier && (
+            <FormControl
+              fullWidth
+              sx={textFieldStyle}
+              required
+              size="small"
+              disabled={(specs === "" || specIndex < 0) && other_specs === ""}
+            >
+              <InputLabel id="supplier-select-label">Supplier</InputLabel>
+              <Select
+                labelId="supplier-select-label"
+                id="supplier-select"
+                label="Supplier"
+                onChange={handleSupplierChange}
+                value={supplier}
+                required
+              >
+                {specs !== "" &&
+                  Object.keys(types[typeIndex]?.specs[specIndex]?.supplier).map(
+                    (s: string) => {
+                      return <MenuItem value={s}>{s.toUpperCase()}</MenuItem>;
+                    }
+                  )}
+              </Select>
+            </FormControl>
+          )}
+          <CheckStock
+            type={brand === "Others" ? other_type : type}
+            spec={specs === "Other" || brand === "Others" ? other_specs : specs}
+            brand={brand === "Others" ? other_brand : brand}
+            completeDeviceChoice={completeDeviceChoice}
+            setLoading={setLoading}
+            supplier={supplier}
+            product_link={product_link}
+          />
+        </>
       )}
       {region !== "" && region !== "United States" && (
         <Button
@@ -249,7 +334,12 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
               type === "" ? other_type : type,
               specs === "Other" || specs === "" ? other_specs : specs,
               "",
-              region === "Other" ? other_region : region
+              region === "Other" ? other_region : region,
+              "",
+              "",
+              "",
+              "",
+              supplier
             )
           }
         >
