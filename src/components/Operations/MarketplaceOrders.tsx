@@ -58,6 +58,7 @@ interface RowProps {
     email_sent?: boolean;
     recipient_name?: string;
     entity?: string;
+    region?: string;
   };
   refresh: Function;
 }
@@ -220,6 +221,9 @@ const MarketRow = (props: RowProps) => {
         </TableCell>
         <TableCell>
           <Typography>{order.order_type}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography>{order.region}</Typography>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -541,6 +545,9 @@ const MarketplaceOrders = (props: MOProps) => {
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Request Type</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold">Region</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
