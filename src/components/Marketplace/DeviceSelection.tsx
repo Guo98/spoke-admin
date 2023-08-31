@@ -20,6 +20,7 @@ interface DeviceSelectionProps {
   clear_device: boolean;
   setClear: Function;
   loading: boolean;
+  suppliers?: any;
 }
 
 const textFieldStyle = {
@@ -110,7 +111,9 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   const handleSupplierChange = (event: SelectChangeEvent) => {
     setSupplier(event.target.value);
+
     if (
+      types[typeIndex]?.specs[specIndex]?.supplier &&
       types[typeIndex]?.specs[specIndex]?.supplier[event.target.value] &&
       types[typeIndex]?.specs[specIndex]?.supplier[event.target.value][color]
     ) {
@@ -287,7 +290,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
       )}
       {region === "United States" && (
         <>
-          {types[typeIndex]?.specs[specIndex]?.supplier && (
+          {props.suppliers && props.suppliers["United States"] && (
             <FormControl
               fullWidth
               sx={textFieldStyle}
@@ -304,12 +307,9 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                 value={supplier}
                 required
               >
-                {specs !== "" &&
-                  Object.keys(types[typeIndex]?.specs[specIndex]?.supplier).map(
-                    (s: string) => {
-                      return <MenuItem value={s}>{s.toUpperCase()}</MenuItem>;
-                    }
-                  )}
+                {props.suppliers["United States"].map((s: string) => {
+                  return <MenuItem value={s.toLowerCase()}>{s}</MenuItem>;
+                })}
               </Select>
             </FormControl>
           )}

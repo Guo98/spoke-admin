@@ -30,6 +30,7 @@ interface MPProps {
   types: any;
   brand: string;
   client: string;
+  suppliers?: any;
 }
 
 const style = {
@@ -244,6 +245,7 @@ const MarketplacePurchase = (props: MPProps) => {
               clear_device={clear_device}
               setClear={setClearDevice}
               loading={loading}
+              suppliers={props.suppliers}
             />
           </>
         )}
@@ -262,6 +264,7 @@ const MarketplacePurchase = (props: MPProps) => {
             clear_deployment={clear_deployment}
             setClear={setClearDeployment}
             ai_specs={ai_specs}
+            supplier={supplier}
           />
         )}
       </Box>

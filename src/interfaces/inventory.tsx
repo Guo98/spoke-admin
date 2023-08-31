@@ -102,4 +102,5 @@ export interface MarketplaceProducts2 {
   ];
   imgSrc: string;
   hide?: boolean;
+  suppliers?: any;
 }

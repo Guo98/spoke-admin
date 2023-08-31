@@ -35,6 +35,7 @@ const Marketplace = () => {
   const [product, setProduct] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<any>({});
   const [brandname, setBrand] = useState("");
   const [brandtypes, setTypes] = useState<any | null>(null);
   const [openModal, setOpen] = useState(false);
@@ -70,6 +71,7 @@ const Marketplace = () => {
     setProduct(product_name);
     setSelectedProducts([product_name]);
     setBrands(productRedux[item_index].brands);
+    setSuppliers(productRedux[item_index].suppliers);
   };
 
   const selectBrand = (brand_name: string, index: number) => {
@@ -232,6 +234,7 @@ const Marketplace = () => {
             types={brandtypes}
             brand={brandname}
             client={marketClient}
+            suppliers={suppliers}
           />
         </Box>
         {pagenumber > 0 && (
