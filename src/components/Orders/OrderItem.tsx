@@ -154,7 +154,9 @@ const OrderItem = (props: OrderProps) => {
 
   useEffect(() => {
     let itemFilter = items.filter(
-      (item) => item.type && item.type === "laptop"
+      (item) =>
+        (item.type && item.type === "laptop") ||
+        item.name.toLowerCase().includes("mac mini")
     );
 
     if (items[0].name !== "Offboarding" && items[0].name !== "Returning") {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Collapse,
@@ -6,7 +6,6 @@ import {
   TableCell,
   Button,
   TextField,
-  Grid,
   Stack,
   Radio,
   RadioGroup,
@@ -15,6 +14,7 @@ import {
   FormLabel,
   Typography,
 } from "@mui/material";
+import DateInput from "../../common/DateInput";
 
 interface UpdateProps {
   sn: string;
@@ -26,6 +26,7 @@ interface UpdateProps {
   warehouse?: string;
   submitChanges: Function;
   handleDelete: Function;
+  date_deployed?: string;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
@@ -38,6 +39,7 @@ const UpdateCollapse = (props: UpdateProps) => {
     submitChanges,
     index,
     warehouse,
+    date_deployed,
   } = props;
   const [open, setOpen] = useState(false);
   const [updateSN, setSN] = useState(sn);
@@ -47,6 +49,7 @@ const UpdateCollapse = (props: UpdateProps) => {
   const [grade, setGrade] = useState("");
   const [updatedCondition, setCondition] = useState(condition);
   const [updatedWarehouse, setWarehouse] = useState(warehouse ? warehouse : "");
+  const [updatedDate, setDate] = useState(date_deployed || "");
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStatus((event.target as HTMLInputElement).value);
@@ -74,7 +77,8 @@ const UpdateCollapse = (props: UpdateProps) => {
       updateLN !== last_name ? updateLN : "",
       grade,
       updatedCondition !== condition ? updatedCondition : "",
-      updatedWarehouse !== warehouse ? updatedWarehouse : ""
+      updatedWarehouse !== warehouse ? updatedWarehouse : "",
+      updatedDate !== date_deployed ? updatedDate : ""
     );
   };
 
@@ -90,6 +94,7 @@ const UpdateCollapse = (props: UpdateProps) => {
     setFN(first_name || "");
     setGrade("");
     setCondition(condition);
+    setDate(date_deployed || "");
   };
 
   return (
@@ -129,39 +134,52 @@ const UpdateCollapse = (props: UpdateProps) => {
                     setSN(e.target.value);
                   }}
                 />
-                <FormControl>
-                  <FormLabel id="radio-group-label">Status</FormLabel>
-                  <RadioGroup
-                    row
-                    aria-labelledby="radio-group-label"
-                    name="status-radio-buttons-group"
-                    value={status}
-                    onChange={handleStatusChange}
-                  >
-                    <FormControlLabel
-                      value="In Stock"
-                      control={<Radio checked={updateStatus === "In Stock"} />}
-                      label="In Stock"
+                <Stack direction="row" justifyContent="space-between" pt={2}>
+                  <FormControl>
+                    <FormLabel id="radio-group-label">Status</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="radio-group-label"
+                      name="status-radio-buttons-group"
+                      value={status}
+                      onChange={handleStatusChange}
+                    >
+                      <FormControlLabel
+                        value="In Stock"
+                        control={
+                          <Radio checked={updateStatus === "In Stock"} />
+                        }
+                        label="In Stock"
+                      />
+                      <FormControlLabel
+                        value="Deployed"
+                        control={
+                          <Radio checked={updateStatus === "Deployed"} />
+                        }
+                        label="Deployed"
+                      />
+                      <FormControlLabel
+                        value="Offboard"
+                        control={
+                          <Radio
+                            checked={
+                              updateStatus === "Offboard" ||
+                              updateStatus === "Offboarding"
+                            }
+                          />
+                        }
+                        label="Offboard"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                  {(status === "Deployed" || updateStatus === "Deployed") && (
+                    <DateInput
+                      label="Date Deployed"
+                      initial_date={updatedDate}
+                      handleChange={setDate}
                     />
-                    <FormControlLabel
-                      value="Deployed"
-                      control={<Radio checked={updateStatus === "Deployed"} />}
-                      label="Deployed"
-                    />
-                    <FormControlLabel
-                      value="Offboard"
-                      control={
-                        <Radio
-                          checked={
-                            updateStatus === "Offboard" ||
-                            updateStatus === "Offboarding"
-                          }
-                        />
-                      }
-                      label="Offboard"
-                    />
-                  </RadioGroup>
-                </FormControl>
+                  )}
+                </Stack>
                 {(status === "Deployed" || updateStatus === "Deployed") && (
                   <>
                     <Typography>Deployed Info:</Typography>

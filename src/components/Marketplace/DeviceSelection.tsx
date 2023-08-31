@@ -321,6 +321,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             setLoading={setLoading}
             supplier={supplier}
             product_link={product_link}
+            others={brand === "Others"}
           />
         </>
       )}

@@ -19,10 +19,11 @@ interface CheckStockProps {
   spec: string;
   supplier?: string;
   product_link?: string;
+  others: boolean;
 }
 
 const CheckStock = (props: CheckStockProps) => {
-  const { type, spec, setLoading, brand, completeDeviceChoice } = props;
+  const { type, spec, setLoading, brand, completeDeviceChoice, others } = props;
 
   const [status, setStatus] = useState(-1);
 
@@ -52,6 +53,7 @@ const CheckStock = (props: CheckStockProps) => {
       item_name: brand + " " + type,
       specs: spec,
       supplier: props.supplier !== "" ? props.supplier : "cdw",
+      others,
     };
     if (props.product_link !== "") {
       checkObj.product_link = props.product_link;
