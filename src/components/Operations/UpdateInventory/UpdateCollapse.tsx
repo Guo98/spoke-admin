@@ -276,7 +276,8 @@ const UpdateCollapse = (props: UpdateProps) => {
                       status === updateStatus &&
                       first_name === updateFN &&
                       last_name === updateLN &&
-                      condition === updatedCondition
+                      condition === updatedCondition &&
+                      date_deployed === updatedDate
                     }
                     fullWidth
                     onClick={submit_changes}
@@ -290,7 +291,8 @@ const UpdateCollapse = (props: UpdateProps) => {
                       status === updateStatus &&
                       first_name === updateFN &&
                       last_name === updateLN &&
-                      condition === updatedCondition
+                      condition === updatedCondition &&
+                      date_deployed === updatedDate
                     }
                     onClick={handleClose}
                     fullWidth

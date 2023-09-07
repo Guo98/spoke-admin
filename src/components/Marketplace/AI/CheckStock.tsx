@@ -43,7 +43,7 @@ const CheckStock = (props: CheckStockProps) => {
     setStockChecked(false);
     setRecs([]);
     setStatus(-1);
-  }, [spec, type]);
+  }, [spec, type, props.supplier]);
 
   const checkStock = async () => {
     setLoading(true);
