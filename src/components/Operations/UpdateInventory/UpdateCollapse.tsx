@@ -241,6 +241,13 @@ const UpdateCollapse = (props: UpdateProps) => {
                       }
                       label="Damaged"
                     />
+                    <FormControlLabel
+                      value="End of Life"
+                      control={
+                        <Radio checked={updatedCondition === "End of Life"} />
+                      }
+                      label="End of Life"
+                    />
                   </RadioGroup>
                 </FormControl>
                 {updateStatus === "In Stock" && (

@@ -56,11 +56,13 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "40%",
+  width: { xs: "85%", md: "50%" },
+  maxHeight: "80%",
   bgcolor: "background.paper",
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
+  overflowY: "scroll",
 };
 
 const OffboardBody = (props: OffboardProps) => {
@@ -92,6 +94,7 @@ const OffboardBody = (props: OffboardProps) => {
   const [country, setCountry] = useState(address?.country_code || "");
   const [updatedemail, setEmail] = useState(email);
   const [pn, setPn] = useState(phone_number);
+  const [activation_key, setActivationKey] = useState("");
   const [note, setNote] = useState("");
   const [confirmation, setConfirmation] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -112,7 +115,7 @@ const OffboardBody = (props: OffboardProps) => {
     setLoading(true);
     const client = clientData === "spokeops" ? selectedClientData : clientData;
     const accessToken = await getAccessTokenSilently();
-    const bodyObj = {
+    let bodyObj: any = {
       client: client,
       type: manageType,
       device_location: device_location,
@@ -154,6 +157,10 @@ const OffboardBody = (props: OffboardProps) => {
           ? getId()
           : "",
     };
+
+    if (activation_key !== "") {
+      bodyObj.activation_key = activation_key;
+    }
 
     const offboardResult = await standardPost(
       accessToken,
@@ -400,6 +407,14 @@ const OffboardBody = (props: OffboardProps) => {
                   sx={textFieldStyle}
                   size="small"
                   onChange={(event) => setNote(event.target.value)}
+                />
+                <TextField
+                  label="Activation Key"
+                  value={activation_key}
+                  fullWidth
+                  sx={textFieldStyle}
+                  size="small"
+                  onChange={(event) => setActivationKey(event.target.value)}
                 />
                 <Grid
                   container
