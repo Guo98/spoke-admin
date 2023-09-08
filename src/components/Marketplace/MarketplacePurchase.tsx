@@ -30,6 +30,7 @@ interface MPProps {
   types: any;
   brand: string;
   client: string;
+  suppliers?: any;
 }
 
 const style = {
@@ -127,6 +128,7 @@ const MarketplacePurchase = (props: MPProps) => {
   const [img_src, setSource] = useState("");
   const [stock_level, setStock] = useState("");
   const [ai_specs, setAISpecs] = useState("");
+  const [supplier, setSupplier] = useState("");
 
   const [clear_device, setClearDevice] = useState(false);
   const [clear_deployment, setClearDeployment] = useState(false);
@@ -145,7 +147,8 @@ const MarketplacePurchase = (props: MPProps) => {
     price: string,
     image_source: string,
     stock_level: string,
-    ai_specs: string
+    ai_specs: string,
+    sup: string
   ) => {
     setActiveStep(1);
     setComplete1(true);
@@ -157,6 +160,7 @@ const MarketplacePurchase = (props: MPProps) => {
     setSource(image_source);
     setStock(stock_level);
     setAISpecs(ai_specs);
+    setSupplier(sup);
   };
 
   const completeDeploymentStep = () => {
@@ -241,6 +245,7 @@ const MarketplacePurchase = (props: MPProps) => {
               clear_device={clear_device}
               setClear={setClearDevice}
               loading={loading}
+              suppliers={props.suppliers}
             />
           </>
         )}
@@ -259,6 +264,7 @@ const MarketplacePurchase = (props: MPProps) => {
             clear_deployment={clear_deployment}
             setClear={setClearDeployment}
             ai_specs={ai_specs}
+            supplier={supplier}
           />
         )}
       </Box>

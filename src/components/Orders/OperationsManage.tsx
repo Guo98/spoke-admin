@@ -48,19 +48,25 @@ const OperationsManage = (props: OperationsOrder) => {
     (state: RootState) => state.client.selectedClient
   );
 
-  let tempItems = JSON.parse(JSON.stringify(items));
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [updateShippingStatus, setShippingStatus] = useState(shipping_status);
   const [loading, setLoading] = useState(false);
   const [laptopIndex, setLaptopIndex] = useState(-1);
 
+  const [changed_items, setItems] = useState(items);
+
   useEffect(() => {
-    const laptopFilter = items.findIndex((item) => item.type === "laptop");
+    const laptopFilter = items.findIndex(
+      (item) =>
+        item.type === "laptop" || item.name.toLowerCase().includes("mac mini")
+    );
     if (laptopFilter > -1) {
       setLaptopIndex(laptopFilter);
     }
   }, [items]);
+
+  useEffect(() => {}, [changed_items]);
 
   const handleClose = () => {
     setOpen(false);
@@ -71,12 +77,12 @@ const OperationsManage = (props: OperationsOrder) => {
 
   const saveTrackingNumbers = async () => {
     setLoading(true);
-    if (JSON.stringify(tempItems) !== JSON.stringify(items)) {
+    if (JSON.stringify(changed_items) !== JSON.stringify(items)) {
       const accessToken = await getAccessTokenSilently();
       const bodyObj = {
         client: selectedClient,
         full_name: firstName + " " + lastName,
-        items: tempItems,
+        items: changed_items,
         order_id: props.id,
         status: shipping_status,
       };
@@ -125,7 +131,12 @@ const OperationsManage = (props: OperationsOrder) => {
   };
 
   const handleChange = (event: SelectChangeEvent, index: number) => {
-    tempItems[index].courier = event.target.value;
+    setItems((prevState) => {
+      let newItems = JSON.parse(JSON.stringify(prevState));
+      newItems[index].courier = event.target.value;
+
+      return newItems;
+    });
   };
 
   const handleStatusChange = (event: SelectChangeEvent) => {
@@ -190,9 +201,16 @@ const OperationsManage = (props: OperationsOrder) => {
                           <TextField
                             size="small"
                             defaultValue={item.price}
-                            onChange={(event) =>
-                              (tempItems[index].price = event.target.value)
-                            }
+                            onChange={(event) => {
+                              setItems((prevState) => {
+                                let newItems = JSON.parse(
+                                  JSON.stringify(prevState)
+                                );
+                                newItems[index].price = event.target.value;
+
+                                return newItems;
+                              });
+                            }}
                           />
                         ) : (
                           <Typography>
@@ -212,11 +230,18 @@ const OperationsManage = (props: OperationsOrder) => {
                                 ? ""
                                 : item.tracking_number[0]
                             }
-                            onChange={(event) =>
-                              (tempItems[index].tracking_number = [
-                                event.target.value,
-                              ])
-                            }
+                            onChange={(event) => {
+                              setItems((prevState) => {
+                                let newItems = JSON.parse(
+                                  JSON.stringify(prevState)
+                                );
+                                newItems[index].tracking_number = [
+                                  event.target.value,
+                                ];
+
+                                return newItems;
+                              });
+                            }}
                           />
                         ) : (
                           item.tracking_number
@@ -227,10 +252,8 @@ const OperationsManage = (props: OperationsOrder) => {
                           <>
                             <FormControl fullWidth size="small">
                               <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={tempItems[index].courier}
-                                label="Courier"
+                                id="courier-simple-select"
+                                value={changed_items[index].courier}
                                 onChange={(e) => handleChange(e, index)}
                               >
                                 <MenuItem value="UPS">UPS</MenuItem>
@@ -257,12 +280,17 @@ const OperationsManage = (props: OperationsOrder) => {
               label="Device Serial Number"
               fullWidth
               size="small"
-              onChange={(e) =>
-                (tempItems[laptopIndex].serial_number = e.target.value)
-              }
+              onChange={(e) => {
+                setItems((prevState) => {
+                  let newItems = JSON.parse(JSON.stringify(prevState));
+                  newItems[laptopIndex].serial_number = e.target.value;
+
+                  return newItems;
+                });
+              }}
               defaultValue={
-                (tempItems[laptopIndex] &&
-                  tempItems[laptopIndex].serial_number) ||
+                (changed_items[laptopIndex] &&
+                  changed_items[laptopIndex].serial_number) ||
                 ""
               }
               disabled={!edit}

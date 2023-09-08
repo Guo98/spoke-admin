@@ -27,7 +27,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useAuth0 } from "@auth0/auth0-react";
-import { standardPost, standardGet } from "../../services/standard";
+import {
+  standardPost,
+  standardGet,
+  standardDelete,
+} from "../../services/standard";
 import { uploadFile, downloadFile } from "../../services/azureblob";
 import { clientsList } from "../../utilities/mappings";
 import { entityMappings } from "../../app/utility/constants";
@@ -58,6 +62,7 @@ interface RowProps {
     email_sent?: boolean;
     recipient_name?: string;
     entity?: string;
+    region?: string;
   };
   refresh: Function;
 }
@@ -67,8 +72,8 @@ const MarketRow = (props: RowProps) => {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(order.status);
   const [file, setFile] = useState<File | null>(null);
-  const [price, setPrice] = useState("");
-  const [changeClient, setClient] = useState("");
+  const [price, setPrice] = useState(order.quote_price);
+  const [changeClient, setClient] = useState(order.client || "");
   const [selectEntity, setEntity] = useState("");
   const [replace, setReplace] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -88,43 +93,36 @@ const MarketRow = (props: RowProps) => {
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const updateMarketplaceOrder = async (
-    updateStatus: boolean = false,
-    updatePrice: boolean = false,
-    updateClient: boolean = false,
-    updateEntity: boolean = false,
-    updateEmail: boolean = false,
-    reapprove: boolean = false
-  ) => {
+  const updateMarketplaceOrder = async (reapprove: boolean = false) => {
+    setLoading(true);
     let bodyObj: any = {
       id: order.id,
     };
-    if (updateStatus) {
+
+    if (
+      (changeClient !== "" && changeClient !== order.client) ||
+      !order.client
+    ) {
+      bodyObj.updateClient = changeClient;
+    } else {
       bodyObj.client = order.client;
       if (status !== order.status) {
         bodyObj.status = status;
       }
-    } else if (updatePrice) {
-      bodyObj.client = order.client;
       if (
         (order.quote_price && price !== order.quote_price) ||
         !order.quote_price
       ) {
         bodyObj.price = price;
       }
-    } else if (updateClient) {
-      bodyObj.updateClient = changeClient;
-    } else if (updateEntity) {
-      bodyObj.client = order.client;
-      if (!order.entity || order.entity !== selectEntity)
+      if (!order.entity || order.entity !== selectEntity) {
         bodyObj.entity = selectEntity;
-    } else if (updateEmail) {
-      bodyObj.client = order.client;
+      }
       if (!order.requestor_email || order.requestor_email !== newReqEmail) {
         bodyObj.requestor_email = newReqEmail;
       }
-    } else if (reapprove) {
-      bodyObj.client = order.client;
+    }
+    if (reapprove) {
       bodyObj.approved = null;
     }
 
@@ -139,6 +137,7 @@ const MarketRow = (props: RowProps) => {
     if (updateRes.status === "Successful") {
       await props.refresh();
     }
+    setLoading(false);
   };
 
   const uploadFileOnOrder = async () => {
@@ -188,6 +187,20 @@ const MarketRow = (props: RowProps) => {
     setLoading(false);
   };
 
+  const delete_approval = async () => {
+    setLoading(true);
+    const accessToken = await getAccessTokenSilently();
+    const deleteResp = await standardDelete(
+      accessToken,
+      "marketplaceorders/" + order.client + "/" + order.id
+    );
+
+    if (deleteResp.status === "Successful") {
+      await props.refresh();
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <TableRow>
@@ -221,38 +234,17 @@ const MarketRow = (props: RowProps) => {
         <TableCell>
           <Typography>{order.order_type}</Typography>
         </TableCell>
+        <TableCell>
+          <Typography>{order.region}</Typography>
+        </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
+        <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }} colSpan={9}>
+          <Collapse in={open} timeout="auto" unmountOnExit sx={{ pt: 2 }}>
             <Box sx={{ margin: 1 }}>
               {loading && <LinearLoading />}
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{ pb: 2, pt: 2 }}
-                justifyContent="space-evenly"
-              >
-                <TextField
-                  label="Requested By"
-                  fullWidth
-                  size="small"
-                  defaultValue={order.requestor_email || ""}
-                  onChange={(e) => setNewReqEmail(e.target.value)}
-                />
-                <Button
-                  variant="contained"
-                  size="small"
-                  fullWidth
-                  onClick={() =>
-                    updateMarketplaceOrder(false, false, false, false, true)
-                  }
-                >
-                  Update Email
-                </Button>
-              </Stack>
               {order.notes.device && (
-                <Typography sx={{ pb: 2 }}>
+                <Typography sx={{ py: 2 }}>
                   Device Notes: {order.notes.device}
                 </Typography>
               )}
@@ -261,179 +253,140 @@ const MarketRow = (props: RowProps) => {
                   More Notes: {order.notes.recipient}
                 </Typography>
               )}
-              {!order.client && (
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="space-between"
-                  spacing={2}
-                  sx={{ display: "flex", mb: 2 }}
-                >
-                  <Grid item xs={8}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="client-select-label">Client</InputLabel>
-                      <Select
-                        labelId="client-select-label"
-                        label="Client"
-                        value={changeClient}
-                        onChange={handleClientChange}
-                      >
-                        {clientsList.map((c) => (
-                          <MenuItem value={c}>{c}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Button
-                      variant="contained"
-                      onClick={() => updateMarketplaceOrder(false, false, true)}
-                    >
-                      Update Client
-                    </Button>
-                  </Grid>
-                </Grid>
-              )}
-              {order.client && entityMappings[order.client] && (
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="space-between"
-                  spacing={2}
-                  sx={{ display: "flex", mb: 2 }}
-                >
-                  <Grid item xs={8}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="entity-select-label">Entity</InputLabel>
-                      <Select
-                        labelId="entity-select-label"
-                        label="Entity"
-                        value={selectEntity}
-                        onChange={handleEntityChange}
-                      >
-                        {entityMappings[order.client].map((c: string) => (
-                          <MenuItem value={c}>{c}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        updateMarketplaceOrder(false, false, false, true)
-                      }
-                    >
-                      Update Entity
-                    </Button>
-                  </Grid>
-                </Grid>
-              )}
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-between"
-                spacing={2}
-                sx={{ display: "flex" }}
-              >
-                <Grid item xs={4}>
+              <Stack direction="column" spacing={2}>
+                <Typography fontWeight="bold">Order Details:</Typography>
+                <TextField
+                  label="Requested By"
+                  fullWidth
+                  size="small"
+                  defaultValue={order.requestor_email || ""}
+                  onChange={(e) => setNewReqEmail(e.target.value)}
+                />
+                <FormControl fullWidth size="small">
+                  <InputLabel id="status-select-label">Status</InputLabel>
+                  <Select
+                    labelId="status-select-label"
+                    label="Status"
+                    value={status}
+                    defaultValue={order.status}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="In Progress">In Progress</MenuItem>
+                    <MenuItem value="Approved">Approved</MenuItem>
+                    <MenuItem value="Rejected">Rejected</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth size="small">
+                  <InputLabel htmlFor="outlined-adornment-amount">
+                    Price
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-amount"
+                    startAdornment={
+                      <InputAdornment position="start">$</InputAdornment>
+                    }
+                    label="Price"
+                    onChange={(e) => {
+                      setPrice(e.target.value);
+                    }}
+                    defaultValue={order.quote_price}
+                  />
+                </FormControl>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="client-select-label">Client</InputLabel>
+                  <Select
+                    labelId="client-select-label"
+                    label="Client"
+                    value={changeClient}
+                    onChange={handleClientChange}
+                  >
+                    {clientsList.map((c) => (
+                      <MenuItem value={c}>{c}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {order.client && entityMappings[order.client] && (
                   <FormControl fullWidth size="small">
-                    <InputLabel id="status-select-label">Status</InputLabel>
+                    <InputLabel id="entity-select-label">Entity</InputLabel>
                     <Select
-                      labelId="status-select-label"
-                      label="Status"
-                      value={status}
-                      defaultValue={order.status}
-                      onChange={handleChange}
+                      labelId="entity-select-label"
+                      label="Entity"
+                      value={selectEntity}
+                      onChange={handleEntityChange}
                     >
-                      <MenuItem value="In Progress">In Progress</MenuItem>
-                      <MenuItem value="Approved">Approved</MenuItem>
-                      <MenuItem value="Rejected">Rejected</MenuItem>
+                      {entityMappings[order.client].map((c: string) => (
+                        <MenuItem value={c}>{c}</MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
-                </Grid>
-                <Grid item xs={2}>
+                )}
+                <Button
+                  variant="contained"
+                  onClick={() => updateMarketplaceOrder()}
+                  disabled={
+                    order.status === status &&
+                    order.quote_price === price &&
+                    order.requestor_email === newReqEmail &&
+                    order.client === changeClient
+                  }
+                >
+                  Update Changes
+                </Button>
+              </Stack>
+              <Typography pt={2} fontWeight="bold">
+                Order Quote:
+              </Typography>
+              <Stack direction="row" spacing={2} pt={1}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  label="File Path"
+                  type="file"
+                  name="file"
+                  inputProps={{ accept: "application/pdf" }}
+                  onChange={(e) => {
+                    setFile(
+                      (
+                        (e.target as HTMLInputElement).files as FileList
+                      )[0] as File
+                    );
+                  }}
+                  disabled={order.quote !== undefined && replace}
+                />
+                {order.quote && replace ? (
                   <Button
                     variant="contained"
-                    onClick={() => updateMarketplaceOrder(true, false, false)}
-                  >
-                    Update Status
-                  </Button>
-                </Grid>
-                <Grid item xs={4}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel htmlFor="outlined-adornment-amount">
-                      Price
-                    </InputLabel>
-                    <OutlinedInput
-                      id="outlined-adornment-amount"
-                      startAdornment={
-                        <InputAdornment position="start">$</InputAdornment>
-                      }
-                      label="Price"
-                      onChange={(e) => {
-                        setPrice(e.target.value);
-                      }}
-                      defaultValue={order.quote_price}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={2}>
-                  <Button
-                    variant="contained"
-                    onClick={() => updateMarketplaceOrder(false, true, false)}
-                    disabled={order.approved === true}
-                  >
-                    Update Price
-                  </Button>
-                </Grid>
-              </Grid>
-              <Grid container sx={{ paddingTop: "20px" }} spacing={2}>
-                <Grid item xs={8}>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    label="File Path"
-                    type="file"
-                    name="file"
-                    inputProps={{ accept: "application/pdf" }}
-                    onChange={(e) => {
-                      setFile(
-                        (
-                          (e.target as HTMLInputElement).files as FileList
-                        )[0] as File
-                      );
+                    onClick={() => {
+                      setReplace(false);
                     }}
-                    disabled={order.quote !== undefined && replace}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  {order.quote && replace ? (
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        setReplace(false);
-                      }}
-                    >
-                      Replace Quote
-                    </Button>
-                  ) : (
-                    <Button variant="contained" onClick={uploadFileOnOrder}>
-                      Upload Quote
-                    </Button>
-                  )}
-                </Grid>
-                <Grid item xs={2}>
-                  <Button
-                    variant="contained"
-                    onClick={download}
-                    disabled={order.quote === undefined}
                   >
-                    View Quote
+                    Replace
                   </Button>
-                </Grid>
-              </Grid>
-              <Stack direction="row" sx={{ mt: "20px" }} spacing={2}>
+                ) : (
+                  <Button variant="contained" onClick={uploadFileOnOrder}>
+                    Upload
+                  </Button>
+                )}
+
+                <Button
+                  variant="contained"
+                  onClick={download}
+                  disabled={order.quote === undefined}
+                >
+                  View
+                </Button>
+              </Stack>
+              <Typography fontWeight="bold" pt={2}>
+                Other Actions:
+              </Typography>
+              <Stack direction="row" spacing={2} py={2} justifyContent="center">
+                <Button
+                  variant="contained"
+                  onClick={delete_approval}
+                  color="error"
+                >
+                  Delete Approval
+                </Button>
                 {(order.quote || order.quote_price) && (
                   <Button variant="contained" onClick={sendApprovalEmail}>
                     {order.email_sent
@@ -447,16 +400,7 @@ const MarketRow = (props: RowProps) => {
                     disabled={
                       order.approved === undefined || order.approved === null
                     }
-                    onClick={() =>
-                      updateMarketplaceOrder(
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true
-                      )
-                    }
+                    onClick={() => updateMarketplaceOrder(true)}
                   >
                     Reopen Approval
                   </Button>
@@ -541,6 +485,9 @@ const MarketplaceOrders = (props: MOProps) => {
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight="bold">Request Type</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight="bold">Region</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>

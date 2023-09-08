@@ -34,6 +34,7 @@ interface RecipientProps {
   clear_deployment: boolean;
   setClear: Function;
   ai_specs: string;
+  supplier?: string;
 }
 
 const textFieldStyle = {
@@ -128,6 +129,9 @@ const RecipientForm = (props: RecipientProps) => {
       region,
       ai_specs: ai_specs,
     };
+    if (props.supplier !== "") {
+      postBody.supplier = props.supplier;
+    }
     if (deployment_type === "Buy and Hold") {
       postBody.order_type = "Hold in Inventory";
       postBody.quantity = quantity;

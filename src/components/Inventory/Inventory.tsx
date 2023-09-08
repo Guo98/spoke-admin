@@ -11,7 +11,6 @@ import {
   Stack,
   Chip,
 } from "@mui/material";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useAuth0 } from "@auth0/auth0-react";
 import * as FileSaver from "file-saver";
@@ -28,7 +27,6 @@ import {
 import { standardGet } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import InventoryAccordion from "./InventoryAccordion";
-import Filter from "./Filter";
 import AddModal from "./AddModal";
 import ManageModal from "./ManageModal";
 import TabPanel from "../common/TabPanel";
@@ -351,27 +349,6 @@ const Inventory: FC = (): ReactElement => {
             ))}
           </Stack>
         )}
-        {/* <div className="right">
-          <Drawer
-            anchor="right"
-            open={filterdrawer}
-            onClose={() => openFiltersDrawer(false)}
-            PaperProps={{ sx: { width: "20%" } }}
-            keepMounted={true}
-          >
-            <div className="filter-padding">
-              <Filter
-                data={ogstock}
-                ipData={oginprogrss}
-                depData={ogdeployed}
-                setData={setStock}
-                setIPData={setInprogress}
-                setDepData={setDeployed}
-                setFiltering={setFiltered}
-              />
-            </div>
-          </Drawer>
-        </div> */}
         <Box>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
