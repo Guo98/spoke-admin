@@ -8,10 +8,11 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: InitialInventoryState = {
-  data: { in_stock: [], pending: [], deployed: [] },
+  data: { in_stock: [], pending: [], deployed: [], end_of_life: [] },
   pending: [],
   deployed: [],
   in_stock: [],
+  end_of_life: [],
   products: [],
   brands: [],
 };
@@ -20,10 +21,14 @@ const splitInventory = (
   device: InventorySummary,
   inStock: InventorySummary[],
   deployed: InventorySummary[],
-  offboarding: InventorySummary[]
+  offboarding: InventorySummary[],
+  endOfLife: InventorySummary[]
 ) => {
   let instocklaptops = device.serial_numbers.filter(
-    (individual) => individual.status === "In Stock"
+    (individual) =>
+      individual.status === "In Stock" &&
+      individual.condition !== "Damaged" &&
+      individual.condition !== "End of Life"
   );
 
   let deployedlaptops = device.serial_numbers.filter(
@@ -40,6 +45,13 @@ const splitInventory = (
       individual.status == "Shipping"
   );
 
+  let endoflifeLaptops = device.serial_numbers.filter(
+    (individual) =>
+      individual.status === "In Stock" &&
+      (individual.condition === "Damaged" ||
+        individual.condition === "End of Life")
+  );
+
   let tempInStock = { ...device };
   tempInStock.serial_numbers = instocklaptops.slice(0);
   inStock.push(tempInStock);
@@ -51,6 +63,10 @@ const splitInventory = (
   let tempOffboarding = { ...device };
   tempOffboarding.serial_numbers = offboardingLaptops.slice(0);
   offboarding.push(tempOffboarding);
+
+  let tempEndOfLife = { ...device };
+  tempEndOfLife.serial_numbers = endoflifeLaptops.slice(0);
+  endOfLife.push(tempEndOfLife);
 };
 
 const sortInventory = (
@@ -69,11 +85,12 @@ export const inventorySlice = createSlice({
       let inStock: InventorySummary[] = [];
       let deployed: InventorySummary[] = [];
       let offboarding: InventorySummary[] = [];
+      let endOfLife: InventorySummary[] = [];
 
       const tempData = action.payload;
       tempData.forEach((device) => {
         if (device.serial_numbers) {
-          splitInventory(device, inStock, deployed, offboarding);
+          splitInventory(device, inStock, deployed, offboarding, endOfLife);
         }
         const devicename = device.name.toLowerCase();
         if (
@@ -102,11 +119,14 @@ export const inventorySlice = createSlice({
       state.data.deployed = deployed;
       state.in_stock = inStock;
       state.data.in_stock = inStock;
+      state.data.end_of_life = endOfLife;
+      state.end_of_life = endOfLife;
     },
     filterInventoryByEntity: (state, action: PayloadAction<string>) => {
       let inStock: InventorySummary[] = [];
       let deployed: InventorySummary[] = [];
       let pending: InventorySummary[] = [];
+      let endOfLife: InventorySummary[] = [];
 
       if (action.payload !== "") {
         state.data.in_stock.forEach((dev) => {
@@ -124,13 +144,20 @@ export const inventorySlice = createSlice({
             deployed.push(dev);
           }
         });
+        state.data.end_of_life.forEach((dev) => {
+          if (dev.entity === action.payload) {
+            endOfLife.push(dev);
+          }
+        });
         state.pending = pending;
         state.deployed = deployed;
         state.in_stock = inStock;
+        state.end_of_life = endOfLife;
       } else {
         state.pending = state.data.pending;
         state.deployed = state.data.deployed;
         state.in_stock = state.data.in_stock;
+        state.end_of_life = state.data.end_of_life;
       }
     },
     addProducts: (state, action: PayloadAction<MarketplaceProducts2[]>) => {
@@ -153,6 +180,11 @@ export const inventorySlice = createSlice({
             dev.name.toLowerCase().includes("mac") ||
             dev.name.toLowerCase().includes("apple")
         );
+        state.end_of_life = state.end_of_life.filter(
+          (dev) =>
+            dev.name.toLowerCase().includes("mac") ||
+            dev.name.toLowerCase().includes("apple")
+        );
       } else {
         state.in_stock = state.in_stock.filter((dev) =>
           dev.name.toLowerCase().includes(action.payload.toLowerCase())
@@ -163,12 +195,16 @@ export const inventorySlice = createSlice({
         state.deployed = state.deployed.filter((dev) =>
           dev.name.toLowerCase().includes(action.payload.toLowerCase())
         );
+        state.end_of_life = state.end_of_life.filter((dev) =>
+          dev.name.toLowerCase().includes(action.payload.toLowerCase())
+        );
       }
     },
     resetInventory: (state) => {
       state.pending = state.data.pending;
       state.in_stock = state.data.in_stock;
       state.deployed = state.data.deployed;
+      state.end_of_life = state.data.end_of_life;
     },
   },
 });

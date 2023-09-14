@@ -55,6 +55,9 @@ const Inventory: FC = (): ReactElement => {
   const stockRedux = useSelector(
     (state: RootState) => state.inventory.in_stock
   );
+  const eolRedux = useSelector(
+    (state: RootState) => state.inventory.end_of_life
+  );
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
@@ -70,9 +73,12 @@ const Inventory: FC = (): ReactElement => {
 
   // const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+
   const [stock, setStock] = useState(data.in_stock);
   const [deployed, setDeployed] = useState(data.deployed);
   const [inprogress, setInprogress] = useState(data.pending);
+  const [endoflife, setEndOfLife] = useState(data.end_of_life);
+
   const [openAdd, setOpenAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inprogTotal, setInprogTotal] = useState(0);
@@ -183,6 +189,7 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     setInprogress(pendingRedux);
+    setEndOfLife(eolRedux);
     if (search_serial !== "") {
       searchFilter(search_serial);
     } else {
@@ -190,7 +197,7 @@ const Inventory: FC = (): ReactElement => {
       setDeployed(deployedRedux);
       updateCount();
     }
-  }, [pendingRedux, deployedRedux, stockRedux]);
+  }, [pendingRedux, deployedRedux, stockRedux, eolRedux]);
 
   useEffect(() => {
     updateCount();
@@ -359,6 +366,7 @@ const Inventory: FC = (): ReactElement => {
               <Tab label="In Stock" {...a11yProps(0)} />
               <Tab label="Deployed" {...a11yProps(1)} />
               <Tab label="Pending" {...a11yProps(2)} />
+              <Tab label="End of Life" {...a11yProps(3)} />
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0} prefix="inv">
@@ -542,6 +550,37 @@ const Inventory: FC = (): ReactElement => {
                 <LinearLoading />
               )}
             </Box>
+          </TabPanel>
+          <TabPanel value={tabValue} index={3} prefix="inv">
+            {loading ? (
+              <LinearLoading />
+            ) : (
+              <Box
+                sx={{
+                  display: "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                {endoflife.length > 0 &&
+                  endoflife.map((device, index) => {
+                    return (
+                      device.serial_numbers.length > 0 && (
+                        <InventoryAccordion
+                          {...device}
+                          tabValue={tabValue}
+                          key={index}
+                          clientData={clientData}
+                          index={index}
+                          total_devices={inprogress.length}
+                          search_serial_number={search_serial}
+                        />
+                      )
+                    );
+                  })}
+              </Box>
+            )}
           </TabPanel>
           {marketClient !== "Automox" &&
             marketClient !== "Alma" &&
