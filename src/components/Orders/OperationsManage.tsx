@@ -66,7 +66,9 @@ const OperationsManage = (props: OperationsOrder) => {
     }
   }, [items]);
 
-  useEffect(() => {}, [changed_items]);
+  useEffect(() => {
+    setItems(items);
+  }, [items]);
 
   const handleClose = () => {
     setOpen(false);
@@ -95,9 +97,10 @@ const OperationsManage = (props: OperationsOrder) => {
 
       if (postOrderResp.status === "Success") {
         let route =
-          "orders/" + props.client === "Public" || props.client === "Mock"
+          "orders/" +
+          (props.client === "Public" || props.client === "Mock"
             ? "public"
-            : props.client;
+            : props.client);
         const ordersResult = await standardGet(accessToken, route);
         dispatch(setOrders(ordersResult.data));
       }
