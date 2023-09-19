@@ -2,7 +2,6 @@ import React, { FC, ReactElement, useState, useEffect } from "react";
 import {
   Box,
   Grid,
-  Drawer,
   Tabs,
   Tab,
   Fab,
@@ -84,6 +83,7 @@ const Inventory: FC = (): ReactElement => {
   const [inprogTotal, setInprogTotal] = useState(0);
   const [deployedTotal, setDeployedTotal] = useState(0);
   const [stockTotal, setStockTotal] = useState(0);
+  const [eolTotal, setEolTotal] = useState(0);
   const [deviceTotal, setDeviceTotal] = useState(0);
   const [filtered, setFiltered] = useState(false);
   const [search_serial, setSearchSerial] = useState("");
@@ -183,6 +183,11 @@ const Inventory: FC = (): ReactElement => {
       stockVar += s.serial_numbers.length;
     });
     setStockTotal(stockVar);
+
+    let eolVar = 0;
+    eolRedux.forEach((e) => {
+      eolVar += e.serial_numbers.length;
+    });
 
     setDeviceTotal(stockRedux.length);
   };
@@ -397,6 +402,7 @@ const Inventory: FC = (): ReactElement => {
                                   index={index}
                                   total_devices={stock.length}
                                   search_serial_number={search_serial}
+                                  refresh={fetchData}
                                 />
                               )
                             );
@@ -442,6 +448,7 @@ const Inventory: FC = (): ReactElement => {
                                 index={index}
                                 total_devices={deployed.length}
                                 search_serial_number={search_serial}
+                                refresh={fetchData}
                               />
                             )
                           );
@@ -509,6 +516,7 @@ const Inventory: FC = (): ReactElement => {
                                 index={index}
                                 total_devices={inprogress.length}
                                 search_serial_number={search_serial}
+                                refresh={fetchData}
                               />
                             )
                           );
@@ -555,31 +563,40 @@ const Inventory: FC = (): ReactElement => {
             {loading ? (
               <LinearLoading />
             ) : (
-              <Box
-                sx={{
-                  display: "block",
-                  flexWrap: "wrap",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                {endoflife.length > 0 &&
-                  endoflife.map((device, index) => {
-                    return (
-                      device.serial_numbers.length > 0 && (
-                        <InventoryAccordion
-                          {...device}
-                          tabValue={tabValue}
-                          key={index}
-                          clientData={clientData}
-                          index={index}
-                          total_devices={inprogress.length}
-                          search_serial_number={search_serial}
-                        />
-                      )
-                    );
-                  })}
-              </Box>
+              <>
+                {eolTotal > 0 ? (
+                  <Box
+                    sx={{
+                      display: "block",
+                      flexWrap: "wrap",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {endoflife.length > 0 &&
+                      endoflife.map((device, index) => {
+                        return (
+                          device.serial_numbers.length > 0 && (
+                            <InventoryAccordion
+                              {...device}
+                              tabValue={tabValue}
+                              key={index}
+                              clientData={clientData}
+                              index={index}
+                              total_devices={inprogress.length}
+                              search_serial_number={search_serial}
+                              refresh={fetchData}
+                            />
+                          )
+                        );
+                      })}
+                  </Box>
+                ) : (
+                  <Typography textAlign="center">
+                    No devices near end of service
+                  </Typography>
+                )}
+              </>
             )}
           </TabPanel>
           {marketClient !== "Automox" &&

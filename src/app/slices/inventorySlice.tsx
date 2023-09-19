@@ -48,8 +48,8 @@ const splitInventory = (
   let endoflifeLaptops = device.serial_numbers.filter(
     (individual) =>
       individual.status === "In Stock" &&
-      (individual.condition === "Damaged" ||
-        individual.condition === "End of Life")
+      individual.condition !== "Used" &&
+      individual.condition !== "New"
   );
 
   let tempInStock = { ...device };

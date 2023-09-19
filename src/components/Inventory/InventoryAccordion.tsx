@@ -7,25 +7,18 @@ import { styled } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   CardMedia,
-  CardContent,
   Grid,
   Typography,
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-  TableSortLabel,
-  Paper,
   Chip,
-  Button,
   useTheme,
   AccordionDetails,
 } from "@mui/material";
-import AssignModal from "./AssignModal";
-import ManageModal from "./ManageModal";
-import AddToStock from "./AddModalBoxes/AddToStock";
+
+import EndOfLife from "./Tables/EndOfLife";
+import InStock from "./Tables/InStock";
+import Deployed from "./Tables/Deployed";
+import Pending from "./Tables/Pending";
+
 import { InventorySummary } from "../../interfaces/inventory";
 
 const Accordion = styled((props: AccordionProps) => (
@@ -59,6 +52,7 @@ interface InventoryAccordionProps extends InventorySummary {
   index: number;
   total_devices: number;
   search_serial_number: string;
+  refresh: Function;
 }
 
 const InventoryAccordion = (props: InventoryAccordionProps) => {
@@ -71,6 +65,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     tabValue,
     index,
     id,
+    refresh,
   } = props;
 
   const [orderBy, setOrderBy] = useState("");
@@ -227,6 +222,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                       ? " in stock"
                       : tabValue === 1
                       ? " deployed"
+                      : tabValue === 3
+                      ? " device" + (serial_numbers.length > 1 ? "s" : "")
                       : " pending")
               }
               sx={{
@@ -252,168 +249,46 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
         }}
         id={"inventory-accordiondetails-" + index}
       >
-        {serial_numbers.length > 0 ? (
-          <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
-            <Table aria-label="device-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    key="SerialNumber"
-                    width={tabValue === 2 ? "25%" : "40%"}
-                    sortDirection={orderBy === "Serial Number" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "Serial Number"}
-                      onClick={sortHandler("Serial Number")}
-                      direction={orderBy === "Serial Number" ? order : "asc"}
-                    >
-                      <Typography fontWeight="bold">Serial Number</Typography>
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell
-                    key="Condition"
-                    width="20%"
-                    sortDirection={orderBy === "Condition" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "Condition"}
-                      onClick={sortHandler("Condition")}
-                      direction={orderBy === "Condition" ? order : "asc"}
-                    >
-                      <Typography fontWeight="bold">
-                        {tabValue === 0
-                          ? "Condition"
-                          : tabValue === 1
-                          ? "Employee"
-                          : "Status"}
-                      </Typography>
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell
-                    key="Grade"
-                    width={tabValue === 2 ? "15%" : "20%"}
-                    sortDirection={orderBy === "Grade" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "Grade"}
-                      onClick={sortHandler("Grade")}
-                      direction={orderBy === "Grade" ? order : "asc"}
-                    >
-                      <Typography fontWeight="bold">
-                        {tabValue === 0
-                          ? "Grade"
-                          : tabValue === 1
-                          ? "Date Deployed"
-                          : "Quantity"}
-                      </Typography>
-                    </TableSortLabel>
-                  </TableCell>
-                  {tabValue === 2 && (
-                    <TableCell key="Date" width="20%">
-                      <Typography fontWeight="bold">Date Requested</Typography>
-                    </TableCell>
-                  )}
-                  <TableCell key="Action" width="20%">
-                    <Typography fontWeight="bold">Action</Typography>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {serial_numbers.length > 0 &&
-                  tableSort().map((item, index) => {
-                    const { sn, condition } = item;
-                    return (
-                      <TableRow key={index}>
-                        <TableCell width={tabValue === 2 ? "25%" : "40%"}>
-                          <Typography>{sn}</Typography>
-                        </TableCell>
-                        <TableCell width="20%">
-                          <Typography>
-                            {tabValue === 0
-                              ? condition
-                              : tabValue === 1
-                              ? item.first_name + " " + item.last_name
-                              : item.status}
-                          </Typography>
-                        </TableCell>
-                        <TableCell width={tabValue === 2 ? "15%" : "40%"}>
-                          <Typography>
-                            {tabValue === 0
-                              ? condition === "Used" && item.grade
-                              : tabValue === 1
-                              ? item.date_deployed
-                              : item.quantity || 1}
-                          </Typography>
-                        </TableCell>
-                        {tabValue === 2 && (
-                          <TableCell width="20%">
-                            <Typography>{item.date_requested}</Typography>
-                          </TableCell>
-                        )}
-                        <TableCell width="20%">
-                          {tabValue === 0 && (
-                            <AssignModal
-                              serial_number={sn}
-                              device_name={name}
-                              device_location={location}
-                              image_source={image_source}
-                              type="individual"
-                              id={id}
-                              disabled={
-                                item.condition !== "Used" &&
-                                item.condition !== "New"
-                              }
-                            />
-                          )}
-                          {tabValue === 1 && (
-                            <ManageModal
-                              name={{
-                                first_name: item.first_name!,
-                                last_name: item.last_name!,
-                              }}
-                              address={item.address!}
-                              email={item.email!}
-                              serial_number={item.sn}
-                              device_name={name}
-                              device_location={location}
-                              phone_number={item.phone_number!}
-                              type="individual"
-                              id={id}
-                            />
-                          )}
-                          {tabValue === 2 && item.tracking_number && (
-                            <Button
-                              href={
-                                "https://withspoke.aftership.com/" +
-                                item.tracking_number
-                              }
-                              target="_blank"
-                            >
-                              Track
-                            </Button>
-                          )}
-                          {tabValue === 2 &&
-                            props.clientData === "spokeops" &&
-                            item.quantity && (
-                              <AddToStock
-                                quantity={item.quantity!}
-                                device_name={name}
-                                device_location={location}
-                                status={item.sn}
-                                date_requested={item.date_requested!}
-                                new_device={props.new_device}
-                                id={id}
-                              />
-                            )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          <Typography textAlign="center">Out of Stock</Typography>
+        {tabValue === 0 && (
+          <InStock
+            tableSort={tableSort}
+            serial_numbers={serial_numbers}
+            name={name}
+            location={location}
+            id={id}
+            image_source={image_source}
+          />
+        )}
+        {tabValue === 1 && (
+          <Deployed
+            tableSort={tableSort}
+            serial_numbers={serial_numbers}
+            name={name}
+            location={location}
+            id={id}
+            image_source={image_source}
+          />
+        )}
+        {tabValue === 2 && (
+          <Pending
+            tableSort={tableSort}
+            serial_numbers={serial_numbers}
+            name={name}
+            location={location}
+            id={id}
+            image_source={image_source}
+            clientData={props.clientData}
+          />
+        )}
+        {tabValue === 3 && (
+          <EndOfLife
+            tableSort={tableSort}
+            serial_numbers={serial_numbers}
+            name={name}
+            location={location}
+            id={id}
+            refresh={refresh}
+          />
         )}
       </AccordionDetails>
     </Accordion>
