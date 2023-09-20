@@ -107,11 +107,21 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   const handleRegionChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value);
+    if (event.target.value === "United States") {
+      if (
+        types[typeIndex]?.specs[specIndex]?.supplier &&
+        types[typeIndex]?.specs[specIndex]?.supplier?.cdw &&
+        types[typeIndex]?.specs[specIndex]?.supplier?.cdw[color]
+      ) {
+        setProductLink(
+          types[typeIndex]?.specs[specIndex]?.supplier?.cdw[color]
+        );
+      }
+    }
   };
 
   const handleSupplierChange = (event: SelectChangeEvent) => {
     setSupplier(event.target.value);
-
     if (
       types[typeIndex]?.specs[specIndex]?.supplier &&
       types[typeIndex]?.specs[specIndex]?.supplier[event.target.value] &&
