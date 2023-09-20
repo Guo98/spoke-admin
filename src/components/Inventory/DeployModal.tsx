@@ -187,32 +187,30 @@ const DeployModalContent = (props: DeployProps) => {
             </CardContent>
           </Card>
           <Stack spacing={2} sx={{ paddingTop: "20px" }}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-fn"
-                  label="First Name"
-                  defaultValue={fn}
-                  onChange={(event) => setFn(event.target.value)}
-                  size="small"
-                  sx={textFieldStyle}
-                  disabled={!edit}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-ln"
-                  label="Last Name"
-                  defaultValue={ln}
-                  sx={rightTextFieldStyle}
-                  onChange={(event) => setLn(event.target.value)}
-                  size="small"
-                  disabled={!edit}
-                />
-              </Grid>
-            </Grid>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                required
+                id="standard-fn"
+                label="First Name"
+                defaultValue={fn}
+                onChange={(event) => setFn(event.target.value)}
+                size="small"
+                sx={textFieldStyle}
+                disabled={!edit}
+                fullWidth
+              />
+              <TextField
+                required
+                id="standard-ln"
+                label="Last Name"
+                defaultValue={ln}
+                sx={rightTextFieldStyle}
+                onChange={(event) => setLn(event.target.value)}
+                size="small"
+                disabled={!edit}
+                fullWidth
+              />
+            </Stack>
             <div>
               <TextField
                 required
@@ -238,105 +236,78 @@ const DeployModalContent = (props: DeployProps) => {
                 disabled={!edit}
               />
             </div>
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                marginLeft: "-16px !important",
-                marginTop: "0px !important",
-              }}
-            >
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-city"
-                  label="City"
-                  defaultValue={city}
-                  onChange={(event) => setCity(event.target.value)}
-                  size="small"
-                  sx={textFieldStyle}
-                  disabled={!edit}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-state"
-                  label="State/Province"
-                  defaultValue={state}
-                  sx={rightTextFieldStyle}
-                  onChange={(event) => setState(event.target.value)}
-                  size="small"
-                  disabled={!edit}
-                />
-              </Grid>
-            </Grid>
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                marginLeft: "-16px !important",
-                marginTop: "0px !important",
-              }}
-            >
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-postal-code"
-                  label="Postal Code"
-                  defaultValue={postalCode}
-                  onChange={(event) => setPC(event.target.value)}
-                  size="small"
-                  sx={textFieldStyle}
-                  disabled={!edit}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-country"
-                  label="Country"
-                  defaultValue={country}
-                  sx={rightTextFieldStyle}
-                  onChange={(event) => setCountry(event.target.value)}
-                  size="small"
-                  disabled={!edit}
-                />
-              </Grid>
-            </Grid>
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                marginLeft: "-16px !important",
-                marginTop: "0px !important",
-              }}
-            >
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-email"
-                  label="Email"
-                  defaultValue={updatedemail}
-                  onChange={(event) => setEmail(event.target.value)}
-                  size="small"
-                  sx={textFieldStyle}
-                  disabled={!edit}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  id="standard-phonenumber"
-                  label="Phone Number"
-                  defaultValue={pn}
-                  sx={rightTextFieldStyle}
-                  onChange={(event) => setPn(event.target.value)}
-                  size="small"
-                  disabled={!edit}
-                />
-              </Grid>
-            </Grid>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                required
+                id="standard-city"
+                label="City"
+                defaultValue={city}
+                onChange={(event) => setCity(event.target.value)}
+                size="small"
+                sx={textFieldStyle}
+                disabled={!edit}
+                fullWidth
+              />
+              <TextField
+                required
+                id="standard-state"
+                label="State/Province"
+                defaultValue={state}
+                sx={rightTextFieldStyle}
+                onChange={(event) => setState(event.target.value)}
+                size="small"
+                disabled={!edit}
+                fullWidth
+              />
+            </Stack>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                required
+                id="standard-postal-code"
+                label="Postal Code"
+                defaultValue={postalCode}
+                onChange={(event) => setPC(event.target.value)}
+                size="small"
+                sx={textFieldStyle}
+                disabled={!edit}
+                fullWidth
+              />
+              <TextField
+                required
+                id="standard-country"
+                label="Country"
+                defaultValue={country}
+                sx={rightTextFieldStyle}
+                onChange={(event) => setCountry(event.target.value)}
+                size="small"
+                disabled={!edit}
+                fullWidth
+              />
+            </Stack>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                required
+                id="standard-email"
+                label="Email"
+                defaultValue={updatedemail}
+                onChange={(event) => setEmail(event.target.value)}
+                size="small"
+                sx={textFieldStyle}
+                disabled={!edit}
+                fullWidth
+              />
+              <TextField
+                required
+                id="standard-phonenumber"
+                label="Phone Number"
+                defaultValue={pn}
+                sx={rightTextFieldStyle}
+                onChange={(event) => setPn(event.target.value)}
+                size="small"
+                disabled={!edit}
+                fullWidth
+              />
+            </Stack>
             <div>
               <TextField
                 id="standard-note"

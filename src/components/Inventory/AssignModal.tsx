@@ -83,6 +83,14 @@ const AssignModal = (props: AssignProps) => {
   const [error, setError] = useState("");
   const [selectedDevice, setSD] = useState("");
 
+  //new address fields
+  const [ad1, setAd1] = useState("");
+  const [ad2, setAd2] = useState("");
+  const [city, setCity] = useState("");
+  const [pc, setPC] = useState("");
+  const [country, setCountry] = useState("");
+  const [prov, setProv] = useState("");
+
   const { getAccessTokenSilently } = useAuth0();
 
   const handleOpen = () => {
@@ -107,31 +115,41 @@ const AssignModal = (props: AssignProps) => {
     setSD(event.target.value as string);
   };
 
-  const checkAddress = async () => {
-    const accessToken = await getAccessTokenSilently();
-    const addressResult = await validateAddress(address, accessToken);
-    if (addressResult.message === "Successful!") {
-      if (
-        addressResult.data.country &&
-        deviceLocationMappings[addressResult.data.country] &&
-        deviceLocationMappings[addressResult.data.country].indexOf(
-          type === "general"
-            ? props.devices![parseInt(selectedDevice)]?.location
-            : device_location
-        ) < 0
-      ) {
-        setError(
-          `This device is only deployable within ${
-            locationMappings[device_location!]
-          }. Please enter an address within the territory or select a new device to deploy.`
-        );
-      } else {
-        setAddrObj(addressResult.data);
-        setForm(false);
-      }
-    } else {
-      setError("Please confirm that the address was entered correctly.");
-    }
+  const checkAddress = () => {
+    // const accessToken = await getAccessTokenSilently();
+    // const addressResult = await validateAddress(address, accessToken);
+    // if (addressResult.message === "Successful!") {
+    //   if (
+    //     addressResult.data.country &&
+    //     deviceLocationMappings[addressResult.data.country] &&
+    //     deviceLocationMappings[addressResult.data.country].indexOf(
+    //       type === "general"
+    //         ? props.devices![parseInt(selectedDevice)]?.location
+    //         : device_location
+    //     ) < 0
+    //   ) {
+    //     setError(
+    //       `This device is only deployable within ${
+    //         locationMappings[device_location!]
+    //       }. Please enter an address within the territory or select a new device to deploy.`
+    //     );
+    //   } else {
+    //     setAddrObj(addressResult.data);
+    //     setForm(false);
+    //   }
+    // } else {
+    //   setError("Please confirm that the address was entered correctly.");
+    // }
+    const addrObj: any = {
+      address_line1: ad1,
+      address_line2: ad2,
+      city: city,
+      state: prov,
+      zipCode: pc,
+      country: country,
+    };
+    setAddrObj(addrObj);
+    setForm(false);
   };
 
   return (
@@ -231,18 +249,70 @@ const AssignModal = (props: AssignProps) => {
                 <TextField
                   required
                   id="standard-address"
-                  label="Address"
-                  defaultValue=""
+                  label="Address Line 1"
+                  defaultValue={ad1}
                   fullWidth
-                  onChange={(event) => setAddress(event.target.value)}
+                  onChange={(event) => setAd1(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
-                  error={error !== ""}
-                  helperText={error}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="standard-address"
+                  label="Address Line 2"
+                  defaultValue={ad2}
+                  fullWidth
+                  onChange={(event) => setAd2(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
                 />
               </div>
               <Stack direction="row" spacing={2}>
-                {" "}
+                <TextField
+                  required
+                  id="standard-city"
+                  label="City"
+                  defaultValue={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                />
+                <TextField
+                  required
+                  id="standard-state"
+                  label="State/Province"
+                  defaultValue={prov}
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setProv(event.target.value)}
+                  size="small"
+                  fullWidth
+                />
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  required
+                  id="standard-postal-code"
+                  label="Postal Code"
+                  defaultValue={pc}
+                  onChange={(event) => setPC(event.target.value)}
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                />
+                <TextField
+                  required
+                  id="standard-country"
+                  label="Country"
+                  defaultValue={country}
+                  sx={rightTextFieldStyle}
+                  onChange={(event) => setCountry(event.target.value)}
+                  size="small"
+                  fullWidth
+                />
+              </Stack>
+              <Stack direction="row" spacing={2}>
                 <TextField
                   required
                   id="standard-email"
