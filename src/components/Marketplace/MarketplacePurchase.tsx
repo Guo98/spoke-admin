@@ -20,17 +20,22 @@ import LaptopIcon from "@mui/icons-material/Laptop";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
+import SpecificDevice from "./SpecificDevice";
 
 interface MPProps {
   open: boolean;
   handleClose: Function;
   imgSrc: string;
-  types: any;
+  types?: any;
   brand: string;
   client: string;
   suppliers?: any;
+  specific_device?: string;
+  location?: string;
+  supplier_links?: any;
 }
 
 const style = {
@@ -197,7 +202,7 @@ const MarketplacePurchase = (props: MPProps) => {
       <Box sx={style}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h5" fontWeight="bold">
-            New Purchase - {brand}
+            {"New Purchase" + (!props.specific_device ? " - " + brand : "")}
           </Typography>
           <ButtonGroup>
             {activeStep === 1 && (
@@ -235,7 +240,7 @@ const MarketplacePurchase = (props: MPProps) => {
             </StepLabel>
           </Step>
         </Stepper>
-        {activeStep === 0 && (
+        {activeStep === 0 && !props.specific_device && (
           <>
             <DeviceSelection
               types={types}
@@ -246,6 +251,16 @@ const MarketplacePurchase = (props: MPProps) => {
               setClear={setClearDevice}
               loading={loading}
               suppliers={props.suppliers}
+            />
+          </>
+        )}
+        {activeStep === 0 && props.specific_device && (
+          <>
+            <SpecificDevice
+              device_name={props.specific_device}
+              location={props.location!}
+              completeDeviceChoice={completeDeviceStep}
+              supplier_links={props.supplier_links}
             />
           </>
         )}

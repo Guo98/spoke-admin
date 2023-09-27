@@ -169,7 +169,13 @@ const RecipientForm = (props: RecipientProps) => {
             Device Details
           </Typography>
           <Stack direction="row" spacing={2}>
-            {image_source && <img src={image_source} alt="Laptop picture" />}
+            {image_source && (
+              <img
+                src={image_source}
+                alt="Laptop picture"
+                style={{ maxHeight: 200, maxWidth: 200 }}
+              />
+            )}
             <Stack justifyContent="center" spacing={1}>
               <Typography fontWeight="bold">{device_name}</Typography>
               <div>

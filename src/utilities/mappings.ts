@@ -119,6 +119,7 @@ const navMappings: any = {
   spokeops: [
     "Orders",
     "Inventory",
+    "NewInventory",
     "Storefront",
     "Marketplace",
     "Approvals",

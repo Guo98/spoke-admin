@@ -15,6 +15,7 @@ const initialState: InitialInventoryState = {
   end_of_life: [],
   products: [],
   brands: [],
+  devices: [],
 };
 
 const splitInventory = (
@@ -206,6 +207,9 @@ export const inventorySlice = createSlice({
       state.deployed = state.data.deployed;
       state.end_of_life = state.data.end_of_life;
     },
+    setNewInventory: (state, action: PayloadAction<InventorySummary[]>) => {
+      state.devices = action.payload;
+    },
   },
 });
 
@@ -215,6 +219,7 @@ export const {
   addProducts,
   filterByBrand,
   resetInventory,
+  setNewInventory,
 } = inventorySlice.actions;
 
 export default inventorySlice.reducer;

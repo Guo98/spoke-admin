@@ -16,6 +16,7 @@ interface InitialInventoryState {
   end_of_life: InventorySummary[];
   products: MarketplaceProducts2[];
   brands: string[];
+  devices: InventorySummary[];
 }
 
 const UpdateInventoryAction: string = "UpdateInventory";

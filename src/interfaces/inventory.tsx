@@ -19,6 +19,7 @@ export interface InventorySummary {
   entity?: string;
   id: string;
   hide_out_of_stock?: boolean;
+  marketplace?: any;
 }
 
 interface SerialNumbers {

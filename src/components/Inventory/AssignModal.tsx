@@ -10,12 +10,10 @@ import {
   FormControl,
   Select,
   SelectChangeEvent,
-  Grid,
   Stack,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import DeployModalContent from "./DeployModal";
-import { validateAddress } from "../../services/address";
 import { InventorySummary } from "../../interfaces/inventory";
 import {
   deviceLocationMappings,
@@ -152,8 +150,23 @@ const AssignModal = (props: AssignProps) => {
     setForm(false);
   };
 
+  const disable_button = () => {
+    return (
+      firstname === "" ||
+      lastname === "" ||
+      ad1 === "" ||
+      city === "" ||
+      prov === "" ||
+      pc === "" ||
+      country === "" ||
+      phonenumber === "" ||
+      email === "" ||
+      shipping === ""
+    );
+  };
+
   return (
-    <div>
+    <>
       {type !== "general" && (
         <Button
           variant="contained"
@@ -228,8 +241,8 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-fn"
                   label="First Name"
-                  defaultValue=""
                   onChange={(event) => setFirstname(event.target.value)}
+                  value={firstname}
                   size="small"
                   sx={textFieldStyle}
                   fullWidth
@@ -238,7 +251,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-ln"
                   label="Last Name"
-                  defaultValue=""
+                  value={lastname}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setLastname(event.target.value)}
                   size="small"
@@ -250,7 +263,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-address"
                   label="Address Line 1"
-                  defaultValue={ad1}
+                  value={ad1}
                   fullWidth
                   onChange={(event) => setAd1(event.target.value)}
                   size="small"
@@ -261,7 +274,7 @@ const AssignModal = (props: AssignProps) => {
                 <TextField
                   id="standard-address"
                   label="Address Line 2"
-                  defaultValue={ad2}
+                  value={ad2}
                   fullWidth
                   onChange={(event) => setAd2(event.target.value)}
                   size="small"
@@ -273,7 +286,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-city"
                   label="City"
-                  defaultValue={city}
+                  value={city}
                   onChange={(event) => setCity(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -283,7 +296,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-state"
                   label="State/Province"
-                  defaultValue={prov}
+                  value={prov}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setProv(event.target.value)}
                   size="small"
@@ -295,7 +308,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-postal-code"
                   label="Postal Code"
-                  defaultValue={pc}
+                  value={pc}
                   onChange={(event) => setPC(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -305,7 +318,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-country"
                   label="Country"
-                  defaultValue={country}
+                  value={country}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setCountry(event.target.value)}
                   size="small"
@@ -317,7 +330,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-email"
                   label="Email"
-                  defaultValue=""
+                  value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -327,7 +340,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-phonenumber"
                   label="Phone Number"
-                  defaultValue=""
+                  value={phonenumber}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setPhonenumber(event.target.value)}
                   size="small"
@@ -362,7 +375,7 @@ const AssignModal = (props: AssignProps) => {
                 <TextField
                   id="standard-note"
                   label="Note"
-                  defaultValue=""
+                  value={note}
                   fullWidth
                   sx={textFieldStyle}
                   size="small"
@@ -380,6 +393,7 @@ const AssignModal = (props: AssignProps) => {
                   onClick={async () => {
                     await checkAddress();
                   }}
+                  disabled={disable_button()}
                 >
                   Submit
                 </Button>
@@ -424,7 +438,7 @@ const AssignModal = (props: AssignProps) => {
           />
         )}
       </Modal>
-    </div>
+    </>
   );
 };
 
