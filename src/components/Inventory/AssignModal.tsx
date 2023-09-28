@@ -197,7 +197,7 @@ const AssignModal = (props: AssignProps) => {
               New Deployment
             </Typography>
             <Stack spacing={2}>
-              {type === "general" && (
+              {(type === "general" || type === "main") && (
                 <div>
                   <FormControl
                     fullWidth

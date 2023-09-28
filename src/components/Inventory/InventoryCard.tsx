@@ -128,11 +128,20 @@ const InventoryCard = (props: InventoryCardProps) => {
                 open={open_market}
                 handleClose={close_market}
                 imgSrc={image_source || ""}
-                brand={"Apple"}
+                brand={props.brand!}
                 client={client}
                 specific_device={name}
                 location={location}
                 supplier_links={props.marketplace}
+                specific_specs={
+                  props.specs?.screen_size +
+                  ", " +
+                  props.specs?.cpu +
+                  ", " +
+                  props.specs?.ram +
+                  ", " +
+                  props.specs?.hard_drive
+                }
               />
             </IconButton>
           </Stack>

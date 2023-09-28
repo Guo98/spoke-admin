@@ -36,6 +36,7 @@ interface MPProps {
   specific_device?: string;
   location?: string;
   supplier_links?: any;
+  specific_specs?: string;
 }
 
 const style = {
@@ -261,6 +262,7 @@ const MarketplacePurchase = (props: MPProps) => {
               location={props.location!}
               completeDeviceChoice={completeDeviceStep}
               supplier_links={props.supplier_links}
+              specs={props.specific_specs!}
             />
           </>
         )}

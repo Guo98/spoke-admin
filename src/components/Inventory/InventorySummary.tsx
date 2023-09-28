@@ -21,6 +21,7 @@ import EndOfLife from "./Tables/EndOfLife";
 
 import AssignModal from "./AssignModal";
 import OffboardModal from "./OffboardModal";
+import MarketplacePurchase from "../Marketplace/MarketplacePurchase";
 
 import { InventorySummary as IS } from "../../interfaces/inventory";
 
@@ -57,6 +58,8 @@ const InventorySummary = (props: ISProps) => {
 
   const [orderBy, setOrderBy] = useState("");
   const [order, setOrder] = useState<Order>("asc");
+
+  const [open_market, setOpenMarket] = useState(false);
 
   const [in_stock, setInStock] = useState<any>([]);
   const [deployed, setDeployed] = useState<any>([]);
@@ -142,6 +145,10 @@ const InventorySummary = (props: ISProps) => {
     }
 
     return devices;
+  };
+
+  const close_market = () => {
+    setOpenMarket(false);
   };
 
   return (
@@ -262,9 +269,34 @@ const InventorySummary = (props: ISProps) => {
             />
           )}
           <OffboardModal client={client} device_name={name} />
-          <Button variant="contained" sx={{ borderRadius: "10px" }}>
-            Buy
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              sx={{ borderRadius: "10px" }}
+              onClick={() => setOpenMarket(true)}
+            >
+              Buy
+            </Button>
+            <MarketplacePurchase
+              open={open_market}
+              handleClose={close_market}
+              imgSrc={image_source || ""}
+              brand={props.brand!}
+              client={client}
+              specific_device={name}
+              location={location}
+              supplier_links={props.marketplace}
+              specific_specs={
+                props.specs?.screen_size +
+                ", " +
+                props.specs?.cpu +
+                ", " +
+                props.specs?.ram +
+                ", " +
+                props.specs?.hard_drive
+              }
+            />
+          </>
         </Stack>
       </Card>
       <Box>

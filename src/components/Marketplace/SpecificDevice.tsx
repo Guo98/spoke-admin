@@ -22,6 +22,7 @@ interface SDProps {
   supplier_links?: any;
   location: string;
   completeDeviceChoice: Function;
+  specs: string;
 }
 
 const textFieldStyle = {
@@ -45,7 +46,10 @@ const SpecificDevice = (props: SDProps) => {
   const [ai_specs, setAISpecs] = useState("");
 
   useEffect(() => {
-    if (Object.keys(props.supplier_links).length === 1) {
+    if (
+      props.supplier_links &&
+      Object.keys(props.supplier_links).length === 1
+    ) {
       setSupplier(Object.keys(props.supplier_links)[0].toLowerCase());
     }
   }, [props.supplier_links]);

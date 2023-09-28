@@ -28,6 +28,7 @@ interface OffboardProps {
   serial_number?: string;
   id?: string;
   all_devices?: string[];
+  type?: string;
 }
 
 const style = {
@@ -202,12 +203,14 @@ const OffboardModal = (props: OffboardProps) => {
                 )}
                 {props.all_devices && props.all_devices.length > 0 && (
                   <Autocomplete
+                    freeSolo
                     options={[...props.all_devices]}
                     renderInput={(params) => (
                       <TF
                         {...params}
                         label="Device to Return"
-                        onChange={(e) => setSelectedDevice(e.target.value)}
+                        size="small"
+                        sx={textFieldStyle}
                       />
                     )}
                   />

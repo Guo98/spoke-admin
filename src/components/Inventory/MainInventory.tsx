@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Stack } from "@mui/material";
+import { Box, Typography, Stack, ButtonGroup, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -12,7 +12,11 @@ import Header from "../Header/Header";
 import InventoryCard from "./InventoryCard";
 import InventorySummary from "./InventorySummary";
 import LinearLoading from "../common/LinearLoading";
+import AssignModal from "./AssignModal";
+import OffboardModal from "./OffboardModal";
+
 import { InventorySummary as IS } from "../../interfaces/inventory";
+import AppContainer from "../AppContainer/AppContainer";
 
 const MainInventory = () => {
   const [client, setClient] = useState("");
@@ -21,6 +25,8 @@ const MainInventory = () => {
   const [page_number, setPageNumber] = useState(0);
   const [selected_device, setSelectedDevice] = useState<IS | null>(null);
   const [selected_tab, setSelectedTab] = useState(0);
+  const [in_stock_devices, setInStockDevices] = useState<IS[]>([]);
+  const [device_names, setDeviceNames] = useState<string[]>([]);
 
   const dispatch = useDispatch();
 
@@ -58,7 +64,25 @@ const MainInventory = () => {
     getInventory().catch();
   }, [client]);
 
-  useEffect(() => {}, [inventory_redux]);
+  useEffect(() => {
+    let temp_in_stock_devices: IS[] = [];
+    let all_device_names: string[] = [];
+    if (inventory_redux && inventory_redux.length > 0) {
+      inventory_redux.forEach((ir) => {
+        if (
+          ir.serial_numbers.filter((s) => s.status === "In Stock").length > 0
+        ) {
+          temp_in_stock_devices.push(ir);
+        }
+
+        if (all_device_names.indexOf(ir.name) < 0) {
+          all_device_names.push(ir.name);
+        }
+      });
+      setDeviceNames(all_device_names);
+      setInStockDevices(temp_in_stock_devices);
+    }
+  }, [inventory_redux]);
 
   const selectDevice = (index: number, tab_index: number = 0) => {
     setPageNumber(1);
@@ -75,11 +99,32 @@ const MainInventory = () => {
           label="Search Inventory by device name, serial number, location, employee name"
           textChange={searchFilter}
         />
-        <Stack direction="row" spacing={2} pt={2}>
-          <Typography component="h2" variant="h5" fontWeight="bold">
-            {page_number === 0 && "Inventory Overview"}
-          </Typography>
-        </Stack>
+        {page_number === 0 && (
+          <Stack
+            direction="row"
+            spacing={2}
+            pt={2}
+            justifyContent="space-between"
+          >
+            <Typography component="h2" variant="h5" fontWeight="bold">
+              Inventory Overview
+            </Typography>
+            <ButtonGroup variant="contained">
+              <AssignModal
+                type="main"
+                disabled={false}
+                devices={in_stock_devices}
+              />
+              <OffboardModal client={client} all_devices={device_names} />
+              <Button
+                onClick={() => AppContainer.navigate("/marketplace")}
+                sx={{ borderRadius: "0px 10px 10px 0px" }}
+              >
+                Buy
+              </Button>
+            </ButtonGroup>
+          </Stack>
+        )}
         {page_number === 0 && (
           <Box
             sx={{
@@ -87,7 +132,6 @@ const MainInventory = () => {
               flexWrap: "wrap",
               flexDirection: "row",
               justifyContent: "space-between",
-              paddingTop: "10px",
             }}
           >
             {loading && <LinearLoading />}
