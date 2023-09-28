@@ -3,7 +3,11 @@ import { Box, Typography, Stack, ButtonGroup, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { setNewInventory } from "../../app/slices/inventorySlice";
+import {
+  setNewInventory,
+  filterInventory,
+  resetInventory,
+} from "../../app/slices/inventorySlice";
 import { RootState } from "../../app/store";
 import { standardGet } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
@@ -28,6 +32,8 @@ const MainInventory = () => {
   const [in_stock_devices, setInStockDevices] = useState<IS[]>([]);
   const [device_names, setDeviceNames] = useState<string[]>([]);
 
+  const [inventory_list, setInventoryList] = useState<IS[]>([]);
+
   const dispatch = useDispatch();
 
   const { getAccessTokenSilently } = useAuth0();
@@ -37,8 +43,19 @@ const MainInventory = () => {
     (state: RootState) => state.client.selectedClient
   );
   const roles = useSelector((state: RootState) => state.client.roles);
+
   const inventory_redux = useSelector(
     (state: RootState) => state.inventory.devices
+  );
+
+  const filtered_redux = useSelector(
+    (state: RootState) => state.inventory.filteredDevices
+  );
+  const filtered_page_redux = useSelector(
+    (state: RootState) => state.inventory.filteredPage
+  );
+  const search_term = useSelector(
+    (state: RootState) => state.inventory.search_text
   );
 
   const getInventory = async () => {
@@ -65,6 +82,20 @@ const MainInventory = () => {
   }, [client]);
 
   useEffect(() => {
+    if (filtered_page_redux !== -1) {
+      setInventoryList(filtered_redux);
+
+      if (filtered_page_redux === 1 && filtered_redux.length === 1) {
+        filterTab(filtered_redux[0], search_term);
+        setSelectedDevice(filtered_redux[0]);
+        setPageNumber(1);
+      }
+    } else {
+      setInventoryList(inventory_redux);
+    }
+  }, [filtered_redux, filtered_page_redux]);
+
+  useEffect(() => {
     let temp_in_stock_devices: IS[] = [];
     let all_device_names: string[] = [];
     if (inventory_redux && inventory_redux.length > 0) {
@@ -82,6 +113,8 @@ const MainInventory = () => {
       setDeviceNames(all_device_names);
       setInStockDevices(temp_in_stock_devices);
     }
+
+    setInventoryList(inventory_redux);
   }, [inventory_redux]);
 
   const selectDevice = (index: number, tab_index: number = 0) => {
@@ -90,7 +123,37 @@ const MainInventory = () => {
     setSelectedTab(tab_index);
   };
 
-  const searchFilter = () => {};
+  const searchFilter = (text: string) => {
+    if (text !== "") {
+      dispatch(filterInventory(text));
+    } else {
+      dispatch(resetInventory());
+    }
+  };
+
+  const filterTab = (device: IS, st: string) => {
+    const filtered_sn = device.serial_numbers.filter(
+      (s) =>
+        s.sn.toLowerCase().includes(st) ||
+        s.full_name?.toLowerCase().includes(st)
+    );
+
+    if (filtered_sn.length > 0) {
+      const { status, condition } = filtered_sn[0];
+
+      if (status === "In Stock") {
+        if (condition === "New" || condition === "Used") {
+          setSelectedTab(0);
+        } else {
+          setSelectedTab(3);
+        }
+      } else if (status === "Deployed") {
+        setSelectedTab(1);
+      } else if (status === "Pending") {
+        setSelectedTab(2);
+      }
+    }
+  };
 
   return (
     <>
@@ -135,9 +198,9 @@ const MainInventory = () => {
             }}
           >
             {loading && <LinearLoading />}
-            {inventory_redux &&
-              inventory_redux.length > 0 &&
-              inventory_redux.map((inv, index: number) => (
+            {inventory_list &&
+              inventory_list.length > 0 &&
+              inventory_list.map((inv, index: number) => (
                 <InventoryCard
                   {...inv}
                   goToPage={selectDevice}

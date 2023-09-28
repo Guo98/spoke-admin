@@ -48,6 +48,7 @@ interface SerialNumbers {
   date_requested?: string;
   supplier?: string;
   supplier_order_no?: string;
+  full_name?: string;
 }
 
 export interface MarketplaceProducts {

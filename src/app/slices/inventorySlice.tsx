@@ -16,6 +16,9 @@ const initialState: InitialInventoryState = {
   products: [],
   brands: [],
   devices: [],
+  filteredDevices: [],
+  filteredPage: -1,
+  search_text: "",
 };
 
 const splitInventory = (
@@ -206,9 +209,37 @@ export const inventorySlice = createSlice({
       state.in_stock = state.data.in_stock;
       state.deployed = state.data.deployed;
       state.end_of_life = state.data.end_of_life;
+      state.filteredPage = -1;
+      state.filteredDevices = [];
+      state.search_text = "";
     },
     setNewInventory: (state, action: PayloadAction<InventorySummary[]>) => {
       state.devices = action.payload;
+    },
+    filterInventory: (state, action: PayloadAction<string>) => {
+      const search_text = action.payload.toLowerCase();
+      state.search_text = search_text;
+      const page_0 = state.devices.filter(
+        (d) =>
+          d.name.toLowerCase().includes(search_text) ||
+          d.location.toLowerCase().includes(search_text)
+      );
+
+      if (page_0.length > 0) {
+        state.filteredPage = 0;
+        state.filteredDevices = page_0;
+      } else {
+        const page_1 = state.devices.filter(
+          (d) =>
+            d.serial_numbers.filter(
+              (s) =>
+                s.sn.toLowerCase().includes(search_text) ||
+                s.full_name?.toLowerCase().includes(search_text)
+            ).length > 0
+        );
+        state.filteredDevices = page_1;
+        state.filteredPage = 1;
+      }
     },
   },
 });
@@ -220,6 +251,7 @@ export const {
   filterByBrand,
   resetInventory,
   setNewInventory,
+  filterInventory,
 } = inventorySlice.actions;
 
 export default inventorySlice.reducer;

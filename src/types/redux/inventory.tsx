@@ -17,6 +17,9 @@ interface InitialInventoryState {
   products: MarketplaceProducts2[];
   brands: string[];
   devices: InventorySummary[];
+  filteredDevices: InventorySummary[];
+  filteredPage: number;
+  search_text: string;
 }
 
 const UpdateInventoryAction: string = "UpdateInventory";
