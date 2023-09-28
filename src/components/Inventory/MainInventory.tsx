@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Stack, ButtonGroup, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useSearchParams } from "react-router-dom";
 
 import {
   setNewInventory,
@@ -23,6 +24,7 @@ import { InventorySummary as IS } from "../../interfaces/inventory";
 import AppContainer from "../AppContainer/AppContainer";
 
 const MainInventory = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [client, setClient] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -94,6 +96,12 @@ const MainInventory = () => {
       setInventoryList(inventory_redux);
     }
   }, [filtered_redux, filtered_page_redux]);
+
+  useEffect(() => {
+    if (searchParams.get("sn")) {
+      dispatch(filterInventory(searchParams.get("sn")!));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let temp_in_stock_devices: IS[] = [];
