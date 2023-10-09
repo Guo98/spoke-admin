@@ -267,6 +267,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
             location={location}
             id={id}
             image_source={image_source}
+            client={""}
           />
         )}
         {tabValue === 2 && (

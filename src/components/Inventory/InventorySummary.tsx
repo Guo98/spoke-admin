@@ -153,7 +153,10 @@ const InventorySummary = (props: ISProps) => {
 
   return (
     <>
-      <Button sx={{ justifyItems: "center" }} onClick={() => goToPage(0)}>
+      <Button
+        sx={{ justifyItems: "center", mt: 3 }}
+        onClick={() => goToPage(0)}
+      >
         <KeyboardBackspaceIcon sx={{ mr: 1 }} /> Inventory Overview
       </Button>
       <Card
@@ -330,6 +333,7 @@ const InventorySummary = (props: ISProps) => {
             location={location}
             id={id}
             image_source={image_source}
+            client={client}
           />
         </TabPanel>
         <TabPanel value={tab_value} index={2} prefix="inv">

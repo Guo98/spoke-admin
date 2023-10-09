@@ -12,12 +12,14 @@ import {
 } from "@mui/material";
 
 import ManageModal from "../ManageModal";
+import OffboardModal from "../OffboardModal";
 import { InventorySummary } from "../../../interfaces/inventory";
 
 type Order = "asc" | "desc";
 
 interface TableProps extends InventorySummary {
   tableSort: Function;
+  client: string;
 }
 
 const Deployed = (props: TableProps) => {
@@ -101,7 +103,7 @@ const Deployed = (props: TableProps) => {
                         <Typography>{item.date_deployed}</Typography>
                       </TableCell>
                       <TableCell width="20%">
-                        <ManageModal
+                        {/* <ManageModal
                           name={{
                             first_name: item.first_name!,
                             last_name: item.last_name!,
@@ -114,6 +116,22 @@ const Deployed = (props: TableProps) => {
                           phone_number={item.phone_number!}
                           type="individual"
                           id={id}
+                        /> */}
+                        <OffboardModal
+                          client={props.client}
+                          device_name={name}
+                          serial_number={sn}
+                          id={id}
+                          first_name={item.first_name}
+                          last_name={item.last_name}
+                          email={item.email}
+                          phone_number={item.phone_number}
+                          address_line1={item.address?.al1}
+                          address_line2={item.address?.al2}
+                          city={item.address?.city}
+                          state={item.address?.state}
+                          postal_code={item.address?.postal_code}
+                          country={item.address?.country_code}
                         />
                       </TableCell>
                     </TableRow>

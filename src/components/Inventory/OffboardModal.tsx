@@ -29,6 +29,16 @@ interface OffboardProps {
   id?: string;
   all_devices?: string[];
   type?: string;
+  first_name?: string;
+  last_name?: string;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postal_code?: string;
+  email?: string;
+  phone_number?: string;
 }
 
 const style = {
@@ -58,19 +68,19 @@ const OffboardModal = (props: OffboardProps) => {
   const [return_type, setRType] = useState("");
   const [selected_device, setSelectedDevice] = useState("");
   const [condition, setCondition] = useState("");
-  const [serial_number, setSN] = useState("");
+  const [serial_number, setSN] = useState(props.serial_number || "");
   const [activation, setActivation] = useState("");
 
-  const [first_name, setFN] = useState("");
-  const [last_name, setLN] = useState("");
-  const [al1, setAl1] = useState("");
-  const [al2, setAl2] = useState("");
-  const [city, setCity] = useState("");
-  const [prov, setProv] = useState("");
-  const [country, setCountry] = useState("");
-  const [postal_code, setPC] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone_number, setPN] = useState("");
+  const [first_name, setFN] = useState(props.first_name || "");
+  const [last_name, setLN] = useState(props.last_name || "");
+  const [al1, setAl1] = useState(props.address_line1 || "");
+  const [al2, setAl2] = useState(props.address_line2 || "");
+  const [city, setCity] = useState(props.city || "");
+  const [prov, setProv] = useState(props.state || "");
+  const [country, setCountry] = useState(props.country || "");
+  const [postal_code, setPC] = useState(props.postal_code || "");
+  const [email, setEmail] = useState(props.email || "");
+  const [phone_number, setPN] = useState(props.phone_number || "");
   const [shipping, setShipping] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -223,7 +233,9 @@ const OffboardModal = (props: OffboardProps) => {
                 <TextField
                   label="Serial Number"
                   value={serial_number}
+                  defaultValue={props.serial_number}
                   onChange={(text: string) => setSN(text)}
+                  disabled={props.serial_number !== undefined}
                 />
                 <TextField
                   label="Activation Key"
@@ -270,7 +282,7 @@ const OffboardModal = (props: OffboardProps) => {
                   />
                   <TextField
                     label="State/Province"
-                    value={al1}
+                    value={prov}
                     onChange={(text: string) => setProv(text)}
                     fullWidth
                     required
