@@ -158,8 +158,8 @@ const UpdateInventory = (props: UpdateProps) => {
   const handleDeleteRow = async (sn: string, device_index: number) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
-
-    const route = `inventory/${client}/${inventory[inventoryIndex].id}/${device_index}/${sn}`;
+    const delete_sn = sn === "" ? "none" : sn;
+    const route = `inventory/${client}/${inventory[inventoryIndex].id}/${device_index}/${delete_sn}`;
     const deleteResp = await standardDelete(accessToken, route);
 
     if (deleteResp.status === "Successful") {
