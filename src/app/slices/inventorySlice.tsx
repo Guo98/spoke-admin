@@ -241,6 +241,18 @@ export const inventorySlice = createSlice({
         state.filteredPage = 1;
       }
     },
+    inventoryFilterByEntity: (state, action: PayloadAction<string>) => {
+      if (action.payload !== "") {
+        state.filteredPage = 0;
+        const entity_devices = state.devices.filter(
+          (d) => d.entity === action.payload
+        );
+        state.filteredDevices = entity_devices;
+      } else {
+        state.filteredPage = -1;
+        state.filteredDevices = [];
+      }
+    },
   },
 });
 
@@ -252,6 +264,7 @@ export const {
   resetInventory,
   setNewInventory,
   filterInventory,
+  inventoryFilterByEntity,
 } = inventorySlice.actions;
 
 export default inventorySlice.reducer;

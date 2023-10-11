@@ -40,6 +40,7 @@ export interface Item {
   date_shipped?: string;
   delivery_status?: string;
   laptop_name?: string;
+  spoke_fee?: number;
 }
 
 interface Variant {

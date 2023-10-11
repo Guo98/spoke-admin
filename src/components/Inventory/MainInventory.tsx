@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Stack, ButtonGroup, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  ButtonGroup,
+  Button,
+  IconButton,
+} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSearchParams } from "react-router-dom";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as FileSaver from "file-saver";
+import { Buffer } from "buffer";
 
 import {
   setNewInventory,
   filterInventory,
   resetInventory,
+  inventoryFilterByEntity,
 } from "../../app/slices/inventorySlice";
 import { RootState } from "../../app/store";
 import { standardGet } from "../../services/standard";
@@ -43,6 +54,9 @@ const MainInventory = () => {
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
+  );
+  const selectedEntity = useSelector(
+    (state: RootState) => state.client.selectedEntity
   );
   const roles = useSelector((state: RootState) => state.client.roles);
 
@@ -82,6 +96,10 @@ const MainInventory = () => {
   useEffect(() => {
     getInventory().catch();
   }, [client]);
+
+  useEffect(() => {
+    dispatch(inventoryFilterByEntity(selectedEntity));
+  }, [selectedEntity]);
 
   useEffect(() => {
     if (filtered_page_redux !== -1) {
@@ -163,6 +181,26 @@ const MainInventory = () => {
     }
   };
 
+  const downloadInventory = async () => {
+    const accessToken = await getAccessTokenSilently();
+
+    let route = `downloadinventory/${
+      clientData === "spokeops" ? selectedClientData : clientData
+    }`;
+
+    if (selectedEntity !== "") {
+      route = route + `/${selectedEntity}`;
+    }
+
+    const downloadResult = await standardGet(accessToken, route);
+
+    const blob = new Blob([new Buffer(downloadResult.data)], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    FileSaver.saveAs(blob, "inventory.xlsx");
+  };
+
   return (
     <>
       <Box sx={{ width: "94%", paddingLeft: "3%" }}>
@@ -177,9 +215,17 @@ const MainInventory = () => {
             pt={2}
             justifyContent="space-between"
           >
-            <Typography component="h2" variant="h5" fontWeight="bold">
-              Inventory Overview
-            </Typography>
+            <Stack direction="row" spacing={1}>
+              <Typography component="h2" variant="h5" fontWeight="bold">
+                Inventory Overview
+              </Typography>
+              <IconButton
+                onClick={downloadInventory}
+                id="inventory-export-button"
+              >
+                <FileDownloadIcon />
+              </IconButton>
+            </Stack>
             <ButtonGroup variant="contained">
               <AssignModal
                 type="main"

@@ -183,6 +183,11 @@ const OperationsManage = (props: OperationsOrder) => {
                   </TableCell>
                   <TableCell>
                     <Typography fontWeight="bold" align="right">
+                      Spoke Fee
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography fontWeight="bold" align="right">
                       Tracking #
                     </Typography>
                   </TableCell>
@@ -221,6 +226,34 @@ const OperationsManage = (props: OperationsOrder) => {
                             {item.price.toString().indexOf(".") > -1
                               ? item.price
                               : item.price + ".00"}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {edit ? (
+                          <TextField
+                            size="small"
+                            defaultValue={item.spoke_fee}
+                            onChange={(event) => {
+                              setItems((prevState) => {
+                                let newItems = JSON.parse(
+                                  JSON.stringify(prevState)
+                                );
+                                newItems[index].spoke_fee = parseInt(
+                                  event.target.value
+                                );
+
+                                return newItems;
+                              });
+                            }}
+                          />
+                        ) : (
+                          <Typography>
+                            $
+                            {item.spoke_fee &&
+                            item.spoke_fee.toString().indexOf(".") > -1
+                              ? item.spoke_fee
+                              : item.spoke_fee + ".00"}
                           </Typography>
                         )}
                       </TableCell>

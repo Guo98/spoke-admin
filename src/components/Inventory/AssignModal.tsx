@@ -215,16 +215,21 @@ const AssignModal = (props: AssignProps) => {
                       onChange={handleDeviceChange}
                       value={selectedDevice}
                       required
+                      fullWidth
                     >
                       {props.devices!.length > 0 &&
                         props.devices?.map((dev, index) => {
                           if (dev.serial_numbers.length > 0) {
                             return (
                               <MenuItem value={index}>
-                                {dev.name + ","}
+                                <Typography display="inline" component="span">
+                                  {dev.name + ","}
+                                </Typography>
                                 <Typography
                                   fontStyle="italic"
                                   sx={{ paddingLeft: "5px" }}
+                                  display="inline"
+                                  component="span"
                                 >
                                   {dev.location}
                                 </Typography>

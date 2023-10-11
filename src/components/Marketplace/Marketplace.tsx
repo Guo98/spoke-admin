@@ -14,6 +14,7 @@ import ProductCard from "./ProductCard";
 import PurchaseModal from "./PurchaseModal";
 import MarketAI from "./AI/MarketAI";
 import MarketplacePurchase from "./MarketplacePurchase";
+import LinearLoading from "../common/LinearLoading";
 
 const Marketplace = () => {
   const productRedux = useSelector(
@@ -42,6 +43,7 @@ const Marketplace = () => {
   const [modalimg, setImg] = useState("");
 
   const getProducts = async () => {
+    setLoading(true);
     if (marketClient) {
       const accessToken = await getAccessTokenSilently();
 
@@ -51,14 +53,12 @@ const Marketplace = () => {
       );
       dispatch(addProducts(marketplaceRes.data));
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (!loading) {
-      getProducts().catch();
-      setLoading(true);
-    }
-  }, [loading, selectedClient, client]);
+    getProducts().catch();
+  }, [selectedClient, client]);
 
   useEffect(() => {
     if (selectedProducts.length === 0) {
@@ -139,6 +139,7 @@ const Marketplace = () => {
         <Typography>
           <h2>Marketplace</h2>
         </Typography>
+        {loading && <LinearLoading />}
         <Stack direction="row" spacing={2}>
           <Chip
             label="All"
