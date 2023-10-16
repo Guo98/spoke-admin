@@ -59,7 +59,6 @@ const MainOrders = () => {
   const [all_orders, setAllOrders] = useState<Order[]>([]);
   const [order_types, setOrderTypes] = useState<string[]>([]);
 
-  const [table_page, setTablePage] = useState(0);
   const [rows_per_page, setRowsPerPage] = useState(15);
   const [no_of_expands, setNoExpands] = useState(1);
 
@@ -125,15 +124,10 @@ const MainOrders = () => {
     }
   }, [data]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setTablePage(newPage);
-  };
-
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(+event.target.value);
-    setTablePage(0);
     setNoExpands(1);
   };
 

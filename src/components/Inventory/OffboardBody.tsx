@@ -153,7 +153,7 @@ const OffboardBody = (props: OffboardProps) => {
       id:
         type !== "general"
           ? props.id
-          : selectedDeviceName !== "Other"
+          : selectedDeviceName !== "Other" && selectedDeviceName !== ""
           ? getId()
           : "",
     };
@@ -182,6 +182,10 @@ const OffboardBody = (props: OffboardProps) => {
 
   const handleConditionChange = (event: SelectChangeEvent) => {
     setDeviceCondition(event.target.value);
+  };
+
+  const can_submit = () => {
+    return selectedDeviceName === "";
   };
 
   return (
@@ -453,6 +457,7 @@ const OffboardBody = (props: OffboardProps) => {
                       }}
                       fullWidth
                       onClick={() => offboardLaptop()}
+                      //disabled={can_submit()}
                     >
                       Submit
                     </Button>

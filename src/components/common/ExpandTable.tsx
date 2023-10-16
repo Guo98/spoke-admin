@@ -38,7 +38,11 @@ const ExpandTable = (props: ExpandProps) => {
           </Select>
         </FormControl>
         <Typography pl={5}>
-          1 - {props.expands * props.rowsPerPage} of {props.count}
+          1 -{" "}
+          {props.expands * props.rowsPerPage > props.count
+            ? props.count
+            : props.expands * props.rowsPerPage}{" "}
+          of {props.count}
         </Typography>
       </Stack>
       <Stack direction="row" spacing={1}>
