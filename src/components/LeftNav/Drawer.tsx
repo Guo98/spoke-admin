@@ -66,6 +66,7 @@ interface IconMapping {
   Invite: JSX.Element;
   Roadmap: JSX.Element;
   NewInventory: JSX.Element;
+  NewOrders: JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -85,6 +86,7 @@ const iconMapping: IconMapping = {
   Invite: <PersonAddIcon />,
   Roadmap: <SignpostIcon />,
   NewInventory: <WarehouseIcon />,
+  NewOrders: <SyncAltIcon />,
 };
 
 interface DrawerProps {
@@ -222,6 +224,9 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         case "newinventory":
           setIndex(links.indexOf("NewInventory"));
           break;
+        case "neworders":
+          setIndex(links.indexOf("NewOrders"));
+          break;
         case "team":
           setIndex(4);
           break;
@@ -276,6 +281,10 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
       case "NewInventory":
         AppContainer.navigate("/newinventory");
         setIndex(links.indexOf("NewInventory"));
+        break;
+      case "NewOrders":
+        AppContainer.navigate("/neworders");
+        setIndex(links.indexOf("NewOrders"));
         break;
       case "Storefront":
         if (

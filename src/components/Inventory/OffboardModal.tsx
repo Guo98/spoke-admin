@@ -166,6 +166,15 @@ const OffboardModal = (props: OffboardProps) => {
     );
   };
 
+  const is_in_us = () => {
+    const country_text = country.toLowerCase();
+    return (
+      country_text === "us" ||
+      country_text === "usa" ||
+      country_text === "united states"
+    );
+  };
+
   return (
     <>
       <Button
@@ -334,8 +343,13 @@ const OffboardModal = (props: OffboardProps) => {
                     required
                   >
                     <MenuItem value="Shipping">Standard</MenuItem>
-                    <MenuItem value="2 Day">2 Day</MenuItem>
-                    <MenuItem value="Overnight">Overnight</MenuItem>
+                    {is_in_us() && <MenuItem value="2 Day">2 Day</MenuItem>}
+                    {is_in_us() && (
+                      <MenuItem value="Overnight">Overnight</MenuItem>
+                    )}
+                    {!is_in_us() && (
+                      <MenuItem value="Expedited">Expedited</MenuItem>
+                    )}
                   </Select>
                 </FormControl>
                 <TextField

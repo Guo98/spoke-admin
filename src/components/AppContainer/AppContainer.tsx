@@ -10,6 +10,7 @@ import Approvals from "../Approvals/Approvals";
 import InviteUsers from "../Invite/InviteUsers";
 import SpokeDrawer from "../LeftNav/Drawer";
 import MainInventory from "../Inventory/MainInventory";
+import MainOrders from "../Orders/MainOrders";
 
 const AppContainer = createBrowserRouter([
   {
@@ -56,6 +57,22 @@ const AppContainer = createBrowserRouter([
         </Box>
         <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
           <Orders />
+        </Box>
+      </>
+    ),
+  },
+  {
+    path: "/neworders",
+    element: (
+      <>
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <MainOrders />
         </Box>
       </>
     ),

@@ -272,6 +272,25 @@ const UpdateCollapse = (props: UpdateProps) => {
                         control={<Radio checked={updatedWarehouse === "CDW"} />}
                         label="CDW"
                       />
+                      <FormControlLabel
+                        value="Eurotel"
+                        control={
+                          <Radio checked={updatedWarehouse === "Eurotel"} />
+                        }
+                        label="Eurotel"
+                      />
+                      <FormControlLabel
+                        value="ARP"
+                        control={<Radio checked={updatedWarehouse === "ARP"} />}
+                        label="ARP"
+                      />
+                      <FormControlLabel
+                        value="CDW UK"
+                        control={
+                          <Radio checked={updatedWarehouse === "CDW UK"} />
+                        }
+                        label="CDW UK"
+                      />
                     </RadioGroup>
                   </FormControl>
                 )}

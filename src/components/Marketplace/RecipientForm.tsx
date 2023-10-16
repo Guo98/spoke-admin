@@ -294,8 +294,15 @@ const RecipientForm = (props: RecipientProps) => {
                   required
                 >
                   <MenuItem value="Standard">Standard</MenuItem>
-                  <MenuItem value="2 Day">2 Day</MenuItem>
-                  <MenuItem value="Overnight">Overnight</MenuItem>
+                  {region === "United States" && (
+                    <MenuItem value="2 Day">2 Day</MenuItem>
+                  )}
+                  {region === "United States" && (
+                    <MenuItem value="Overnight">Overnight</MenuItem>
+                  )}
+                  {region !== "United States" && (
+                    <MenuItem value="Expedited">Expedited</MenuItem>
+                  )}
                 </Select>
               </FormControl>
               <TextField

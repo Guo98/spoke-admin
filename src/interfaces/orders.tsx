@@ -25,6 +25,7 @@ export interface Order {
   shipping_status: string;
   id: string;
   entity?: string;
+  type?: string;
 }
 
 export interface Item {

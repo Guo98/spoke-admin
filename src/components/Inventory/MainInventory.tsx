@@ -242,6 +242,15 @@ const MainInventory = () => {
             </ButtonGroup>
           </Stack>
         )}
+        {loading && <LinearLoading />}
+        {page_number === 0 &&
+          filtered_page_redux !== -1 &&
+          inventory_list &&
+          inventory_list.length === 0 && (
+            <Typography textAlign="center" mt={10}>
+              No results found for "{search_term}"
+            </Typography>
+          )}
         {page_number === 0 && (
           <Box
             sx={{
@@ -251,7 +260,6 @@ const MainInventory = () => {
               justifyContent: "space-between",
             }}
           >
-            {loading && <LinearLoading />}
             {inventory_list &&
               inventory_list.length > 0 &&
               inventory_list.map((inv, index: number) => (
