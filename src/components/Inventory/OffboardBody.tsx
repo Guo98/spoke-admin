@@ -153,7 +153,7 @@ const OffboardBody = (props: OffboardProps) => {
       id:
         type !== "general"
           ? props.id
-          : selectedDeviceName !== "Other"
+          : selectedDeviceName !== "Other" && selectedDeviceName !== ""
           ? getId()
           : "",
     };
