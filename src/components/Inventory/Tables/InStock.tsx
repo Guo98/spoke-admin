@@ -112,6 +112,7 @@ const InStock = (props: TableProps) => {
                             item.condition !== "Used" &&
                             item.condition !== "New"
                           }
+                          warehouse={item.warehouse}
                         />
                       </TableCell>
                     </TableRow>

@@ -8,6 +8,8 @@ import {
   Box,
   Chip,
   Stack,
+  useTheme,
+  Divider,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -20,6 +22,8 @@ const OrderRow = (props: Order) => {
   const [open, setOpen] = useState(false);
   const [order_price, setOrderPrice] = useState(0);
   const [returned_laptop, setReturnedLaptop] = useState("");
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   const anyTrackingNumbers = () => {
     const { items } = props;
@@ -141,13 +145,25 @@ const OrderRow = (props: Order) => {
       });
 
       setOrderPrice(total_price);
+
+      if (props.items[0].laptop_name) {
+        setReturnedLaptop(props.items[0].laptop_name);
+      }
     }
     setOpen(false);
   }, [props.full_name]);
 
   return props.items ? (
     <>
-      <TableRow sx={{ backgroundColor: open ? "primary.main" : "primary" }}>
+      <TableRow
+        sx={{
+          backgroundColor: open
+            ? isDarkTheme
+              ? "#616E82"
+              : "#F8F8F8"
+            : "primary",
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -181,9 +197,12 @@ const OrderRow = (props: Order) => {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ mx: 5, my: 1 }}>
               <Stack spacing={1} mb={2}>
-                <Typography fontWeight="bold" fontSize="125%">
-                  Employee Info:
-                </Typography>
+                <Divider
+                  textAlign="left"
+                  sx={{ fontSize: "115%", fontWeight: "bold" }}
+                >
+                  Employee Info
+                </Divider>
                 <div>
                   <Typography
                     fontWeight="bold"
@@ -236,11 +255,14 @@ const OrderRow = (props: Order) => {
                     </Typography>
                   </div>
                 )}
-                <Typography fontWeight="bold" fontSize="125%">
-                  Items:
-                </Typography>
+                <Divider
+                  textAlign="left"
+                  sx={{ fontSize: "115%", fontWeight: "bold" }}
+                >
+                  Items
+                </Divider>
+                <ItemsTable items={props.items} />
               </Stack>
-              <ItemsTable items={props.items} />
             </Box>
           </Collapse>
         </TableCell>

@@ -52,6 +52,7 @@ interface AssignProps {
   handleParentClose?: Function;
   disabled: boolean;
   id?: string;
+  warehouse?: string;
 }
 
 interface ValidateAddress {
@@ -454,6 +455,7 @@ const AssignModal = (props: AssignProps) => {
                 ? props.devices![parseInt(selectedDevice)]?.id
                 : props.id
             }
+            warehouse={props.warehouse}
           />
         )}
       </Modal>

@@ -9,6 +9,7 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Button,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -25,8 +26,20 @@ interface ExpandProps {
 const ExpandTable = (props: ExpandProps) => {
   return (
     <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Stack direction="row" spacing={1} alignItems="right" pl={"40%"}>
+        {/* <Tooltip title="Show Less">
+          <IconButton onClick={() => props.onExpandCollapse(false)}>
+            <ExpandLessIcon />
+          </IconButton>
+        </Tooltip> */}
+        <Tooltip title="Show More">
+          <Button onClick={() => props.onExpandCollapse(true)}>
+            <ExpandMoreIcon /> Show More
+          </Button>
+        </Tooltip>
+      </Stack>
       <Stack direction="row" spacing={1} alignItems="center">
-        <Typography>Rows per expand:</Typography>
+        {/* <Typography>Rows per expand:</Typography>
         <FormControl size="small" variant="standard">
           <Select
             onChange={props.onRowsPerPageChange}
@@ -36,26 +49,14 @@ const ExpandTable = (props: ExpandProps) => {
               <MenuItem value={o}>{o.toString()}</MenuItem>
             ))}
           </Select>
-        </FormControl>
-        <Typography pl={5}>
+        </FormControl> */}
+        <Typography>
           1 -{" "}
           {props.expands * props.rowsPerPage > props.count
             ? props.count
             : props.expands * props.rowsPerPage}{" "}
           of {props.count}
         </Typography>
-      </Stack>
-      <Stack direction="row" spacing={1}>
-        <Tooltip title="Show Less">
-          <IconButton onClick={() => props.onExpandCollapse(false)}>
-            <ExpandLessIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Show More">
-          <IconButton onClick={() => props.onExpandCollapse(true)}>
-            <ExpandMoreIcon />
-          </IconButton>
-        </Tooltip>
       </Stack>
     </Toolbar>
   );

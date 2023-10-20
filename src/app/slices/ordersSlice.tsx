@@ -185,7 +185,7 @@ export const ordersSlice = createSlice({
     },
     filterOrders: (state, action: PayloadAction<string>) => {
       const search_term = action.payload.toLowerCase();
-      console.log("saerch term >>>>>>>>>> ", search_term);
+
       let in_prog_filter = [] as Order[];
       let completed_filter = [] as Order[];
 

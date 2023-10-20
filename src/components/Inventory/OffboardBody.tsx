@@ -185,7 +185,20 @@ const OffboardBody = (props: OffboardProps) => {
   };
 
   const can_submit = () => {
-    return selectedDeviceName === "";
+    return (
+      selectedDeviceName === "" ||
+      fn === "" ||
+      ln === "" ||
+      al1 === "" ||
+      city === "" ||
+      state === "" ||
+      postal_code === "" ||
+      country === "" ||
+      updatedemail === "" ||
+      updatedemail === undefined ||
+      pn === undefined ||
+      pn === ""
+    );
   };
 
   return (
@@ -457,7 +470,7 @@ const OffboardBody = (props: OffboardProps) => {
                       }}
                       fullWidth
                       onClick={() => offboardLaptop()}
-                      //disabled={can_submit()}
+                      disabled={can_submit()}
                     >
                       Submit
                     </Button>

@@ -10,9 +10,10 @@ import {
   TableRow,
   TableBody,
   TableCell,
-  TablePagination,
   Paper,
   Chip,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -53,16 +54,21 @@ const sortOrders = (a: Order, b: Order) => {
   if (a.orderNo < b.orderNo) return 1;
 };
 
+const a11yProps = (index: number) => {
+  return {
+    id: `orders-tab-${index}`,
+    "aria-controls": `orders-tabpanel-${index}`,
+  };
+};
+
 const MainOrders = () => {
   const [client, setClient] = useState("");
   const [loading, setLoading] = useState(false);
   const [all_orders, setAllOrders] = useState<Order[]>([]);
-  const [order_types, setOrderTypes] = useState<string[]>([]);
+  const [tab_index, setTabIndex] = useState(0);
 
   const [rows_per_page, setRowsPerPage] = useState(15);
   const [no_of_expands, setNoExpands] = useState(1);
-
-  const [selected_chip, setSelectedChip] = useState("");
 
   const { height, width } = useWindowDimensions();
 
@@ -98,30 +104,6 @@ const MainOrders = () => {
       // @ts-ignore
       combinedOrders.sort(sortOrders)
     );
-
-    let orderTypes = [] as string[];
-
-    if (combinedOrders.length > 0) {
-      combinedOrders.filter((o) => {
-        if (
-          orderTypes.indexOf("Deployments") < 0 &&
-          o &&
-          o.items &&
-          o.items.filter((i) => i.type === "laptop").length > 0
-        ) {
-          orderTypes.push("Deployments");
-        } else if (
-          orderTypes.indexOf("Returns") < 0 &&
-          o &&
-          o.items &&
-          (o.items[0].name === "Offboarding" || o.items[0].name === "Returning")
-        ) {
-          orderTypes.push("Returns");
-        }
-      });
-
-      setOrderTypes(orderTypes);
-    }
   }, [data]);
 
   const handleChangeRowsPerPage = (
@@ -183,6 +165,17 @@ const MainOrders = () => {
     }
   };
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+    if (newValue === 0) {
+      dispatch(resetOrders());
+    } else if (newValue == 1) {
+      dispatch(filterType("Deployments"));
+    } else if (newValue == 2) {
+      dispatch(filterType("Returns"));
+    }
+  };
+
   return (
     <Box sx={{ width: "100%", height: height, overflow: "hidden" }}>
       <Stack spacing={2} px={3}>
@@ -204,32 +197,20 @@ const MainOrders = () => {
               <FileDownloadIcon />
             </IconButton>
           </Stack>
-          {order_types.length > 0 && (
-            <Stack direction="row" spacing={1}>
-              {order_types.map((o) => (
-                <Chip
-                  clickable
-                  label={o}
-                  onClick={() => {
-                    setSelectedChip(o);
-                    dispatch(filterType(o));
-                  }}
-                  onDelete={
-                    o === selected_chip
-                      ? () => {
-                          setSelectedChip("");
-                          dispatch(resetOrders());
-                        }
-                      : undefined
-                  }
-                  variant={o === selected_chip ? "filled" : "outlined"}
-                />
-              ))}
-            </Stack>
-          )}
         </Stack>
         {loading && <LinearLoading />}
       </Stack>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={tab_index}
+          onChange={handleTabChange}
+          aria-label="orders tab"
+        >
+          <Tab label="All" {...a11yProps(0)} />
+          <Tab label="Deployments" {...a11yProps(1)} />
+          <Tab label="Returns" {...a11yProps(2)} />
+        </Tabs>
+      </Box>
       {all_orders.length > 0 && (
         <>
           <TableContainer
@@ -272,7 +253,7 @@ const MainOrders = () => {
           <ExpandTable
             rowOptions={[15, 25, 100]}
             count={all_orders.length}
-            rowsPerPage={rows_per_page}
+            rowsPerPage={25}
             onRowsPerPageChange={handleChangeRowsPerPage}
             onExpandCollapse={handleExpandCollapse}
             expands={no_of_expands}

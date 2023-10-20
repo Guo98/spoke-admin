@@ -9,7 +9,10 @@ import {
   TableCell,
   Paper,
   Link,
+  useTheme,
+  Stack,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import AppContainer from "../AppContainer/AppContainer";
 import { Item } from "../../interfaces/orders";
@@ -20,6 +23,8 @@ interface ITProps {
 
 const ItemsTable = (props: ITProps) => {
   const { items } = props;
+
+  const isDarkTheme = useTheme().palette.mode === "dark";
 
   const getCourierHost = (courier: string, tracking_number: string) => {
     if (courier === "fedex") {
@@ -58,11 +63,11 @@ const ItemsTable = (props: ITProps) => {
   };
 
   return (
-    <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
+    <TableContainer component={Paper} sx={{ borderRadius: "7px" }}>
       <Table
         size="small"
         aria-label="items-table"
-        sx={{ backgroundColor: "primary.main" }}
+        sx={{ backgroundColor: isDarkTheme ? "#616E82" : "#F8F8F8" }}
       >
         <TableHead>
           <TableRow>
@@ -139,7 +144,12 @@ const ItemsTable = (props: ITProps) => {
                     )}
                   </TableCell>
                   <TableCell width="15%">
-                    <Typography>{item.delivery_status}</Typography>
+                    <Stack direction="row" spacing={1}>
+                      <Typography>{item.delivery_status}</Typography>
+                      {item.delivery_status === "Delivered" && (
+                        <CheckCircleIcon color="success" />
+                      )}
+                    </Stack>
                   </TableCell>
                 </TableRow>
               );
