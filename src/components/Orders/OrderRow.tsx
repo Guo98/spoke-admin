@@ -24,6 +24,8 @@ import { Order } from "../../interfaces/orders";
 
 interface OrderRowProps extends Order {
   selected_tab: number;
+  selected_client: string;
+  parent_client: string;
 }
 
 const OrderRow = (props: OrderRowProps) => {
@@ -283,20 +285,23 @@ const OrderRow = (props: OrderRowProps) => {
                   Items
                 </Divider>
                 <ItemsTable items={props.items} />
-                <Stack direction="row" spacing={1}>
-                  <OperationsManage {...props} />
-                  {deployed_laptop !== "" &&
-                    props.shipping_status !== "Complete" &&
-                    props.shipping_status !== "Completed" &&
-                    props.shipping_status !== "Shipped" && (
-                      <OrderLaptop {...props} />
-                    )}
-                  <DeleteModal
-                    id={props.id}
-                    client={props.client}
-                    full_name={props.full_name}
-                  />
-                </Stack>
+                {props.parent_client === "spokeops" && (
+                  <Stack direction="row" spacing={1}>
+                    <OperationsManage {...props} />
+                    {deployed_laptop !== "" &&
+                      props.selected_client === "Alma" &&
+                      props.shipping_status !== "Complete" &&
+                      props.shipping_status !== "Completed" &&
+                      props.shipping_status !== "Shipped" && (
+                        <OrderLaptop {...props} />
+                      )}
+                    <DeleteModal
+                      id={props.id}
+                      client={props.client}
+                      full_name={props.full_name}
+                    />
+                  </Stack>
+                )}
               </Stack>
             </Box>
           </Collapse>

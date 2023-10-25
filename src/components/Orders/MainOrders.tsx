@@ -67,7 +67,7 @@ const MainOrders = () => {
   const [all_orders, setAllOrders] = useState<Order[]>([]);
   const [tab_index, setTabIndex] = useState(0);
 
-  const [rows_per_page, setRowsPerPage] = useState(15);
+  const [rows_per_page, setRowsPerPage] = useState(25);
   const [no_of_expands, setNoExpands] = useState(1);
 
   const { height, width } = useWindowDimensions();
@@ -255,7 +255,14 @@ const MainOrders = () => {
                 {all_orders
                   .slice(0, no_of_expands * rows_per_page)
                   .map((order) => {
-                    return <OrderRow {...order} selected_tab={tab_index} />;
+                    return (
+                      <OrderRow
+                        {...order}
+                        selected_tab={tab_index}
+                        parent_client={clientData}
+                        selected_client={client}
+                      />
+                    );
                   })}
               </TableBody>
             </Table>
