@@ -10,18 +10,29 @@ import {
   Stack,
   useTheme,
   Divider,
+  Button,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import ItemsTable from "./ItemsTable";
+import OperationsManage from "./OperationsManage";
+import OrderLaptop from "./OrderLaptop";
+import DeleteModal from "../Operations/DeleteModal";
 
 import { Order } from "../../interfaces/orders";
 
-const OrderRow = (props: Order) => {
+interface OrderRowProps extends Order {
+  selected_tab: number;
+}
+
+const OrderRow = (props: OrderRowProps) => {
+  const { selected_tab } = props;
+
   const [open, setOpen] = useState(false);
   const [order_price, setOrderPrice] = useState(0);
   const [returned_laptop, setReturnedLaptop] = useState("");
+  const [deployed_laptop, setDeployedLaptop] = useState("");
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -53,42 +64,48 @@ const OrderRow = (props: Order) => {
     }
   };
 
-  const getOrderType = () => {
-    for (let item of props.items) {
-      if (item.name.includes("Return")) {
-        return (
-          <Chip
-            label={"Returning"}
-            sx={{
-              width: "125px",
-              backgroundColor: "#FFE3B2",
-              color: "#690C00",
-            }}
-          />
-        );
-      } else if (item.name.includes("Offboard")) {
-        return (
-          <Chip
-            label={"Offboarding"}
-            sx={{
-              width: "125px",
-              backgroundColor: "#FFC28C",
-              color: "#690C00",
-            }}
-          />
-        );
-      } else if (item.type === "laptop") {
-        return (
-          <Chip
-            label={"Deployment"}
-            sx={{
-              width: "125px",
-              backgroundColor: "#E1FFBB",
-              color: "#2B4B02",
-            }}
-          />
-        );
+  const getOrderTypeOrName = () => {
+    if (selected_tab === 0) {
+      for (let item of props.items) {
+        if (item.name.includes("Return")) {
+          return (
+            <Chip
+              label={"Returning"}
+              sx={{
+                width: "125px",
+                backgroundColor: "#FFE3B2",
+                color: "#690C00",
+              }}
+            />
+          );
+        } else if (item.name.includes("Offboard")) {
+          return (
+            <Chip
+              label={"Offboarding"}
+              sx={{
+                width: "125px",
+                backgroundColor: "#FFC28C",
+                color: "#690C00",
+              }}
+            />
+          );
+        } else if (item.type === "laptop") {
+          return (
+            <Chip
+              label={"Deployment"}
+              sx={{
+                width: "125px",
+                backgroundColor: "#E1FFBB",
+                color: "#2B4B02",
+              }}
+            />
+          );
+        }
       }
+    } else if (selected_tab === 1) {
+      return deployed_laptop;
+    } else if (selected_tab === 2) {
+      return returned_laptop;
     }
   };
 
@@ -142,6 +159,10 @@ const OrderRow = (props: Order) => {
 
       props.items.forEach((i) => {
         total_price += parseFloat(i.price.toString());
+
+        if (i.type === "laptop") {
+          setDeployedLaptop(i.name);
+        }
       });
 
       setOrderPrice(total_price);
@@ -185,7 +206,7 @@ const OrderRow = (props: Order) => {
           <Typography>{props.full_name}</Typography>
         </TableCell>
         <TableCell width="20%">
-          <Typography>{getOrderType()}</Typography>
+          <Typography>{getOrderTypeOrName()}</Typography>
         </TableCell>
         <TableCell width="15%">
           <Typography>{formatPrice()}</Typography>
@@ -262,6 +283,20 @@ const OrderRow = (props: Order) => {
                   Items
                 </Divider>
                 <ItemsTable items={props.items} />
+                <Stack direction="row" spacing={1}>
+                  <OperationsManage {...props} />
+                  {deployed_laptop !== "" &&
+                    props.shipping_status !== "Complete" &&
+                    props.shipping_status !== "Completed" &&
+                    props.shipping_status !== "Shipped" && (
+                      <OrderLaptop {...props} />
+                    )}
+                  <DeleteModal
+                    id={props.id}
+                    client={props.client}
+                    full_name={props.full_name}
+                  />
+                </Stack>
               </Stack>
             </Box>
           </Collapse>

@@ -51,10 +51,12 @@ const DeleteModal = (props: DeleteProps) => {
         variant="contained"
         startIcon={<DeleteIcon />}
         sx={{
-          borderRadius: "999em 999em 999em 999em",
+          borderRadius: "10px",
           textTransform: "none",
         }}
         onClick={() => setOpen(true)}
+        fullWidth
+        size="small"
       >
         Delete
       </Button>

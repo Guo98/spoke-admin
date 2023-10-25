@@ -151,10 +151,12 @@ const OperationsManage = (props: OperationsOrder) => {
       <Button
         variant="contained"
         sx={{
-          borderRadius: "999em 999em 999em 999em",
+          borderRadius: "10px",
           textTransform: "none",
         }}
         onClick={() => setOpen(true)}
+        fullWidth
+        size="small"
       >
         Manage
       </Button>

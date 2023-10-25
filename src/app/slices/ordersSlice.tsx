@@ -195,7 +195,7 @@ export const ordersSlice = createSlice({
       ) {
         in_prog_filter = state.originalData.in_progress.filter(
           (i) =>
-            i.orderNo.includes(search_term) ||
+            i.orderNo.toString().includes(search_term) ||
             i.full_name.toLowerCase().includes(search_term) ||
             i.address?.formatted?.toLowerCase().includes(search_term) ||
             i.items.filter((item) =>

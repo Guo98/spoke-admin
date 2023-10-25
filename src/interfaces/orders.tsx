@@ -14,6 +14,8 @@ export interface Order {
     country: string;
     subdivision: string;
     formatted: string;
+    addressLine?: string;
+    postalCode?: string;
   };
   email: string;
   phone: string;

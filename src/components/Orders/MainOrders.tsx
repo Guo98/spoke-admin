@@ -176,6 +176,16 @@ const MainOrders = () => {
     }
   };
 
+  const tab_text = () => {
+    if (tab_index === 0) {
+      return "Order Type";
+    } else if (tab_index === 1) {
+      return "Device Type";
+    } else if (tab_index === 2) {
+      return "Returned Device";
+    }
+  };
+
   return (
     <Box sx={{ width: "100%", height: height, overflow: "hidden" }}>
       <Stack spacing={2} px={3}>
@@ -231,7 +241,7 @@ const MainOrders = () => {
                     <Typography fontWeight="bold">Recipient Name</Typography>
                   </TableCell>
                   <TableCell width="20%">
-                    <Typography fontWeight="bold">Order Type</Typography>
+                    <Typography fontWeight="bold">{tab_text()}</Typography>
                   </TableCell>
                   <TableCell width="15%">
                     <Typography fontWeight="bold">Price</Typography>
@@ -245,7 +255,7 @@ const MainOrders = () => {
                 {all_orders
                   .slice(0, no_of_expands * rows_per_page)
                   .map((order) => {
-                    return <OrderRow {...order} />;
+                    return <OrderRow {...order} selected_tab={tab_index} />;
                   })}
               </TableBody>
             </Table>
