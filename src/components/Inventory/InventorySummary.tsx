@@ -9,8 +9,14 @@ import {
   Tabs,
   Tab,
   Stack,
+  Select,
+  FormControl,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { useDispatch } from "react-redux";
 
 import TabPanel from "../common/TabPanel";
 
@@ -21,9 +27,10 @@ import EndOfLife from "./Tables/EndOfLife";
 
 import AssignModal from "./AssignModal";
 import OffboardModal from "./OffboardModal";
-import MarketplacePurchase from "../Marketplace/MarketplacePurchase";
 
+import { openMarketplace } from "../../app/slices/marketSlice";
 import { InventorySummary as IS } from "../../interfaces/inventory";
+import AppContainer from "../AppContainer/AppContainer";
 
 interface ISProps extends IS {
   goToPage: Function;
@@ -54,6 +61,8 @@ const InventorySummary = (props: ISProps) => {
     selected_tab,
   } = props;
 
+  const dispatch = useDispatch();
+
   const [tab_value, setTabValue] = useState(selected_tab);
 
   const [orderBy, setOrderBy] = useState("");
@@ -66,7 +75,11 @@ const InventorySummary = (props: ISProps) => {
   const [pending, setPending] = useState<any>([]);
   const [eol, setEol] = useState<any>([]);
 
-  useEffect(() => {
+  const [selected_location, setSelectedLocation] = useState(
+    props.locations && props.locations.length > 1 ? "All" : props.location
+  );
+
+  const set_different_status = () => {
     if (serial_numbers.length > 0) {
       let temp_in_stock: any = [];
       let temp_deployed: any = [];
@@ -94,6 +107,10 @@ const InventorySummary = (props: ISProps) => {
       setPending(temp_pending);
       setEol(temp_eol);
     }
+  };
+
+  useEffect(() => {
+    set_different_status();
   }, [serial_numbers]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -149,6 +166,41 @@ const InventorySummary = (props: ISProps) => {
 
   const close_market = () => {
     setOpenMarket(false);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    const loc = event.target.value;
+    setSelectedLocation(loc);
+    if (loc === "All") {
+      set_different_status();
+    } else {
+      setInStock(in_stock.filter((d: any) => d.location === loc));
+      setPending(pending.filter((d: any) => d.location === loc));
+      setDeployed(deployed.filter((d: any) => d.location === loc));
+      setEol(eol.filter((d: any) => d.location === loc));
+    }
+  };
+
+  const market_info = () => {
+    const market_obj = {
+      imgSrc: image_source || "",
+      brand: props.brand,
+      client: client,
+      specific_device: name,
+      location,
+      supplier_links: props.marketplace,
+      specific_specs:
+        props.specs?.screen_size +
+        ", " +
+        props.specs?.cpu +
+        ", " +
+        props.specs?.ram +
+        ", " +
+        props.specs?.hard_drive,
+    };
+
+    dispatch(openMarketplace(market_obj));
+    AppContainer.navigate("marketplace");
   };
 
   return (
@@ -243,7 +295,7 @@ const InventorySummary = (props: ISProps) => {
                 </Typography>
               </div>
             )}
-            {props.location && (
+            {/* {props.location && (
               <div>
                 <Typography
                   display="inline"
@@ -257,6 +309,29 @@ const InventorySummary = (props: ISProps) => {
                   {props.location}
                 </Typography>
               </div>
+            )} */}
+            {props.locations && props.locations.length > 0 && (
+              <FormControl
+                fullWidth
+                size="small"
+                variant="standard"
+                sx={{ width: { md: "50%", sm: "100%" } }}
+              >
+                <InputLabel>Location</InputLabel>
+                <Select
+                  labelId="location-select-label"
+                  label="Location"
+                  onChange={handleChange}
+                  value={selected_location}
+                >
+                  {props.locations.length > 1 && (
+                    <MenuItem value="All">All</MenuItem>
+                  )}
+                  {props.locations.map((l) => (
+                    <MenuItem value={l}>{l}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           </CardContent>
         </Box>
@@ -276,29 +351,10 @@ const InventorySummary = (props: ISProps) => {
             <Button
               variant="contained"
               sx={{ borderRadius: "10px" }}
-              onClick={() => setOpenMarket(true)}
+              onClick={market_info}
             >
               Buy
             </Button>
-            <MarketplacePurchase
-              open={open_market}
-              handleClose={close_market}
-              imgSrc={image_source || ""}
-              brand={props.brand!}
-              client={client}
-              specific_device={name}
-              location={location}
-              supplier_links={props.marketplace}
-              specific_specs={
-                props.specs?.screen_size +
-                ", " +
-                props.specs?.cpu +
-                ", " +
-                props.specs?.ram +
-                ", " +
-                props.specs?.hard_drive
-              }
-            />
           </>
         </Stack>
       </Card>

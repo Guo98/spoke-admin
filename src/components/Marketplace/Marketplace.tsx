@@ -3,6 +3,7 @@ import { Box, Typography, Grid, Chip, Stack, Button } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProducts } from "../../app/slices/inventorySlice";
+import { resetMarketplaceInfo } from "../../app/slices/marketSlice";
 import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
 import {
@@ -24,6 +25,10 @@ const Marketplace = () => {
   const client = useSelector((state: RootState) => state.client.data);
   const selectedClient = useSelector(
     (state: RootState) => state.client.selectedClient
+  );
+
+  const existing_order_info = useSelector(
+    (state: RootState) => state.market.order_info
   );
 
   let marketClient = client === "spokeops" ? selectedClient : client;
@@ -65,6 +70,12 @@ const Marketplace = () => {
       setPagenumber(0);
     }
   }, [selectedProducts]);
+
+  useEffect(() => {
+    if (existing_order_info !== null) {
+      setOpen(true);
+    }
+  }, [existing_order_info]);
 
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
@@ -128,6 +139,7 @@ const Marketplace = () => {
 
   const handleClose = () => {
     setOpen(false);
+    dispatch(resetMarketplaceInfo());
   };
   return (
     <>
@@ -228,15 +240,29 @@ const Marketplace = () => {
               client={marketClient}
             />
           )} */}
-          <MarketplacePurchase
-            open={openModal}
-            handleClose={handleClose}
-            imgSrc={modalimg}
-            types={brandtypes}
-            brand={brandname}
-            client={marketClient}
-            suppliers={suppliers}
-          />
+          {existing_order_info === null ? (
+            <MarketplacePurchase
+              open={openModal}
+              handleClose={handleClose}
+              imgSrc={modalimg}
+              types={brandtypes}
+              brand={brandname}
+              client={marketClient}
+              suppliers={suppliers}
+            />
+          ) : (
+            <MarketplacePurchase
+              open={openModal}
+              handleClose={handleClose}
+              imgSrc={existing_order_info.imgSrc}
+              brand={existing_order_info.brand}
+              client={existing_order_info.client}
+              specific_device={existing_order_info.specific_device}
+              location={existing_order_info.location}
+              supplier_links={existing_order_info.supplier_links}
+              specific_specs={existing_order_info.specific_specs}
+            />
+          )}
         </Box>
         {pagenumber > 0 && (
           <Button

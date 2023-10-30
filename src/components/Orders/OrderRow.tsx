@@ -208,7 +208,7 @@ const OrderRow = (props: OrderRowProps) => {
           <Typography>{props.full_name}</Typography>
         </TableCell>
         <TableCell width="20%">
-          <Typography>{getOrderTypeOrName()}</Typography>
+          <Typography>{deployed_laptop}</Typography>
         </TableCell>
         <TableCell width="15%">
           <Typography>{formatPrice()}</Typography>

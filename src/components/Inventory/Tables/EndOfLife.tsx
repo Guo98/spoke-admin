@@ -159,7 +159,7 @@ const EndOfLife = (props: TableProps) => {
           </Table>
         </TableContainer>
       ) : (
-        <Typography textAlign="center">Out of Stock</Typography>
+        <Typography textAlign="center">No End of Service Devices</Typography>
       )}
     </>
   );

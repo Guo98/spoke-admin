@@ -10,7 +10,6 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface ExpandProps {
-  rowOptions: number[];
   count: number;
   rowsPerPage: number;
   onRowsPerPageChange(event: SelectChangeEvent): void;

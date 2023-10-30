@@ -21,9 +21,13 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
+
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
 import SpecificDevice from "./SpecificDevice";
+import AppContainer from "../AppContainer/AppContainer";
 
 interface MPProps {
   open: boolean;
@@ -125,6 +129,7 @@ const MarketplacePurchase = (props: MPProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed1, setComplete1] = useState(false);
   const [completed2, setComplete2] = useState(false);
+  const [modal_open, setModalOpen] = useState(false);
 
   const [device_name, setDeviceName] = useState("");
   const [device_specs, setDeviceSpecs] = useState("");

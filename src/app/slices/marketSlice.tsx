@@ -5,10 +5,12 @@ const initialState: {
   data: any;
   filteredData: any;
   dateFilter: string;
+  order_info: any;
 } = {
   data: [],
   filteredData: [],
   dateFilter: "30",
+  order_info: null,
 };
 
 export const marketSlice = createSlice({
@@ -73,10 +75,22 @@ export const marketSlice = createSlice({
         state.dateFilter = "All";
       }
     },
+    openMarketplace: (state, action: PayloadAction<any>) => {
+      state.order_info = action.payload;
+      console.log("state order info ::::::::::: ", state.order_info);
+    },
+    resetMarketplaceInfo: (state) => {
+      state.order_info = null;
+    },
   },
 });
 
-export const { setApprovals, updateApprovals, filterApprovals } =
-  marketSlice.actions;
+export const {
+  setApprovals,
+  updateApprovals,
+  filterApprovals,
+  openMarketplace,
+  resetMarketplaceInfo,
+} = marketSlice.actions;
 
 export default marketSlice.reducer;

@@ -135,7 +135,7 @@ const Pending = (props: TableProps) => {
           </Table>
         </TableContainer>
       ) : (
-        <Typography textAlign="center">Out of Stock</Typography>
+        <Typography textAlign="center">No Devices Pending</Typography>
       )}
     </>
   );

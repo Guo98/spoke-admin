@@ -140,7 +140,24 @@ const MainInventory = () => {
       setInStockDevices(temp_in_stock_devices);
     }
 
-    setInventoryList(inventory_redux);
+    const sorted_list = [...inventory_redux].sort((a: IS, b: IS) => {
+      let a_in_stock = a.serial_numbers.filter(
+        (s) => s.status === "In Stock"
+      ).length;
+      let b_in_stock = b.serial_numbers.filter(
+        (s) => s.status === "In Stock"
+      ).length;
+
+      if (a_in_stock < b_in_stock) {
+        return 1;
+      } else if (a_in_stock > b_in_stock) {
+        return -1;
+      }
+
+      return 0;
+    });
+
+    setInventoryList(sorted_list);
   }, [inventory_redux]);
 
   const selectDevice = (index: number, tab_index: number = 0) => {

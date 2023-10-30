@@ -214,7 +214,47 @@ export const inventorySlice = createSlice({
       state.search_text = "";
     },
     setNewInventory: (state, action: PayloadAction<InventorySummary[]>) => {
-      state.devices = action.payload;
+      //state.devices = action.payload;
+      let common_devices: any[] = [];
+      let common_device_names: string[] = [];
+      // let locations: string[] = [];
+      if (action.payload) {
+        action.payload.forEach((d) => {
+          let device_index = common_device_names.indexOf(d.name);
+          if (device_index < 0) {
+            common_device_names.push(d.name);
+            let devices_w_locations = d.serial_numbers.map((dsn) => {
+              let map_obj: any = { ...dsn, location: d.location, id: d.id };
+              if (d.entity) {
+                map_obj.entity = d.entity;
+              }
+              return map_obj;
+            });
+            common_devices.push({
+              ...d,
+              serial_numbers: devices_w_locations,
+              locations: [d.location],
+            });
+          } else {
+            let devices_w_locations = d.serial_numbers.map((dsn) => {
+              let map_obj: any = { ...dsn, location: d.location, id: d.id };
+              if (d.entity) {
+                map_obj.entity = d.entity;
+              }
+              return map_obj;
+            });
+
+            common_devices[device_index].serial_numbers = [
+              ...common_devices[device_index].serial_numbers,
+              ...devices_w_locations,
+            ];
+
+            common_devices[device_index].locations.push(d.location);
+          }
+        });
+      }
+
+      state.devices = common_devices;
     },
     filterInventory: (state, action: PayloadAction<string>) => {
       const search_text = action.payload.toLowerCase();

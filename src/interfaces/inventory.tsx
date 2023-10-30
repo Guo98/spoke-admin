@@ -21,6 +21,7 @@ export interface InventorySummary {
   hide_out_of_stock?: boolean;
   marketplace?: any;
   brand?: string;
+  locations?: string[];
 }
 
 interface SerialNumbers {

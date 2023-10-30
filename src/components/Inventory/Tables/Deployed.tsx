@@ -141,7 +141,9 @@ const Deployed = (props: TableProps) => {
           </Table>
         </TableContainer>
       ) : (
-        <Typography textAlign="center">Out of Stock</Typography>
+        <Typography textAlign="center">
+          No Devices Currently Deployed
+        </Typography>
       )}
     </>
   );

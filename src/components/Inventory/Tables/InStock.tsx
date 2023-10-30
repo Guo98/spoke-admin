@@ -41,7 +41,7 @@ const InStock = (props: TableProps) => {
               <TableRow>
                 <TableCell
                   key="SerialNumber"
-                  width="40%"
+                  width="35%"
                   sortDirection={orderBy === "Serial Number" ? order : false}
                 >
                   <TableSortLabel
@@ -67,7 +67,7 @@ const InStock = (props: TableProps) => {
                 </TableCell>
                 <TableCell
                   key="Grade"
-                  width="40%"
+                  width="20%"
                   sortDirection={orderBy === "Grade" ? order : false}
                 >
                   <TableSortLabel
@@ -77,6 +77,9 @@ const InStock = (props: TableProps) => {
                   >
                     <Typography fontWeight="bold">Grade</Typography>
                   </TableSortLabel>
+                </TableCell>
+                <TableCell key="Locatino" width="25%">
+                  <Typography fontWeight="bold">Location</Typography>
                 </TableCell>
                 <TableCell key="Action" width="20%">
                   <Typography fontWeight="bold">Action</Typography>
@@ -89,16 +92,19 @@ const InStock = (props: TableProps) => {
                   const { sn, condition } = item;
                   return (
                     <TableRow key={index}>
-                      <TableCell width="40%">
+                      <TableCell width="35%">
                         <Typography>{sn}</Typography>
                       </TableCell>
                       <TableCell width="20%">
                         <Typography>{condition}</Typography>
                       </TableCell>
-                      <TableCell width="40%">
+                      <TableCell width="20%">
                         <Typography>
                           {condition === "Used" && item.grade}
                         </Typography>
+                      </TableCell>
+                      <TableCell width="25%">
+                        <Typography>{item.location}</Typography>
                       </TableCell>
                       <TableCell width="20%">
                         <AssignModal

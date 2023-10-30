@@ -169,9 +169,9 @@ const MainOrders = () => {
     setTabIndex(newValue);
     if (newValue === 0) {
       dispatch(resetOrders());
-    } else if (newValue == 1) {
+    } else if (newValue === 1) {
       dispatch(filterType("Deployments"));
-    } else if (newValue == 2) {
+    } else if (newValue === 2) {
       dispatch(filterType("Returns"));
     }
   };
@@ -187,7 +187,7 @@ const MainOrders = () => {
   };
 
   return (
-    <Box sx={{ width: "100%", height: height, overflow: "hidden" }}>
+    <Box sx={{ width: "100%", overflow: "hidden" }}>
       <Stack spacing={2} px={3}>
         <Header
           textChange={searchFilter}
@@ -225,7 +225,7 @@ const MainOrders = () => {
         <>
           <TableContainer
             component={Paper}
-            sx={{ borderRadius: "10px", mt: 3, maxHeight: "80%" }}
+            sx={{ borderRadius: "10px", mt: 3 }}
           >
             <Table aria-label="orders-table" stickyHeader>
               <TableHead>
@@ -241,7 +241,7 @@ const MainOrders = () => {
                     <Typography fontWeight="bold">Recipient Name</Typography>
                   </TableCell>
                   <TableCell width="20%">
-                    <Typography fontWeight="bold">{tab_text()}</Typography>
+                    <Typography fontWeight="bold">Device Type</Typography>
                   </TableCell>
                   <TableCell width="15%">
                     <Typography fontWeight="bold">Price</Typography>
@@ -268,7 +268,6 @@ const MainOrders = () => {
             </Table>
           </TableContainer>
           <ExpandTable
-            rowOptions={[15, 25, 100]}
             count={all_orders.length}
             rowsPerPage={25}
             onRowsPerPageChange={handleChangeRowsPerPage}

@@ -11,10 +11,11 @@ import {
   Link,
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useDispatch } from "react-redux";
 
-import MarketplacePurchase from "../Marketplace/MarketplacePurchase";
-
+import { openMarketplace } from "../../app/slices/marketSlice";
 import { InventorySummary } from "../../interfaces/inventory";
+import AppContainer from "../AppContainer/AppContainer";
 
 interface InventoryCardProps extends InventorySummary {
   goToPage: Function;
@@ -33,12 +34,17 @@ const InventoryCard = (props: InventoryCardProps) => {
     location,
   } = props;
 
+  const dispatch = useDispatch();
+
   const [open_market, setOpenMarket] = useState(false);
 
   const [in_stock, setInStock] = useState([]);
   const [deployed, setDeployed] = useState([]);
   const [pending, setPending] = useState([]);
   const [eol, setEol] = useState([]);
+
+  const [new_in_stock, setNewInStock] = useState(0);
+  const [used_in_stock, setUsedInStock] = useState(0);
 
   useEffect(() => {
     if (serial_numbers.length > 0) {
@@ -70,6 +76,15 @@ const InventoryCard = (props: InventoryCardProps) => {
     }
   }, [serial_numbers]);
 
+  useEffect(() => {
+    if (in_stock.length > 0) {
+      setNewInStock(in_stock.filter((d: any) => d.condition === "New").length);
+      setUsedInStock(
+        in_stock.filter((d: any) => d.condition === "Used").length
+      );
+    }
+  }, [in_stock]);
+
   const spec_descriptions = () => {
     return (
       props.specs?.screen_size +
@@ -84,6 +99,28 @@ const InventoryCard = (props: InventoryCardProps) => {
 
   const close_market = () => {
     setOpenMarket(false);
+  };
+
+  const market_info = () => {
+    const market_obj = {
+      imgSrc: image_source || "",
+      brand: props.brand,
+      client: client,
+      specific_device: name,
+      location,
+      supplier_links: props.marketplace,
+      specific_specs:
+        props.specs?.screen_size +
+        ", " +
+        props.specs?.cpu +
+        ", " +
+        props.specs?.ram +
+        ", " +
+        props.specs?.hard_drive,
+    };
+
+    dispatch(openMarketplace(market_obj));
+    AppContainer.navigate("marketplace");
   };
 
   return (
@@ -123,26 +160,7 @@ const InventoryCard = (props: InventoryCardProps) => {
               {name}
             </Link>
             <IconButton size="small">
-              <ShoppingCartIcon onClick={() => setOpenMarket(true)} />
-              <MarketplacePurchase
-                open={open_market}
-                handleClose={close_market}
-                imgSrc={image_source || ""}
-                brand={props.brand!}
-                client={client}
-                specific_device={name}
-                location={location}
-                supplier_links={props.marketplace}
-                specific_specs={
-                  props.specs?.screen_size +
-                  ", " +
-                  props.specs?.cpu +
-                  ", " +
-                  props.specs?.ram +
-                  ", " +
-                  props.specs?.hard_drive
-                }
-              />
+              <ShoppingCartIcon onClick={market_info} />
             </IconButton>
           </Stack>
           {props.specs ? (
@@ -168,7 +186,7 @@ const InventoryCard = (props: InventoryCardProps) => {
           ) : (
             <></>
           )}
-          {props.location ? (
+          {/* {props.location ? (
             <div>
               <Typography
                 display="inline"
@@ -184,27 +202,28 @@ const InventoryCard = (props: InventoryCardProps) => {
             </div>
           ) : (
             <></>
-          )}
+          )} */}
+          <Typography>{in_stock.length} in stock</Typography>
           <Stack direction="row" spacing={0.5}>
-            {in_stock.length > 0 ? (
+            {new_in_stock > 0 ? (
               <Chip
                 sx={{ borderRadius: "10px" }}
-                label={in_stock.length + " in stock"}
-                onClick={() => goToPage(index, 0)}
+                label={new_in_stock + " new"}
+                // onClick={() => goToPage(index, 0)}
               />
             ) : (
               <></>
             )}
-            {deployed.length > 0 ? (
+            {used_in_stock > 0 ? (
               <Chip
                 sx={{ borderRadius: "10px" }}
-                label={deployed.length + " deployed"}
-                onClick={() => goToPage(index, 1)}
+                label={used_in_stock + " used"}
+                // onClick={() => goToPage(index, 1)}
               />
             ) : (
               <></>
             )}
-            {pending.length > 0 ? (
+            {/* {pending.length > 0 ? (
               <Chip
                 sx={{ borderRadius: "10px" }}
                 label={pending.length + " pending"}
@@ -221,7 +240,7 @@ const InventoryCard = (props: InventoryCardProps) => {
               />
             ) : (
               <></>
-            )}
+            )} */}
           </Stack>
         </Stack>
       </CardContent>

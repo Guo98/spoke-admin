@@ -109,7 +109,7 @@ const ItemsTable = (props: ITProps) => {
                           )
                         }
                         aria-label="Go to selected device on inventory tab"
-                        color="primary.contrastText"
+                        color={isDarkTheme ? "primary.contrastText" : "primary"}
                       >
                         {item.serial_number}
                       </Link>
@@ -135,7 +135,7 @@ const ItemsTable = (props: ITProps) => {
                         )}
                         aria-label="Tracking link that'll open in a new page"
                         target="_blank"
-                        color="primary.contrastText"
+                        color={isDarkTheme ? "primary.contrastText" : "primary"}
                       >
                         {item.tracking_number}
                       </Link>
