@@ -18,10 +18,14 @@ import {
   Paper,
   Button,
   Stack,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
+import SearchIcon from "@mui/icons-material/Search";
 import { useAuth0 } from "@auth0/auth0-react";
+
 import { entityMappings } from "../../../app/utility/constants";
 import {
   standardGet,
@@ -50,6 +54,10 @@ const UpdateInventory = (props: UpdateProps) => {
   const [loading, setLoading] = useState(false);
   const [newdata, setNewdata] = useState<any>([]);
   const [addrow, setAddrow] = useState(false);
+
+  const [clear, setClear] = useState(false);
+  const [search_text, setSearchText] = useState("");
+  const [filtered_inventory, setFilteredInventory] = useState<any | null>(null);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -107,14 +115,15 @@ const UpdateInventory = (props: UpdateProps) => {
     grade = "",
     updated_condition = "",
     updated_warehouse = "",
-    updated_date = ""
+    updated_date = "",
+    device_id = ""
   ) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
 
     const body = {
       client,
-      device_id: inventory[inventoryIndex].id,
+      device_id: device_id !== "" ? device_id : inventory[inventoryIndex].id,
       serial_number: sn,
       device_index,
       updated_status,
@@ -185,15 +194,109 @@ const UpdateInventory = (props: UpdateProps) => {
     setAddrow(true);
   };
 
+  const search_inventory = () => {
+    const lc_search = search_text.toLowerCase();
+
+    let search_results: any[] = [];
+
+    inventory.forEach((device: any) => {
+      const filtered_devices = device.serial_numbers.filter(
+        (d: any) =>
+          d.sn?.toLowerCase().includes(lc_search) ||
+          d.first_name?.toLowerCase().includes(lc_search) ||
+          d.last_name?.toLowerCase().includes(lc_search)
+      );
+      if (filtered_devices.length > 0) {
+        search_results = [
+          ...search_results,
+          ...filtered_devices.map((l: any) => {
+            return {
+              ...l,
+              id: device.id,
+              device_name: device.name,
+              device_index: device.serial_numbers.findIndex(
+                (dev: any) => dev.sn === l.sn
+              ),
+            };
+          }),
+        ];
+      }
+    });
+
+    setFilteredInventory(search_results);
+  };
+
+  const reset_inventory = () => {
+    setFilteredInventory(null);
+  };
+
   return (
     <Box>
-      <Grid container direction="row" spacing={2}>
-        <Grid item xs={10}>
-          <Typography>
-            <h3>Update Inventory</h3>
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
+      <Stack direction="row" spacing={1} justifyContent="space-between">
+        <Typography>
+          <h3>Update Inventory</h3>
+        </Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <TextField
+            size="small"
+            label="Search"
+            value={search_text}
+            onChange={(e) => setSearchText(e.target.value)}
+            disabled={inventory.length === 0}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                if (clear) {
+                  setSearchText("");
+                  reset_inventory();
+                } else {
+                  search_inventory();
+                }
+                setClear((prevClear) => !prevClear);
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={"Search"}
+                    disabled={inventory.length === 0}
+                    onClick={() => {
+                      if (clear) {
+                        setSearchText("");
+                        reset_inventory();
+                      } else {
+                        search_inventory();
+                      }
+                      setClear((prevClear) => !prevClear);
+                    }}
+                    onMouseDown={() => {
+                      if (clear) {
+                        setSearchText("");
+                        reset_inventory();
+                      } else {
+                        search_inventory();
+                      }
+                      setClear((prevClear) => !prevClear);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        if (clear) {
+                          setSearchText("");
+                          reset_inventory();
+                        } else {
+                          search_inventory();
+                        }
+                        setClear((prevClear) => !prevClear);
+                      }
+                    }}
+                    edge="end"
+                  >
+                    {!clear ? <SearchIcon /> : <CloseIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
           <IconButton
             onClick={() => {
               setEntity("");
@@ -203,13 +306,11 @@ const UpdateInventory = (props: UpdateProps) => {
           >
             <ClearAllIcon />
           </IconButton>
-        </Grid>
-        <Grid item xs={1}>
           <IconButton onClick={() => handleClose()}>
             <CloseIcon />
           </IconButton>
-        </Grid>
-      </Grid>
+        </Stack>
+      </Stack>
       {page === 0 && <ClientDropdown handleChange={handleChange} />}
       {page === 0 && client === "" && (
         <Typography textAlign="center">
@@ -232,7 +333,7 @@ const UpdateInventory = (props: UpdateProps) => {
         </FormControl>
       )}
       {loading && <LinearLoading />}
-      {client !== "" && page === 0 && (
+      {client !== "" && page === 0 && filtered_inventory === null && (
         <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
           <Table stickyHeader>
             <TableHead>
@@ -266,7 +367,7 @@ const UpdateInventory = (props: UpdateProps) => {
           </Stack>
         </TableContainer>
       )}
-      {page === 1 && (
+      {page === 1 && filtered_inventory === null && (
         <>
           <Typography sx={{ paddingBottom: "15px" }}>
             Editing {inventory[inventoryIndex].name} at{" "}
@@ -336,6 +437,42 @@ const UpdateInventory = (props: UpdateProps) => {
             )}
           </Stack>
         </>
+      )}
+      {filtered_inventory !== null && (
+        <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell>Serial Number</TableCell>
+                <TableCell>Condition</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>User</TableCell>
+                <TableCell align="right">Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filtered_inventory.length > 0 &&
+                filtered_inventory.map((device: any) => {
+                  return (
+                    <UpdateCollapse
+                      sn={device.sn}
+                      condition={device.condition}
+                      status={device.status}
+                      first_name={device.first_name}
+                      last_name={device.last_name}
+                      index={device.device_index}
+                      submitChanges={handleSubmitChange}
+                      handleDelete={handleDeleteRow}
+                      warehouse={device.warehouse}
+                      date_deployed={device.date_deployed}
+                      device_id={device.id}
+                      device_name={device.device_name}
+                    />
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
     </Box>
   );

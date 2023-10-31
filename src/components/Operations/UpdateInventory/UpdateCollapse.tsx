@@ -27,6 +27,8 @@ interface UpdateProps {
   submitChanges: Function;
   handleDelete: Function;
   date_deployed?: string;
+  device_name?: string;
+  device_id?: string;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
@@ -78,7 +80,8 @@ const UpdateCollapse = (props: UpdateProps) => {
       grade,
       updatedCondition !== condition ? updatedCondition : "",
       updatedWarehouse !== warehouse ? updatedWarehouse : "",
-      updatedDate !== date_deployed ? updatedDate : ""
+      updatedDate !== date_deployed ? updatedDate : "",
+      props.device_id ? props.device_id : ""
     );
   };
 
@@ -124,6 +127,25 @@ const UpdateCollapse = (props: UpdateProps) => {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ marginY: 1 }}>
               <Stack direction="column" spacing={2}>
+                {props.device_name && (
+                  <div>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontWeight="bold"
+                      fontSize="110%"
+                    >
+                      Device:{" "}
+                    </Typography>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontSize="110%"
+                    >
+                      {props.device_name}
+                    </Typography>
+                  </div>
+                )}
                 <TextField
                   fullWidth
                   label="Serial Number"

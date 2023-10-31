@@ -36,8 +36,6 @@ const InventoryCard = (props: InventoryCardProps) => {
 
   const dispatch = useDispatch();
 
-  const [open_market, setOpenMarket] = useState(false);
-
   const [in_stock, setInStock] = useState([]);
   const [deployed, setDeployed] = useState([]);
   const [pending, setPending] = useState([]);
@@ -95,10 +93,6 @@ const InventoryCard = (props: InventoryCardProps) => {
       ", " +
       props.specs?.hard_drive
     );
-  };
-
-  const close_market = () => {
-    setOpenMarket(false);
   };
 
   const market_info = () => {
