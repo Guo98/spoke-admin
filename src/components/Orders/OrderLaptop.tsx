@@ -94,6 +94,8 @@ const OrderLaptop = (props: Order) => {
         postalCode: updt_postal,
       },
       order_client: client,
+      id: props.id,
+      full_name_key: props.full_name,
     };
 
     const post_resp = await standardPost(accessToken, "placeorder/cdw", body);

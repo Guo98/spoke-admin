@@ -32,7 +32,7 @@ const OrderRow = (props: OrderRowProps) => {
   const { selected_tab } = props;
 
   const [open, setOpen] = useState(false);
-  const [order_price, setOrderPrice] = useState(0);
+  const [order_price, setOrderPrice] = useState("");
   const [returned_laptop, setReturnedLaptop] = useState("");
   const [deployed_laptop, setDeployedLaptop] = useState("");
 
@@ -54,16 +54,6 @@ const OrderRow = (props: OrderRowProps) => {
     }
 
     return anyTrackingNumbers;
-  };
-
-  const formatPrice = () => {
-    if (isNaN(order_price)) {
-      return "$0.00";
-    } else if (order_price.toString().includes(".")) {
-      return "$" + order_price;
-    } else {
-      return "$" + order_price + ".00";
-    }
   };
 
   const getOrderTypeOrName = () => {
@@ -156,18 +146,24 @@ const OrderRow = (props: OrderRowProps) => {
   };
 
   useEffect(() => {
+    setDeployedLaptop("");
+    setReturnedLaptop("");
+    let USDollar = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+
     if (props.items) {
       let total_price = 0;
 
       props.items.forEach((i) => {
         total_price += parseFloat(i.price.toString());
-
         if (i.type === "laptop") {
           setDeployedLaptop(i.name);
         }
       });
 
-      setOrderPrice(total_price);
+      setOrderPrice(USDollar.format(total_price));
 
       if (props.items[0].laptop_name) {
         setReturnedLaptop(props.items[0].laptop_name);
@@ -208,10 +204,16 @@ const OrderRow = (props: OrderRowProps) => {
           <Typography>{props.full_name}</Typography>
         </TableCell>
         <TableCell width="20%">
-          <Typography>{deployed_laptop}</Typography>
+          {deployed_laptop !== "" ? (
+            <Typography>{deployed_laptop}</Typography>
+          ) : returned_laptop !== "" ? (
+            <Typography color="#AEDD6B">{returned_laptop}</Typography>
+          ) : (
+            <Typography></Typography>
+          )}
         </TableCell>
         <TableCell width="15%">
-          <Typography>{formatPrice()}</Typography>
+          <Typography>{order_price}</Typography>
         </TableCell>
         <TableCell width="15%">{getStatus()}</TableCell>
       </TableRow>
