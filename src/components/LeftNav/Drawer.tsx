@@ -65,7 +65,6 @@ interface IconMapping {
   Approvals: JSX.Element;
   Invite: JSX.Element;
   Roadmap: JSX.Element;
-  NewInventory: JSX.Element;
   NewOrders: JSX.Element;
 }
 
@@ -85,7 +84,6 @@ const iconMapping: IconMapping = {
   Approvals: <ApprovalIcon />,
   Invite: <PersonAddIcon />,
   Roadmap: <SignpostIcon />,
-  NewInventory: <WarehouseIcon />,
   NewOrders: <SyncAltIcon />,
 };
 

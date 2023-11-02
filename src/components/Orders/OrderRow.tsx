@@ -157,7 +157,12 @@ const OrderRow = (props: OrderRowProps) => {
       let total_price = 0;
 
       props.items.forEach((i) => {
-        total_price += parseFloat(i.price.toString());
+        if (typeof i.price === "string") {
+          total_price += parseFloat((i.price as string).replace(",", ""));
+        } else {
+          total_price += i.price;
+        }
+
         if (i.type === "laptop") {
           setDeployedLaptop(i.name);
         }

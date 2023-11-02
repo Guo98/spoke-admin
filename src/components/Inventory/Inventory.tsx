@@ -122,6 +122,12 @@ const Inventory: FC = (): ReactElement => {
   }, [clientData]);
 
   useEffect(() => {
+    if (search_serial !== "") {
+      searchFilter("");
+    }
+  }, [tabValue]);
+
+  useEffect(() => {
     if (selectedClientData !== "") {
       fetchData().catch(console.error);
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import {
   Typography,
   Table,
@@ -23,6 +23,13 @@ interface ITProps {
 
 const ItemsTable = (props: ITProps) => {
   const { items } = props;
+
+  let USDollar = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+
+  useEffect(() => {}, [items]);
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -119,7 +126,13 @@ const ItemsTable = (props: ITProps) => {
                     <Typography>{quantity}</Typography>
                   </TableCell>
                   <TableCell width="10%">
-                    <Typography>{formatPrice(price)}</Typography>
+                    <Typography>
+                      {typeof price === "string"
+                        ? USDollar.format(
+                            parseFloat((price as string).replace(",", ""))
+                          )
+                        : USDollar.format(price)}
+                    </Typography>
                   </TableCell>
                   <TableCell width="20%">
                     {item.tracking_number.length > 0 &&

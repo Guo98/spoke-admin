@@ -94,22 +94,6 @@ const AppContainer = createBrowserRouter([
     ),
   },
   {
-    path: "/newinventory",
-    element: (
-      <>
-        <Box
-          component="nav"
-          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
-        >
-          <SpokeDrawer />
-        </Box>
-        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
-          <MainInventory />
-        </Box>
-      </>
-    ),
-  },
-  {
     path: "/marketplace",
     element: (
       <>

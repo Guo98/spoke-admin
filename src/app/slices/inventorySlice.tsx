@@ -7,6 +7,8 @@ import {
 } from "../../interfaces/inventory";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { standardGet } from "../../services/standard";
+
 const initialState: InitialInventoryState = {
   data: { in_stock: [], pending: [], deployed: [], end_of_life: [] },
   pending: [],
@@ -19,6 +21,7 @@ const initialState: InitialInventoryState = {
   filteredDevices: [],
   filteredPage: -1,
   search_text: "",
+  device_ids: [],
 };
 
 const splitInventory = (
@@ -90,9 +93,16 @@ export const inventorySlice = createSlice({
       let deployed: InventorySummary[] = [];
       let offboarding: InventorySummary[] = [];
       let endOfLife: InventorySummary[] = [];
+      state.device_ids = [];
 
       const tempData = action.payload;
       tempData.forEach((device) => {
+        state.device_ids.push({
+          name: device.name,
+          id: device.id,
+          location: device.location,
+          serial_numbers: device.serial_numbers.map((s) => s.sn),
+        });
         if (device.serial_numbers) {
           splitInventory(device, inStock, deployed, offboarding, endOfLife);
         }

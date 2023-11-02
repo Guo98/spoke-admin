@@ -120,7 +120,6 @@ const navMappings: any = {
     "Orders",
     "NewOrders",
     "Inventory",
-    "NewInventory",
     "Storefront",
     "Marketplace",
     "Approvals",

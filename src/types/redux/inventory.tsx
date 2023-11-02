@@ -20,6 +20,12 @@ interface InitialInventoryState {
   filteredDevices: InventorySummary[];
   filteredPage: number;
   search_text: string;
+  device_ids: {
+    name: string;
+    id: string;
+    location: string;
+    serial_numbers: string[];
+  }[];
 }
 
 const UpdateInventoryAction: string = "UpdateInventory";
