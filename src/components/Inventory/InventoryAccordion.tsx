@@ -12,6 +12,7 @@ import {
   Chip,
   useTheme,
   AccordionDetails,
+  Stack,
 } from "@mui/material";
 
 import EndOfLife from "./Tables/EndOfLife";
@@ -115,32 +116,14 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
   return (
     <Accordion defaultExpanded={props.total_devices === 1}>
       <AccordionSummary id={"inventory-accordionsummary-" + index}>
-        <Grid
-          container
-          spacing={{ md: 2 }}
-          justifyItems={{ md: "space-between" }}
-          justifyContent="center"
-          flexGrow={{ md: 1 }}
-          alignItems="center"
-          direction={{ md: "row", xs: "column" }}
-          flexDirection={{ xs: "column", md: "row" }}
-          display={{ md: "flex", xs: "block" }}
-        >
-          <Grid
-            item
-            xs={4}
-            md={2.5}
-            justifyContent="center"
-            alignContent="center"
-          >
-            <CardMedia
-              component="img"
-              sx={{ width: 175 }}
-              image={image_source}
-              alt="laptop"
-            />
-          </Grid>
-          <Grid item xs={4} md={6.5}>
+        <Stack direction="row" spacing={2} sx={{ width: "90%" }}>
+          <CardMedia
+            component="img"
+            sx={{ width: 175 }}
+            image={image_source}
+            alt="laptop"
+          />
+          <Stack spacing={1} width="70%">
             <Typography fontWeight="bold" fontSize="18px">
               {(props.new_device ? "[Requested] " : "") + name}
             </Typography>
@@ -204,14 +187,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 </Typography>
               </div>
             )}
-          </Grid>
-          <Grid
-            item
-            xs={4}
-            md={3}
-            display={{ xs: "flex", md: "block" }}
-            justifyItems={{ xs: "space-evenly" }}
-          >
+          </Stack>
+          <Stack spacing={2} justifyContent="space-evenly" width="12%">
             <Typography>{location}</Typography>
             <Chip
               label={
@@ -239,8 +216,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 marginLeft: { md: "0px", xs: "15px" },
               }}
             />
-          </Grid>
-        </Grid>
+          </Stack>
+        </Stack>
       </AccordionSummary>
       <AccordionDetails
         sx={{

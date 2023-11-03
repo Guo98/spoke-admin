@@ -22,6 +22,7 @@ const initialState: InitialInventoryState = {
   filteredPage: -1,
   search_text: "",
   device_ids: [],
+  current_inventory: [],
 };
 
 const splitInventory = (
@@ -103,6 +104,7 @@ export const inventorySlice = createSlice({
           location: device.location,
           serial_numbers: device.serial_numbers.map((s) => s.sn),
         });
+
         if (device.serial_numbers) {
           splitInventory(device, inStock, deployed, offboarding, endOfLife);
         }

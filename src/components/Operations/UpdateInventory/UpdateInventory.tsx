@@ -116,7 +116,10 @@ const UpdateInventory = (props: UpdateProps) => {
     updated_condition = "",
     updated_warehouse = "",
     updated_date = "",
-    device_id = ""
+    device_id = "",
+    updated_supplier = "",
+    updated_price = "",
+    updated_purchase_date = ""
   ) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
@@ -134,6 +137,9 @@ const UpdateInventory = (props: UpdateProps) => {
       updated_condition,
       updated_warehouse,
       updated_date,
+      updated_supplier,
+      updated_price,
+      updated_purchase_date,
     };
 
     const postResp = await standardPatch(accessToken, "inventory", body);
@@ -467,6 +473,9 @@ const UpdateInventory = (props: UpdateProps) => {
                       date_deployed={device.date_deployed}
                       device_id={device.id}
                       device_name={device.device_name}
+                      supplier={device.supplier}
+                      price={device.price}
+                      purchase_date={device.purchase_date}
                     />
                   );
                 })}
