@@ -79,7 +79,7 @@ const InStock = (props: TableProps) => {
                   </TableSortLabel>
                 </TableCell>
                 <TableCell key="Locatino" width="25%">
-                  <Typography fontWeight="bold">Supplier</Typography>
+                  <Typography fontWeight="bold">Warehouse</Typography>
                 </TableCell>
                 <TableCell key="Action" width="20%">
                   <Typography fontWeight="bold">Action</Typography>
@@ -104,7 +104,7 @@ const InStock = (props: TableProps) => {
                         </Typography>
                       </TableCell>
                       <TableCell width="25%">
-                        <Typography>{item.supplier}</Typography>
+                        <Typography>{item.warehouse}</Typography>
                       </TableCell>
                       <TableCell width="20%">
                         <AssignModal

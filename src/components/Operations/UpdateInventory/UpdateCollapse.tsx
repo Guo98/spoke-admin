@@ -33,6 +33,7 @@ interface UpdateProps {
   price?: string;
   supplier?: string;
   purchase_date?: string;
+  filtered_device_index?: number;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
@@ -99,7 +100,7 @@ const UpdateCollapse = (props: UpdateProps) => {
   };
 
   const handle_delete = async () => {
-    await props.handleDelete(sn, index);
+    await props.handleDelete(sn, index, props.filtered_device_index);
     setOpen(false);
   };
 
@@ -371,7 +372,10 @@ const UpdateCollapse = (props: UpdateProps) => {
                       first_name === updateFN &&
                       last_name === updateLN &&
                       condition === updatedCondition &&
-                      date_deployed === updatedDate
+                      date_deployed === updatedDate &&
+                      props.price === updatedPrice &&
+                      props.purchase_date === updatedPurchaseDate &&
+                      props.supplier === updatedSupplier
                     }
                     fullWidth
                     onClick={submit_changes}
@@ -386,7 +390,10 @@ const UpdateCollapse = (props: UpdateProps) => {
                       first_name === updateFN &&
                       last_name === updateLN &&
                       condition === updatedCondition &&
-                      date_deployed === updatedDate
+                      date_deployed === updatedDate &&
+                      props.price === updatedPrice &&
+                      props.purchase_date === updatedPurchaseDate &&
+                      props.supplier === updatedSupplier
                     }
                     onClick={handleClose}
                     fullWidth

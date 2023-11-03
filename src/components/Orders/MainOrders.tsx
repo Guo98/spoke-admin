@@ -201,7 +201,7 @@ const MainOrders = () => {
         >
           <Stack direction="row" spacing={1}>
             <Typography component="h2" variant="h5" fontWeight="bold">
-              Orders Overview
+              Orders
             </Typography>
             <IconButton onClick={download} id="export-orders-button">
               <FileDownloadIcon />

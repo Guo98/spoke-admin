@@ -170,11 +170,19 @@ const UpdateInventory = (props: UpdateProps) => {
     setLoading(false);
   };
 
-  const handleDeleteRow = async (sn: string, device_index: number) => {
+  const handleDeleteRow = async (
+    sn: string,
+    device_index: number,
+    filtered_index: number = -1
+  ) => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
     const delete_sn = sn === "" ? "none" : sn;
-    const route = `inventory/${client}/${inventory[inventoryIndex].id}/${device_index}/${delete_sn}`;
+    const route = `inventory/${client}/${
+      filtered_inventory !== null
+        ? filtered_inventory[filtered_index].id
+        : inventory[inventoryIndex].id
+    }/${device_index}/${delete_sn}`;
     const deleteResp = await standardDelete(accessToken, route);
 
     if (deleteResp.status === "Successful") {
@@ -458,7 +466,7 @@ const UpdateInventory = (props: UpdateProps) => {
             </TableHead>
             <TableBody>
               {filtered_inventory.length > 0 &&
-                filtered_inventory.map((device: any) => {
+                filtered_inventory.map((device: any, index: number) => {
                   return (
                     <UpdateCollapse
                       sn={device.sn}
@@ -476,6 +484,7 @@ const UpdateInventory = (props: UpdateProps) => {
                       supplier={device.supplier}
                       price={device.price}
                       purchase_date={device.purchase_date}
+                      filtered_device_index={index}
                     />
                   );
                 })}
