@@ -102,9 +102,7 @@ const OperationsManage = (props: OperationsOrder) => {
   }, [items]);
 
   useEffect(() => {
-    if (inventory_ids.length < 1) {
-      getInventory().catch();
-    }
+    getInventory().catch();
   }, [selectedClient]);
 
   useEffect(() => {
