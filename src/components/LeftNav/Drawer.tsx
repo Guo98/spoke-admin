@@ -294,21 +294,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           clientData === "FLYR" ||
           (clientData === "spokeops" && selectedClientData === "FLYR")
         ) {
-          if (
-            entity === "FLYR Poland" ||
-            entity === "FLYR EU" ||
-            (roles?.length > 0 &&
-              (roles[0] === "flyr-eu" || roles[0] === "flyr-poland"))
-          ) {
-            window.open("https://withspoke.com/flyrlabs-eu", "_blank");
-          } else if (
-            entity === "Pribas EU" ||
-            (roles?.length > 0 && roles[0] === "pribas-eu")
-          ) {
-            window.open("https://withspoke.com/pribas", "_blank");
-          } else {
-            window.open("https://withspoke.com/flyrlabs", "_blank");
-          }
+          window.open("https://www.withspoke.com/flyr-ab", "_blank");
         } else if (
           clientData === "Intersect Power" ||
           (clientData === "spokeops" &&

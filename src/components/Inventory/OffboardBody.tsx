@@ -98,7 +98,9 @@ const OffboardBody = (props: OffboardProps) => {
   const [note, setNote] = useState("");
   const [confirmation, setConfirmation] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [selectedDeviceName, setSelectedDeviceName] = useState("");
+  const [selectedDeviceName, setSelectedDeviceName] = useState(
+    device_name || ""
+  );
   const [deviceCondition, setDeviceCondition] = useState("");
   const [otherName, setOtherName] = useState("");
   const [loading, setLoading] = useState(false);
