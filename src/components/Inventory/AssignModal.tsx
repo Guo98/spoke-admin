@@ -68,6 +68,7 @@ interface ValidateAddress {
 const AssignModal = (props: AssignProps) => {
   const { serial_number, device_name, device_location, image_source, type } =
     props;
+
   const [open, setOpen] = useState(
     props.manageOpen !== undefined ? props.manageOpen : false
   );
@@ -90,6 +91,7 @@ const AssignModal = (props: AssignProps) => {
   const [pc, setPC] = useState("");
   const [country, setCountry] = useState("");
   const [prov, setProv] = useState("");
+  const [country_err, setCountryErr] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -103,6 +105,17 @@ const AssignModal = (props: AssignProps) => {
     setShipping("");
     setSD("");
     setError("");
+    setAd1("");
+    setAd2("");
+    setCity("");
+    setPC("");
+    setCountry("");
+    setProv("");
+    setCountryErr("");
+    setFirstname("");
+    setLastname("");
+    setEmail("");
+    setPhonenumber("");
 
     if (type === "general") props.handleParentClose!();
   };
@@ -140,6 +153,22 @@ const AssignModal = (props: AssignProps) => {
     // } else {
     //   setError("Please confirm that the address was entered correctly.");
     // }
+    if (device_location) {
+      const lc_location = device_location.toLowerCase();
+      if (
+        lc_location.includes("usa") ||
+        lc_location.includes("united states") ||
+        lc_location === "us"
+      ) {
+        if (
+          !country.toLowerCase().includes("us") &&
+          !country.toLowerCase().includes("united states")
+        ) {
+          setCountryErr("This device is only deployable within the US.");
+          return;
+        }
+      }
+    }
     const addrObj: any = {
       address_line1: ad1,
       address_line2: ad2,
@@ -150,6 +179,21 @@ const AssignModal = (props: AssignProps) => {
     };
     setAddrObj(addrObj);
     setForm(false);
+  };
+
+  const can_submit = () => {
+    return (
+      firstname === "" ||
+      lastname === "" ||
+      ad1 === "" ||
+      city === "" ||
+      prov === "" ||
+      pc === "" ||
+      country === "" ||
+      phonenumber === "" ||
+      email === "" ||
+      shipping === ""
+    );
   };
 
   return (
@@ -228,7 +272,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-fn"
                   label="First Name"
-                  defaultValue=""
+                  value={firstname}
                   onChange={(event) => setFirstname(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -238,7 +282,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-ln"
                   label="Last Name"
-                  defaultValue=""
+                  value={lastname}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setLastname(event.target.value)}
                   size="small"
@@ -250,7 +294,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-address"
                   label="Address Line 1"
-                  defaultValue={ad1}
+                  value={ad1}
                   fullWidth
                   onChange={(event) => setAd1(event.target.value)}
                   size="small"
@@ -261,7 +305,7 @@ const AssignModal = (props: AssignProps) => {
                 <TextField
                   id="standard-address"
                   label="Address Line 2"
-                  defaultValue={ad2}
+                  value={ad2}
                   fullWidth
                   onChange={(event) => setAd2(event.target.value)}
                   size="small"
@@ -273,7 +317,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-city"
                   label="City"
-                  defaultValue={city}
+                  value={city}
                   onChange={(event) => setCity(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -283,7 +327,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-state"
                   label="State/Province"
-                  defaultValue={prov}
+                  value={prov}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setProv(event.target.value)}
                   size="small"
@@ -295,7 +339,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-postal-code"
                   label="Postal Code"
-                  defaultValue={pc}
+                  value={pc}
                   onChange={(event) => setPC(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -305,11 +349,13 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-country"
                   label="Country"
-                  defaultValue={country}
+                  value={country}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setCountry(event.target.value)}
                   size="small"
                   fullWidth
+                  error={country_err !== ""}
+                  helperText={country_err}
                 />
               </Stack>
               <Stack direction="row" spacing={2}>
@@ -317,7 +363,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-email"
                   label="Email"
-                  defaultValue=""
+                  value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
@@ -327,7 +373,7 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-phonenumber"
                   label="Phone Number"
-                  defaultValue=""
+                  value={phonenumber}
                   sx={rightTextFieldStyle}
                   onChange={(event) => setPhonenumber(event.target.value)}
                   size="small"
@@ -352,8 +398,14 @@ const AssignModal = (props: AssignProps) => {
                     onChange={handleChange}
                     required
                   >
-                    <MenuItem value="Overnight">Overnight</MenuItem>
-                    <MenuItem value="2 Day">2 Day</MenuItem>
+                    {device_location &&
+                    device_location.toLowerCase().includes("us") ? (
+                      ["Overnight", "2 Day"].map((s) => (
+                        <MenuItem value={s}>{s}</MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value="Expedited">Expedited</MenuItem>
+                    )}
                     <MenuItem value="Standard">Standard</MenuItem>
                   </Select>
                 </FormControl>
@@ -378,8 +430,9 @@ const AssignModal = (props: AssignProps) => {
                     borderRadius: "10px",
                   }}
                   onClick={async () => {
-                    await checkAddress();
+                    checkAddress();
                   }}
+                  disabled={can_submit()}
                 >
                   Submit
                 </Button>
