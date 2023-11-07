@@ -29,7 +29,7 @@ interface OrderRowProps extends Order {
 }
 
 const OrderRow = (props: OrderRowProps) => {
-  const { selected_tab } = props;
+  const { selected_tab, client, full_name } = props;
 
   const [open, setOpen] = useState(false);
   const [order_price, setOrderPrice] = useState("");
@@ -54,51 +54,6 @@ const OrderRow = (props: OrderRowProps) => {
     }
 
     return anyTrackingNumbers;
-  };
-
-  const getOrderTypeOrName = () => {
-    if (selected_tab === 0) {
-      for (let item of props.items) {
-        if (item.name.includes("Return")) {
-          return (
-            <Chip
-              label={"Returning"}
-              sx={{
-                width: "125px",
-                backgroundColor: "#FFE3B2",
-                color: "#690C00",
-              }}
-            />
-          );
-        } else if (item.name.includes("Offboard")) {
-          return (
-            <Chip
-              label={"Offboarding"}
-              sx={{
-                width: "125px",
-                backgroundColor: "#FFC28C",
-                color: "#690C00",
-              }}
-            />
-          );
-        } else if (item.type === "laptop") {
-          return (
-            <Chip
-              label={"Deployment"}
-              sx={{
-                width: "125px",
-                backgroundColor: "#E1FFBB",
-                color: "#2B4B02",
-              }}
-            />
-          );
-        }
-      }
-    } else if (selected_tab === 1) {
-      return deployed_laptop;
-    } else if (selected_tab === 2) {
-      return returned_laptop;
-    }
   };
 
   const getStatus = () => {
@@ -291,7 +246,12 @@ const OrderRow = (props: OrderRowProps) => {
                 >
                   Items
                 </Divider>
-                <ItemsTable items={props.items} />
+                <ItemsTable
+                  items={props.items}
+                  recipient_name={full_name}
+                  client={client}
+                  order_no={props.orderNo}
+                />
                 {props.parent_client === "spokeops" && (
                   <Stack direction="row" spacing={1}>
                     <OperationsManage {...props} />

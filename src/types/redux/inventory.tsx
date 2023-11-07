@@ -27,6 +27,7 @@ interface InitialInventoryState {
     serial_numbers: string[];
   }[];
   current_inventory: InventorySummary[];
+  serial_info: any;
 }
 
 const UpdateInventoryAction: string = "UpdateInventory";

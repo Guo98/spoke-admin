@@ -23,6 +23,7 @@ const initialState: InitialInventoryState = {
   search_text: "",
   device_ids: [],
   current_inventory: [],
+  serial_info: {},
 };
 
 const splitInventory = (
@@ -137,6 +138,9 @@ export const inventorySlice = createSlice({
       state.data.in_stock = inStock;
       state.data.end_of_life = endOfLife;
       state.end_of_life = endOfLife;
+    },
+    searchBySerial: (state, action: PayloadAction<any>) => {
+      state.serial_info = action.payload;
     },
     filterInventoryByEntity: (state, action: PayloadAction<string>) => {
       let inStock: InventorySummary[] = [];
@@ -317,6 +321,7 @@ export const {
   setNewInventory,
   filterInventory,
   inventoryFilterByEntity,
+  searchBySerial,
 } = inventorySlice.actions;
 
 export default inventorySlice.reducer;

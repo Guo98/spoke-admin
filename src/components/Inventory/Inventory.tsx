@@ -23,7 +23,7 @@ import {
   filterByBrand,
   resetInventory,
 } from "../../app/slices/inventorySlice";
-import { standardGet } from "../../services/standard";
+import { standardGet, standardPost } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import InventoryAccordion from "./InventoryAccordion";
 import AddModal from "./AddModal";
@@ -45,6 +45,8 @@ function a11yProps(index: number) {
 const Inventory: FC = (): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+
+  // inventory redux
   const data = useSelector((state: RootState) => state.inventory.data);
   const pendingRedux = useSelector(
     (state: RootState) => state.inventory.pending
@@ -58,18 +60,20 @@ const Inventory: FC = (): ReactElement => {
   const eolRedux = useSelector(
     (state: RootState) => state.inventory.end_of_life
   );
+  const brands = useSelector((state: RootState) => state.inventory.brands);
+  const serial_info = useSelector(
+    (state: RootState) => state.inventory.serial_info
+  );
+
+  // client redux
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
   );
-
   const selectedEntity = useSelector(
     (state: RootState) => state.client.selectedEntity
   );
-
   const roles = useSelector((state: RootState) => state.client.roles);
-
-  const brands = useSelector((state: RootState) => state.inventory.brands);
 
   // const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -89,6 +93,8 @@ const Inventory: FC = (): ReactElement => {
   const [filtered, setFiltered] = useState(false);
   const [search_serial, setSearchSerial] = useState("");
   const [chip, setChip] = useState("");
+
+  const [inventory_filter_msg, setInvFilterMsg] = useState("");
 
   const dispatch = useDispatch();
 
@@ -168,6 +174,16 @@ const Inventory: FC = (): ReactElement => {
     FileSaver.saveAs(blob, "inventory.xlsx");
   };
 
+  const missing_mapping = async () => {
+    const access_token = await getAccessTokenSilently();
+
+    const missing_resp = await standardPost(
+      access_token,
+      "missing",
+      serial_info
+    );
+  };
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
@@ -238,12 +254,26 @@ const Inventory: FC = (): ReactElement => {
         inprogVar += p.serial_numbers.length;
       });
       setInprogTotal(inprogVar);
+    } else {
+      if (
+        stock.length === 0 &&
+        deployed.length === 0 &&
+        inprogress.length === 0 &&
+        search_serial !== ""
+      ) {
+        missing_mapping().catch();
+        setInvFilterMsg(
+          "Device has not been mapped yet in the inventory. Will be updated in 24 hours."
+        );
+      }
     }
   }, [filtered]);
 
   useEffect(() => {
     dispatch(filterInventoryByEntity(selectedEntity));
   }, [selectedEntity]);
+
+  useEffect(() => {}, [search_serial]);
 
   const searchFilter = (text: string) => {
     if (text !== "") {
@@ -289,6 +319,7 @@ const Inventory: FC = (): ReactElement => {
       setStock(data.in_stock);
       setDeployed(data.deployed);
       setInprogress(data.pending);
+      setInvFilterMsg("");
     }
   };
 
@@ -317,6 +348,7 @@ const Inventory: FC = (): ReactElement => {
         <Header
           label="Search Inventory by device name, serial number, location, employee name"
           textChange={searchFilter}
+          search_value={search_serial}
         />
         <Stack
           direction="row"
@@ -384,7 +416,9 @@ const Inventory: FC = (): ReactElement => {
                 justifyContent: "center",
               }}
             >
-              {/* <InventorySkeleton /> */}
+              {inventory_filter_msg !== "" && (
+                <Typography>{inventory_filter_msg}</Typography>
+              )}
               <>
                 {deviceTotal > 0 ? (
                   <>

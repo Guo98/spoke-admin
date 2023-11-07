@@ -13,16 +13,24 @@ import {
   Stack,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useDispatch } from "react-redux";
 
 import AppContainer from "../AppContainer/AppContainer";
 import { Item } from "../../interfaces/orders";
 
+import { searchBySerial } from "../../app/slices/inventorySlice";
+
 interface ITProps {
   items: Item[];
+  client: string;
+  recipient_name: string;
+  order_no: number;
 }
 
 const ItemsTable = (props: ITProps) => {
-  const { items } = props;
+  const { items, client, recipient_name, order_no } = props;
+
+  const dispatch = useDispatch();
 
   let USDollar = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -110,11 +118,20 @@ const ItemsTable = (props: ITProps) => {
                   <TableCell width="15%">
                     <Typography>
                       <Link
-                        onClick={() =>
+                        onClick={() => {
+                          dispatch(
+                            searchBySerial({
+                              device_name: name,
+                              serial_no: item.serial_number,
+                              name: recipient_name,
+                              client: client,
+                              order_no: order_no,
+                            })
+                          );
                           AppContainer.navigate(
                             "/inventory?sn=" + item.serial_number
-                          )
-                        }
+                          );
+                        }}
                         aria-label="Go to selected device on inventory tab"
                         color={isDarkTheme ? "primary.contrastText" : "primary"}
                       >

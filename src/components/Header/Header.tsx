@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from "react";
+import React, { useState, ReactElement, useEffect } from "react";
 import {
   Grid,
   InputAdornment,
@@ -18,12 +18,20 @@ interface HeaderProps {
   label: string;
   textChange: Function;
   showAll?: boolean;
+  search_value?: string;
 }
 
 const Header = (props: HeaderProps): ReactElement => {
   const { label, textChange } = props;
-  const [text, setText] = useState("");
-  const [clear, setClear] = useState(false);
+  const [text, setText] = useState(props.search_value || "");
+  const [clear, setClear] = useState(props.search_value ? true : false);
+
+  useEffect(() => {
+    if (props.search_value) {
+      setText(props.search_value);
+      setClear(true);
+    }
+  }, [props.search_value]);
 
   return (
     <>

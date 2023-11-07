@@ -67,6 +67,7 @@ interface ValidateAddress {
 const AssignModal = (props: AssignProps) => {
   const { serial_number, device_name, device_location, image_source, type } =
     props;
+
   const [open, setOpen] = useState(
     props.manageOpen !== undefined ? props.manageOpen : false
   );
@@ -89,6 +90,7 @@ const AssignModal = (props: AssignProps) => {
   const [pc, setPC] = useState("");
   const [country, setCountry] = useState("");
   const [prov, setProv] = useState("");
+  const [country_err, setCountryErr] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -102,6 +104,17 @@ const AssignModal = (props: AssignProps) => {
     setShipping("");
     setSD("");
     setError("");
+    setAd1("");
+    setAd2("");
+    setCity("");
+    setPC("");
+    setCountry("");
+    setProv("");
+    setCountryErr("");
+    setFirstname("");
+    setLastname("");
+    setEmail("");
+    setPhonenumber("");
 
     if (type === "general") props.handleParentClose!();
   };
@@ -139,6 +152,22 @@ const AssignModal = (props: AssignProps) => {
     // } else {
     //   setError("Please confirm that the address was entered correctly.");
     // }
+    if (device_location) {
+      const lc_location = device_location.toLowerCase();
+      if (
+        lc_location.includes("usa") ||
+        lc_location.includes("united states") ||
+        lc_location === "us"
+      ) {
+        if (
+          !country.toLowerCase().includes("us") &&
+          !country.toLowerCase().includes("united states")
+        ) {
+          setCountryErr("This device is only deployable within the US.");
+          return;
+        }
+      }
+    }
     const addrObj: any = {
       address_line1: ad1,
       address_line2: ad2,
@@ -151,7 +180,7 @@ const AssignModal = (props: AssignProps) => {
     setForm(false);
   };
 
-  const disable_button = () => {
+  const can_submit = () => {
     return (
       firstname === "" ||
       lastname === "" ||
@@ -163,15 +192,6 @@ const AssignModal = (props: AssignProps) => {
       phonenumber === "" ||
       email === "" ||
       shipping === ""
-    );
-  };
-
-  const is_in_us = () => {
-    const country_text = country.toLowerCase();
-    return (
-      country_text === "us" ||
-      country_text === "usa" ||
-      country_text === "united states"
     );
   };
 
@@ -256,8 +276,8 @@ const AssignModal = (props: AssignProps) => {
                   required
                   id="standard-fn"
                   label="First Name"
-                  onChange={(event) => setFirstname(event.target.value)}
                   value={firstname}
+                  onChange={(event) => setFirstname(event.target.value)}
                   size="small"
                   sx={textFieldStyle}
                   fullWidth
@@ -338,6 +358,8 @@ const AssignModal = (props: AssignProps) => {
                   onChange={(event) => setCountry(event.target.value)}
                   size="small"
                   fullWidth
+                  error={country_err !== ""}
+                  helperText={country_err}
                 />
               </Stack>
               <Stack direction="row" spacing={2}>
@@ -380,14 +402,15 @@ const AssignModal = (props: AssignProps) => {
                     onChange={handleChange}
                     required
                   >
-                    {is_in_us() && (
-                      <MenuItem value="Overnight">Overnight</MenuItem>
-                    )}
-                    {is_in_us() && <MenuItem value="2 Day">2 Day</MenuItem>}
-                    <MenuItem value="Standard">Standard</MenuItem>
-                    {!is_in_us() && (
+                    {device_location &&
+                    device_location.toLowerCase().includes("us") ? (
+                      ["Overnight", "2 Day"].map((s) => (
+                        <MenuItem value={s}>{s}</MenuItem>
+                      ))
+                    ) : (
                       <MenuItem value="Expedited">Expedited</MenuItem>
                     )}
+                    <MenuItem value="Standard">Standard</MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -411,9 +434,9 @@ const AssignModal = (props: AssignProps) => {
                     borderRadius: "10px",
                   }}
                   onClick={async () => {
-                    await checkAddress();
+                    checkAddress();
                   }}
-                  disabled={disable_button()}
+                  disabled={can_submit()}
                 >
                   Submit
                 </Button>
