@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Table,
@@ -32,13 +32,59 @@ const InStock = (props: TableProps) => {
     searched_serial,
   } = props;
 
-  const [orderBy, setOrderBy] = useState("");
+  const [orderBy, setOrderBy] = useState("Serial Number");
   const [order, setOrder] = useState<Order>("asc");
+  const [sorted_serials, setSorted] = useState(serial_numbers);
+
+  useEffect(() => {
+    if (serial_numbers.length > 0) {
+      setSorted(
+        [...serial_numbers].sort((a, b) =>
+          a.sn < b.sn ? 1 : b.sn < a.sn ? -1 : 0
+        )
+      );
+    }
+  }, [serial_numbers]);
 
   const sortHandler = (cell: string) => (event: React.MouseEvent<unknown>) => {
     const isAsc = orderBy === cell && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(cell);
+
+    let devices = [...serial_numbers];
+    if (cell === "Serial Number") {
+      if (!isAsc) {
+        setSorted(
+          devices.sort((a, b) => (a.sn > b.sn ? 1 : b.sn > a.sn ? -1 : 0))
+        );
+      } else {
+        setSorted(
+          devices.sort((a, b) => (a.sn < b.sn ? 1 : b.sn < a.sn ? -1 : 0))
+        );
+      }
+    } else if (cell === "Condition") {
+      if (!isAsc) {
+        setSorted(
+          devices.sort((a, b) =>
+            a.condition! > b.condition!
+              ? 1
+              : b.condition! > a.condition!
+              ? -1
+              : 0
+          )
+        );
+      } else {
+        setSorted(
+          devices.sort((a, b) =>
+            a.condition! < b.condition!
+              ? 1
+              : b.condition! < a.condition!
+              ? -1
+              : 0
+          )
+        );
+      }
+    }
   };
 
   return (
@@ -74,20 +120,10 @@ const InStock = (props: TableProps) => {
                     <Typography fontWeight="bold">Condition</Typography>
                   </TableSortLabel>
                 </TableCell>
-                <TableCell
-                  key="Grade"
-                  width="20%"
-                  sortDirection={orderBy === "Grade" ? order : false}
-                >
-                  <TableSortLabel
-                    active={orderBy === "Grade"}
-                    onClick={sortHandler("Grade")}
-                    direction={orderBy === "Grade" ? order : "asc"}
-                  >
-                    <Typography fontWeight="bold">Grade</Typography>
-                  </TableSortLabel>
+                <TableCell key="Grade" width="20%">
+                  <Typography fontWeight="bold">Grade</Typography>
                 </TableCell>
-                <TableCell key="Locatino" width="25%">
+                <TableCell key="Warehouse" width="25%">
                   <Typography fontWeight="bold">Warehouse</Typography>
                 </TableCell>
                 <TableCell key="Action" width="20%">
@@ -96,8 +132,8 @@ const InStock = (props: TableProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {serial_numbers.length > 0 &&
-                tableSort().map((item: any, index: number) => {
+              {sorted_serials.length > 0 &&
+                sorted_serials.map((item: any, index: number) => {
                   const { sn, condition } = item;
                   return (
                     <TableRow key={index}>
