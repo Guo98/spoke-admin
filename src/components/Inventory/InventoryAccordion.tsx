@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import MuiAccordionSummary, {
   AccordionSummaryProps,
@@ -115,6 +115,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
 
     return devices;
   };
+
+  useEffect(() => {}, [props.total_devices]);
 
   return (
     <Accordion defaultExpanded={props.total_devices === 1}>

@@ -166,6 +166,28 @@ const AssignModal = (props: AssignProps) => {
           setCountryErr("This device is only deployable within the US.");
           return;
         }
+      } else if (
+        lc_location === "uk" ||
+        lc_location.includes("united kingdom") ||
+        lc_location.includes("uk")
+      ) {
+        if (
+          !country.toLowerCase().includes("uk") &&
+          !country.toLowerCase().includes("united kingdom")
+        ) {
+          setCountryErr("This device is only deployable within the UK.");
+          return;
+        }
+      } else {
+        if (
+          country.toLowerCase().includes("uk") ||
+          country.toLowerCase().includes("united kingdom") ||
+          country.toLowerCase().includes("us") ||
+          country.toLowerCase().includes("united states")
+        ) {
+          setCountryErr("This device is not deployable to this region.");
+          return;
+        }
       }
     }
     const addrObj: any = {

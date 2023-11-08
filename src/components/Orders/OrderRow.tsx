@@ -135,7 +135,7 @@ const OrderRow = (props: OrderRowProps) => {
       }
     }
     setOpen(false);
-  }, [props.full_name]);
+  }, [props.full_name, props.items]);
 
   return props.items ? (
     <>

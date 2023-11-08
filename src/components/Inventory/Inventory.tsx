@@ -277,6 +277,7 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {}, [search_serial]);
 
   const searchFilter = (text: string) => {
+    setLoading(true);
     if (text !== "") {
       let searchStock = searchFilterFunction(
         [...data.in_stock],
@@ -322,6 +323,7 @@ const Inventory: FC = (): ReactElement => {
       setInprogress(data.pending);
       setInvFilterMsg("");
     }
+    setLoading(false);
   };
 
   const searchFilterFunction = (objs: InventorySummary[], text: string) => {
@@ -394,148 +396,213 @@ const Inventory: FC = (): ReactElement => {
             ))}
           </Stack>
         )}
-        <Box>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              aria-label="inventory tabs"
-            >
-              <Tab label="In Stock" {...a11yProps(0)} />
-              <Tab label="Deployed" {...a11yProps(1)} />
-              <Tab label="Pending" {...a11yProps(2)} />
-              <Tab label="End of Life" {...a11yProps(3)} />
-            </Tabs>
-          </Box>
-          {loading && <LinearLoading />}
-          <TabPanel value={tabValue} index={0} prefix="inv">
-            <Box
-              sx={{
-                display: loading ? "flex" : "block",
-                flexWrap: "wrap",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              {inventory_filter_msg !== "" && (
-                <Typography>{inventory_filter_msg}</Typography>
-              )}
-              <>
-                {deviceTotal > 0 ? (
-                  <>
-                    {stock?.length > 0 &&
-                      stock.map((device, index) => {
-                        if (
-                          device.serial_numbers.length > 0 ||
-                          !device.hide_out_of_stock
-                        )
+        {loading && <LinearLoading />}
+        {!loading && (
+          <Box>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                aria-label="inventory tabs"
+              >
+                <Tab label="In Stock" {...a11yProps(0)} />
+                <Tab label="Deployed" {...a11yProps(1)} />
+                <Tab label="Pending" {...a11yProps(2)} />
+                <Tab label="End of Life" {...a11yProps(3)} />
+              </Tabs>
+            </Box>
+            <TabPanel value={tabValue} index={0} prefix="inv">
+              <Box
+                sx={{
+                  display: loading ? "flex" : "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                {inventory_filter_msg !== "" && (
+                  <Typography>{inventory_filter_msg}</Typography>
+                )}
+                <>
+                  {deviceTotal > 0 ? (
+                    <>
+                      {stock?.length > 0 &&
+                        stock.map((device, index) => {
+                          if (
+                            device.serial_numbers.length > 0 ||
+                            !device.hide_out_of_stock
+                          )
+                            return (
+                              !device.new_device && (
+                                <InventoryAccordion
+                                  {...device}
+                                  tabValue={tabValue}
+                                  key={index}
+                                  index={index}
+                                  total_devices={stock.length}
+                                  search_serial_number={search_serial}
+                                  refresh={fetchData}
+                                  client={client}
+                                />
+                              )
+                            );
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      <Typography textAlign="center">
+                        No Inventory Currently In Stock
+                      </Typography>
+                    </>
+                  )}
+                  {stockTotal === 0 && filtered && (
+                    <Typography textAlign="center">No results found</Typography>
+                  )}
+                </>
+              </Box>
+            </TabPanel>
+            <TabPanel value={tabValue} index={1} prefix="inv">
+              <Box
+                sx={{
+                  display: "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                <>
+                  {deployedTotal > 0 ? (
+                    <>
+                      {deployed?.length > 0 &&
+                        deployed.map((device, index) => {
                           return (
-                            !device.new_device && (
+                            device.serial_numbers.length > 0 && (
                               <InventoryAccordion
                                 {...device}
                                 tabValue={tabValue}
                                 key={index}
                                 index={index}
-                                total_devices={stock.length}
+                                total_devices={deployed.length}
                                 search_serial_number={search_serial}
                                 refresh={fetchData}
                                 client={client}
                               />
                             )
                           );
-                      })}
-                  </>
-                ) : (
-                  <>
-                    <Typography textAlign="center">
-                      No Inventory Currently In Stock
-                    </Typography>
-                  </>
-                )}
-                {stockTotal === 0 && filtered && (
-                  <Typography textAlign="center">No results found</Typography>
-                )}
-              </>
-            </Box>
-          </TabPanel>
-          <TabPanel value={tabValue} index={1} prefix="inv">
-            <Box
-              sx={{
-                display: "block",
-                flexWrap: "wrap",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      {!filtered ? (
+                        <>
+                          <img
+                            src={
+                              "https://spokeimages.blob.core.windows.net/image/warehouse.avif"
+                            }
+                            style={{
+                              display: "block",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          />
+                          <div>
+                            <Typography
+                              textAlign="center"
+                              sx={{ paddingTop: "20px" }}
+                              variant="subtitle1"
+                            >
+                              No Inventory Currently Deployed
+                            </Typography>
+                          </div>
+                        </>
+                      ) : (
+                        <Typography textAlign="center">
+                          No results found
+                        </Typography>
+                      )}
+                    </>
+                  )}
+                </>
+              </Box>
+            </TabPanel>
+            <TabPanel value={tabValue} index={2} prefix="inv">
+              <Box
+                sx={{
+                  display: "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                <>
+                  {inprogTotal > 0 ? (
+                    <>
+                      {inprogress?.length > 0 &&
+                        inprogress.map((device, index) => {
+                          return (
+                            device.serial_numbers.length > 0 && (
+                              <InventoryAccordion
+                                {...device}
+                                tabValue={tabValue}
+                                key={index}
+                                clientData={clientData}
+                                index={index}
+                                total_devices={inprogress.length}
+                                search_serial_number={search_serial}
+                                refresh={fetchData}
+                                client={client}
+                              />
+                            )
+                          );
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      {!filtered ? (
+                        <>
+                          <img
+                            src={
+                              "https://spokeimages.blob.core.windows.net/image/warehousestock.png"
+                            }
+                            style={{
+                              display: "block",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          />
+                          <div>
+                            <Typography
+                              textAlign="center"
+                              sx={{ paddingTop: "20px" }}
+                              variant="subtitle1"
+                            >
+                              No Inventory Currently Pending
+                            </Typography>
+                          </div>
+                        </>
+                      ) : (
+                        <Typography textAlign="center">
+                          No results found
+                        </Typography>
+                      )}
+                    </>
+                  )}
+                </>
+              </Box>
+            </TabPanel>
+            <TabPanel value={tabValue} index={3} prefix="inv">
               <>
-                {deployedTotal > 0 ? (
-                  <>
-                    {deployed?.length > 0 &&
-                      deployed.map((device, index) => {
-                        return (
-                          device.serial_numbers.length > 0 && (
-                            <InventoryAccordion
-                              {...device}
-                              tabValue={tabValue}
-                              key={index}
-                              index={index}
-                              total_devices={deployed.length}
-                              search_serial_number={search_serial}
-                              refresh={fetchData}
-                              client={client}
-                            />
-                          )
-                        );
-                      })}
-                  </>
-                ) : (
-                  <>
-                    {!filtered ? (
-                      <>
-                        <img
-                          src={
-                            "https://spokeimages.blob.core.windows.net/image/warehouse.avif"
-                          }
-                          style={{
-                            display: "block",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                          }}
-                        />
-                        <div>
-                          <Typography
-                            textAlign="center"
-                            sx={{ paddingTop: "20px" }}
-                            variant="subtitle1"
-                          >
-                            No Inventory Currently Deployed
-                          </Typography>
-                        </div>
-                      </>
-                    ) : (
-                      <Typography textAlign="center">
-                        No results found
-                      </Typography>
-                    )}
-                  </>
-                )}
-              </>
-            </Box>
-          </TabPanel>
-          <TabPanel value={tabValue} index={2} prefix="inv">
-            <Box
-              sx={{
-                display: "block",
-                flexWrap: "wrap",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              <>
-                {inprogTotal > 0 ? (
-                  <>
-                    {inprogress?.length > 0 &&
-                      inprogress.map((device, index) => {
+                {eolTotal > 0 ? (
+                  <Box
+                    sx={{
+                      display: "block",
+                      flexWrap: "wrap",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {endoflife.length > 0 &&
+                      endoflife.map((device, index) => {
                         return (
                           device.serial_numbers.length > 0 && (
                             <InventoryAccordion
@@ -552,79 +619,15 @@ const Inventory: FC = (): ReactElement => {
                           )
                         );
                       })}
-                  </>
+                  </Box>
                 ) : (
-                  <>
-                    {!filtered ? (
-                      <>
-                        <img
-                          src={
-                            "https://spokeimages.blob.core.windows.net/image/warehousestock.png"
-                          }
-                          style={{
-                            display: "block",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                          }}
-                        />
-                        <div>
-                          <Typography
-                            textAlign="center"
-                            sx={{ paddingTop: "20px" }}
-                            variant="subtitle1"
-                          >
-                            No Inventory Currently Pending
-                          </Typography>
-                        </div>
-                      </>
-                    ) : (
-                      <Typography textAlign="center">
-                        No results found
-                      </Typography>
-                    )}
-                  </>
+                  <Typography textAlign="center">
+                    No devices near end of service
+                  </Typography>
                 )}
               </>
-            </Box>
-          </TabPanel>
-          <TabPanel value={tabValue} index={3} prefix="inv">
-            <>
-              {eolTotal > 0 ? (
-                <Box
-                  sx={{
-                    display: "block",
-                    flexWrap: "wrap",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  {endoflife.length > 0 &&
-                    endoflife.map((device, index) => {
-                      return (
-                        device.serial_numbers.length > 0 && (
-                          <InventoryAccordion
-                            {...device}
-                            tabValue={tabValue}
-                            key={index}
-                            clientData={clientData}
-                            index={index}
-                            total_devices={inprogress.length}
-                            search_serial_number={search_serial}
-                            refresh={fetchData}
-                            client={client}
-                          />
-                        )
-                      );
-                    })}
-                </Box>
-              ) : (
-                <Typography textAlign="center">
-                  No devices near end of service
-                </Typography>
-              )}
-            </>
-          </TabPanel>
-          {/* {marketClient !== "Automox" &&
+            </TabPanel>
+            {/* {marketClient !== "Automox" &&
             marketClient !== "Alma" &&
             marketClient !== "Flo Health" &&
             marketClient !== "Hidden Road" &&
@@ -646,7 +649,8 @@ const Inventory: FC = (): ReactElement => {
                 />
               </>
             )} */}
-        </Box>
+          </Box>
+        )}
       </Box>
     </>
   );
