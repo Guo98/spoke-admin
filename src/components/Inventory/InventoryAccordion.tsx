@@ -54,6 +54,7 @@ interface InventoryAccordionProps extends InventorySummary {
   total_devices: number;
   search_serial_number: string;
   refresh: Function;
+  client: string;
 }
 
 const InventoryAccordion = (props: InventoryAccordionProps) => {
@@ -67,6 +68,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     index,
     id,
     refresh,
+    search_serial_number,
+    client,
   } = props;
 
   const [orderBy, setOrderBy] = useState("");
@@ -234,17 +237,18 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
             location={location}
             id={id}
             image_source={image_source}
+            searched_serial={search_serial_number}
           />
         )}
         {tabValue === 1 && (
           <Deployed
-            tableSort={tableSort}
             serial_numbers={serial_numbers}
             name={name}
             location={location}
             id={id}
             image_source={image_source}
-            client={""}
+            client={client}
+            searched_serial={search_serial_number}
           />
         )}
         {tabValue === 2 && (

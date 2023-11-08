@@ -379,17 +379,18 @@ const InventorySummary = (props: ISProps) => {
             location={location}
             id={id}
             image_source={image_source}
+            searched_serial=""
           />
         </TabPanel>
         <TabPanel value={tab_value} index={1} prefix="inv">
           <Deployed
-            tableSort={tableSort}
             serial_numbers={deployed}
             name={name}
             location={location}
             id={id}
             image_source={image_source}
             client={client}
+            searched_serial=""
           />
         </TabPanel>
         <TabPanel value={tab_value} index={2} prefix="inv">

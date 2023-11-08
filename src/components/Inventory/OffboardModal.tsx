@@ -13,6 +13,7 @@ import {
   Divider,
   Autocomplete,
   TextField as TF,
+  Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -186,12 +187,23 @@ const OffboardModal = (props: OffboardProps) => {
       </Button>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          {!loading && success === -1 && (
+          {!loading && (
             <>
               <Typography variant="h6" pb={2}>
                 Return a Device
               </Typography>
               <Stack spacing={1}>
+                {success === 0 && (
+                  <Alert severity="success">
+                    Offboard successfully requested!
+                  </Alert>
+                )}
+                {success === 1 && (
+                  <Alert severity="error">
+                    Error in requesting offboard. Please reach out to the Spoke
+                    team for support.
+                  </Alert>
+                )}
                 <Divider textAlign="left">Device Info</Divider>
                 <FormControl
                   fullWidth

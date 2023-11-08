@@ -77,6 +77,9 @@ const Inventory: FC = (): ReactElement => {
 
   // const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+  const [client, setClient] = useState(
+    clientData === "spokeops" ? selectedClientData : clientData
+  );
 
   const [stock, setStock] = useState(data.in_stock);
   const [deployed, setDeployed] = useState(data.deployed);
@@ -100,12 +103,9 @@ const Inventory: FC = (): ReactElement => {
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const marketClient =
-    clientData === "spokeops" ? selectedClientData : clientData;
-
   const fetchData = async () => {
     setLoading(true);
-    let client = clientData === "spokeops" ? selectedClientData : clientData;
+
     const accessToken = await getAccessTokenSilently();
 
     let route = `inventory/${client}`;
@@ -126,7 +126,7 @@ const Inventory: FC = (): ReactElement => {
     if (!loading) {
       fetchData().catch(console.error);
     }
-  }, [clientData]);
+  }, [client]);
 
   useEffect(() => {
     if (search_serial !== "") {
@@ -136,7 +136,8 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     if (selectedClientData !== "") {
-      fetchData().catch(console.error);
+      setClient(selectedClientData);
+      // fetchData().catch(console.error);
     }
   }, [selectedClientData]);
 
@@ -438,6 +439,7 @@ const Inventory: FC = (): ReactElement => {
                                 total_devices={stock.length}
                                 search_serial_number={search_serial}
                                 refresh={fetchData}
+                                client={client}
                               />
                             )
                           );
@@ -480,6 +482,7 @@ const Inventory: FC = (): ReactElement => {
                               total_devices={deployed.length}
                               search_serial_number={search_serial}
                               refresh={fetchData}
+                              client={client}
                             />
                           )
                         );
@@ -544,6 +547,7 @@ const Inventory: FC = (): ReactElement => {
                               total_devices={inprogress.length}
                               search_serial_number={search_serial}
                               refresh={fetchData}
+                              client={client}
                             />
                           )
                         );
@@ -607,6 +611,7 @@ const Inventory: FC = (): ReactElement => {
                             total_devices={inprogress.length}
                             search_serial_number={search_serial}
                             refresh={fetchData}
+                            client={client}
                           />
                         )
                       );

@@ -127,6 +127,11 @@ const OrderRow = (props: OrderRowProps) => {
 
       if (props.items[0].laptop_name) {
         setReturnedLaptop(props.items[0].laptop_name);
+      } else if (
+        props.items[0].name === "Offboarding" ||
+        props.items[0].name === "Returning"
+      ) {
+        setReturnedLaptop(props.items[0].name);
       }
     }
     setOpen(false);
@@ -167,7 +172,16 @@ const OrderRow = (props: OrderRowProps) => {
           {deployed_laptop !== "" ? (
             <Typography>{deployed_laptop}</Typography>
           ) : returned_laptop !== "" ? (
-            <Typography color="#AEDD6B">{returned_laptop}</Typography>
+            <Typography
+              color={
+                returned_laptop !== "Offboarding" &&
+                returned_laptop !== "Returning"
+                  ? "#AEDD6B"
+                  : ""
+              }
+            >
+              {returned_laptop}
+            </Typography>
           ) : (
             <Typography></Typography>
           )}

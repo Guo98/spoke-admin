@@ -18,10 +18,19 @@ type Order = "asc" | "desc";
 
 interface TableProps extends InventorySummary {
   tableSort: Function;
+  searched_serial: string;
 }
 
 const InStock = (props: TableProps) => {
-  const { serial_numbers, tableSort, name, location, image_source, id } = props;
+  const {
+    serial_numbers,
+    tableSort,
+    name,
+    location,
+    image_source,
+    id,
+    searched_serial,
+  } = props;
 
   const [orderBy, setOrderBy] = useState("");
   const [order, setOrder] = useState<Order>("asc");
@@ -93,7 +102,15 @@ const InStock = (props: TableProps) => {
                   return (
                     <TableRow key={index}>
                       <TableCell width="35%">
-                        <Typography>{sn}</Typography>
+                        <Typography
+                          color={
+                            searched_serial !== "" && searched_serial === sn
+                              ? "#AEDD6B"
+                              : ""
+                          }
+                        >
+                          {sn}
+                        </Typography>
                       </TableCell>
                       <TableCell width="20%">
                         <Typography>{condition}</Typography>
