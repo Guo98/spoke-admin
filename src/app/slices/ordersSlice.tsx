@@ -1,5 +1,5 @@
 import { UpdateOrdersAction } from "../../types/redux/orders";
-import { OrdersSummary } from "../../interfaces/orders";
+import { OrdersSummary, Order } from "../../interfaces/orders";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: {
@@ -8,12 +8,16 @@ const initialState: {
   entity: string;
   hasEntity: boolean;
   dateFilter: string;
+  orders_data: OrdersSummary;
+  filtered: boolean;
 } = {
   data: {},
   originalData: {},
   entity: "",
   hasEntity: false,
   dateFilter: "30",
+  orders_data: {},
+  filtered: false,
 };
 
 export const ordersSlice = createSlice({
@@ -23,6 +27,7 @@ export const ordersSlice = createSlice({
     setOrders: (state, action: PayloadAction<OrdersSummary>) => {
       // state.data = action.payload;
       state.originalData = action.payload;
+      state.orders_data = action.payload;
       let date = new Date(new Date().setDate(new Date().getDate() - 30));
       let completed = [] as any[];
       let in_progress = [...(action.payload.in_progress as any[])];
@@ -134,9 +139,102 @@ export const ordersSlice = createSlice({
         state.data = state.originalData;
       }
     },
+    filterType: (state, action: PayloadAction<string>) => {
+      const search_type = action.payload;
+
+      let in_prog_filter = [] as Order[];
+      let completed_filter = [] as Order[];
+      if (
+        state.originalData.in_progress &&
+        state.originalData.in_progress.length > 0
+      ) {
+        if (search_type === "Deployments") {
+          in_prog_filter = state.originalData.in_progress.filter(
+            (o) => o.items.filter((i) => i.type === "laptop").length > 0
+          );
+        } else if (search_type === "Returns") {
+          in_prog_filter = state.originalData.in_progress.filter(
+            (o) =>
+              o.items.filter(
+                (i) => i.name === "Offboarding" || i.name === "Returning"
+              ).length > 0
+          );
+        }
+      }
+
+      if (
+        state.originalData.completed &&
+        state.originalData.completed.length > 0
+      ) {
+        if (search_type === "Deployments") {
+          completed_filter = state.originalData.completed.filter(
+            (o) => o.items.filter((i) => i.type === "laptop").length > 0
+          );
+        } else if (search_type === "Returns") {
+          completed_filter = state.originalData.completed.filter(
+            (o) =>
+              o.items.filter(
+                (i) => i.name === "Offboarding" || i.name === "Returning"
+              ).length > 0
+          );
+        }
+      }
+
+      state.orders_data.in_progress = in_prog_filter;
+      state.orders_data.completed = completed_filter;
+    },
+    filterOrders: (state, action: PayloadAction<string>) => {
+      const search_term = action.payload.toLowerCase();
+
+      let in_prog_filter = [] as Order[];
+      let completed_filter = [] as Order[];
+
+      if (
+        state.originalData.in_progress &&
+        state.originalData.in_progress.length > 0
+      ) {
+        in_prog_filter = state.originalData.in_progress.filter(
+          (i) =>
+            i.orderNo.toString().includes(search_term) ||
+            i.full_name.toLowerCase().includes(search_term) ||
+            i.address?.formatted?.toLowerCase().includes(search_term) ||
+            i.items.filter((item) =>
+              item.name.toLowerCase().includes(search_term)
+            ).length > 0
+        );
+      }
+
+      if (
+        state.originalData.completed &&
+        state.originalData.completed.length > 0
+      ) {
+        completed_filter = state.originalData.completed.filter(
+          (i) =>
+            i.orderNo.toString().includes(search_term) ||
+            i.full_name.toLowerCase().includes(search_term) ||
+            i.address?.formatted?.toLowerCase().includes(search_term) ||
+            i.items.filter((item) =>
+              item.name.toLowerCase().includes(search_term)
+            ).length > 0
+        );
+      }
+
+      state.orders_data.in_progress = in_prog_filter;
+      state.orders_data.completed = completed_filter;
+    },
+    resetOrders: (state) => {
+      state.orders_data = state.originalData;
+    },
   },
 });
 
-export const { setOrders, filterEntity, filterDate } = ordersSlice.actions;
+export const {
+  setOrders,
+  filterEntity,
+  filterDate,
+  filterType,
+  resetOrders,
+  filterOrders,
+} = ordersSlice.actions;
 
 export default ordersSlice.reducer;

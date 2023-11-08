@@ -10,12 +10,10 @@ import {
   FormControl,
   Select,
   SelectChangeEvent,
-  Grid,
   Stack,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import DeployModalContent from "./DeployModal";
-import { validateAddress } from "../../services/address";
 import { InventorySummary } from "../../interfaces/inventory";
 import {
   deviceLocationMappings,
@@ -54,6 +52,7 @@ interface AssignProps {
   handleParentClose?: Function;
   disabled: boolean;
   id?: string;
+  warehouse?: string;
 }
 
 interface ValidateAddress {
@@ -167,6 +166,28 @@ const AssignModal = (props: AssignProps) => {
           setCountryErr("This device is only deployable within the US.");
           return;
         }
+      } else if (
+        lc_location === "uk" ||
+        lc_location.includes("united kingdom") ||
+        lc_location.includes("uk")
+      ) {
+        if (
+          !country.toLowerCase().includes("uk") &&
+          !country.toLowerCase().includes("united kingdom")
+        ) {
+          setCountryErr("This device is only deployable within the UK.");
+          return;
+        }
+      } else {
+        if (
+          country.toLowerCase().includes("uk") ||
+          country.toLowerCase().includes("united kingdom") ||
+          country.toLowerCase().includes("us") ||
+          country.toLowerCase().includes("united states")
+        ) {
+          setCountryErr("This device is not deployable to this region.");
+          return;
+        }
       }
     }
     const addrObj: any = {
@@ -197,7 +218,7 @@ const AssignModal = (props: AssignProps) => {
   };
 
   return (
-    <div>
+    <>
       {type !== "general" && (
         <Button
           variant="contained"
@@ -228,7 +249,7 @@ const AssignModal = (props: AssignProps) => {
               New Deployment
             </Typography>
             <Stack spacing={2}>
-              {type === "general" && (
+              {(type === "general" || type === "main") && (
                 <div>
                   <FormControl
                     fullWidth
@@ -246,16 +267,21 @@ const AssignModal = (props: AssignProps) => {
                       onChange={handleDeviceChange}
                       value={selectedDevice}
                       required
+                      fullWidth
                     >
                       {props.devices!.length > 0 &&
                         props.devices?.map((dev, index) => {
                           if (dev.serial_numbers.length > 0) {
                             return (
                               <MenuItem value={index}>
-                                {dev.name + ","}
+                                <Typography display="inline" component="span">
+                                  {dev.name + ","}
+                                </Typography>
                                 <Typography
                                   fontStyle="italic"
                                   sx={{ paddingLeft: "5px" }}
+                                  display="inline"
+                                  component="span"
                                 >
                                   {dev.location}
                                 </Typography>
@@ -414,7 +440,7 @@ const AssignModal = (props: AssignProps) => {
                 <TextField
                   id="standard-note"
                   label="Note"
-                  defaultValue=""
+                  value={note}
                   fullWidth
                   sx={textFieldStyle}
                   size="small"
@@ -474,10 +500,11 @@ const AssignModal = (props: AssignProps) => {
                 ? props.devices![parseInt(selectedDevice)]?.id
                 : props.id
             }
+            warehouse={props.warehouse}
           />
         )}
       </Modal>
-    </div>
+    </>
   );
 };
 

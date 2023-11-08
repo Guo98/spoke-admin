@@ -14,6 +14,8 @@ export interface Order {
     country: string;
     subdivision: string;
     formatted: string;
+    addressLine?: string;
+    postalCode?: string;
   };
   email: string;
   phone: string;
@@ -25,6 +27,7 @@ export interface Order {
   shipping_status: string;
   id: string;
   entity?: string;
+  type?: string;
 }
 
 export interface Item {
@@ -40,6 +43,7 @@ export interface Item {
   date_shipped?: string;
   delivery_status?: string;
   laptop_name?: string;
+  spoke_fee?: number;
 }
 
 interface Variant {

@@ -13,6 +13,7 @@ import {
   FormControl,
   FormLabel,
   Typography,
+  Divider,
 } from "@mui/material";
 import DateInput from "../../common/DateInput";
 
@@ -27,6 +28,12 @@ interface UpdateProps {
   submitChanges: Function;
   handleDelete: Function;
   date_deployed?: string;
+  device_name?: string;
+  device_id?: string;
+  price?: string;
+  supplier?: string;
+  purchase_date?: string;
+  filtered_device_index?: number;
 }
 
 const UpdateCollapse = (props: UpdateProps) => {
@@ -41,6 +48,7 @@ const UpdateCollapse = (props: UpdateProps) => {
     warehouse,
     date_deployed,
   } = props;
+
   const [open, setOpen] = useState(false);
   const [updateSN, setSN] = useState(sn);
   const [updateStatus, setStatus] = useState(status);
@@ -50,6 +58,11 @@ const UpdateCollapse = (props: UpdateProps) => {
   const [updatedCondition, setCondition] = useState(condition);
   const [updatedWarehouse, setWarehouse] = useState(warehouse ? warehouse : "");
   const [updatedDate, setDate] = useState(date_deployed || "");
+  const [updatedSupplier, setSupplier] = useState(props.supplier || "");
+  const [updatedPrice, setPrice] = useState(props.price || "");
+  const [updatedPurchaseDate, setPurchaseDate] = useState(
+    props.purchase_date || ""
+  );
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStatus((event.target as HTMLInputElement).value);
@@ -78,12 +91,16 @@ const UpdateCollapse = (props: UpdateProps) => {
       grade,
       updatedCondition !== condition ? updatedCondition : "",
       updatedWarehouse !== warehouse ? updatedWarehouse : "",
-      updatedDate !== date_deployed ? updatedDate : ""
+      updatedDate !== date_deployed ? updatedDate : "",
+      props.device_id ? props.device_id : "",
+      updatedSupplier !== props.supplier ? updatedSupplier : "",
+      updatedPrice !== props.price ? updatedPrice : "",
+      updatedPurchaseDate !== props.purchase_date ? updatedPurchaseDate : ""
     );
   };
 
   const handle_delete = async () => {
-    await props.handleDelete(sn, index);
+    await props.handleDelete(sn, index, props.filtered_device_index);
     setOpen(false);
   };
 
@@ -95,6 +112,9 @@ const UpdateCollapse = (props: UpdateProps) => {
     setGrade("");
     setCondition(condition);
     setDate(date_deployed || "");
+    setSupplier(props.supplier || "");
+    setPrice(props.price || "");
+    setPurchaseDate(props.purchase_date || "");
   };
 
   return (
@@ -122,8 +142,28 @@ const UpdateCollapse = (props: UpdateProps) => {
       <TableRow>
         <TableCell colSpan={8} sx={{ paddingTop: 0, paddingBottom: 0 }}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ marginY: 1 }}>
+            <Box sx={{ my: 2 }}>
               <Stack direction="column" spacing={2}>
+                <Divider textAlign="left">Device Info:</Divider>
+                {props.device_name && (
+                  <div>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontWeight="bold"
+                      fontSize="110%"
+                    >
+                      Device:{" "}
+                    </Typography>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontSize="110%"
+                    >
+                      {props.device_name}
+                    </Typography>
+                  </div>
+                )}
                 <TextField
                   fullWidth
                   label="Serial Number"
@@ -134,7 +174,36 @@ const UpdateCollapse = (props: UpdateProps) => {
                     setSN(e.target.value);
                   }}
                 />
-                <Stack direction="row" justifyContent="space-between" pt={2}>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <TextField
+                    size="small"
+                    label="Supplier"
+                    value={updatedSupplier}
+                    onChange={(e) => setSupplier(e.target.value)}
+                  />
+                  <TextField
+                    size="small"
+                    label="Purchase Price"
+                    value={updatedPrice}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                  <DateInput
+                    label="Purchase Date"
+                    initial_date={updatedPurchaseDate}
+                    handleChange={setPurchaseDate}
+                  />
+                </Stack>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  pt={2}
+                >
                   <FormControl>
                     <FormLabel id="radio-group-label">Status</FormLabel>
                     <RadioGroup
@@ -182,7 +251,7 @@ const UpdateCollapse = (props: UpdateProps) => {
                 </Stack>
                 {(status === "Deployed" || updateStatus === "Deployed") && (
                   <>
-                    <Typography>Deployed Info:</Typography>
+                    <Divider textAlign="left">Deployed Info:</Divider>
                     <Stack direction="row" spacing={2} alignItems="center">
                       <TextField
                         size="small"
@@ -272,6 +341,25 @@ const UpdateCollapse = (props: UpdateProps) => {
                         control={<Radio checked={updatedWarehouse === "CDW"} />}
                         label="CDW"
                       />
+                      <FormControlLabel
+                        value="Eurotel"
+                        control={
+                          <Radio checked={updatedWarehouse === "Eurotel"} />
+                        }
+                        label="Eurotel"
+                      />
+                      <FormControlLabel
+                        value="ARP"
+                        control={<Radio checked={updatedWarehouse === "ARP"} />}
+                        label="ARP"
+                      />
+                      <FormControlLabel
+                        value="CDW UK"
+                        control={
+                          <Radio checked={updatedWarehouse === "CDW UK"} />
+                        }
+                        label="CDW UK"
+                      />
                     </RadioGroup>
                   </FormControl>
                 )}
@@ -284,7 +372,10 @@ const UpdateCollapse = (props: UpdateProps) => {
                       first_name === updateFN &&
                       last_name === updateLN &&
                       condition === updatedCondition &&
-                      date_deployed === updatedDate
+                      date_deployed === updatedDate &&
+                      props.price === updatedPrice &&
+                      props.purchase_date === updatedPurchaseDate &&
+                      props.supplier === updatedSupplier
                     }
                     fullWidth
                     onClick={submit_changes}
@@ -299,7 +390,10 @@ const UpdateCollapse = (props: UpdateProps) => {
                       first_name === updateFN &&
                       last_name === updateLN &&
                       condition === updatedCondition &&
-                      date_deployed === updatedDate
+                      date_deployed === updatedDate &&
+                      props.price === updatedPrice &&
+                      props.purchase_date === updatedPurchaseDate &&
+                      props.supplier === updatedSupplier
                     }
                     onClick={handleClose}
                     fullWidth

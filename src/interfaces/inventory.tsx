@@ -19,6 +19,9 @@ export interface InventorySummary {
   entity?: string;
   id: string;
   hide_out_of_stock?: boolean;
+  marketplace?: any;
+  brand?: string;
+  locations?: string[];
 }
 
 interface SerialNumbers {
@@ -46,6 +49,8 @@ interface SerialNumbers {
   date_requested?: string;
   supplier?: string;
   supplier_order_no?: string;
+  full_name?: string;
+  warehouse?: string;
 }
 
 export interface MarketplaceProducts {

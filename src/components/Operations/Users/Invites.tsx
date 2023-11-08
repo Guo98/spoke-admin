@@ -156,7 +156,9 @@ const Invites = () => {
                             await resendInvite(
                               user.organization,
                               user.id,
-                              user.roles.length > 0 ? user.roles[0] : undefined,
+                              user.roles && user.roles.length > 0
+                                ? user.roles[0]
+                                : undefined,
                               user.connection_id,
                               user.invitee.email
                             )

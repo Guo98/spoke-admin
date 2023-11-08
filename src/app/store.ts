@@ -19,6 +19,7 @@ export const clientSlice = createSlice({
     },
     updateSelectedClient: (state, action: PayloadAction<string>) => {
       state.selectedClient = action.payload;
+      state.selectedEntity = "";
     },
     updateEntity: (state, action: PayloadAction<string>) => {
       state.selectedEntity = action.payload;

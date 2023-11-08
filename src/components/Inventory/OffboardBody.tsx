@@ -188,18 +188,10 @@ const OffboardBody = (props: OffboardProps) => {
 
   const can_submit = () => {
     return (
-      selectedDeviceName === "" ||
       fn === "" ||
       ln === "" ||
-      al1 === "" ||
-      city === "" ||
-      state === "" ||
-      postal_code === "" ||
-      country === "" ||
       updatedemail === "" ||
-      updatedemail === undefined ||
-      pn === undefined ||
-      pn === ""
+      updatedemail === undefined
     );
   };
 

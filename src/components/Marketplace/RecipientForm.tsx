@@ -169,7 +169,13 @@ const RecipientForm = (props: RecipientProps) => {
             Device Details
           </Typography>
           <Stack direction="row" spacing={2}>
-            {image_source && <img src={image_source} alt="Laptop picture" />}
+            {image_source && (
+              <img
+                src={image_source}
+                alt="Laptop picture"
+                style={{ maxHeight: 200, maxWidth: 200 }}
+              />
+            )}
             <Stack justifyContent="center" spacing={1}>
               <Typography fontWeight="bold">{device_name}</Typography>
               <div>
@@ -288,8 +294,15 @@ const RecipientForm = (props: RecipientProps) => {
                   required
                 >
                   <MenuItem value="Standard">Standard</MenuItem>
-                  <MenuItem value="2 Day">2 Day</MenuItem>
-                  <MenuItem value="Overnight">Overnight</MenuItem>
+                  {region === "United States" && (
+                    <MenuItem value="2 Day">2 Day</MenuItem>
+                  )}
+                  {region === "United States" && (
+                    <MenuItem value="Overnight">Overnight</MenuItem>
+                  )}
+                  {region !== "United States" && (
+                    <MenuItem value="Expedited">Expedited</MenuItem>
+                  )}
                 </Select>
               </FormControl>
               <TextField

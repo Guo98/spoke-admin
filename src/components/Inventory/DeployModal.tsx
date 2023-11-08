@@ -63,6 +63,7 @@ interface DeployProps {
   shipping: string;
   image_source: string | undefined;
   id: string | undefined;
+  warehouse?: string;
 }
 
 const DeployModalContent = (props: DeployProps) => {
@@ -136,6 +137,7 @@ const DeployModalContent = (props: DeployProps) => {
       requestor_email: user?.email,
       requestor_name: user?.name,
       id,
+      warehouse: props.warehouse,
     };
     setSending(true);
 

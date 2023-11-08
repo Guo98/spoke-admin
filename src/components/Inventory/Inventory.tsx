@@ -2,7 +2,6 @@ import React, { FC, ReactElement, useState, useEffect } from "react";
 import {
   Box,
   Grid,
-  Drawer,
   Tabs,
   Tab,
   Fab,
@@ -24,7 +23,7 @@ import {
   filterByBrand,
   resetInventory,
 } from "../../app/slices/inventorySlice";
-import { standardGet } from "../../services/standard";
+import { standardGet, standardPost } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import InventoryAccordion from "./InventoryAccordion";
 import AddModal from "./AddModal";
@@ -34,6 +33,7 @@ import Header from "../Header/Header";
 import "./Inventory.css";
 import { InventorySummary } from "../../interfaces/inventory";
 import LinearLoading from "../common/LinearLoading";
+import InventorySkeleton from "./InventorySkeleton";
 
 function a11yProps(index: number) {
   return {
@@ -45,6 +45,8 @@ function a11yProps(index: number) {
 const Inventory: FC = (): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+
+  // inventory redux
   const data = useSelector((state: RootState) => state.inventory.data);
   const pendingRedux = useSelector(
     (state: RootState) => state.inventory.pending
@@ -55,44 +57,55 @@ const Inventory: FC = (): ReactElement => {
   const stockRedux = useSelector(
     (state: RootState) => state.inventory.in_stock
   );
+  const eolRedux = useSelector(
+    (state: RootState) => state.inventory.end_of_life
+  );
+  const brands = useSelector((state: RootState) => state.inventory.brands);
+  const serial_info = useSelector(
+    (state: RootState) => state.inventory.serial_info
+  );
+
+  // client redux
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
   );
-
   const selectedEntity = useSelector(
     (state: RootState) => state.client.selectedEntity
   );
-
   const roles = useSelector((state: RootState) => state.client.roles);
-
-  const brands = useSelector((state: RootState) => state.inventory.brands);
 
   // const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+  const [client, setClient] = useState(
+    clientData === "spokeops" ? selectedClientData : clientData
+  );
+
   const [stock, setStock] = useState(data.in_stock);
   const [deployed, setDeployed] = useState(data.deployed);
   const [inprogress, setInprogress] = useState(data.pending);
+  const [endoflife, setEndOfLife] = useState(data.end_of_life);
+
   const [openAdd, setOpenAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inprogTotal, setInprogTotal] = useState(0);
   const [deployedTotal, setDeployedTotal] = useState(0);
   const [stockTotal, setStockTotal] = useState(0);
+  const [eolTotal, setEolTotal] = useState(0);
   const [deviceTotal, setDeviceTotal] = useState(0);
   const [filtered, setFiltered] = useState(false);
   const [search_serial, setSearchSerial] = useState("");
   const [chip, setChip] = useState("");
 
+  const [inventory_filter_msg, setInvFilterMsg] = useState("");
+
   const dispatch = useDispatch();
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const marketClient =
-    clientData === "spokeops" ? selectedClientData : clientData;
-
   const fetchData = async () => {
     setLoading(true);
-    let client = clientData === "spokeops" ? selectedClientData : clientData;
+
     const accessToken = await getAccessTokenSilently();
 
     let route = `inventory/${client}`;
@@ -113,11 +126,18 @@ const Inventory: FC = (): ReactElement => {
     if (!loading) {
       fetchData().catch(console.error);
     }
-  }, [clientData]);
+  }, [client]);
+
+  useEffect(() => {
+    if (search_serial !== "") {
+      searchFilter("");
+    }
+  }, [tabValue]);
 
   useEffect(() => {
     if (selectedClientData !== "") {
-      fetchData().catch(console.error);
+      setClient(selectedClientData);
+      // fetchData().catch(console.error);
     }
   }, [selectedClientData]);
 
@@ -155,6 +175,16 @@ const Inventory: FC = (): ReactElement => {
     FileSaver.saveAs(blob, "inventory.xlsx");
   };
 
+  const missing_mapping = async () => {
+    const access_token = await getAccessTokenSilently();
+
+    const missing_resp = await standardPost(
+      access_token,
+      "missing",
+      serial_info
+    );
+  };
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
@@ -178,11 +208,17 @@ const Inventory: FC = (): ReactElement => {
     });
     setStockTotal(stockVar);
 
+    let eolVar = 0;
+    eolRedux.forEach((e) => {
+      eolVar += e.serial_numbers.length;
+    });
+
     setDeviceTotal(stockRedux.length);
   };
 
   useEffect(() => {
     setInprogress(pendingRedux);
+    setEndOfLife(eolRedux);
     if (search_serial !== "") {
       searchFilter(search_serial);
     } else {
@@ -190,7 +226,7 @@ const Inventory: FC = (): ReactElement => {
       setDeployed(deployedRedux);
       updateCount();
     }
-  }, [pendingRedux, deployedRedux, stockRedux]);
+  }, [pendingRedux, deployedRedux, stockRedux, eolRedux]);
 
   useEffect(() => {
     updateCount();
@@ -219,6 +255,18 @@ const Inventory: FC = (): ReactElement => {
         inprogVar += p.serial_numbers.length;
       });
       setInprogTotal(inprogVar);
+    } else {
+      if (
+        stock.length === 0 &&
+        deployed.length === 0 &&
+        inprogress.length === 0 &&
+        search_serial !== ""
+      ) {
+        missing_mapping().catch();
+        setInvFilterMsg(
+          "Device has not been mapped yet in the inventory. Will be updated in 24 hours."
+        );
+      }
     }
   }, [filtered]);
 
@@ -226,7 +274,10 @@ const Inventory: FC = (): ReactElement => {
     dispatch(filterInventoryByEntity(selectedEntity));
   }, [selectedEntity]);
 
+  useEffect(() => {}, [search_serial]);
+
   const searchFilter = (text: string) => {
+    setLoading(true);
     if (text !== "") {
       let searchStock = searchFilterFunction(
         [...data.in_stock],
@@ -270,7 +321,9 @@ const Inventory: FC = (): ReactElement => {
       setStock(data.in_stock);
       setDeployed(data.deployed);
       setInprogress(data.pending);
+      setInvFilterMsg("");
     }
+    setLoading(false);
   };
 
   const searchFilterFunction = (objs: InventorySummary[], text: string) => {
@@ -298,34 +351,28 @@ const Inventory: FC = (): ReactElement => {
         <Header
           label="Search Inventory by device name, serial number, location, employee name"
           textChange={searchFilter}
+          search_value={search_serial}
         />
-        <Grid container direction="row" alignItems="center">
-          <Grid item xs={7}>
-            <h2>
-              Inventory{" "}
-              <IconButton
-                onClick={downloadInventory}
-                id="inventory-export-button"
-              >
-                <FileDownloadIcon />
-              </IconButton>
-            </h2>
-          </Grid>
-          <Grid item xs={5}>
-            <Box
-              display="flex"
-              justifyContent="flex-end"
-              justifyItems="center"
-              alignItems="center"
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <h2>
+            Inventory{" "}
+            <IconButton
+              onClick={downloadInventory}
+              id="inventory-export-button"
             >
-              <ManageModal
-                type="general"
-                devices={data.in_stock}
-                instock_quantity={stockTotal}
-              />
-            </Box>
-          </Grid>
-        </Grid>
+              <FileDownloadIcon />
+            </IconButton>
+          </h2>
+          <ManageModal
+            type="general"
+            devices={data.in_stock}
+            instock_quantity={stockTotal}
+          />
+        </Stack>
         {brands.length > 0 && (
           <Stack direction="row" spacing={2}>
             {brands.map((b) => (
@@ -349,28 +396,33 @@ const Inventory: FC = (): ReactElement => {
             ))}
           </Stack>
         )}
-        <Box>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              aria-label="inventory tabs"
-            >
-              <Tab label="In Stock" {...a11yProps(0)} />
-              <Tab label="Deployed" {...a11yProps(1)} />
-              <Tab label="Pending" {...a11yProps(2)} />
-            </Tabs>
-          </Box>
-          <TabPanel value={tabValue} index={0} prefix="inv">
-            <Box
-              sx={{
-                display: loading ? "flex" : "block",
-                flexWrap: "wrap",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              {!loading ? (
+        {loading && <LinearLoading />}
+        {!loading && (
+          <Box>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                aria-label="inventory tabs"
+              >
+                <Tab label="In Stock" {...a11yProps(0)} />
+                <Tab label="Deployed" {...a11yProps(1)} />
+                <Tab label="Pending" {...a11yProps(2)} />
+                <Tab label="End of Life" {...a11yProps(3)} />
+              </Tabs>
+            </Box>
+            <TabPanel value={tabValue} index={0} prefix="inv">
+              <Box
+                sx={{
+                  display: loading ? "flex" : "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                {inventory_filter_msg !== "" && (
+                  <Typography>{inventory_filter_msg}</Typography>
+                )}
                 <>
                   {deviceTotal > 0 ? (
                     <>
@@ -389,6 +441,8 @@ const Inventory: FC = (): ReactElement => {
                                   index={index}
                                   total_devices={stock.length}
                                   search_serial_number={search_serial}
+                                  refresh={fetchData}
+                                  client={client}
                                 />
                               )
                             );
@@ -405,21 +459,17 @@ const Inventory: FC = (): ReactElement => {
                     <Typography textAlign="center">No results found</Typography>
                   )}
                 </>
-              ) : (
-                <LinearLoading />
-              )}
-            </Box>
-          </TabPanel>
-          <TabPanel value={tabValue} index={1} prefix="inv">
-            <Box
-              sx={{
-                display: "block",
-                flexWrap: "wrap",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              {!loading ? (
+              </Box>
+            </TabPanel>
+            <TabPanel value={tabValue} index={1} prefix="inv">
+              <Box
+                sx={{
+                  display: "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
                 <>
                   {deployedTotal > 0 ? (
                     <>
@@ -434,6 +484,8 @@ const Inventory: FC = (): ReactElement => {
                                 index={index}
                                 total_devices={deployed.length}
                                 search_serial_number={search_serial}
+                                refresh={fetchData}
+                                client={client}
                               />
                             )
                           );
@@ -471,21 +523,17 @@ const Inventory: FC = (): ReactElement => {
                     </>
                   )}
                 </>
-              ) : (
-                <LinearLoading />
-              )}
-            </Box>
-          </TabPanel>
-          <TabPanel value={tabValue} index={2} prefix="inv">
-            <Box
-              sx={{
-                display: "block",
-                flexWrap: "wrap",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              {!loading ? (
+              </Box>
+            </TabPanel>
+            <TabPanel value={tabValue} index={2} prefix="inv">
+              <Box
+                sx={{
+                  display: "block",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
                 <>
                   {inprogTotal > 0 ? (
                     <>
@@ -501,6 +549,8 @@ const Inventory: FC = (): ReactElement => {
                                 index={index}
                                 total_devices={inprogress.length}
                                 search_serial_number={search_serial}
+                                refresh={fetchData}
+                                client={client}
                               />
                             )
                           );
@@ -538,12 +588,46 @@ const Inventory: FC = (): ReactElement => {
                     </>
                   )}
                 </>
-              ) : (
-                <LinearLoading />
-              )}
-            </Box>
-          </TabPanel>
-          {marketClient !== "Automox" &&
+              </Box>
+            </TabPanel>
+            <TabPanel value={tabValue} index={3} prefix="inv">
+              <>
+                {eolTotal > 0 ? (
+                  <Box
+                    sx={{
+                      display: "block",
+                      flexWrap: "wrap",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {endoflife.length > 0 &&
+                      endoflife.map((device, index) => {
+                        return (
+                          device.serial_numbers.length > 0 && (
+                            <InventoryAccordion
+                              {...device}
+                              tabValue={tabValue}
+                              key={index}
+                              clientData={clientData}
+                              index={index}
+                              total_devices={inprogress.length}
+                              search_serial_number={search_serial}
+                              refresh={fetchData}
+                              client={client}
+                            />
+                          )
+                        );
+                      })}
+                  </Box>
+                ) : (
+                  <Typography textAlign="center">
+                    No devices near end of service
+                  </Typography>
+                )}
+              </>
+            </TabPanel>
+            {/* {marketClient !== "Automox" &&
             marketClient !== "Alma" &&
             marketClient !== "Flo Health" &&
             marketClient !== "Hidden Road" &&
@@ -564,15 +648,9 @@ const Inventory: FC = (): ReactElement => {
                   deviceNames={data.in_stock}
                 />
               </>
-            )}
-          {/* <Fab
-            color="primary"
-            sx={{ bottom: 15, right: 15, position: "fixed" }}
-            onClick={() => openFiltersDrawer(true)}
-          >
-            <FilterAltIcon />
-          </Fab> */}
-        </Box>
+            )} */}
+          </Box>
+        )}
       </Box>
     </>
   );

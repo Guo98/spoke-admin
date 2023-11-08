@@ -20,17 +20,27 @@ import LaptopIcon from "@mui/icons-material/Laptop";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
+
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
+import SpecificDevice from "./SpecificDevice";
+import AppContainer from "../AppContainer/AppContainer";
 
 interface MPProps {
   open: boolean;
   handleClose: Function;
   imgSrc: string;
-  types: any;
+  types?: any;
   brand: string;
   client: string;
   suppliers?: any;
+  specific_device?: string;
+  location?: string;
+  supplier_links?: any;
+  specific_specs?: string;
 }
 
 const style = {
@@ -119,6 +129,7 @@ const MarketplacePurchase = (props: MPProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed1, setComplete1] = useState(false);
   const [completed2, setComplete2] = useState(false);
+  const [modal_open, setModalOpen] = useState(false);
 
   const [device_name, setDeviceName] = useState("");
   const [device_specs, setDeviceSpecs] = useState("");
@@ -197,7 +208,7 @@ const MarketplacePurchase = (props: MPProps) => {
       <Box sx={style}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h5" fontWeight="bold">
-            New Purchase - {brand}
+            {"New Purchase" + (!props.specific_device ? " - " + brand : "")}
           </Typography>
           <ButtonGroup>
             {activeStep === 1 && (
@@ -235,7 +246,7 @@ const MarketplacePurchase = (props: MPProps) => {
             </StepLabel>
           </Step>
         </Stepper>
-        {activeStep === 0 && (
+        {activeStep === 0 && !props.specific_device && (
           <>
             <DeviceSelection
               types={types}
@@ -246,6 +257,17 @@ const MarketplacePurchase = (props: MPProps) => {
               setClear={setClearDevice}
               loading={loading}
               suppliers={props.suppliers}
+            />
+          </>
+        )}
+        {activeStep === 0 && props.specific_device && (
+          <>
+            <SpecificDevice
+              device_name={props.specific_device}
+              location={props.location!}
+              completeDeviceChoice={completeDeviceStep}
+              supplier_links={props.supplier_links}
+              specs={props.specific_specs!}
             />
           </>
         )}
