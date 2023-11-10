@@ -18,7 +18,6 @@ import { InventorySummary } from "../../../interfaces/inventory";
 type Order = "asc" | "desc";
 
 interface TableProps extends InventorySummary {
-  tableSort: Function;
   clientData?: string;
   searched_serial: string;
 }

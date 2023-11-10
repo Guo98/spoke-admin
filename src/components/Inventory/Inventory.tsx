@@ -136,15 +136,39 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {
     if (is_filtered) {
       setUIInventory(filtered_inventory);
-      if (search_serial !== "" && filtered_inventory.length === 0) {
-        missing_mapping().catch();
-        setInvFilterMsg(
-          "Device has not been mapped yet in the inventory. Will be updated in 24 hours."
-        );
+      if (search_serial !== "") {
+        if (filtered_inventory.length === 0) {
+          missing_mapping().catch();
+          setInvFilterMsg(
+            "Device has not been mapped yet in the inventory. Will be updated in 24 hours."
+          );
+        } else {
+          if (
+            filtered_inventory[0].deployed!.length > 0 &&
+            filtered_inventory[0].deployed!.filter(
+              (sn) => sn.sn === search_serial
+            ).length > 0
+          ) {
+            setTabValue(1);
+          } else if (
+            filtered_inventory[0].pending!.length > 0 &&
+            filtered_inventory[0].pending!.filter(
+              (sn) => sn.sn === search_serial
+            ).length > 0
+          ) {
+            setTabValue(2);
+          }
+        }
       }
     } else {
       setUIInventory(current_inventory);
       setInvFilterMsg("");
+
+      if (search_serial !== "") {
+        searchParams.delete("sn");
+        setSearchParams(searchParams);
+        setSearchSerial("");
+      }
     }
   }, [filtered_inventory, is_filtered]);
 

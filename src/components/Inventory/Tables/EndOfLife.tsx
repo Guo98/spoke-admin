@@ -24,7 +24,6 @@ import { InventorySummary } from "../../../interfaces/inventory";
 type Order = "asc" | "desc";
 
 interface TableProps extends InventorySummary {
-  tableSort: Function;
   refresh: Function;
 }
 

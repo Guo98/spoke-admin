@@ -77,49 +77,9 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
 
   const dispatch = useDispatch();
 
-  const [orderBy, setOrderBy] = useState("");
-  const [order, setOrder] = useState<Order>("asc");
-
   const isDarkTheme = useTheme().palette.mode === "dark";
 
-  const sortHandler = (cell: string) => (event: React.MouseEvent<unknown>) => {
-    const isAsc = orderBy === cell && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(cell);
-  };
-
-  const tableSort = () => {
-    let devices = [...serial_numbers];
-    if (orderBy === "Serial Number") {
-      if (order === "asc") {
-        return devices.sort((a, b) => (a.sn > b.sn ? 1 : b.sn > a.sn ? -1 : 0));
-      } else {
-        return devices.sort((a, b) => (a.sn < b.sn ? 1 : b.sn < a.sn ? -1 : 0));
-      }
-    } else if (orderBy === "Condition") {
-      if (order === "asc") {
-        return devices.sort((a, b) =>
-          a.condition! > b.condition! ? 1 : b.condition! > a.condition! ? -1 : 0
-        );
-      } else {
-        return devices.sort((a, b) =>
-          a.condition! < b.condition! ? 1 : b.condition! < a.condition! ? -1 : 0
-        );
-      }
-    } else if (orderBy === "Grade") {
-      if (order === "asc") {
-        return devices.sort((a, b) =>
-          a.grade! > b.grade! ? 1 : b.grade! > a.grade! ? -1 : 0
-        );
-      } else {
-        return devices.sort((a, b) =>
-          a.grade! < b.grade! ? 1 : b.grade! < a.grade! ? -1 : 0
-        );
-      }
-    }
-
-    return devices;
-  };
+  const [expand, setExpand] = useState(false);
 
   const market_info = () => {
     const market_obj = {
@@ -143,10 +103,18 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     AppContainer.navigate("marketplace");
   };
 
-  useEffect(() => {}, [props.total_devices]);
+  useEffect(() => {
+    if (search_serial_number !== "") {
+      if (
+        serial_numbers.filter((sn) => sn.sn === search_serial_number).length > 0
+      ) {
+        setExpand(true);
+      }
+    }
+  }, [serial_numbers]);
 
   return (
-    <Accordion defaultExpanded={props.total_devices === 1}>
+    <Accordion expanded={expand} onClick={() => setExpand(!expand)}>
       <AccordionSummary id={"inventory-accordionsummary-" + index}>
         <Stack direction="row" spacing={2} sx={{ width: "90%" }}>
           <CardMedia
@@ -265,7 +233,6 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
       >
         {tabValue === 0 && (
           <InStock
-            tableSort={tableSort}
             serial_numbers={props.in_stock!}
             name={name}
             location={location}
@@ -287,7 +254,6 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
         )}
         {tabValue === 2 && (
           <Pending
-            tableSort={tableSort}
             serial_numbers={props.pending!}
             name={name}
             location={location}
@@ -299,7 +265,6 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
         )}
         {tabValue === 3 && (
           <EndOfLife
-            tableSort={tableSort}
             serial_numbers={props.eol!}
             name={name}
             location={location}
