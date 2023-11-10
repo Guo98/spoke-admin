@@ -13,6 +13,8 @@ import {
   Stack,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+
 import DeployModalContent from "./DeployModal";
 import { InventorySummary } from "../../interfaces/inventory";
 import {
@@ -46,13 +48,13 @@ interface AssignProps {
   device_name?: string;
   device_location?: string;
   image_source?: string | undefined;
-  type: string;
   devices?: InventorySummary[];
   manageOpen?: boolean;
   handleParentClose?: Function;
   disabled: boolean;
   id?: string;
   warehouse?: string;
+  manage_modal: boolean;
 }
 
 interface ValidateAddress {
@@ -65,8 +67,13 @@ interface ValidateAddress {
 }
 
 const AssignModal = (props: AssignProps) => {
-  const { serial_number, device_name, device_location, image_source, type } =
-    props;
+  const {
+    serial_number,
+    device_name,
+    device_location,
+    image_source,
+    manage_modal,
+  } = props;
 
   const [open, setOpen] = useState(
     props.manageOpen !== undefined ? props.manageOpen : false
@@ -75,7 +82,7 @@ const AssignModal = (props: AssignProps) => {
   const [shipping, setShipping] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
-  const [address, setAddress] = useState("");
+
   const [addressObj, setAddrObj] = useState<ValidateAddress | null>(null);
   const [email, setEmail] = useState("");
   const [phonenumber, setPhonenumber] = useState("");
@@ -115,8 +122,6 @@ const AssignModal = (props: AssignProps) => {
     setLastname("");
     setEmail("");
     setPhonenumber("");
-
-    if (type === "general") props.handleParentClose!();
   };
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -128,30 +133,6 @@ const AssignModal = (props: AssignProps) => {
   };
 
   const checkAddress = () => {
-    // const accessToken = await getAccessTokenSilently();
-    // const addressResult = await validateAddress(address, accessToken);
-    // if (addressResult.message === "Successful!") {
-    //   if (
-    //     addressResult.data.country &&
-    //     deviceLocationMappings[addressResult.data.country] &&
-    //     deviceLocationMappings[addressResult.data.country].indexOf(
-    //       type === "general"
-    //         ? props.devices![parseInt(selectedDevice)]?.location
-    //         : device_location
-    //     ) < 0
-    //   ) {
-    //     setError(
-    //       `This device is only deployable within ${
-    //         locationMappings[device_location!]
-    //       }. Please enter an address within the territory or select a new device to deploy.`
-    //     );
-    //   } else {
-    //     setAddrObj(addressResult.data);
-    //     setForm(false);
-    //   }
-    // } else {
-    //   setError("Please confirm that the address was entered correctly.");
-    // }
     if (device_location) {
       const lc_location = device_location.toLowerCase();
       if (
@@ -219,17 +200,28 @@ const AssignModal = (props: AssignProps) => {
 
   return (
     <>
-      {type !== "general" && (
+      {!manage_modal ? (
         <Button
           variant="contained"
           sx={{
-            borderRadius: type === "general" ? "10px 0px 0px 10px" : "10px",
+            borderRadius: "10px",
             alignItems: "center",
           }}
           onClick={handleOpen}
           disabled={props.disabled}
         >
           Assign
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          sx={{ height: "50%", width: "25%" }}
+          onClick={handleOpen}
+        >
+          <Stack spacing={1} alignItems="center" p={2}>
+            <LocalShippingIcon />
+            <Typography>Deploy</Typography>
+          </Stack>
         </Button>
       )}
       <Modal
@@ -249,7 +241,7 @@ const AssignModal = (props: AssignProps) => {
               New Deployment
             </Typography>
             <Stack spacing={2}>
-              {(type === "general" || type === "main") && (
+              {manage_modal && (
                 <div>
                   <FormControl
                     fullWidth
@@ -471,13 +463,13 @@ const AssignModal = (props: AssignProps) => {
             first_name={firstname}
             last_name={lastname}
             device_name={
-              type === "general"
+              manage_modal
                 ? props.devices![parseInt(selectedDevice)]?.name
                 : device_name!
             }
             addressObj={addressObj!}
             serial_number={
-              type === "general"
+              manage_modal
                 ? props.devices![parseInt(selectedDevice)]?.serial_numbers[0].sn
                 : serial_number!
             }
@@ -485,18 +477,18 @@ const AssignModal = (props: AssignProps) => {
             phone_number={phonenumber}
             note={note}
             device_location={
-              type === "general"
+              manage_modal
                 ? props.devices![parseInt(selectedDevice)]?.location
                 : device_location!
             }
             shipping={shipping}
             image_source={
-              type === "general"
+              manage_modal
                 ? props.devices![parseInt(selectedDevice)]?.image_source
                 : image_source
             }
             id={
-              type === "general"
+              manage_modal
                 ? props.devices![parseInt(selectedDevice)]?.id
                 : props.id
             }

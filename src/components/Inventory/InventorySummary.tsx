@@ -341,12 +341,16 @@ const InventorySummary = (props: ISProps) => {
               device_name={name}
               device_location={location}
               image_source={image_source}
-              type="individual"
               id={id}
               disabled={false}
+              manage_modal={true}
             />
           )}
-          <OffboardModal client={client} device_name={name} />
+          <OffboardModal
+            client={client}
+            device_name={name}
+            manage_modal={true}
+          />
           <>
             <Button
               variant="contained"
@@ -402,6 +406,7 @@ const InventorySummary = (props: ISProps) => {
             id={id}
             image_source={image_source}
             clientData={client}
+            searched_serial=""
           />
         </TabPanel>
         <TabPanel value={tab_value} index={3} prefix="inv">

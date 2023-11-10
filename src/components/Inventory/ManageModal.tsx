@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Grid from "@mui/material/Grid";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { Stack, Box, Button, Typography, Modal } from "@mui/material";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
-import OffboardBody from "./OffboardBody";
+
+import OffboardModal from "./OffboardModal";
+
+import { RootState } from "../../app/store";
 import { setInventory } from "../../app/slices/inventorySlice";
 import { standardGet } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import { InventorySummary } from "../../interfaces/inventory";
+import AppContainer from "../AppContainer/AppContainer";
 import AssignModal from "./AssignModal";
 
 const style = {
@@ -36,37 +32,11 @@ const textFieldStyle = {
 };
 
 interface ManageProps {
-  name?: {
-    first_name: string;
-    last_name: string;
-  };
-  address?: {
-    al1: string;
-    al2?: string;
-    city: string;
-    state: string;
-    postal_code: string;
-    country_code: string;
-  };
-  email?: string;
-  device_name?: string;
-  serial_number?: string;
-  device_location?: string;
-  phone_number?: string;
-  type: string;
-  devices?: InventorySummary[];
-  instock_quantity?: number;
-  id?: string;
+  devices: InventorySummary[];
 }
 
 const ManageModal = (props: ManageProps) => {
-  const { instock_quantity } = props;
-
-  const [open, setOpen] = useState(false);
-  const [manageType, setManageType] = useState("");
-  const [changeView, setChangeView] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [device_names, setDeviceNames] = useState<any[]>([]);
+  const { devices } = props;
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -74,14 +44,22 @@ const ManageModal = (props: ManageProps) => {
   );
   const roles = useSelector((state: RootState) => state.client.roles);
 
+  const [open, setOpen] = useState(false);
+  const [client, setClient] = useState(
+    clientData === "spokeops" ? selectedClientData : clientData
+  );
+
+  const [manageType, setManageType] = useState("");
+  const [changeView, setChangeView] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [device_names, setDeviceNames] = useState<string[]>([]);
+
   const dispatch = useDispatch();
 
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchData = async () => {
-      const client =
-        clientData === "spokeops" ? selectedClientData : clientData;
       const accessToken = await getAccessTokenSilently();
 
       let route = `inventory/${client}`;
@@ -100,15 +78,19 @@ const ManageModal = (props: ManageProps) => {
   }, [open]);
 
   useEffect(() => {
-    if (props.devices && props.devices.length > 0)
+    if (devices && devices.length > 0)
       setDeviceNames([
         ...new Set(
-          props.devices!?.map((dev) => {
-            return { name: dev.name, id: dev.id };
+          devices.map((dev) => {
+            return dev.name;
           })
         ),
       ]);
-  }, [props.devices]);
+  }, [devices]);
+
+  useEffect(() => {
+    setClient(selectedClientData);
+  }, [selectedClientData]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -120,16 +102,9 @@ const ManageModal = (props: ManageProps) => {
     setManageType("");
   };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setManageType(event.target.value);
-  };
-
   return (
     <div>
-      <Button
-        onClick={handleOpen}
-        variant={props.type === "general" ? "contained" : "text"}
-      >
+      <Button onClick={handleOpen} variant="contained">
         Manage
       </Button>
       <Modal
@@ -138,7 +113,41 @@ const ManageModal = (props: ManageProps) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        {!changeView ? (
+        <Box sx={style}>
+          <Stack spacing={2}>
+            <Typography
+              id="modal-modal-title"
+              variant="h5"
+              component="h3"
+              sx={{ textAlign: "center" }}
+            >
+              Manage Inventory
+            </Typography>
+            <Stack direction="row" spacing={2} justifyContent="space-evenly">
+              <AssignModal
+                manage_modal={true}
+                devices={devices}
+                disabled={false}
+              />
+              <OffboardModal
+                client={client}
+                manage_modal={true}
+                all_devices={device_names}
+              />
+              <Button
+                variant="contained"
+                sx={{ height: "50%", width: "25%" }}
+                onClick={() => AppContainer.navigate("marketplace")}
+              >
+                <Stack spacing={1} alignItems="center" p={2}>
+                  <ShoppingCartIcon />
+                  <Typography>Buy</Typography>
+                </Stack>
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+        {/* {!changeView ? (
           <Box sx={style}>
             <Typography
               id="modal-modal-title"
@@ -217,7 +226,7 @@ const ManageModal = (props: ManageProps) => {
               />
             )}
           </>
-        )}
+        )} */}
       </Modal>
     </div>
   );

@@ -165,13 +165,13 @@ const InStock = (props: TableProps) => {
                           device_name={name}
                           device_location={location}
                           image_source={image_source}
-                          type="individual"
                           id={id}
                           disabled={
                             item.condition !== "Used" &&
                             item.condition !== "New"
                           }
                           warehouse={item.warehouse}
+                          manage_modal={false}
                         />
                       </TableCell>
                     </TableRow>

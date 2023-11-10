@@ -19,7 +19,7 @@ const initialState: InitialInventoryState = {
   brands: [],
   devices: [],
   filteredDevices: [],
-  filteredPage: -1,
+  filtered: false,
   search_text: "",
   device_ids: [],
   current_inventory: [],
@@ -91,14 +91,58 @@ export const inventorySlice = createSlice({
   initialState: initialState,
   reducers: {
     setInventory: (state, action: PayloadAction<InventorySummary[]>) => {
-      let inStock: InventorySummary[] = [];
-      let deployed: InventorySummary[] = [];
-      let offboarding: InventorySummary[] = [];
-      let endOfLife: InventorySummary[] = [];
-      state.device_ids = [];
+      // console.log("action payload :::::::::::: ", action.payload);
+      // let inStock: InventorySummary[] = [];
+      // let deployed: InventorySummary[] = [];
+      // let offboarding: InventorySummary[] = [];
+      // let endOfLife: InventorySummary[] = [];
+      // state.device_ids = [];
 
-      const tempData = action.payload;
-      tempData.forEach((device) => {
+      // const tempData = action.payload;
+      // tempData.forEach((device) => {
+      //   // state.device_ids.push({
+      //   //   name: device.name,
+      //   //   id: device.id,
+      //   //   location: device.location,
+      //   //   serial_numbers: device.serial_numbers.map((s) => s.sn),
+      //   // });
+
+      //   if (device.serial_numbers) {
+      //     splitInventory(device, inStock, deployed, offboarding, endOfLife);
+      //   }
+      //   const devicename = device.name.toLowerCase();
+      //   if (
+      //     (devicename.includes("mac") || devicename.includes("apple")) &&
+      //     state.brands.indexOf("Apple") < 0
+      //   ) {
+      //     state.brands.push("Apple");
+      //   } else if (
+      //     devicename.includes("lenovo") &&
+      //     state.brands.indexOf("Lenovo") < 0
+      //   ) {
+      //     state.brands.push("Lenovo");
+      //   } else if (
+      //     devicename.includes("dell") &&
+      //     state.brands.indexOf("Dell") < 0
+      //   ) {
+      //     state.brands.push("Dell");
+      //   }
+      // });
+
+      // sortInventory(inStock, deployed);
+
+      // state.pending = offboarding;
+      // state.data.pending = offboarding;
+      // state.deployed = deployed;
+      // state.data.deployed = deployed;
+      // state.in_stock = inStock;
+      // state.data.in_stock = inStock;
+      // state.data.end_of_life = endOfLife;
+      // state.end_of_life = endOfLife;
+      state.device_ids = [];
+      state.current_inventory = action.payload;
+
+      state.current_inventory.forEach((device) => {
         state.device_ids.push({
           name: device.name,
           id: device.id,
@@ -106,38 +150,38 @@ export const inventorySlice = createSlice({
           serial_numbers: device.serial_numbers.map((s) => s.sn),
         });
 
-        if (device.serial_numbers) {
-          splitInventory(device, inStock, deployed, offboarding, endOfLife);
-        }
-        const devicename = device.name.toLowerCase();
-        if (
-          (devicename.includes("mac") || devicename.includes("apple")) &&
-          state.brands.indexOf("Apple") < 0
-        ) {
-          state.brands.push("Apple");
-        } else if (
-          devicename.includes("lenovo") &&
-          state.brands.indexOf("Lenovo") < 0
-        ) {
-          state.brands.push("Lenovo");
-        } else if (
-          devicename.includes("dell") &&
-          state.brands.indexOf("Dell") < 0
-        ) {
-          state.brands.push("Dell");
-        }
+        device.in_stock = [];
+        device.deployed = [];
+        device.pending = [];
+        device.eol = [];
+
+        device.serial_numbers.forEach((d) => {
+          if (
+            d.status === "In Stock" &&
+            d.condition !== "Damaged" &&
+            d.condition !== "End of Life"
+          ) {
+            device.in_stock!.push(d);
+          } else if (d.status === "Deployed") {
+            device.deployed!.push(d);
+          } else if (
+            d.status === "Offboarding" ||
+            d.status === "Offboard" ||
+            d.status === "Returning" ||
+            d.status === "Top Up" ||
+            d.status === "In Progress" ||
+            d.status == "Shipping"
+          ) {
+            device.pending!.push(d);
+          } else if (
+            d.status === "In Stock" &&
+            d.condition !== "Used" &&
+            d.condition !== "New"
+          ) {
+            device.eol!.push(d);
+          }
+        });
       });
-
-      sortInventory(inStock, deployed);
-
-      state.pending = offboarding;
-      state.data.pending = offboarding;
-      state.deployed = deployed;
-      state.data.deployed = deployed;
-      state.in_stock = inStock;
-      state.data.in_stock = inStock;
-      state.data.end_of_life = endOfLife;
-      state.end_of_life = endOfLife;
     },
     searchBySerial: (state, action: PayloadAction<any>) => {
       state.serial_info = action.payload;
@@ -225,7 +269,7 @@ export const inventorySlice = createSlice({
       state.in_stock = state.data.in_stock;
       state.deployed = state.data.deployed;
       state.end_of_life = state.data.end_of_life;
-      state.filteredPage = -1;
+      // state.filteredPage = -1;
       state.filteredDevices = [];
       state.search_text = "";
     },
@@ -275,37 +319,55 @@ export const inventorySlice = createSlice({
     filterInventory: (state, action: PayloadAction<string>) => {
       const search_text = action.payload.toLowerCase();
       state.search_text = search_text;
-      const page_0 = state.devices.filter(
-        (d) =>
-          d.name.toLowerCase().includes(search_text) ||
-          d.location.toLowerCase().includes(search_text)
-      );
+      // const page_0 = state.devices.filter(
+      //   (d) =>
+      //     d.name.toLowerCase().includes(search_text) ||
+      //     d.location.toLowerCase().includes(search_text)
+      // );
 
-      if (page_0.length > 0) {
-        state.filteredPage = 0;
-        state.filteredDevices = page_0;
-      } else {
-        const page_1 = state.devices.filter(
+      // if (page_0.length > 0) {
+      //   state.filteredPage = 0;
+      //   state.filteredDevices = page_0;
+      // } else {
+      //   const page_1 = state.devices.filter(
+      //     (d) =>
+      //       d.serial_numbers.filter(
+      //         (s) =>
+      //           s.sn.toLowerCase().includes(search_text) ||
+      //           s.full_name?.toLowerCase().includes(search_text)
+      //       ).length > 0
+      //   );
+      //   state.filteredDevices = page_1;
+      //   state.filteredPage = 1;
+      // }
+      if (search_text !== "") {
+        const filtered_devices = state.current_inventory.filter(
           (d) =>
+            d.name.toLowerCase().includes(search_text) ||
+            d.location.toLowerCase().includes(search_text) ||
             d.serial_numbers.filter(
               (s) =>
                 s.sn.toLowerCase().includes(search_text) ||
                 s.full_name?.toLowerCase().includes(search_text)
             ).length > 0
         );
-        state.filteredDevices = page_1;
-        state.filteredPage = 1;
+
+        state.filteredDevices = filtered_devices;
+        state.filtered = true;
+      } else {
+        state.filteredDevices = [];
+        state.filtered = false;
       }
     },
     inventoryFilterByEntity: (state, action: PayloadAction<string>) => {
       if (action.payload !== "") {
-        state.filteredPage = 0;
+        //state.filteredPage = 0;
         const entity_devices = state.devices.filter(
           (d) => d.entity === action.payload
         );
         state.filteredDevices = entity_devices;
       } else {
-        state.filteredPage = -1;
+        //state.filteredPage = -1;
         state.filteredDevices = [];
       }
     },

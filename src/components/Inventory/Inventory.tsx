@@ -1,10 +1,8 @@
 import React, { FC, ReactElement, useState, useEffect } from "react";
 import {
   Box,
-  Grid,
   Tabs,
   Tab,
-  Fab,
   Typography,
   IconButton,
   Stack,
@@ -22,13 +20,13 @@ import {
   filterInventoryByEntity,
   filterByBrand,
   resetInventory,
+  filterInventory,
 } from "../../app/slices/inventorySlice";
 import { standardGet, standardPost } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import InventoryAccordion from "./InventoryAccordion";
-import AddModal from "./AddModal";
 import ManageModal from "./ManageModal";
-import TabPanel from "../common/TabPanel";
+
 import Header from "../Header/Header";
 import "./Inventory.css";
 import { InventorySummary } from "../../interfaces/inventory";
@@ -45,26 +43,23 @@ function a11yProps(index: number) {
 const Inventory: FC = (): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
-
+  const dispatch = useDispatch<any>();
   // inventory redux
   const data = useSelector((state: RootState) => state.inventory.data);
-  const pendingRedux = useSelector(
-    (state: RootState) => state.inventory.pending
-  );
-  const deployedRedux = useSelector(
-    (state: RootState) => state.inventory.deployed
-  );
-  const stockRedux = useSelector(
-    (state: RootState) => state.inventory.in_stock
-  );
-  const eolRedux = useSelector(
-    (state: RootState) => state.inventory.end_of_life
-  );
+
   const brands = useSelector((state: RootState) => state.inventory.brands);
   const serial_info = useSelector(
     (state: RootState) => state.inventory.serial_info
   );
-
+  const current_inventory = useSelector(
+    (state: RootState) => state.inventory.current_inventory
+  );
+  const filtered_inventory = useSelector(
+    (state: RootState) => state.inventory.filteredDevices
+  );
+  const is_filtered = useSelector(
+    (state: RootState) => state.inventory.filtered
+  );
   // client redux
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -75,31 +70,19 @@ const Inventory: FC = (): ReactElement => {
   );
   const roles = useSelector((state: RootState) => state.client.roles);
 
-  // const [filterdrawer, openFiltersDrawer] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [client, setClient] = useState(
     clientData === "spokeops" ? selectedClientData : clientData
   );
 
-  const [stock, setStock] = useState(data.in_stock);
-  const [deployed, setDeployed] = useState(data.deployed);
-  const [inprogress, setInprogress] = useState(data.pending);
-  const [endoflife, setEndOfLife] = useState(data.end_of_life);
-
-  const [openAdd, setOpenAdd] = useState(false);
+  const [inventory, setUIInventory] = useState<InventorySummary[]>([]);
   const [loading, setLoading] = useState(false);
-  const [inprogTotal, setInprogTotal] = useState(0);
-  const [deployedTotal, setDeployedTotal] = useState(0);
-  const [stockTotal, setStockTotal] = useState(0);
-  const [eolTotal, setEolTotal] = useState(0);
-  const [deviceTotal, setDeviceTotal] = useState(0);
-  const [filtered, setFiltered] = useState(false);
+
   const [search_serial, setSearchSerial] = useState("");
   const [chip, setChip] = useState("");
 
   const [inventory_filter_msg, setInvFilterMsg] = useState("");
-
-  const dispatch = useDispatch();
+  const [has_eol, setEol] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -116,6 +99,7 @@ const Inventory: FC = (): ReactElement => {
 
     const inventoryResult = await standardGet(accessToken, route);
     dispatch(setInventory(inventoryResult.data));
+
     if (selectedEntity !== "") {
       dispatch(filterInventoryByEntity(selectedEntity));
     }
@@ -123,37 +107,64 @@ const Inventory: FC = (): ReactElement => {
   };
 
   useEffect(() => {
-    if (!loading) {
-      fetchData().catch(console.error);
+    if (client !== "") {
+      fetchData().catch();
     }
   }, [client]);
 
   useEffect(() => {
-    if (search_serial !== "") {
-      searchFilter("");
-    }
-  }, [tabValue]);
-
-  useEffect(() => {
     if (selectedClientData !== "") {
       setClient(selectedClientData);
-      // fetchData().catch(console.error);
     }
   }, [selectedClientData]);
 
-  useEffect(() => {
-    if (!openAdd && data.in_stock.length > 0) {
-      fetchData().catch(console.error);
-    }
-  }, [openAdd]);
-
-  useEffect(() => {
-    if (data.in_stock.length >= 0) {
-      setLoading(false);
-    }
-  }, [data]);
-
   useEffect(() => {}, [brands]);
+
+  useEffect(() => {
+    if (current_inventory.length > 0 && !is_filtered) {
+      setUIInventory(current_inventory);
+
+      for (const dev of current_inventory) {
+        if (dev.eol!.length > 0) {
+          setEol(true);
+          break;
+        }
+      }
+    }
+  }, [current_inventory]);
+
+  useEffect(() => {
+    if (is_filtered) {
+      setUIInventory(filtered_inventory);
+      if (search_serial !== "" && filtered_inventory.length === 0) {
+        missing_mapping().catch();
+        setInvFilterMsg(
+          "Device has not been mapped yet in the inventory. Will be updated in 24 hours."
+        );
+      }
+    } else {
+      setUIInventory(current_inventory);
+      setInvFilterMsg("");
+    }
+  }, [filtered_inventory, is_filtered]);
+
+  useEffect(() => {
+    if (searchParams.get("sn")) {
+      setSearchSerial(searchParams.get("sn")!);
+    } else {
+      setSearchSerial("");
+      searchFilter("");
+      setTabValue(0);
+    }
+  }, [searchParams, location.pathname]);
+
+  useEffect(() => {
+    dispatch(filterInventoryByEntity(selectedEntity));
+  }, [selectedEntity]);
+
+  useEffect(() => {
+    searchFilter(search_serial);
+  }, [search_serial]);
 
   const downloadInventory = async () => {
     const accessToken = await getAccessTokenSilently();
@@ -189,160 +200,10 @@ const Inventory: FC = (): ReactElement => {
     setTabValue(newValue);
   };
 
-  const updateCount = () => {
-    let deployedVar = 0;
-    deployedRedux.forEach((d) => {
-      deployedVar += d.serial_numbers.length;
-    });
-    setDeployedTotal(deployedVar);
-
-    let inprogVar = 0;
-    pendingRedux.forEach((p) => {
-      inprogVar += p.serial_numbers.length;
-    });
-    setInprogTotal(inprogVar);
-
-    let stockVar = 0;
-    stockRedux.forEach((s) => {
-      stockVar += s.serial_numbers.length;
-    });
-    setStockTotal(stockVar);
-
-    let eolVar = 0;
-    eolRedux.forEach((e) => {
-      eolVar += e.serial_numbers.length;
-    });
-
-    setDeviceTotal(stockRedux.length);
-  };
-
-  useEffect(() => {
-    setInprogress(pendingRedux);
-    setEndOfLife(eolRedux);
-    if (search_serial !== "") {
-      searchFilter(search_serial);
-    } else {
-      setStock(stockRedux);
-      setDeployed(deployedRedux);
-      updateCount();
-    }
-  }, [pendingRedux, deployedRedux, stockRedux, eolRedux]);
-
-  useEffect(() => {
-    updateCount();
-  }, [stock, deployed, inprogress]);
-
-  useEffect(() => {
-    if (searchParams.get("sn")) {
-      setSearchSerial(searchParams.get("sn")!);
-    } else {
-      setSearchSerial("");
-      searchFilter("");
-      setTabValue(0);
-    }
-  }, [searchParams, location.pathname]);
-
-  useEffect(() => {
-    if (!filtered) {
-      let deployedVar = 0;
-      deployedRedux.forEach((d) => {
-        deployedVar += d.serial_numbers.length;
-      });
-      setDeployedTotal(deployedVar);
-
-      let inprogVar = 0;
-      pendingRedux.forEach((p) => {
-        inprogVar += p.serial_numbers.length;
-      });
-      setInprogTotal(inprogVar);
-    } else {
-      if (
-        stock.length === 0 &&
-        deployed.length === 0 &&
-        inprogress.length === 0 &&
-        search_serial !== ""
-      ) {
-        missing_mapping().catch();
-        setInvFilterMsg(
-          "Device has not been mapped yet in the inventory. Will be updated in 24 hours."
-        );
-      }
-    }
-  }, [filtered]);
-
-  useEffect(() => {
-    dispatch(filterInventoryByEntity(selectedEntity));
-  }, [selectedEntity]);
-
-  useEffect(() => {}, [search_serial]);
-
   const searchFilter = (text: string) => {
     setLoading(true);
-    if (text !== "") {
-      let searchStock = searchFilterFunction(
-        [...data.in_stock],
-        text.toLowerCase()
-      );
-      let searchInProg = searchFilterFunction(
-        [...data.pending],
-        text.toLowerCase()
-      );
-
-      let searchDeployed = searchFilterFunction(
-        [...data.deployed],
-        text.toLowerCase()
-      );
-
-      setStock(searchStock);
-      setDeployed(searchDeployed);
-      setInprogress(searchInProg);
-      setFiltered(true);
-      if (
-        searchStock.length === 0 &&
-        searchDeployed.length === 0 &&
-        searchInProg.length > 0
-      ) {
-        setTabValue(2);
-      } else if (
-        searchStock.length === 0 &&
-        searchDeployed.length > 0 &&
-        searchInProg.length === 0
-      ) {
-        setTabValue(1);
-      } else if (
-        searchStock.length > 0 &&
-        searchDeployed.length === 0 &&
-        searchInProg.length === 0
-      ) {
-        setTabValue(0);
-      }
-    } else {
-      setFiltered(false);
-      setStock(data.in_stock);
-      setDeployed(data.deployed);
-      setInprogress(data.pending);
-      setInvFilterMsg("");
-    }
+    dispatch(filterInventory(text));
     setLoading(false);
-  };
-
-  const searchFilterFunction = (objs: InventorySummary[], text: string) => {
-    return objs.filter(
-      (device) =>
-        device.name.toLowerCase().indexOf(text) > -1 ||
-        device.location.toLowerCase().indexOf(text) > -1 ||
-        device.serial_numbers.filter(
-          (dev) => dev.sn.toLowerCase().indexOf(text) > -1
-        ).length > 0 ||
-        device.serial_numbers.filter(
-          (dev) =>
-            dev.first_name && dev.first_name.toLowerCase().indexOf(text) > -1
-        ).length > 0 ||
-        device.serial_numbers.filter(
-          (dev) =>
-            dev.last_name && dev.last_name.toLowerCase().indexOf(text) > -1
-        ).length > 0
-    );
   };
 
   return (
@@ -367,11 +228,7 @@ const Inventory: FC = (): ReactElement => {
               <FileDownloadIcon />
             </IconButton>
           </h2>
-          <ManageModal
-            type="general"
-            devices={data.in_stock}
-            instock_quantity={stockTotal}
-          />
+          <ManageModal devices={current_inventory} />
         </Stack>
         {brands.length > 0 && (
           <Stack direction="row" spacing={2}>
@@ -408,247 +265,70 @@ const Inventory: FC = (): ReactElement => {
                 <Tab label="In Stock" {...a11yProps(0)} />
                 <Tab label="Deployed" {...a11yProps(1)} />
                 <Tab label="Pending" {...a11yProps(2)} />
-                <Tab label="End of Life" {...a11yProps(3)} />
+                {has_eol && <Tab label="End of Life" {...a11yProps(3)} />}
               </Tabs>
             </Box>
-            <TabPanel value={tabValue} index={0} prefix="inv">
-              <Box
-                sx={{
-                  display: loading ? "flex" : "block",
-                  flexWrap: "wrap",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                {inventory_filter_msg !== "" && (
-                  <Typography>{inventory_filter_msg}</Typography>
-                )}
-                <>
-                  {deviceTotal > 0 ? (
-                    <>
-                      {stock?.length > 0 &&
-                        stock.map((device, index) => {
-                          if (
-                            device.serial_numbers.length > 0 ||
-                            !device.hide_out_of_stock
-                          )
-                            return (
-                              !device.new_device && (
-                                <InventoryAccordion
-                                  {...device}
-                                  tabValue={tabValue}
-                                  key={index}
-                                  index={index}
-                                  total_devices={stock.length}
-                                  search_serial_number={search_serial}
-                                  refresh={fetchData}
-                                  client={client}
-                                />
-                              )
-                            );
-                        })}
-                    </>
-                  ) : (
-                    <>
-                      <Typography textAlign="center">
-                        No Inventory Currently In Stock
-                      </Typography>
-                    </>
-                  )}
-                  {stockTotal === 0 && filtered && (
-                    <Typography textAlign="center">No results found</Typography>
-                  )}
-                </>
-              </Box>
-            </TabPanel>
-            <TabPanel value={tabValue} index={1} prefix="inv">
-              <Box
-                sx={{
-                  display: "block",
-                  flexWrap: "wrap",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                <>
-                  {deployedTotal > 0 ? (
-                    <>
-                      {deployed?.length > 0 &&
-                        deployed.map((device, index) => {
-                          return (
-                            device.serial_numbers.length > 0 && (
-                              <InventoryAccordion
-                                {...device}
-                                tabValue={tabValue}
-                                key={index}
-                                index={index}
-                                total_devices={deployed.length}
-                                search_serial_number={search_serial}
-                                refresh={fetchData}
-                                client={client}
-                              />
-                            )
-                          );
-                        })}
-                    </>
-                  ) : (
-                    <>
-                      {!filtered ? (
-                        <>
-                          <img
-                            src={
-                              "https://spokeimages.blob.core.windows.net/image/warehouse.avif"
-                            }
-                            style={{
-                              display: "block",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                            }}
-                          />
-                          <div>
-                            <Typography
-                              textAlign="center"
-                              sx={{ paddingTop: "20px" }}
-                              variant="subtitle1"
-                            >
-                              No Inventory Currently Deployed
-                            </Typography>
-                          </div>
-                        </>
-                      ) : (
-                        <Typography textAlign="center">
-                          No results found
-                        </Typography>
-                      )}
-                    </>
-                  )}
-                </>
-              </Box>
-            </TabPanel>
-            <TabPanel value={tabValue} index={2} prefix="inv">
-              <Box
-                sx={{
-                  display: "block",
-                  flexWrap: "wrap",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                <>
-                  {inprogTotal > 0 ? (
-                    <>
-                      {inprogress?.length > 0 &&
-                        inprogress.map((device, index) => {
-                          return (
-                            device.serial_numbers.length > 0 && (
-                              <InventoryAccordion
-                                {...device}
-                                tabValue={tabValue}
-                                key={index}
-                                clientData={clientData}
-                                index={index}
-                                total_devices={inprogress.length}
-                                search_serial_number={search_serial}
-                                refresh={fetchData}
-                                client={client}
-                              />
-                            )
-                          );
-                        })}
-                    </>
-                  ) : (
-                    <>
-                      {!filtered ? (
-                        <>
-                          <img
-                            src={
-                              "https://spokeimages.blob.core.windows.net/image/warehousestock.png"
-                            }
-                            style={{
-                              display: "block",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                            }}
-                          />
-                          <div>
-                            <Typography
-                              textAlign="center"
-                              sx={{ paddingTop: "20px" }}
-                              variant="subtitle1"
-                            >
-                              No Inventory Currently Pending
-                            </Typography>
-                          </div>
-                        </>
-                      ) : (
-                        <Typography textAlign="center">
-                          No results found
-                        </Typography>
-                      )}
-                    </>
-                  )}
-                </>
-              </Box>
-            </TabPanel>
-            <TabPanel value={tabValue} index={3} prefix="inv">
-              <>
-                {eolTotal > 0 ? (
-                  <Box
-                    sx={{
-                      display: "block",
-                      flexWrap: "wrap",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {endoflife.length > 0 &&
-                      endoflife.map((device, index) => {
-                        return (
-                          device.serial_numbers.length > 0 && (
-                            <InventoryAccordion
-                              {...device}
-                              tabValue={tabValue}
-                              key={index}
-                              clientData={clientData}
-                              index={index}
-                              total_devices={inprogress.length}
-                              search_serial_number={search_serial}
-                              refresh={fetchData}
-                              client={client}
-                            />
-                          )
-                        );
-                      })}
-                  </Box>
-                ) : (
-                  <Typography textAlign="center">
-                    No devices near end of service
-                  </Typography>
-                )}
-              </>
-            </TabPanel>
-            {/* {marketClient !== "Automox" &&
-            marketClient !== "Alma" &&
-            marketClient !== "Flo Health" &&
-            marketClient !== "Hidden Road" &&
-            marketClient !== "Roivant" &&
-            marketClient !== "Sona" && (
-              <>
-                <Fab
-                  color="primary"
-                  sx={{ bottom: 15, position: "fixed" }}
-                  onClick={() => setOpenAdd(true)}
-                  variant="extended"
-                >
-                  <Typography>Add Inventory</Typography>
-                </Fab>
-                <AddModal
-                  open={openAdd}
-                  setParentOpen={setOpenAdd}
-                  deviceNames={data.in_stock}
-                />
-              </>
-            )} */}
+            <Stack spacing={1} pt={1}>
+              {inventory_filter_msg !== "" && (
+                <Typography>{inventory_filter_msg}</Typography>
+              )}
+              {inventory.length > 0 &&
+                inventory.map((device, index) => {
+                  if (tabValue === 0) {
+                    return (
+                      <InventoryAccordion
+                        {...device}
+                        tabValue={tabValue}
+                        key={index}
+                        index={index}
+                        total_devices={device.in_stock!.length}
+                        search_serial_number={search_serial}
+                        refresh={fetchData}
+                        client={client}
+                      />
+                    );
+                  } else if (tabValue === 1 && device.deployed!.length > 0) {
+                    return (
+                      <InventoryAccordion
+                        {...device}
+                        tabValue={tabValue}
+                        key={index}
+                        index={index}
+                        total_devices={device.deployed!.length}
+                        search_serial_number={search_serial}
+                        refresh={fetchData}
+                        client={client}
+                      />
+                    );
+                  } else if (tabValue === 2 && device.pending!.length > 0) {
+                    return (
+                      <InventoryAccordion
+                        {...device}
+                        tabValue={tabValue}
+                        key={index}
+                        index={index}
+                        total_devices={device.pending!.length}
+                        search_serial_number={search_serial}
+                        refresh={fetchData}
+                        client={client}
+                      />
+                    );
+                  } else if (tabValue === 3 && device.eol!.length > 0) {
+                    return (
+                      <InventoryAccordion
+                        {...device}
+                        tabValue={tabValue}
+                        key={index}
+                        index={index}
+                        total_devices={device.eol!.length}
+                        search_serial_number={search_serial}
+                        refresh={fetchData}
+                        client={client}
+                      />
+                    );
+                  }
+                })}
+            </Stack>
           </Box>
         )}
       </Box>

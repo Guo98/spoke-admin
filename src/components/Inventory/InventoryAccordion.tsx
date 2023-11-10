@@ -7,19 +7,22 @@ import { styled } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   CardMedia,
-  Grid,
+  Button,
   Typography,
   Chip,
   useTheme,
   AccordionDetails,
   Stack,
 } from "@mui/material";
+import { useDispatch } from "react-redux";
 
 import EndOfLife from "./Tables/EndOfLife";
 import InStock from "./Tables/InStock";
 import Deployed from "./Tables/Deployed";
 import Pending from "./Tables/Pending";
+import AppContainer from "../AppContainer/AppContainer";
 
+import { openMarketplace } from "../../app/slices/marketSlice";
 import { InventorySummary } from "../../interfaces/inventory";
 
 const Accordion = styled((props: AccordionProps) => (
@@ -72,6 +75,8 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     client,
   } = props;
 
+  const dispatch = useDispatch();
+
   const [orderBy, setOrderBy] = useState("");
   const [order, setOrder] = useState<Order>("asc");
 
@@ -114,6 +119,28 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
     }
 
     return devices;
+  };
+
+  const market_info = () => {
+    const market_obj = {
+      imgSrc: image_source || "",
+      brand: props.brand,
+      client: client,
+      specific_device: name,
+      location,
+      supplier_links: props.marketplace,
+      specific_specs:
+        props.specs?.screen_size +
+        ", " +
+        props.specs?.cpu +
+        ", " +
+        props.specs?.ram +
+        ", " +
+        props.specs?.hard_drive,
+    };
+
+    dispatch(openMarketplace(market_obj));
+    AppContainer.navigate("marketplace");
   };
 
   useEffect(() => {}, [props.total_devices]);
@@ -197,15 +224,15 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
             <Typography>{location}</Typography>
             <Chip
               label={
-                serial_numbers.length === 0
+                props.total_devices === 0
                   ? "Out of Stock"
-                  : serial_numbers.length +
+                  : props.total_devices +
                     (tabValue === 0
                       ? " in stock"
                       : tabValue === 1
                       ? " deployed"
                       : tabValue === 3
-                      ? " device" + (serial_numbers.length > 1 ? "s" : "")
+                      ? " device" + (props.total_devices > 1 ? "s" : "")
                       : " pending")
               }
               sx={{
@@ -221,6 +248,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 marginLeft: { md: "0px", xs: "15px" },
               }}
             />
+            {tabValue === 0 && serial_numbers.length === 0 && (
+              <Button variant="contained" size="small" onClick={market_info}>
+                Order More
+              </Button>
+            )}
           </Stack>
         </Stack>
       </AccordionSummary>
@@ -234,7 +266,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
         {tabValue === 0 && (
           <InStock
             tableSort={tableSort}
-            serial_numbers={serial_numbers}
+            serial_numbers={props.in_stock!}
             name={name}
             location={location}
             id={id}
@@ -244,7 +276,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
         )}
         {tabValue === 1 && (
           <Deployed
-            serial_numbers={serial_numbers}
+            serial_numbers={props.deployed!}
             name={name}
             location={location}
             id={id}
@@ -256,18 +288,19 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
         {tabValue === 2 && (
           <Pending
             tableSort={tableSort}
-            serial_numbers={serial_numbers}
+            serial_numbers={props.pending!}
             name={name}
             location={location}
             id={id}
             image_source={image_source}
             clientData={props.clientData}
+            searched_serial={search_serial_number}
           />
         )}
         {tabValue === 3 && (
           <EndOfLife
             tableSort={tableSort}
-            serial_numbers={serial_numbers}
+            serial_numbers={props.eol!}
             name={name}
             location={location}
             id={id}
