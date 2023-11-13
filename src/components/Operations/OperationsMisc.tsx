@@ -4,7 +4,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import NewClient from "./NewClient";
-import MarketplaceOrders from "./MarketplaceOrders";
+import MarketplaceOrders from "./MarketplaceOrders/MarketplaceOrders";
 import ViewUsers from "./Users/ViewUsers";
 import EditMarketplace from "./EditMarketplace/EditMarketplace";
 import UpdateInventory from "./UpdateInventory/UpdateInventory";

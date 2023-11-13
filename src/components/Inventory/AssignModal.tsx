@@ -11,6 +11,7 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
+  Divider,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -241,6 +242,35 @@ const AssignModal = (props: AssignProps) => {
               New Deployment
             </Typography>
             <Stack spacing={2}>
+              <Divider textAlign="left">Device Info</Divider>
+              {device_name && (
+                <div>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Device:{" "}
+                  </Typography>
+                  <Typography display="inline" component="span">
+                    {device_name}
+                  </Typography>
+                </div>
+              )}
+              {serial_number && (
+                <div>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    Serial Number:{" "}
+                  </Typography>
+                  <Typography display="inline" component="span">
+                    {serial_number}
+                  </Typography>
+                </div>
+              )}
               {manage_modal && (
                 <div>
                   <FormControl
@@ -285,6 +315,7 @@ const AssignModal = (props: AssignProps) => {
                   </FormControl>
                 </div>
               )}
+              <Divider textAlign="left">Recipient Info</Divider>
               <Stack direction="row" spacing={2}>
                 <TextField
                   required
