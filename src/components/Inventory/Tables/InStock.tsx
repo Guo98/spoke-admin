@@ -17,20 +17,12 @@ import { InventorySummary } from "../../../interfaces/inventory";
 type Order = "asc" | "desc";
 
 interface TableProps extends InventorySummary {
-  tableSort: Function;
   searched_serial: string;
 }
 
 const InStock = (props: TableProps) => {
-  const {
-    serial_numbers,
-    tableSort,
-    name,
-    location,
-    image_source,
-    id,
-    searched_serial,
-  } = props;
+  const { serial_numbers, name, location, image_source, id, searched_serial } =
+    props;
 
   const [orderBy, setOrderBy] = useState("Serial Number");
   const [order, setOrder] = useState<Order>("asc");
@@ -165,13 +157,13 @@ const InStock = (props: TableProps) => {
                           device_name={name}
                           device_location={location}
                           image_source={image_source}
-                          type="individual"
                           id={id}
                           disabled={
                             item.condition !== "Used" &&
                             item.condition !== "New"
                           }
                           warehouse={item.warehouse}
+                          manage_modal={false}
                         />
                       </TableCell>
                     </TableRow>

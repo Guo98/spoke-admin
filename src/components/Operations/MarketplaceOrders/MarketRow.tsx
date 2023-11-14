@@ -1,45 +1,32 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  IconButton,
-  Typography,
-  Grid,
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-  Paper,
-  Collapse,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Button,
-  TextField,
-  InputAdornment,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
-  standardPost,
-  standardGet,
-  standardDelete,
-} from "../../services/standard";
-import { uploadFile, downloadFile } from "../../services/azureblob";
-import { clientsList } from "../../utilities/mappings";
-import { entityMappings } from "../../app/utility/constants";
-import LinearLoading from "../common/LinearLoading";
+  SelectChangeEvent,
+  TableRow,
+  TableCell,
+  IconButton,
+  Typography,
+  Collapse,
+  Box,
+  Stack,
+  TextField,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  InputAdornment,
+  Button,
+} from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-interface MOProps {
-  handleClose: Function;
-}
+import LinearLoading from "../../common/LinearLoading";
+import { clientsList } from "../../../utilities/mappings";
+import { entityMappings } from "../../../app/utility/constants";
+
+import { standardPost, standardDelete } from "../../../services/standard";
+import { uploadFile, downloadFile } from "../../../services/azureblob";
 
 interface RowProps {
   order: {
@@ -414,93 +401,4 @@ const MarketRow = (props: RowProps) => {
   );
 };
 
-const MarketplaceOrders = (props: MOProps) => {
-  const { handleClose } = props;
-
-  const [loading, setLoading] = useState(false);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [error, setError] = useState(false);
-
-  const { getAccessTokenSilently } = useAuth0();
-
-  const getOrders = async () => {
-    const accessToken = await getAccessTokenSilently();
-
-    const ordersRes = await standardGet(accessToken, "marketplaceorders");
-
-    if (ordersRes.status === "Successful") {
-      setOrders(ordersRes.data.reverse());
-      setLoading(false);
-    } else {
-      setError(true);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (orders.length === 0 && !loading) {
-      setLoading(true);
-      getOrders().catch();
-    }
-  }, []);
-
-  return (
-    <Box>
-      <Grid container direction="row">
-        <Grid item xs={11} sx={{ paddingLeft: "15px" }}>
-          <Typography>
-            <h3>Marketplace Orders</h3>
-          </Typography>
-        </Grid>
-        <Grid item xs={1} sx={{ paddingTop: "10px", paddingLeft: "20px" }}>
-          <IconButton onClick={() => handleClose()}>
-            <CloseIcon />
-          </IconButton>
-        </Grid>
-      </Grid>
-      {loading && <LinearLoading />}
-      {!loading && orders.length > 0 && (
-        <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Client</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Recipient Name</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Date Requested</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Type</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Specs</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Color</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Request Type</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography fontWeight="bold">Region</Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.map((order, index) => (
-                <MarketRow order={order} refresh={getOrders} />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Box>
-  );
-};
-
-export default MarketplaceOrders;
+export default MarketRow;

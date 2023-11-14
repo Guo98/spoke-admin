@@ -77,7 +77,6 @@ export const marketSlice = createSlice({
     },
     openMarketplace: (state, action: PayloadAction<any>) => {
       state.order_info = action.payload;
-      console.log("state order info ::::::::::: ", state.order_info);
     },
     resetMarketplaceInfo: (state) => {
       state.order_info = null;

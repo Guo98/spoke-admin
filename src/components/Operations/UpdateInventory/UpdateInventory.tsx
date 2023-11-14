@@ -413,6 +413,9 @@ const UpdateInventory = (props: UpdateProps) => {
                         handleDelete={handleDeleteRow}
                         warehouse={sn.warehouse}
                         date_deployed={sn.date_deployed}
+                        supplier={sn.supplier}
+                        price={sn.price}
+                        purchase_date={sn.purchase_date}
                       />
                     )
                   )}

@@ -11,7 +11,6 @@ import {
   Paper,
 } from "@mui/material";
 
-import ManageModal from "../ManageModal";
 import OffboardModal from "../OffboardModal";
 import { InventorySummary } from "../../../interfaces/inventory";
 
@@ -201,6 +200,7 @@ const Deployed = (props: TableProps) => {
                           state={item.address?.state}
                           postal_code={item.address?.postal_code}
                           country={item.address?.country_code}
+                          manage_modal={false}
                         />
                       </TableCell>
                     </TableRow>

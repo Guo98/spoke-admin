@@ -22,6 +22,10 @@ export interface InventorySummary {
   marketplace?: any;
   brand?: string;
   locations?: string[];
+  in_stock?: SerialNumbers[];
+  deployed?: SerialNumbers[];
+  pending?: SerialNumbers[];
+  eol?: SerialNumbers[];
 }
 
 interface SerialNumbers {
@@ -51,6 +55,7 @@ interface SerialNumbers {
   supplier_order_no?: string;
   full_name?: string;
   warehouse?: string;
+  eol_date?: string;
 }
 
 export interface MarketplaceProducts {

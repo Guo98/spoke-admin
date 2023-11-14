@@ -16,6 +16,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 
 import { standardPost } from "../../services/standard";
 
@@ -40,6 +41,7 @@ interface OffboardProps {
   postal_code?: string;
   email?: string;
   phone_number?: string;
+  manage_modal: boolean;
 }
 
 const style = {
@@ -59,7 +61,7 @@ const textFieldStyle = {
 };
 
 const OffboardModal = (props: OffboardProps) => {
-  const { client } = props;
+  const { client, manage_modal } = props;
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -89,6 +91,25 @@ const OffboardModal = (props: OffboardProps) => {
 
   const handleClose = () => {
     setOpen(false);
+    // reset all state
+    setRType("");
+    setSelectedDevice("");
+    setCondition("");
+    setSN("");
+    setActivation("");
+    setFN("");
+    setLN("");
+    setAl1("");
+    setAl2("");
+    setCity("");
+    setProv("");
+    setCountry("");
+    setPC("");
+    setEmail("");
+    setPN("");
+    setShipping("");
+    setNotes("");
+    setSuccess(-1);
   };
 
   const handleTypeChange = (event: SelectChangeEvent) => {
@@ -155,14 +176,7 @@ const OffboardModal = (props: OffboardProps) => {
     return (
       first_name === "" ||
       last_name === "" ||
-      al1 === "" ||
-      city === "" ||
-      prov === "" ||
-      postal_code === "" ||
-      country === "" ||
       email === "" ||
-      phone_number === "" ||
-      shipping === "" ||
       return_type === ""
     );
   };
@@ -178,13 +192,26 @@ const OffboardModal = (props: OffboardProps) => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        onClick={() => setOpen(true)}
-        sx={{ borderRadius: "10px" }}
-      >
-        Offboard
-      </Button>
+      {manage_modal ? (
+        <Button
+          variant="contained"
+          sx={{ height: "50%", width: "25%" }}
+          onClick={() => setOpen(true)}
+        >
+          <Stack spacing={1} alignItems="center" p={2}>
+            <KeyboardReturnIcon />
+            <Typography>Return</Typography>
+          </Stack>
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={() => setOpen(true)}
+          sx={{ borderRadius: "10px" }}
+        >
+          Offboard
+        </Button>
+      )}
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           {!loading && (
@@ -280,51 +307,6 @@ const OffboardModal = (props: OffboardProps) => {
                     required
                   />
                 </Stack>
-                <TextField
-                  label="Address Line 1"
-                  value={al1}
-                  onChange={(text: string) => setAl1(text)}
-                  fullWidth
-                  required
-                />
-                <TextField
-                  label="Address Line 2"
-                  value={al2}
-                  onChange={(text: string) => setAl2(text)}
-                  fullWidth
-                />
-                <Stack direction="row" spacing={2}>
-                  <TextField
-                    label="City/Town"
-                    value={city}
-                    onChange={(text: string) => setCity(text)}
-                    fullWidth
-                    required
-                  />
-                  <TextField
-                    label="State/Province"
-                    value={prov}
-                    onChange={(text: string) => setProv(text)}
-                    fullWidth
-                    required
-                  />
-                </Stack>
-                <Stack direction="row" spacing={2}>
-                  <TextField
-                    label="Postal Code"
-                    value={postal_code}
-                    onChange={(text: string) => setPC(text)}
-                    fullWidth
-                    required
-                  />
-                  <TextField
-                    label="Country"
-                    value={country}
-                    onChange={(text: string) => setCountry(text)}
-                    fullWidth
-                    required
-                  />
-                </Stack>
                 <Stack direction="row" spacing={2}>
                   <TextField
                     label="Email"
@@ -338,15 +320,49 @@ const OffboardModal = (props: OffboardProps) => {
                     value={phone_number}
                     onChange={(text: string) => setPN(text)}
                     fullWidth
-                    required
                   />
                 </Stack>
-                <FormControl
+                <TextField
+                  label="Address Line 1"
+                  value={al1}
+                  onChange={(text: string) => setAl1(text)}
                   fullWidth
-                  size="small"
-                  sx={textFieldStyle}
-                  required
-                >
+                />
+                <TextField
+                  label="Address Line 2"
+                  value={al2}
+                  onChange={(text: string) => setAl2(text)}
+                  fullWidth
+                />
+                <Stack direction="row" spacing={2}>
+                  <TextField
+                    label="City/Town"
+                    value={city}
+                    onChange={(text: string) => setCity(text)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="State/Province"
+                    value={prov}
+                    onChange={(text: string) => setProv(text)}
+                    fullWidth
+                  />
+                </Stack>
+                <Stack direction="row" spacing={2}>
+                  <TextField
+                    label="Postal Code"
+                    value={postal_code}
+                    onChange={(text: string) => setPC(text)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Country"
+                    value={country}
+                    onChange={(text: string) => setCountry(text)}
+                    fullWidth
+                  />
+                </Stack>
+                <FormControl fullWidth size="small" sx={textFieldStyle}>
                   <InputLabel id="shipping-select-label">Shipping</InputLabel>
                   <Select
                     labelId="shipping-select-label"

@@ -18,20 +18,69 @@ import { InventorySummary } from "../../../interfaces/inventory";
 type Order = "asc" | "desc";
 
 interface TableProps extends InventorySummary {
-  tableSort: Function;
   clientData?: string;
+  searched_serial: string;
 }
 
 const Pending = (props: TableProps) => {
-  const { serial_numbers, tableSort, name, location, image_source, id } = props;
+  const { serial_numbers, name, location, image_source, id, searched_serial } =
+    props;
 
-  const [orderBy, setOrderBy] = useState("");
+  const [orderBy, setOrderBy] = useState("Date Requested");
   const [order, setOrder] = useState<Order>("asc");
+  const [sorted_serials, setSorted] = useState(serial_numbers);
 
   const sortHandler = (cell: string) => (event: React.MouseEvent<unknown>) => {
     const isAsc = orderBy === cell && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(cell);
+
+    let devices = [...serial_numbers];
+    if (cell === "Serial Number") {
+      if (!isAsc) {
+        setSorted(
+          devices.sort((a, b) => (a.sn > b.sn ? 1 : b.sn > a.sn ? -1 : 0))
+        );
+      } else {
+        setSorted(
+          devices.sort((a, b) => (a.sn < b.sn ? 1 : b.sn < a.sn ? -1 : 0))
+        );
+      }
+    } else if (cell === "Status") {
+      if (!isAsc) {
+        setSorted(
+          devices.sort((a, b) =>
+            a.status > b.status ? 1 : b.status > a.status ? -1 : 0
+          )
+        );
+      } else {
+        setSorted(
+          devices.sort((a, b) =>
+            a.status < b.status ? 1 : b.status < a.status ? -1 : 0
+          )
+        );
+      }
+    } else if (cell === "Date Requested") {
+      if (!isAsc) {
+        setSorted(
+          devices.sort((a, b) => {
+            return (
+              new Date(b.date_requested!).getTime() -
+              new Date(a.date_requested!).getTime()
+            );
+          })
+        );
+      } else {
+        setSorted(
+          devices.sort((a, b) => {
+            return (
+              new Date(a.date_requested!).getTime() -
+              new Date(b.date_requested!).getTime()
+            );
+          })
+        );
+      }
+    }
   };
 
   return (
@@ -55,33 +104,29 @@ const Pending = (props: TableProps) => {
                   </TableSortLabel>
                 </TableCell>
                 <TableCell
-                  key="Condition"
+                  key="Status"
                   width="20%"
-                  sortDirection={orderBy === "Condition" ? order : false}
+                  sortDirection={orderBy === "Status" ? order : false}
                 >
                   <TableSortLabel
-                    active={orderBy === "Condition"}
-                    onClick={sortHandler("Condition")}
-                    direction={orderBy === "Condition" ? order : "asc"}
+                    active={orderBy === "Status"}
+                    onClick={sortHandler("Status")}
+                    direction={orderBy === "Status" ? order : "asc"}
                   >
                     <Typography fontWeight="bold">Status</Typography>
                   </TableSortLabel>
                 </TableCell>
-                <TableCell
-                  key="Grade"
-                  width="15%"
-                  sortDirection={orderBy === "Grade" ? order : false}
-                >
-                  <TableSortLabel
-                    active={orderBy === "Grade"}
-                    onClick={sortHandler("Grade")}
-                    direction={orderBy === "Grade" ? order : "asc"}
-                  >
-                    <Typography fontWeight="bold">Quantity</Typography>
-                  </TableSortLabel>
+                <TableCell width="15%">
+                  <Typography fontWeight="bold">Quantity</Typography>
                 </TableCell>
-                <TableCell key="Date" width="20%">
-                  <Typography fontWeight="bold">Date Requested</Typography>
+                <TableCell key="Date Requested" width="20%">
+                  <TableSortLabel
+                    active={orderBy === "Date Requested"}
+                    onClick={sortHandler("Date Requested")}
+                    direction={orderBy === "Date Requested" ? order : "asc"}
+                  >
+                    <Typography fontWeight="bold">Date Requested</Typography>
+                  </TableSortLabel>
                 </TableCell>
                 <TableCell key="Action" width="20%">
                   <Typography fontWeight="bold">Action</Typography>
@@ -89,13 +134,21 @@ const Pending = (props: TableProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {serial_numbers.length > 0 &&
-                tableSort().map((item: any, index: number) => {
+              {sorted_serials.length > 0 &&
+                sorted_serials.map((item: any, index: number) => {
                   const { sn, condition } = item;
                   return (
                     <TableRow key={index}>
                       <TableCell width="25%">
-                        <Typography>{sn}</Typography>
+                        <Typography
+                          color={
+                            searched_serial !== "" && searched_serial === sn
+                              ? "#AEDD6B"
+                              : ""
+                          }
+                        >
+                          {sn}
+                        </Typography>
                       </TableCell>
                       <TableCell width="20%">
                         <Typography>{item.status}</Typography>

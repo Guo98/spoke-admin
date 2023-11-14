@@ -18,7 +18,7 @@ interface InitialInventoryState {
   brands: string[];
   devices: InventorySummary[];
   filteredDevices: InventorySummary[];
-  filteredPage: number;
+  filtered: boolean;
   search_text: string;
   device_ids: {
     name: string;
