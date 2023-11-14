@@ -113,10 +113,12 @@ const Inventory: FC = (): ReactElement => {
   }, [client]);
 
   useEffect(() => {
-    if (selectedClientData !== "") {
+    if (clientData === "spokeops") {
       setClient(selectedClientData);
+    } else {
+      setClient(clientData);
     }
-  }, [selectedClientData]);
+  }, [selectedClientData, clientData]);
 
   useEffect(() => {}, [brands]);
 
