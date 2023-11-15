@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+// @ts-ignore
+import isEmail from "validator/lib/isEmail";
 
 import DeployModalContent from "./DeployModal";
 import { InventorySummary } from "../../interfaces/inventory";
@@ -86,6 +88,7 @@ const AssignModal = (props: AssignProps) => {
 
   const [addressObj, setAddrObj] = useState<ValidateAddress | null>(null);
   const [email, setEmail] = useState("");
+  const [valid_email, setValidEmail] = useState(true);
   const [phonenumber, setPhonenumber] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -411,12 +414,25 @@ const AssignModal = (props: AssignProps) => {
                 <TextField
                   required
                   id="standard-email"
+                  type="email"
                   label="Email"
                   value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    if (
+                      !isEmail(event.target.value) &&
+                      event.target.value !== ""
+                    ) {
+                      setValidEmail(false);
+                    } else {
+                      setValidEmail(true);
+                    }
+                  }}
                   size="small"
                   sx={textFieldStyle}
                   fullWidth
+                  error={!valid_email}
+                  helperText={!valid_email ? "Invalid email" : ""}
                 />
                 <TextField
                   required

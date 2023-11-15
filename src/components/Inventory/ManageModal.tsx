@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Stack, Box, Button, Typography, Modal } from "@mui/material";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -25,10 +24,6 @@ const style = {
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
-};
-
-const textFieldStyle = {
-  "& fieldset": { borderRadius: "10px" },
 };
 
 interface ManageProps {
@@ -89,8 +84,12 @@ const ManageModal = (props: ManageProps) => {
   }, [devices]);
 
   useEffect(() => {
-    setClient(selectedClientData);
-  }, [selectedClientData]);
+    if (clientData === "spokeops") {
+      setClient(selectedClientData);
+    } else {
+      setClient(clientData);
+    }
+  }, [selectedClientData, clientData]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -147,86 +146,6 @@ const ManageModal = (props: ManageProps) => {
             </Stack>
           </Stack>
         </Box>
-        {/* {!changeView ? (
-          <Box sx={style}>
-            <Typography
-              id="modal-modal-title"
-              variant="h5"
-              component="h3"
-              sx={{ textAlign: "center" }}
-            >
-              Manage Device
-            </Typography>
-            <Grid
-              container
-              spacing={2}
-              justifyContent="space-evenly"
-              sx={{ paddingTop: "15px" }}
-            >
-              <Grid item xs={10}>
-                <FormControl fullWidth sx={textFieldStyle}>
-                  <InputLabel id="manage-type-label">
-                    What do you want to do?
-                  </InputLabel>
-                  <Select
-                    labelId="manage-type-label"
-                    id="manage-select-standard"
-                    value={manageType}
-                    onChange={handleChange}
-                    label="What do you want to do?"
-                  >
-                    {props.type === "general" && (
-                      <MenuItem
-                        value="Deployment"
-                        disabled={instock_quantity! < 1}
-                      >
-                        New Deployment
-                      </MenuItem>
-                    )}
-                    <MenuItem value="Offboard">Offboard</MenuItem>
-                    <MenuItem value="Return">Return</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid
-                xs={2}
-                sx={{
-                  float: "right",
-                  paddingTop: "25px !important",
-                  paddingLeft: "10px",
-                }}
-                item
-              >
-                <Button
-                  variant="contained"
-                  onClick={() => setChangeView(true)}
-                  sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
-                >
-                  <ArrowForwardIcon />
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        ) : (
-          <>
-            {manageType !== "Deployment" && (
-              <OffboardBody
-                manageType={manageType}
-                {...props}
-                device_names={device_names}
-              />
-            )}
-            {manageType === "Deployment" && (
-              <AssignModal
-                type="general"
-                devices={props.devices}
-                manageOpen={true}
-                handleParentClose={handleClose}
-                disabled={false}
-              />
-            )}
-          </>
-        )} */}
       </Modal>
     </div>
   );

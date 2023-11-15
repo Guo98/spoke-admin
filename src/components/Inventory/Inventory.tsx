@@ -43,10 +43,9 @@ function a11yProps(index: number) {
 const Inventory: FC = (): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
-  const dispatch = useDispatch<any>();
-  // inventory redux
-  const data = useSelector((state: RootState) => state.inventory.data);
+  const dispatch = useDispatch();
 
+  // inventory redux
   const brands = useSelector((state: RootState) => state.inventory.brands);
   const serial_info = useSelector(
     (state: RootState) => state.inventory.serial_info
@@ -106,6 +105,22 @@ const Inventory: FC = (): ReactElement => {
     setLoading(false);
   };
 
+  const sort_inventory = () => {
+    setUIInventory(
+      [...current_inventory].sort((a, b) => {
+        if (tabValue === 0) {
+          return b.in_stock!.length - a.in_stock!.length;
+        } else if (tabValue === 1) {
+          return b.deployed!.length - a.deployed!.length;
+        } else if (tabValue === 2) {
+          return b.pending!.length - a.pending!.length;
+        } else {
+          return b.eol!.length - a.eol!.length;
+        }
+      })
+    );
+  };
+
   useEffect(() => {
     if (client !== "") {
       fetchData().catch();
@@ -124,7 +139,7 @@ const Inventory: FC = (): ReactElement => {
 
   useEffect(() => {
     if (current_inventory.length > 0 && !is_filtered) {
-      setUIInventory(current_inventory);
+      sort_inventory();
 
       for (const dev of current_inventory) {
         if (dev.eol!.length > 0) {
@@ -163,7 +178,7 @@ const Inventory: FC = (): ReactElement => {
         }
       }
     } else {
-      setUIInventory(current_inventory);
+      sort_inventory();
       setInvFilterMsg("");
 
       if (search_serial !== "") {
@@ -191,6 +206,12 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {
     searchFilter(search_serial);
   }, [search_serial]);
+
+  useEffect(() => {
+    if (!is_filtered) {
+      sort_inventory();
+    }
+  }, [tabValue]);
 
   const downloadInventory = async () => {
     const accessToken = await getAccessTokenSilently();

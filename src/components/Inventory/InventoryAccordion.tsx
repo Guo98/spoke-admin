@@ -114,8 +114,13 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
   }, [serial_numbers]);
 
   return (
-    <Accordion expanded={expand} onClick={() => setExpand(!expand)}>
-      <AccordionSummary id={"inventory-accordionsummary-" + index}>
+    <Accordion expanded={expand}>
+      <AccordionSummary
+        id={"inventory-accordionsummary-" + index}
+        onClick={() => {
+          setExpand(!expand);
+        }}
+      >
         <Stack direction="row" spacing={2} sx={{ width: "90%" }}>
           <CardMedia
             component="img"
@@ -205,18 +210,18 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
               }
               sx={{
                 backgroundColor:
-                  serial_numbers.length < 10 && tabValue === 0
+                  props.total_devices < 10 && tabValue === 0
                     ? "#ffefea"
                     : "#ebebeb",
                 color:
-                  serial_numbers.length < 10 && tabValue === 0
+                  props.total_devices < 10 && tabValue === 0
                     ? "#DC0202"
                     : "black",
                 marginTop: { md: "20px" },
                 marginLeft: { md: "0px", xs: "15px" },
               }}
             />
-            {tabValue === 0 && serial_numbers.length === 0 && (
+            {tabValue === 0 && props.total_devices === 0 && (
               <Button variant="contained" size="small" onClick={market_info}>
                 Order More
               </Button>

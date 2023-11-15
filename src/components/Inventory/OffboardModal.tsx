@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+// @ts-ignore
+import isEmail from "validator/lib/isEmail";
 
 import { standardPost } from "../../services/standard";
 
@@ -83,6 +85,8 @@ const OffboardModal = (props: OffboardProps) => {
   const [country, setCountry] = useState(props.country || "");
   const [postal_code, setPC] = useState(props.postal_code || "");
   const [email, setEmail] = useState(props.email || "");
+  const [valid_email, setValidEmail] = useState(true);
+
   const [phone_number, setPN] = useState(props.phone_number || "");
   const [shipping, setShipping] = useState("");
   const [notes, setNotes] = useState("");
@@ -151,6 +155,7 @@ const OffboardModal = (props: OffboardProps) => {
       note: notes,
       requestor_name: user?.name,
       id: props.id,
+      shipping,
     };
 
     if (activation !== "") {
@@ -245,8 +250,8 @@ const OffboardModal = (props: OffboardProps) => {
                     onChange={handleTypeChange}
                     required
                   >
-                    <MenuItem value="Offboarding">Offboarding</MenuItem>
-                    <MenuItem value="Returning">Returning</MenuItem>
+                    <MenuItem value="Offboard">Offboarding</MenuItem>
+                    <MenuItem value="Return">Returning</MenuItem>
                   </Select>
                 </FormControl>
                 {props.device_name && (
@@ -308,12 +313,26 @@ const OffboardModal = (props: OffboardProps) => {
                   />
                 </Stack>
                 <Stack direction="row" spacing={2}>
-                  <TextField
+                  <TF
                     label="Email"
                     value={email}
-                    onChange={(text: string) => setEmail(text)}
+                    sx={textFieldStyle}
+                    size="small"
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      if (
+                        !isEmail(event.target.value) &&
+                        event.target.value !== ""
+                      ) {
+                        setValidEmail(false);
+                      } else {
+                        setValidEmail(true);
+                      }
+                    }}
                     fullWidth
                     required
+                    error={!valid_email}
+                    helperText={!valid_email ? "Invalid email" : ""}
                   />
                   <TextField
                     label="Phone Number"
