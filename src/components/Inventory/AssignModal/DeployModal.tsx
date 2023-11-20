@@ -14,11 +14,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../app/store";
+import { RootState } from "../../../app/store";
 import { useAuth0 } from "@auth0/auth0-react";
-import { standardPost, standardGet } from "../../services/standard";
-import ConfirmationBody from "./ConfirmationBody";
-import { setInventory } from "../../app/slices/inventorySlice";
+import { standardPost, standardGet } from "../../../services/standard";
+import ConfirmationBody from "../ConfirmationBody";
+import { setInventory } from "../../../app/slices/inventorySlice";
 
 const style = {
   position: "absolute" as "absolute",
@@ -64,6 +64,7 @@ interface DeployProps {
   image_source: string | undefined;
   id: string | undefined;
   warehouse?: string;
+  return_device: boolean;
 }
 
 const DeployModalContent = (props: DeployProps) => {
@@ -138,6 +139,7 @@ const DeployModalContent = (props: DeployProps) => {
       requestor_name: user?.name,
       id,
       warehouse: props.warehouse,
+      return_device: props.return_device,
     };
     setSending(true);
 

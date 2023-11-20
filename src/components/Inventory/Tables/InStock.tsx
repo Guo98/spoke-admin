@@ -11,7 +11,7 @@ import {
   Paper,
 } from "@mui/material";
 
-import AssignModal from "../AssignModal";
+import AssignModal from "../AssignModal/AssignModal";
 import { InventorySummary } from "../../../interfaces/inventory";
 
 type Order = "asc" | "desc";
