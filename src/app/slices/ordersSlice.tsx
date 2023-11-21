@@ -198,8 +198,10 @@ export const ordersSlice = createSlice({
             i.orderNo.toString().includes(search_term) ||
             i.full_name.toLowerCase().includes(search_term) ||
             i.address?.formatted?.toLowerCase().includes(search_term) ||
-            i.items.filter((item) =>
-              item.name.toLowerCase().includes(search_term)
+            i.items.filter(
+              (item) =>
+                item.name.toLowerCase().includes(search_term) ||
+                item.serial_number?.toLowerCase().includes(search_term)
             ).length > 0
         );
       }
@@ -213,8 +215,10 @@ export const ordersSlice = createSlice({
             i.orderNo.toString().includes(search_term) ||
             i.full_name.toLowerCase().includes(search_term) ||
             i.address?.formatted?.toLowerCase().includes(search_term) ||
-            i.items.filter((item) =>
-              item.name.toLowerCase().includes(search_term)
+            i.items.filter(
+              (item) =>
+                item.name.toLowerCase().includes(search_term) ||
+                item.serial_number?.toLowerCase().includes(search_term)
             ).length > 0
         );
       }

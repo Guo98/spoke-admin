@@ -26,10 +26,11 @@ interface OrderRowProps extends Order {
   selected_tab: number;
   selected_client: string;
   parent_client: string;
+  single_row: boolean;
 }
 
 const OrderRow = (props: OrderRowProps) => {
-  const { selected_tab, client, full_name } = props;
+  const { selected_tab, client, full_name, single_row } = props;
 
   const [open, setOpen] = useState(false);
   const [order_price, setOrderPrice] = useState("");

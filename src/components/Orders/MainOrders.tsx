@@ -20,6 +20,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as FileSaver from "file-saver";
 import { Buffer } from "buffer";
 import { useSelector, useDispatch } from "react-redux";
+import { useSearchParams, useLocation } from "react-router-dom";
 
 import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
@@ -62,10 +63,15 @@ const a11yProps = (index: number) => {
 };
 
 const MainOrders = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
   const [client, setClient] = useState("");
   const [loading, setLoading] = useState(false);
   const [all_orders, setAllOrders] = useState<Order[]>([]);
   const [tab_index, setTabIndex] = useState(0);
+
+  const [search_serial, setSearchSerial] = useState("");
 
   const [rows_per_page, setRowsPerPage] = useState(25);
   const [no_of_expands, setNoExpands] = useState(1);
@@ -88,7 +94,25 @@ const MainOrders = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    if (client !== "") {
+    if (searchParams.get("sn")) {
+      setSearchSerial(searchParams.get("sn")!);
+    } else {
+      setSearchSerial("");
+      searchFilter("");
+      setTabIndex(0);
+    }
+  }, [searchParams, location.pathname]);
+
+  useEffect(() => {
+    if (search_serial !== "") {
+      dispatch(filterOrders(search_serial));
+    } else {
+      dispatch(resetOrders());
+    }
+  }, [search_serial]);
+
+  useEffect(() => {
+    if (client !== "" && search_serial === "") {
       getOrders().catch();
     }
   }, [client]);
@@ -162,6 +186,11 @@ const MainOrders = () => {
       dispatch(filterOrders(search_term));
     } else {
       dispatch(resetOrders());
+      if (search_serial !== "") {
+        searchParams.delete("sn");
+        setSearchParams(searchParams);
+        setSearchSerial("");
+      }
     }
   };
 
@@ -176,22 +205,13 @@ const MainOrders = () => {
     }
   };
 
-  const tab_text = () => {
-    if (tab_index === 0) {
-      return "Order Type";
-    } else if (tab_index === 1) {
-      return "Device Type";
-    } else if (tab_index === 2) {
-      return "Returned Device";
-    }
-  };
-
   return (
     <Box sx={{ width: "100%", overflow: "hidden" }}>
       <Stack spacing={2} px={3}>
         <Header
           textChange={searchFilter}
-          label="Search Orders by order number, name, item, location"
+          label="Search Orders by order number, name, item, serial number, location"
+          search_value={search_serial}
         />
         <Stack
           direction="row"
@@ -261,6 +281,7 @@ const MainOrders = () => {
                         selected_tab={tab_index}
                         parent_client={clientData}
                         selected_client={client}
+                        single_row={all_orders.length === 1}
                       />
                     );
                   })}

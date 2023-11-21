@@ -12,6 +12,7 @@ import {
   Button,
 } from "@mui/material";
 
+import AppContainer from "../../AppContainer/AppContainer";
 import AddToStock from "../AddModalBoxes/AddToStock";
 import { InventorySummary } from "../../../interfaces/inventory";
 
@@ -161,11 +162,9 @@ const Pending = (props: TableProps) => {
                       </TableCell>
                       <TableCell width="20%">
                         <Button
-                          href={
-                            "https://withspoke.aftership.com/" +
-                            item.tracking_number
-                          }
-                          target="_blank"
+                          onClick={() => {
+                            AppContainer.navigate("/orders?sn=" + item.sn);
+                          }}
                         >
                           Track
                         </Button>
