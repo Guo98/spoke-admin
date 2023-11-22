@@ -244,12 +244,14 @@ const RecipientForm = (props: RecipientProps) => {
               <MenuItem value="Buy and Hold">Buy and Hold</MenuItem>
             </Select>
           </FormControl>
-          <FormControlLabel
-            control={
-              <Checkbox onChange={handleReturnChecked} checked={return_box} />
-            }
-            label="Return A Device"
-          />
+          {deployment_type === "Drop Ship" && (
+            <FormControlLabel
+              control={
+                <Checkbox onChange={handleReturnChecked} checked={return_box} />
+              }
+              label="Include Equipment Return Box"
+            />
+          )}
           {deployment_type === "Drop Ship" && (
             <>
               <Typography fontWeight="bold" variant="h6">

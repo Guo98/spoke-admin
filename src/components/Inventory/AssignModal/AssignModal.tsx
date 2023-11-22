@@ -271,7 +271,7 @@ const AssignModal = (props: AssignProps) => {
                       checked={return_device}
                     />
                   }
-                  label="Return A Device"
+                  label="Include Equipment Return Box"
                 />
               </Stack>
               <Stack spacing={2}>
