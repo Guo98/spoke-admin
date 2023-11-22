@@ -3,7 +3,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import {
   Typography,
   Avatar,
-  Grid,
   Button,
   Menu,
   MenuItem,
@@ -11,6 +10,7 @@ import {
   InputLabel,
   Select,
   SelectChangeEvent,
+  Stack,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -68,16 +68,14 @@ const Profile = (props: ProfileProps) => {
   };
 
   return (
-    <div className="profile-padding">
-      <Grid container>
-        <Grid item xs={8}>
-          {!mobile && (
-            <Typography sx={{ paddingTop: 1, textAlign: "right" }}>
-              Welcome, {username}
-            </Typography>
-          )}
-        </Grid>
-        <Grid item xs={4}>
+    <div>
+      <Stack direction="row" alignItems="center">
+        {!mobile && (
+          <Typography sx={{ textAlign: "right" }}>
+            Welcome, {username}
+          </Typography>
+        )}
+        <>
           <Button
             sx={{
               paddingTop: 0,
@@ -153,8 +151,8 @@ const Profile = (props: ProfileProps) => {
               </FormControl>
             )}
           </Menu>
-        </Grid>
-      </Grid>
+        </>
+      </Stack>
     </div>
   );
 };

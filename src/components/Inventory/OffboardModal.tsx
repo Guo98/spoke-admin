@@ -156,6 +156,7 @@ const OffboardModal = (props: OffboardProps) => {
       requestor_name: user?.name,
       id: props.id,
       shipping,
+      no_address: al1 === "",
     };
 
     if (activation !== "") {

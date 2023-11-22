@@ -61,6 +61,7 @@ const RecipientForm = (props: RecipientProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
 
   const [deployment_type, setDeploymentType] = useState("Drop Ship");
+  const [return_box, setReturnBox] = useState(false);
   const [name, setName] = useState("");
   const [addr, setAddr] = useState("");
   const [email, setEmail] = useState("");
@@ -99,6 +100,10 @@ const RecipientForm = (props: RecipientProps) => {
     setChecked(event.target.checked);
   };
 
+  const handleReturnChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    setReturnBox(event.target.checked);
+  };
+
   const fieldsFilled = () => {
     if (deployment_type === "Drop Ship") {
       return (
@@ -128,6 +133,7 @@ const RecipientForm = (props: RecipientProps) => {
       notes: {},
       region,
       ai_specs: ai_specs,
+      return_device: return_box,
     };
     if (props.supplier !== "") {
       postBody.supplier = props.supplier;
@@ -238,6 +244,14 @@ const RecipientForm = (props: RecipientProps) => {
               <MenuItem value="Buy and Hold">Buy and Hold</MenuItem>
             </Select>
           </FormControl>
+          {deployment_type === "Drop Ship" && (
+            <FormControlLabel
+              control={
+                <Checkbox onChange={handleReturnChecked} checked={return_box} />
+              }
+              label="Include Equipment Return Box"
+            />
+          )}
           {deployment_type === "Drop Ship" && (
             <>
               <Typography fontWeight="bold" variant="h6">

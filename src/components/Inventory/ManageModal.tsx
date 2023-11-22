@@ -12,7 +12,7 @@ import { standardGet } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
 import { InventorySummary } from "../../interfaces/inventory";
 import AppContainer from "../AppContainer/AppContainer";
-import AssignModal from "./AssignModal";
+import AssignModal from "./AssignModal/AssignModal";
 
 const style = {
   position: "absolute" as "absolute",
