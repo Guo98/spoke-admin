@@ -130,7 +130,7 @@ const ReturnInfo = (props: ReturnProps) => {
             backgroundColor: "#054ffe",
             borderRadius: "10px",
           }}
-          onClick={() => deploy(1)}
+          onClick={async () => await deploy()}
         >
           Submit
         </Button>
