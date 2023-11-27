@@ -10,7 +10,6 @@ import {
   InputLabel,
   MenuItem,
   Button,
-  IconButton,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -131,7 +130,7 @@ const ReturnInfo = (props: ReturnProps) => {
             backgroundColor: "#054ffe",
             borderRadius: "10px",
           }}
-          onClick={async () => await deploy()}
+          onClick={() => deploy(1)}
         >
           Submit
         </Button>
