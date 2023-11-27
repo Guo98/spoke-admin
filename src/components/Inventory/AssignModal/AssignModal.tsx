@@ -185,6 +185,8 @@ const AssignModal = (props: AssignProps) => {
         ) {
           setCountryErr("This device is only deployable within the US.");
           return;
+        } else {
+          setPage(2);
         }
       } else if (
         lc_location === "uk" ||
@@ -197,6 +199,8 @@ const AssignModal = (props: AssignProps) => {
         ) {
           setCountryErr("This device is only deployable within the UK.");
           return;
+        } else {
+          setPage(2);
         }
       } else {
         if (
@@ -207,6 +211,8 @@ const AssignModal = (props: AssignProps) => {
         ) {
           setCountryErr("This device is not deployable to this region.");
           return;
+        } else {
+          setPage(2);
         }
       }
     }
@@ -555,7 +561,7 @@ const AssignModal = (props: AssignProps) => {
               deploy={deploy}
             />
           )}
-          {success === 0 && (
+          {success === -1 && page === 2 && (
             <ConfirmationBox
               first_name={firstname}
               last_name={lastname}
