@@ -153,9 +153,8 @@ const Marketplace = () => {
           <Typography>
             <h2>Marketplace</h2>
           </Typography>
-          <AddNewDevice client={marketClient} />
+          <AddNewDevice client={marketClient} refresh={getProducts} />
         </Stack>
-        {loading && <LinearLoading />}
         <Stack direction="row" spacing={2}>
           <Chip
             label="All"
@@ -186,6 +185,7 @@ const Marketplace = () => {
                 );
             })}
         </Stack>
+        {loading && <LinearLoading />}
         <Box
           sx={{
             display: "flex",

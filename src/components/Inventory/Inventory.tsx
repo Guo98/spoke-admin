@@ -17,10 +17,10 @@ import { RootState } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setInventory,
-  filterInventoryByEntity,
   filterByBrand,
   resetInventory,
   filterInventory,
+  inventoryFilterByEntity,
 } from "../../app/slices/inventorySlice";
 import { standardGet, standardPost } from "../../services/standard";
 import { roleMapping } from "../../utilities/mappings";
@@ -100,7 +100,7 @@ const Inventory: FC = (): ReactElement => {
     dispatch(setInventory(inventoryResult.data));
 
     if (selectedEntity !== "") {
-      dispatch(filterInventoryByEntity(selectedEntity));
+      dispatch(inventoryFilterByEntity(selectedEntity));
     }
     setLoading(false);
   };
@@ -200,7 +200,7 @@ const Inventory: FC = (): ReactElement => {
   }, [searchParams, location.pathname]);
 
   useEffect(() => {
-    dispatch(filterInventoryByEntity(selectedEntity));
+    dispatch(inventoryFilterByEntity(selectedEntity));
   }, [selectedEntity]);
 
   useEffect(() => {

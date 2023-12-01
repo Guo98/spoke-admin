@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Stack,
@@ -20,14 +20,17 @@ import ConfirmSpecs from "./ConfirmSpecs";
 
 interface AddProps {
   client: string;
+  refresh: Function;
 }
 
 const AddNewDevice = (props: AddProps) => {
-  const { client } = props;
+  const { client, refresh } = props;
+
   const [open, setOpen] = useState(false);
   const [supplier_url, setSupplierUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
+  const [invalid_supplier, setInvalidSupplier] = useState(false);
 
   const [specs, setSpecs] = useState<any>({});
 
@@ -56,6 +59,18 @@ const AddNewDevice = (props: AddProps) => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (
+      supplier_url !== "" &&
+      !supplier_url.includes("www.cdw.com") &&
+      !supplier_url.includes("www.insight.com")
+    ) {
+      setInvalidSupplier(true);
+    } else {
+      setInvalidSupplier(false);
+    }
+  }, [supplier_url]);
 
   return (
     <>
@@ -93,12 +108,19 @@ const AddNewDevice = (props: AddProps) => {
                 label="Supplier URL"
                 value={supplier_url}
                 onChange={(e) => setSupplierUrl(e.target.value)}
+                error={invalid_supplier}
+                helperText={
+                  invalid_supplier
+                    ? "Only CDW and Insight links supported right now."
+                    : ""
+                }
               />
               <Divider />
               <Button
                 variant="contained"
                 sx={{ borderRadius: "20px", textTransform: "none" }}
                 onClick={get_specs}
+                disabled={invalid_supplier}
               >
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Typography>Next</Typography>
@@ -113,6 +135,7 @@ const AddNewDevice = (props: AddProps) => {
               specs={specs}
               client={client}
               supplier_url={supplier_url}
+              refresh={refresh}
             />
           )}
         </Box>

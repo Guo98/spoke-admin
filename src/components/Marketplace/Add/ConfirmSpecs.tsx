@@ -21,10 +21,11 @@ interface ConfirmProps {
   specs: any;
   client: string;
   supplier_url: string;
+  refresh: Function;
 }
 
 const ConfirmSpecs = (props: ConfirmProps) => {
-  const { back, specs, supplier_url, client } = props;
+  const { back, specs, supplier_url, client, refresh } = props;
 
   const [device_name, setDeviceName] = useState(specs.name || "");
   const [screen_size, setScreenSize] = useState(specs.screen_size || "");
@@ -42,20 +43,6 @@ const ConfirmSpecs = (props: ConfirmProps) => {
   const add_device = async () => {
     setLoading(true);
     const access_token = await getAccessTokenSilently();
-    /**
-     * client,
-    type,
-    device_name,
-    brand,
-    device_line,
-    screen_size,
-    cpu,
-    ram,
-    ssd,
-    supplier_url,
-    color,
-    locations,
-     */
 
     let body: any = {
       client,
@@ -70,6 +57,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
       color: specs.color,
       locations: [location],
       supplier: specs.supplier,
+      img_src: specs.image_source,
     };
 
     if (specs.supplier.toLowerCase() === "insight") {
@@ -80,6 +68,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
 
     if (add_resp.status === "Successful") {
       setSuccess(0);
+      await refresh();
     } else {
       setSuccess(1);
     }
