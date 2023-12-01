@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Grid, Chip, Stack, Button } from "@mui/material";
+import { Box, Typography, Chip, Stack, Button } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { addProducts } from "../../app/slices/inventorySlice";
 import { resetMarketplaceInfo } from "../../app/slices/marketSlice";
 import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
-import {
-  MarketplaceProducts,
-  MarketplaceProducts2,
-} from "../../interfaces/inventory";
+
 import Header from "../Header/Header";
 import ProductCard from "./ProductCard";
-import PurchaseModal from "./PurchaseModal";
-import MarketAI from "./AI/MarketAI";
 import MarketplacePurchase from "./MarketplacePurchase";
 import LinearLoading from "../common/LinearLoading";
+import AddNewDevice from "./Add/AddNewDevice";
 
 const Marketplace = () => {
   const productRedux = useSelector(
@@ -148,9 +145,16 @@ const Marketplace = () => {
           textChange={searchFilter}
           label="Search products and categories"
         />
-        <Typography>
-          <h2>Marketplace</h2>
-        </Typography>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography>
+            <h2>Marketplace</h2>
+          </Typography>
+          <AddNewDevice client={marketClient} />
+        </Stack>
         {loading && <LinearLoading />}
         <Stack direction="row" spacing={2}>
           <Chip
@@ -222,24 +226,6 @@ const Marketplace = () => {
                 />
               );
             })}
-          {/* {marketClient !== "public" ? (
-            <PurchaseModal
-              open={openModal}
-              handleClose={handleClose}
-              imgSrc={modalimg}
-              types={brandtypes}
-              brand={brandname}
-            />
-          ) : (
-            <MarketAI
-              open={openModal}
-              handleClose={handleClose}
-              imgSrc={modalimg}
-              types={brandtypes}
-              brand={brandname}
-              client={marketClient}
-            />
-          )} */}
           {existing_order_info === null ? (
             <MarketplacePurchase
               open={openModal}

@@ -1,0 +1,215 @@
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  Stack,
+  IconButton,
+  Divider,
+  Button,
+  TextField,
+  Alert,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useAuth0 } from "@auth0/auth0-react";
+
+import { standardPost } from "../../../services/standard";
+
+import { button_style, textfield_style } from "../../../utilities/styles";
+import LinearLoading from "../../common/LinearLoading";
+
+interface ConfirmProps {
+  back: Function;
+  specs: any;
+  client: string;
+  supplier_url: string;
+}
+
+const ConfirmSpecs = (props: ConfirmProps) => {
+  const { back, specs, supplier_url, client } = props;
+
+  const [device_name, setDeviceName] = useState(specs.name || "");
+  const [screen_size, setScreenSize] = useState(specs.screen_size || "");
+  const [cpu, setCPU] = useState(specs.cpu || "");
+  const [ram, setRAM] = useState(specs.ram || "");
+  const [ssd, setSSD] = useState(specs.hard_drive || "");
+  const [color, setColor] = useState(specs.color || "");
+  const [location, setLocation] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(-1);
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  const add_device = async () => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+    /**
+     * client,
+    type,
+    device_name,
+    brand,
+    device_line,
+    screen_size,
+    cpu,
+    ram,
+    ssd,
+    supplier_url,
+    color,
+    locations,
+     */
+
+    let body: any = {
+      client,
+      type: specs.device_type,
+      brand: specs.brand,
+      device_line: specs.device_line,
+      screen_size: specs.screen_size,
+      cpu: specs.cpu,
+      ram: specs.ram,
+      ssd: specs.hard_drive,
+      supplier_url,
+      color: specs.color,
+      locations: [location],
+      supplier: specs.supplier,
+    };
+
+    if (specs.supplier.toLowerCase() === "insight") {
+      body.sku = specs.sku;
+    }
+
+    const add_resp = await standardPost(access_token, "marketplace/add", body);
+
+    if (add_resp.status === "Successful") {
+      setSuccess(0);
+    } else {
+      setSuccess(1);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (
+      supplier_url.includes("www.cdw.com") ||
+      supplier_url.includes("www.insight.com")
+    ) {
+      setLocation("United States");
+    }
+  }, [supplier_url]);
+
+  return (
+    <>
+      {!loading ? (
+        <Stack spacing={2}>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <IconButton onClick={() => back(0)}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography component="h4" variant="h5">
+              Device Details
+            </Typography>
+          </Stack>
+          <Divider />
+          {success !== -1 && (
+            <Alert severity={success === 0 ? "success" : "error"}>
+              {success === 0
+                ? "Successfully added to marketplace!"
+                : "Error in adding to marketplace."}
+            </Alert>
+          )}
+          <Stack spacing={1}>
+            <Typography>Product Name: {specs.name}</Typography>
+            {specs.supplier && (
+              <Typography>Supplier: {specs.supplier}</Typography>
+            )}
+            {specs.stock_level && (
+              <Typography>Stock Level: {specs.stock_level}</Typography>
+            )}
+            {specs.price && (
+              <Typography>Estimated Price: {specs.price}</Typography>
+            )}
+            {specs.image_source && (
+              <Stack direction="row" justifyContent="space-evenly">
+                <img
+                  src={specs.image_source}
+                  title="Device Picture"
+                  loading="lazy"
+                  style={{ width: "40%", height: "40%" }}
+                />
+              </Stack>
+            )}
+          </Stack>
+          <TextField
+            label="Device Title"
+            value={device_name}
+            size="small"
+            sx={textfield_style}
+            onChange={(e) => setDeviceName(e.target.value)}
+          />
+          <Stack direction="row" spacing={2}>
+            <TextField
+              size="small"
+              sx={textfield_style}
+              label="Screen Size"
+              fullWidth
+              value={screen_size}
+              onChange={(e) => setScreenSize(e.target.value)}
+            />
+            <TextField
+              size="small"
+              sx={textfield_style}
+              label="CPU"
+              fullWidth
+              value={cpu}
+              onChange={(e) => setCPU(e.target.value)}
+            />
+          </Stack>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              size="small"
+              sx={textfield_style}
+              label="RAM"
+              fullWidth
+              value={ram}
+              onChange={(e) => setRAM(e.target.value)}
+            />
+            <TextField
+              size="small"
+              sx={textfield_style}
+              label="SSD"
+              fullWidth
+              value={ssd}
+              onChange={(e) => setSSD(e.target.value)}
+            />
+          </Stack>
+          <TextField
+            label="Color"
+            value={color}
+            size="small"
+            sx={textfield_style}
+            onChange={(e) => setColor(e.target.value)}
+          />
+          <TextField
+            label="Location"
+            value={location}
+            size="small"
+            sx={textfield_style}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+          <Divider />
+          <Button
+            variant="contained"
+            sx={button_style}
+            onClick={add_device}
+            disabled={loading || success === 0}
+          >
+            {loading ? <LinearLoading /> : "Add to Marketplace"}
+          </Button>
+        </Stack>
+      ) : (
+        <LinearLoading />
+      )}
+    </>
+  );
+};
+
+export default ConfirmSpecs;
