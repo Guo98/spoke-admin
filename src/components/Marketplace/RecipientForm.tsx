@@ -20,6 +20,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { standardPost } from "../../services/standard";
 import LinearLoading from "../common/LinearLoading";
 
+import { customer_ids } from "../../utilities/cdw-mappings";
+
 interface RecipientProps {
   completeRecipientStep: Function;
   device_name: string;
@@ -35,6 +37,8 @@ interface RecipientProps {
   setClear: Function;
   ai_specs: string;
   supplier?: string;
+  request_type: string;
+  cdw_part_no: string;
 }
 
 const textFieldStyle = {
@@ -56,6 +60,8 @@ const RecipientForm = (props: RecipientProps) => {
     clear_deployment,
     setClear,
     ai_specs,
+    request_type,
+    cdw_part_no,
   } = props;
 
   const { user, getAccessTokenSilently } = useAuth0();
@@ -72,6 +78,16 @@ const RecipientForm = (props: RecipientProps) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(-1);
   const [checked, setChecked] = useState(false);
+
+  // direct order
+  const [fn, setFN] = useState("");
+  const [ln, setLN] = useState("");
+  const [adl, setAdl] = useState("");
+  const [city, setCity] = useState("");
+  const [prov, setProv] = useState("");
+  const [postal, setPostal] = useState("");
+
+  const [cdw_status, setCDWStatus] = useState(-1);
 
   useEffect(() => {
     if (clear_deployment) {
@@ -105,10 +121,23 @@ const RecipientForm = (props: RecipientProps) => {
   };
 
   const fieldsFilled = () => {
-    if (deployment_type === "Drop Ship") {
+    if (deployment_type === "Drop Ship" && request_type === "quote") {
       return (
         name === "" ||
         addr === "" ||
+        email === "" ||
+        phone_number === "" ||
+        shipping === "" ||
+        !checked
+      );
+    } else if (request_type === "buy") {
+      return (
+        fn === "" ||
+        ln === "" ||
+        adl === "" ||
+        city === "" ||
+        prov === "" ||
+        postal === "" ||
         email === "" ||
         phone_number === "" ||
         shipping === "" ||
@@ -143,10 +172,33 @@ const RecipientForm = (props: RecipientProps) => {
       postBody.quantity = quantity;
       postBody.notes.device = notes;
     } else {
-      postBody.order_type = "Deploy Right Away";
+      if (request_type === "buy") {
+        postBody.order_type = "Buy Directly from CDW";
+        postBody.recipient_name = fn + " " + ln;
+        postBody.address =
+          adl + ", " + city + ", " + prov + " " + postal + ", US";
+        postBody.approved = true;
+        postBody.cdw_part_no = cdw_part_no;
+        postBody.cdw_address = {
+          addressLine: adl,
+          city: city,
+          subdivision: prov,
+          postalCode: postal,
+        };
+        postBody.cdw_name = {
+          first_name: fn,
+          last_name: ln,
+        };
+        // postBody.customer_id = "15004983";
+        postBody.customer_id = customer_ids[client];
+        postBody.unit_price = price.replace("$", "").replace(",", "");
+      } else {
+        postBody.order_type = "Deploy Right Away";
+        postBody.recipient_name = name;
+        postBody.address = addr;
+      }
+
       postBody.notes.recipient = notes;
-      postBody.recipient_name = name;
-      postBody.address = addr;
       postBody.email = email;
       postBody.phone_number = phone_number;
       postBody.shipping_rate = shipping;
@@ -163,6 +215,7 @@ const RecipientForm = (props: RecipientProps) => {
     } else {
       setStatus(1);
     }
+
     setLoading(false);
     setParentLoading(false);
   };
@@ -171,9 +224,9 @@ const RecipientForm = (props: RecipientProps) => {
     <>
       {!loading && status === -1 && (
         <Stack spacing={2} pt={2.5}>
-          <Typography fontWeight="bold" variant="h6">
+          <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
             Device Details
-          </Typography>
+          </Divider>
           <Stack direction="row" spacing={2}>
             {image_source && (
               <img
@@ -224,27 +277,47 @@ const RecipientForm = (props: RecipientProps) => {
                   </Typography>
                 </div>
               )}
+              {cdw_part_no && (
+                <div>
+                  <Typography
+                    display="inline"
+                    component="span"
+                    fontWeight="bold"
+                  >
+                    CDW Part Number:{" "}
+                  </Typography>
+                  <Typography display="inline" component="span">
+                    {cdw_part_no}
+                  </Typography>
+                </div>
+              )}
             </Stack>
           </Stack>
-          <Divider />
-          <Typography fontWeight="bold">Select Deployment Type:</Typography>
-          <FormControl fullWidth sx={textFieldStyle} required size="small">
-            <InputLabel id="deployment-select-label">
-              Deployment Type
-            </InputLabel>
-            <Select
-              labelId="deployment-select-label"
-              id="deployment-select"
-              label="Deployment Type"
-              onChange={handleDeploymentChange}
-              value={deployment_type}
-              required
-            >
-              <MenuItem value="Drop Ship">Drop Ship</MenuItem>
-              <MenuItem value="Buy and Hold">Buy and Hold</MenuItem>
-            </Select>
-          </FormControl>
-          {deployment_type === "Drop Ship" && (
+          <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
+            Deployment Type
+          </Divider>
+          {request_type === "quote" && (
+            <FormControl fullWidth sx={textFieldStyle} required size="small">
+              <InputLabel id="deployment-select-label">
+                Deployment Type
+              </InputLabel>
+              <Select
+                labelId="deployment-select-label"
+                id="deployment-select"
+                label="Deployment Type"
+                onChange={handleDeploymentChange}
+                value={deployment_type}
+                required
+              >
+                <MenuItem value="Drop Ship">Drop Ship</MenuItem>
+                <MenuItem value="Buy and Hold">Buy and Hold</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+          {request_type === "buy" && (
+            <Typography>Order from CDW immediately</Typography>
+          )}
+          {(deployment_type === "Drop Ship" || request_type === "buy") && (
             <FormControlLabel
               control={
                 <Checkbox onChange={handleReturnChecked} checked={return_box} />
@@ -252,11 +325,87 @@ const RecipientForm = (props: RecipientProps) => {
               label="Include Equipment Return Box"
             />
           )}
-          {deployment_type === "Drop Ship" && (
+          {request_type === "buy" && (
             <>
-              <Typography fontWeight="bold" variant="h6">
+              <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
                 Recipient Details
-              </Typography>
+              </Divider>
+              <Stack direction="row" spacing={1}>
+                <TextField
+                  label="First Name"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  value={fn}
+                  onChange={(e) => setFN(e.target.value)}
+                  required
+                />
+                <TextField
+                  label="Last Name"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  value={ln}
+                  onChange={(e) => setLN(e.target.value)}
+                  required
+                />
+              </Stack>
+              <TextField
+                label="Address Line"
+                size="small"
+                sx={textFieldStyle}
+                fullWidth
+                value={adl}
+                onChange={(e) => setAdl(e.target.value)}
+                required
+              />
+              <Stack direction="row" spacing={1}>
+                <TextField
+                  label="City"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                />
+                <TextField
+                  label="State"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  value={prov}
+                  onChange={(e) => setProv(e.target.value)}
+                  required
+                />
+              </Stack>
+              <Stack direction="row" spacing={1}>
+                <TextField
+                  label="Postal Code"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  value={postal}
+                  onChange={(e) => setPostal(e.target.value)}
+                  required
+                />
+                <TextField
+                  label="Country"
+                  size="small"
+                  sx={textFieldStyle}
+                  fullWidth
+                  value={"US"}
+                  required
+                  disabled
+                />
+              </Stack>
+            </>
+          )}
+          {deployment_type === "Drop Ship" && request_type === "quote" && (
+            <>
+              <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
+                Recipient Details
+              </Divider>
               <TextField
                 label="Full Name"
                 size="small"
@@ -275,6 +424,10 @@ const RecipientForm = (props: RecipientProps) => {
                 onChange={(e) => setAddr(e.target.value)}
                 required
               />
+            </>
+          )}
+          {(deployment_type === "Drop Ship" || request_type === "buy") && (
+            <>
               <Stack direction="row" spacing={2} justifyContent="space-between">
                 <TextField
                   label="Email"
@@ -331,9 +484,9 @@ const RecipientForm = (props: RecipientProps) => {
           )}
           {deployment_type === "Buy and Hold" && (
             <>
-              <Typography fontWeight="bold" variant="h6">
+              <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
                 Buy and Hold Details
-              </Typography>
+              </Divider>
               <TextField
                 label="Quantity"
                 size="small"
@@ -370,7 +523,7 @@ const RecipientForm = (props: RecipientProps) => {
             disabled={fieldsFilled()}
             onClick={sendMarketplaceRequest}
           >
-            Request Quote
+            {request_type === "buy" ? "Buy Now" : "Request Quote"}
           </Button>
         </Stack>
       )}

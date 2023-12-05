@@ -21,6 +21,7 @@ interface DeviceSelectionProps {
   setClear: Function;
   loading: boolean;
   suppliers?: any;
+  client: string;
 }
 
 const textFieldStyle = {
@@ -37,6 +38,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
     clear_device,
     setClear,
     loading,
+    client,
   } = props;
 
   const [other_brand, setOtherBrand] = useState("");
@@ -332,6 +334,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             supplier={supplier}
             product_link={product_link}
             others={brand === "Others"}
+            client={client}
           />
         </>
       )}

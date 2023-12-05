@@ -9,7 +9,6 @@ import {
   styled,
   StepConnector,
   StepIconProps,
-  Button,
   Tooltip,
   IconButton,
   Stack,
@@ -21,13 +20,9 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
 import SpecificDevice from "./SpecificDevice";
-import AppContainer from "../AppContainer/AppContainer";
 
 interface MPProps {
   open: boolean;
@@ -140,6 +135,8 @@ const MarketplacePurchase = (props: MPProps) => {
   const [stock_level, setStock] = useState("");
   const [ai_specs, setAISpecs] = useState("");
   const [supplier, setSupplier] = useState("");
+  const [cdw_part_number, setCDWPartNo] = useState("");
+  const [request_type, setReqType] = useState("");
 
   const [clear_device, setClearDevice] = useState(false);
   const [clear_deployment, setClearDeployment] = useState(false);
@@ -159,7 +156,9 @@ const MarketplacePurchase = (props: MPProps) => {
     image_source: string,
     stock_level: string,
     ai_specs: string,
-    sup: string
+    sup: string,
+    cdw_part_no: string = "",
+    type: string = "quote"
   ) => {
     setActiveStep(1);
     setComplete1(true);
@@ -172,6 +171,8 @@ const MarketplacePurchase = (props: MPProps) => {
     setStock(stock_level);
     setAISpecs(ai_specs);
     setSupplier(sup);
+    setCDWPartNo(cdw_part_no);
+    setReqType(type);
   };
 
   const completeDeploymentStep = () => {
@@ -257,6 +258,7 @@ const MarketplacePurchase = (props: MPProps) => {
               setClear={setClearDevice}
               loading={loading}
               suppliers={props.suppliers}
+              client={props.client}
             />
           </>
         )}
@@ -287,6 +289,8 @@ const MarketplacePurchase = (props: MPProps) => {
             setClear={setClearDeployment}
             ai_specs={ai_specs}
             supplier={supplier}
+            request_type={request_type}
+            cdw_part_no={cdw_part_number}
           />
         )}
       </Box>
