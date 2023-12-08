@@ -10,6 +10,7 @@ import { RootState } from "../../app/store";
 
 import Header from "../Header/Header";
 import ProductCard from "./ProductCard";
+import BookmarkedCard from "./BookmarkedCard";
 import MarketplacePurchase from "./MarketplacePurchase";
 import LinearLoading from "../common/LinearLoading";
 import AddNewDevice from "./Add/AddNewDevice";
@@ -44,6 +45,8 @@ const Marketplace = () => {
   const [openModal, setOpen] = useState(false);
   const [modalimg, setImg] = useState("");
 
+  const [bookmarked, setBookmarked] = useState<any[]>([]);
+
   const getProducts = async () => {
     setLoading(true);
     if (marketClient) {
@@ -71,8 +74,42 @@ const Marketplace = () => {
   useEffect(() => {
     if (existing_order_info !== null) {
       setOpen(true);
+      if (existing_order_info.item_type) {
+        setTypes(
+          productRedux
+            .filter((p) => p.item_type === existing_order_info.item_type)[0]
+            .brands.filter((b) => b.brand === existing_order_info.brand)[0]
+            .types
+        );
+      }
     }
   }, [existing_order_info]);
+
+  useEffect(() => {
+    let bookmarked_devices: any[] = [];
+
+    productRedux.forEach((p) => {
+      p.brands.forEach((b) => {
+        b.types.forEach((t) => {
+          t.specs.forEach((s) => {
+            if (s.bookmarked) {
+              bookmarked_devices.push({
+                brand: b.brand,
+                type: t.type,
+                spec: s.spec,
+                locations: s.locations,
+                device_type: p.item_type,
+              });
+            }
+          });
+        });
+      });
+    });
+
+    if (bookmarked_devices.length > 0) {
+      setBookmarked(bookmarked_devices);
+    }
+  }, [productRedux]);
 
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
@@ -235,11 +272,13 @@ const Marketplace = () => {
               brand={brandname}
               client={marketClient}
               suppliers={suppliers}
+              product_type={product}
             />
           ) : (
             <MarketplacePurchase
               open={openModal}
               handleClose={handleClose}
+              types={brandtypes}
               imgSrc={existing_order_info.imgSrc}
               brand={existing_order_info.brand}
               client={existing_order_info.client}
@@ -247,9 +286,31 @@ const Marketplace = () => {
               location={existing_order_info.location}
               supplier_links={existing_order_info.supplier_links}
               specific_specs={existing_order_info.specific_specs}
+              bookmark={existing_order_info.bookmark}
             />
           )}
         </Box>
+        {pagenumber === 0 && bookmarked.length > 0 && (
+          <Stack pt={2} spacing={2}>
+            <Typography component="h3" fontWeight="bold">
+              Bookmarked Devices
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              {bookmarked.length > 0 &&
+                bookmarked.map((b: any) => {
+                  return (
+                    <BookmarkedCard
+                      device_line={b.type}
+                      specs={b.spec}
+                      brand={b.brand}
+                      locations={b.locations}
+                      item_type={b.device_type}
+                    />
+                  );
+                })}
+            </Stack>
+          </Stack>
+        )}
         {pagenumber > 0 && (
           <Button
             sx={{ marginTop: "50px" }}

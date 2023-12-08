@@ -22,6 +22,11 @@ interface DeviceSelectionProps {
   loading: boolean;
   suppliers?: any;
   client: string;
+  setDeviceSpecs: Function;
+  setDeviceName: Function;
+  specs: string;
+  device_name: string;
+  bookmarked: Function;
 }
 
 const textFieldStyle = {
@@ -43,11 +48,11 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   const [other_brand, setOtherBrand] = useState("");
 
-  const [type, setType] = useState("");
+  // const [type, setType] = useState("");
   const [typeIndex, setTypeIndex] = useState(-1);
   const [other_type, setOtherType] = useState("");
 
-  const [specs, setSpecs] = useState("");
+  // const [specs, setSpecs] = useState("");
   const [specIndex, setSpecIndex] = useState(-1);
   const [other_specs, setOtherSpecs] = useState("");
   const [color, setColor] = useState("");
@@ -61,10 +66,10 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
     if (clear_device) {
       setClear(false);
       if (brand !== "Others") {
-        setType("");
+        //setType("");
         setTypeIndex(-1);
         setOtherType("");
-        setSpecs("");
+        //setSpecs("");
         setSpecIndex(-1);
         setOtherSpecs("");
         setRegion("");
@@ -81,8 +86,32 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
     }
   }, [clear_device]);
 
+  useEffect(() => {
+    let type_index = -1;
+    if (props.device_name !== "") {
+      type_index = types
+        .map((type: any) => type.type)
+        .indexOf(props.device_name);
+      setTypeIndex(type_index);
+    }
+
+    if (props.specs !== "") {
+      const specIndex = types[type_index].specs
+        ?.map((spec: any) => spec.spec)
+        .indexOf(props.specs);
+      setSpecIndex(specIndex);
+      setSupplier(
+        types[type_index]?.specs[specIndex]?.supplier &&
+          Object.keys(types[type_index]?.specs[specIndex]?.supplier)[0]
+          ? Object.keys(types[type_index]?.specs[specIndex]?.supplier)[0]
+          : ""
+      );
+    }
+  }, []);
+
   const handleTypeChange = (event: SelectChangeEvent) => {
-    setType(event.target.value);
+    // setType(event.target.value);
+    props.setDeviceName(event.target.value);
     setTypeIndex(
       types.map((type: any) => type.type).indexOf(event.target.value)
     );
@@ -102,8 +131,14 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           ? Object.keys(types[typeIndex]?.specs[specIndex]?.supplier)[0]
           : ""
       );
+      if (types[typeIndex]?.specs[specIndex]?.bookmarked) {
+        props.bookmarked(true);
+      } else {
+        props.bookmarked(false);
+      }
     }
-    setSpecs(event.target.value);
+    //setSpecs(event.target.value);
+    props.setDeviceSpecs(event.target.value);
     setOtherSpecs("");
   };
 
@@ -154,7 +189,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             id="type-select"
             label="Device Type"
             onChange={handleTypeChange}
-            value={type}
+            value={props.device_name}
             required
           >
             {types &&
@@ -197,13 +232,13 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           />
         </>
       )}
-      {type !== "" && (
+      {props.device_name !== "" && (
         <FormControl
           fullWidth
           sx={textFieldStyle}
           required
           size="small"
-          disabled={type === ""}
+          disabled={props.device_name === ""}
         >
           <InputLabel id="specs-select-label">Specs</InputLabel>
           <Select
@@ -211,10 +246,10 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             id="specs-select"
             label="Specs"
             onChange={handleSpecsChange}
-            value={specs}
+            value={props.specs}
             required
           >
-            {type !== "" &&
+            {props.device_name !== "" &&
               typeIndex !== -1 &&
               types[typeIndex].specs?.map((spec: any) => {
                 return <MenuItem value={spec.spec}>{spec.spec}</MenuItem>;
@@ -223,7 +258,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           </Select>
         </FormControl>
       )}
-      {(specs === "Other" || brand === "Others") && (
+      {(props.specs === "Other" || brand === "Others") && (
         <TextField
           label={brand === "Others" ? "Specs" : "Other Specs"}
           sx={textFieldStyle}
@@ -235,13 +270,13 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           onChange={(event) => setOtherSpecs(event.target.value)}
         />
       )}
-      {type !== "" && (
+      {props.device_name !== "" && (
         <FormControl
           fullWidth
           sx={textFieldStyle}
           required
           size="small"
-          disabled={type === ""}
+          disabled={props.device_name === ""}
         >
           <InputLabel id="color-select-label">Color</InputLabel>
           <Select
@@ -252,7 +287,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             value={color}
             required
           >
-            {type !== "" &&
+            {props.device_name !== "" &&
               typeIndex !== -1 &&
               types[typeIndex].colors?.map((c: string) => {
                 return <MenuItem value={c}>{c}</MenuItem>;
@@ -266,7 +301,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
         sx={textFieldStyle}
         required
         size="small"
-        disabled={(specs === "" || specIndex < 0) && other_specs === ""}
+        disabled={(props.specs === "" || specIndex < 0) && other_specs === ""}
       >
         <InputLabel id="region-select-label">Shipping Region</InputLabel>
         <Select
@@ -277,13 +312,15 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           value={region}
           required
         >
-          {specs !== "" &&
+          {props.specs !== "" &&
+            typeIndex !== -1 &&
+            specIndex !== -1 &&
             types[typeIndex]?.specs[specIndex]?.locations.map(
               (specLocation: string) => {
                 return <MenuItem value={specLocation}>{specLocation}</MenuItem>;
               }
             )}
-          {(brand === "Others" || specs === "Other") && (
+          {(brand === "Others" || props.specs === "Other") && (
             <MenuItem value="United States">United States</MenuItem>
           )}
           <MenuItem value="Other">Different Region</MenuItem>
@@ -308,7 +345,9 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
               sx={textFieldStyle}
               required
               size="small"
-              disabled={(specs === "" || specIndex < 0) && other_specs === ""}
+              disabled={
+                (props.specs === "" || specIndex < 0) && other_specs === ""
+              }
             >
               <InputLabel id="supplier-select-label">Supplier</InputLabel>
               <Select
@@ -326,8 +365,12 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             </FormControl>
           )}
           <CheckStock
-            type={brand === "Others" ? other_type : type}
-            spec={specs === "Other" || brand === "Others" ? other_specs : specs}
+            type={brand === "Others" ? other_type : props.device_name}
+            spec={
+              props.specs === "Other" || brand === "Others"
+                ? other_specs
+                : props.specs
+            }
             brand={brand === "Others" ? other_brand : brand}
             completeDeviceChoice={completeDeviceChoice}
             setLoading={setLoading}
@@ -345,8 +388,10 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
           sx={{ borderRadius: "10px" }}
           onClick={() =>
             completeDeviceChoice(
-              type === "" ? other_type : type,
-              specs === "Other" || specs === "" ? other_specs : specs,
+              props.device_name === "" ? other_type : props.device_name,
+              props.specs === "Other" || props.specs === ""
+                ? other_specs
+                : props.specs,
               "",
               region === "Other" ? other_region : region,
               "",

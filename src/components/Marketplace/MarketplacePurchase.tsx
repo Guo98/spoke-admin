@@ -13,16 +13,23 @@ import {
   IconButton,
   Stack,
   ButtonGroup,
+  Alert,
 } from "@mui/material";
 import { stepConnectorClasses } from "@mui/material/StepConnector";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useDispatch } from "react-redux";
 
 import DeviceSelection from "./DeviceSelection";
 import RecipientForm from "./RecipientForm";
 import SpecificDevice from "./SpecificDevice";
+import { standardPost } from "../../services/standard";
+import { openMarketplace } from "../../app/slices/marketSlice";
 
 interface MPProps {
   open: boolean;
@@ -36,6 +43,8 @@ interface MPProps {
   location?: string;
   supplier_links?: any;
   specific_specs?: string;
+  product_type?: string;
+  bookmark?: boolean;
 }
 
 const style = {
@@ -119,12 +128,13 @@ function ColorStepIcon(props: StepIconProps) {
 
 const MarketplacePurchase = (props: MPProps) => {
   const { open, handleClose, imgSrc, types, brand, client } = props;
+  const { getAccessTokenSilently } = useAuth0();
+  const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [completed1, setComplete1] = useState(false);
   const [completed2, setComplete2] = useState(false);
-  const [modal_open, setModalOpen] = useState(false);
 
   const [device_name, setDeviceName] = useState("");
   const [device_specs, setDeviceSpecs] = useState("");
@@ -141,11 +151,28 @@ const MarketplacePurchase = (props: MPProps) => {
   const [clear_device, setClearDevice] = useState(false);
   const [clear_deployment, setClearDeployment] = useState(false);
 
+  const [can_bookmark, setCanBookmark] = useState(false);
+  const [bookmark_status, setBookmarkStatus] = useState(-1);
+  const [already_bookmarked, setAlreadyBookmark] = useState(false);
+
   useEffect(() => {
     setActiveStep(0);
     setComplete1(false);
     setComplete2(false);
   }, [brand]);
+
+  useEffect(() => {
+    if (!props.bookmark && device_name !== "" && device_specs !== "") {
+      setCanBookmark(true);
+    }
+  }, [device_name, device_specs]);
+
+  useEffect(() => {
+    if (props.bookmark) {
+      setDeviceName(props.specific_device!);
+      setDeviceSpecs(props.specific_specs!);
+    }
+  }, [props.specific_device, props.specific_specs, props.bookmark]);
 
   const completeDeviceStep = (
     dn: string,
@@ -192,11 +219,39 @@ const MarketplacePurchase = (props: MPProps) => {
     }
   };
 
+  const bookmarkDevice = async () => {
+    setLoading(true);
+    setCanBookmark(false);
+    const access_token = await getAccessTokenSilently();
+    const bookmark_body = {
+      brand,
+      type: device_name,
+      specs: device_specs,
+      client,
+      product_type: props.product_type,
+    };
+
+    const bookmark_resp = await standardPost(
+      access_token,
+      "marketplace/bookmark",
+      bookmark_body
+    );
+
+    if (bookmark_resp.status === "Successful") {
+      setBookmarkStatus(0);
+    } else {
+      setBookmarkStatus(1);
+    }
+
+    setLoading(false);
+  };
+
   return (
     <Modal
       onClose={() => {
         if (!loading) {
           handleClose();
+          dispatch(openMarketplace(null));
         }
         if (completed1 && completed2) {
           setActiveStep(0);
@@ -224,6 +279,22 @@ const MarketplacePurchase = (props: MPProps) => {
                 </IconButton>
               </Tooltip>
             )}
+            {activeStep === 0 && (
+              <Tooltip title="Bookmark">
+                <IconButton
+                  disabled={
+                    !can_bookmark || props.bookmark || already_bookmarked
+                  }
+                  onClick={bookmarkDevice}
+                >
+                  {props.bookmark || already_bookmarked ? (
+                    <BookmarkIcon />
+                  ) : (
+                    <BookmarkBorderIcon />
+                  )}
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title="Clear All">
               <IconButton onClick={clearAll}>
                 <ClearAllIcon />
@@ -231,6 +302,13 @@ const MarketplacePurchase = (props: MPProps) => {
             </Tooltip>
           </ButtonGroup>
         </Stack>
+        {bookmark_status !== -1 && (
+          <Alert severity={bookmark_status === 0 ? "success" : "error"}>
+            {bookmark_status === 0
+              ? "Successfully bookmarked!"
+              : "Please try again later."}
+          </Alert>
+        )}
         <Stepper
           activeStep={activeStep}
           sx={{ paddingTop: "10px" }}
@@ -259,10 +337,35 @@ const MarketplacePurchase = (props: MPProps) => {
               loading={loading}
               suppliers={props.suppliers}
               client={props.client}
+              setDeviceName={setDeviceName}
+              setDeviceSpecs={setDeviceSpecs}
+              specs={device_specs}
+              device_name={device_name}
+              bookmarked={setAlreadyBookmark}
             />
           </>
         )}
-        {activeStep === 0 && props.specific_device && (
+        {activeStep === 0 && props.specific_device && props.bookmark && (
+          <>
+            <DeviceSelection
+              types={types}
+              brand={brand}
+              setLoading={setLoading}
+              completeDeviceChoice={completeDeviceStep}
+              clear_device={clear_device}
+              setClear={setClearDevice}
+              loading={loading}
+              suppliers={props.suppliers}
+              client={props.client}
+              setDeviceName={setDeviceName}
+              setDeviceSpecs={setDeviceSpecs}
+              specs={props.specific_specs!}
+              device_name={props.specific_device}
+              bookmarked={setAlreadyBookmark}
+            />
+          </>
+        )}
+        {activeStep === 0 && props.specific_device && !props.bookmark && (
           <>
             <SpecificDevice
               device_name={props.specific_device}

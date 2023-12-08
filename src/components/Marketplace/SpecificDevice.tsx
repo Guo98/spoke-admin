@@ -99,6 +99,7 @@ const SpecificDevice = (props: SDProps) => {
         <Typography fontWeight="bold" fontSize="115%">
           {device_name}
         </Typography>
+        <Typography>{props.specs}</Typography>
         <Typography>{location}</Typography>
         {props.supplier_links &&
           Object.keys(props.supplier_links).length > 0 && (

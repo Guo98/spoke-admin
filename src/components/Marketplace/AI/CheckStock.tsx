@@ -220,7 +220,7 @@ const CheckStock = (props: CheckStockProps) => {
                 <Button
                   variant="contained"
                   sx={{ borderRadius: "10px" }}
-                  fullWidth={client === "Alma"}
+                  fullWidth={client === "Alma" || client === "public"}
                   onClick={() =>
                     completeDeviceChoice(
                       product_name,

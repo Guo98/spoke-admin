@@ -102,6 +102,7 @@ export interface MarketplaceProducts2 {
             {
               spec: string;
               locations: string[];
+              bookmarked?: boolean;
             }
           ];
           colors: string[];
