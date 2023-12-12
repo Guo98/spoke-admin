@@ -120,7 +120,7 @@ const AddNewDevice = (props: AddProps) => {
                 variant="contained"
                 sx={{ borderRadius: "20px", textTransform: "none" }}
                 onClick={get_specs}
-                disabled={invalid_supplier}
+                disabled={invalid_supplier || supplier_url === ""}
               >
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Typography>Next</Typography>
