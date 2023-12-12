@@ -108,9 +108,11 @@ const Marketplace = () => {
 
     if (bookmarked_devices.length > 0) {
       setBookmarked(bookmarked_devices);
+    } else {
+      setBookmarked([]);
     }
 
-    if (brandname !== "") {
+    if (brandname !== "" && productRedux.length > 0) {
       const brand_index = productRedux
         .filter((p) => p.item_type === product)[0]
         .brands.findIndex((b) => b.brand === brandname);
@@ -121,6 +123,8 @@ const Marketplace = () => {
       }
     }
   }, [productRedux]);
+
+  useEffect(() => {}, [bookmarked]);
 
   const genericProduct = (product_name: string, item_index: number) => {
     setPagenumber(1);
@@ -318,6 +322,8 @@ const Marketplace = () => {
                       brand={b.brand}
                       locations={b.locations}
                       item_type={b.device_type}
+                      client={marketClient}
+                      refresh={getProducts}
                     />
                   );
                 })}
