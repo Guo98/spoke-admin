@@ -22,6 +22,7 @@ import ClearAllIcon from "@mui/icons-material/ClearAll";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch } from "react-redux";
 
@@ -45,6 +46,7 @@ interface MPProps {
   specific_specs?: string;
   product_type?: string;
   bookmark?: boolean;
+  refresh: Function;
 }
 
 const style = {
@@ -155,15 +157,19 @@ const MarketplacePurchase = (props: MPProps) => {
   const [bookmark_status, setBookmarkStatus] = useState(-1);
   const [already_bookmarked, setAlreadyBookmark] = useState(false);
 
+  const [can_delete, setCanDelete] = useState(false);
+  const [delete_status, setDeleteStatus] = useState(-1);
+
   useEffect(() => {
     setActiveStep(0);
     setComplete1(false);
     setComplete2(false);
-  }, [brand]);
+  }, [brand, types]);
 
   useEffect(() => {
     if (!props.bookmark && device_name !== "" && device_specs !== "") {
       setCanBookmark(true);
+      setCanDelete(true);
     }
   }, [device_name, device_specs]);
 
@@ -211,6 +217,8 @@ const MarketplacePurchase = (props: MPProps) => {
     setLoading(false);
     if (activeStep === 0) {
       setClearDevice(true);
+      setDeviceName("");
+      setDeviceSpecs("");
     } else {
       setClearDeployment(true);
       setClearDevice(true);
@@ -239,10 +247,40 @@ const MarketplacePurchase = (props: MPProps) => {
 
     if (bookmark_resp.status === "Successful") {
       setBookmarkStatus(0);
+      await props.refresh();
     } else {
       setBookmarkStatus(1);
     }
 
+    setLoading(false);
+  };
+
+  const deleteSpec = async () => {
+    setLoading(true);
+    setCanDelete(false);
+
+    const access_token = await getAccessTokenSilently();
+    const delete_obj = {
+      brand,
+      type: device_name,
+      specs: device_specs,
+      client,
+      product_type: props.product_type,
+    };
+
+    const delete_resp = await standardPost(
+      access_token,
+      "marketplace/delete",
+      delete_obj
+    );
+    if (delete_resp.status === "Successful") {
+      setDeleteStatus(0);
+      await props.refresh();
+      setDeviceName("");
+      setDeviceSpecs("");
+    } else {
+      setDeleteStatus(1);
+    }
     setLoading(false);
   };
 
@@ -258,6 +296,12 @@ const MarketplacePurchase = (props: MPProps) => {
           setComplete1(false);
           setComplete2(false);
         }
+        setBookmarkStatus(-1);
+        setDeleteStatus(-1);
+        setCanBookmark(false);
+        setCanDelete(false);
+        setDeviceName("");
+        setDeviceSpecs("");
       }}
       open={open}
     >
@@ -295,6 +339,13 @@ const MarketplacePurchase = (props: MPProps) => {
                 </IconButton>
               </Tooltip>
             )}
+            {activeStep === 0 && (
+              <Tooltip title="Delete Spec">
+                <IconButton disabled={!can_delete} onClick={deleteSpec}>
+                  <DeleteForeverIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title="Clear All">
               <IconButton onClick={clearAll}>
                 <ClearAllIcon />
@@ -306,6 +357,13 @@ const MarketplacePurchase = (props: MPProps) => {
           <Alert severity={bookmark_status === 0 ? "success" : "error"}>
             {bookmark_status === 0
               ? "Successfully bookmarked!"
+              : "Please try again later."}
+          </Alert>
+        )}
+        {delete_status !== -1 && (
+          <Alert severity={delete_status === 0 ? "success" : "error"}>
+            {delete_status === 0
+              ? "Successfully deleted!"
               : "Please try again later."}
           </Alert>
         )}

@@ -10,7 +10,6 @@ import {
   Autocomplete,
 } from "@mui/material";
 import CheckStock from "./AI/CheckStock";
-import { event } from "cypress/types/jquery";
 
 interface DeviceSelectionProps {
   types: any;
@@ -108,6 +107,8 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
       );
     }
   }, []);
+
+  useEffect(() => {}, [props.specs]);
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     // setType(event.target.value);

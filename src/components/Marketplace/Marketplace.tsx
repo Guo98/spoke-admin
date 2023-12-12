@@ -109,6 +109,17 @@ const Marketplace = () => {
     if (bookmarked_devices.length > 0) {
       setBookmarked(bookmarked_devices);
     }
+
+    if (brandname !== "") {
+      const brand_index = productRedux
+        .filter((p) => p.item_type === product)[0]
+        .brands.findIndex((b) => b.brand === brandname);
+
+      if (brand_index > -1) {
+        setTypes(brands![brand_index].types);
+        setImg(brands![brand_index].imgSrc);
+      }
+    }
   }, [productRedux]);
 
   const genericProduct = (product_name: string, item_index: number) => {
@@ -273,6 +284,7 @@ const Marketplace = () => {
               client={marketClient}
               suppliers={suppliers}
               product_type={product}
+              refresh={getProducts}
             />
           ) : (
             <MarketplacePurchase
@@ -287,6 +299,7 @@ const Marketplace = () => {
               supplier_links={existing_order_info.supplier_links}
               specific_specs={existing_order_info.specific_specs}
               bookmark={existing_order_info.bookmark}
+              refresh={getProducts}
             />
           )}
         </Box>
