@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -46,7 +46,6 @@ interface ConfirmationProps {
   note: string;
   shipping: string;
   image_source: string | undefined;
-  back: Function;
   returning: boolean;
   client: string;
   id: string | undefined;
@@ -68,6 +67,8 @@ const ConfirmationBox = (props: ConfirmationProps) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(-1);
+
+  useEffect(() => {}, [props.device_name]);
 
   const deploy = async () => {
     setLoading(true);

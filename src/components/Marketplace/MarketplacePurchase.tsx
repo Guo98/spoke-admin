@@ -23,7 +23,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch } from "react-redux";
 
-import DeviceSelection from "./DeviceSelection";
+import DeviceSelection from "./DeviceSelection/DeviceSelection";
 import RecipientForm from "./RecipientForm";
 import SpecificDevice from "./SpecificDevice";
 import { standardPost } from "../../services/standard";
@@ -45,6 +45,7 @@ interface MPProps {
   product_type?: string;
   bookmark?: boolean;
   refresh: Function;
+  item_type: string;
 }
 
 const style = {
@@ -78,7 +79,7 @@ function ColorStepIcon(props: StepIconProps) {
 }
 
 const MarketplacePurchase = (props: MPProps) => {
-  const { open, handleClose, imgSrc, types, brand, client } = props;
+  const { open, handleClose, imgSrc, types, brand, client, item_type } = props;
   const { getAccessTokenSilently } = useAuth0();
   const dispatch = useDispatch();
 
@@ -349,6 +350,7 @@ const MarketplacePurchase = (props: MPProps) => {
               specs={device_specs}
               device_name={device_name}
               bookmarked={setAlreadyBookmark}
+              item_type={item_type}
             />
           </>
         )}
@@ -369,6 +371,7 @@ const MarketplacePurchase = (props: MPProps) => {
               specs={props.specific_specs!}
               device_name={props.specific_device}
               bookmarked={setAlreadyBookmark}
+              item_type={item_type}
             />
           </>
         )}

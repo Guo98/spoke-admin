@@ -37,6 +37,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(false);
   const [pagenumber, setPagenumber] = useState(0);
   const [product, setProduct] = useState("");
+  const [product_type, setProductType] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any>({});
@@ -89,21 +90,23 @@ const Marketplace = () => {
     let bookmarked_devices: any[] = [];
 
     productRedux.forEach((p) => {
-      p.brands.forEach((b) => {
-        b.types.forEach((t) => {
-          t.specs.forEach((s) => {
-            if (s.bookmarked) {
-              bookmarked_devices.push({
-                brand: b.brand,
-                type: t.type,
-                spec: s.spec,
-                locations: s.locations,
-                device_type: p.item_type,
-              });
-            }
+      if (p.item_type === "Laptops") {
+        p.brands.forEach((b) => {
+          b.types.forEach((t) => {
+            t.specs.forEach((s) => {
+              if (s.bookmarked) {
+                bookmarked_devices.push({
+                  brand: b.brand,
+                  type: t.type,
+                  spec: s.spec,
+                  locations: s.locations,
+                  device_type: p.item_type,
+                });
+              }
+            });
           });
         });
-      });
+      }
     });
 
     if (bookmarked_devices.length > 0) {
@@ -132,6 +135,7 @@ const Marketplace = () => {
     setSelectedProducts([product_name]);
     setBrands(productRedux[item_index].brands);
     setSuppliers(productRedux[item_index].suppliers);
+    setProductType(productRedux[item_index].item_type);
   };
 
   const selectBrand = (brand_name: string, index: number) => {
@@ -289,6 +293,7 @@ const Marketplace = () => {
               suppliers={suppliers}
               product_type={product}
               refresh={getProducts}
+              item_type={product_type}
             />
           ) : (
             <MarketplacePurchase
@@ -304,6 +309,7 @@ const Marketplace = () => {
               specific_specs={existing_order_info.specific_specs}
               bookmark={existing_order_info.bookmark}
               refresh={getProducts}
+              item_type={product_type}
             />
           )}
         </Box>

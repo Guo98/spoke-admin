@@ -112,7 +112,11 @@ const AssignModal = (props: AssignProps) => {
   );
 
   const [success, setSuccess] = useState(-1);
-  const [page, setPage] = useState(0);
+
+  const [assign_device_name, setAssignDeviceName] = useState(device_name || "");
+  const [assign_device_loc, setAssignDeviceLoc] = useState(
+    device_location || ""
+  );
 
   const [shipping, setShipping] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -177,7 +181,6 @@ const AssignModal = (props: AssignProps) => {
     setEmail("");
     setPhonenumber("");
     setReturnDevice(false);
-    setPage(0);
     setSuccess(-1);
   };
 
@@ -187,6 +190,12 @@ const AssignModal = (props: AssignProps) => {
 
   const handleDeviceChange = (event: SelectChangeEvent) => {
     setSD(event.target.value as string);
+    setAssignDeviceName(
+      props.devices![parseInt(event.target.value as string)]?.name
+    );
+    setAssignDeviceLoc(
+      props.devices![parseInt(event.target.value as string)]?.location
+    );
   };
 
   const can_submit = () => {
@@ -205,8 +214,8 @@ const AssignModal = (props: AssignProps) => {
   };
 
   const deploy = async () => {
-    if (device_location) {
-      const lc_location = device_location.toLowerCase();
+    if (assign_device_loc) {
+      const lc_location = assign_device_loc.toLowerCase();
       if (
         lc_location.includes("usa") ||
         lc_location.includes("united states") ||
@@ -564,8 +573,8 @@ const AssignModal = (props: AssignProps) => {
                     onChange={handleChange}
                     required
                   >
-                    {device_location &&
-                    device_location.toLowerCase().includes("us") ? (
+                    {assign_device_loc &&
+                    assign_device_loc.toLowerCase().includes("us") ? (
                       ["Overnight", "2 Day"].map((s) => (
                         <MenuItem value={s}>{s}</MenuItem>
                       ))
@@ -653,11 +662,7 @@ const AssignModal = (props: AssignProps) => {
             <ConfirmationBox
               first_name={firstname}
               last_name={lastname}
-              device_name={
-                manage_modal
-                  ? props.devices![parseInt(selectedDevice)]?.name
-                  : device_name!
-              }
+              device_name={assign_device_name}
               address_line1={ad1}
               address_line2={ad2}
               city={city}
@@ -679,7 +684,6 @@ const AssignModal = (props: AssignProps) => {
                   ? props.devices![parseInt(selectedDevice)]?.image_source
                   : image_source
               }
-              back={setPage}
               returning={return_device}
               client={
                 clientData === "spokeops" ? selectedClientData : clientData
@@ -689,11 +693,7 @@ const AssignModal = (props: AssignProps) => {
                   ? props.devices![parseInt(selectedDevice)]?.id
                   : props.id
               }
-              device_location={
-                manage_modal
-                  ? props.devices![parseInt(selectedDevice)]?.location
-                  : device_location!
-              }
+              device_location={assign_device_loc}
               warehouse={props.warehouse}
               ret_activation={ret_activation}
               ret_condition={ret_condition}
