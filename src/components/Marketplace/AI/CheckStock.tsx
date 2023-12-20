@@ -8,8 +8,10 @@ import {
   Link,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
+
 import { standardGet, standardPost } from "../../../services/standard";
 import Recommendations from "./Recommendations";
+import { customer_ids } from "../../../utilities/cdw-mappings";
 
 interface CheckStockProps {
   type: string;
@@ -20,10 +22,19 @@ interface CheckStockProps {
   supplier?: string;
   product_link?: string;
   others: boolean;
+  client: string;
 }
 
 const CheckStock = (props: CheckStockProps) => {
-  const { type, spec, setLoading, brand, completeDeviceChoice, others } = props;
+  const {
+    type,
+    spec,
+    setLoading,
+    brand,
+    completeDeviceChoice,
+    others,
+    client,
+  } = props;
 
   const [status, setStatus] = useState(-1);
 
@@ -36,6 +47,7 @@ const CheckStock = (props: CheckStockProps) => {
   const [recs, setRecs] = useState<any[]>([]);
   const [stock_checked, setStockChecked] = useState(false);
   const [img_src, setImgSrc] = useState("");
+  const [cdw_part_no, setCDWPartNo] = useState("");
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -69,6 +81,7 @@ const CheckStock = (props: CheckStockProps) => {
         setUrlLink(stockResp.data.url_link);
         setAISpecs(stockResp.data.specs);
         setImgSrc(stockResp.data.image_source);
+        setCDWPartNo(stockResp.data.cdw_part_no);
         setStatus(0);
       } else {
         setStatus(2);
@@ -144,7 +157,7 @@ const CheckStock = (props: CheckStockProps) => {
                     <Typography
                       display="inline"
                       component="span"
-                      color={stock === "In Stock" ? "greenyellow" : "red"}
+                      color={stock.includes("In Stock") ? "greenyellow" : "red"}
                     >
                       {stock}
                     </Typography>
@@ -165,17 +178,49 @@ const CheckStock = (props: CheckStockProps) => {
                   </div>
                 )}
               </div>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
+              {(client === "Alma" || client === "public") && (
                 <Link href={url_link} target="_blank">
                   Link to Product
                 </Link>
+              )}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                spacing={1}
+                alignItems="center"
+              >
+                {client !== "Alma" && client !== "public" ? (
+                  <Link href={url_link} target="_blank">
+                    Link to Product
+                  </Link>
+                ) : (
+                  <Button
+                    variant="contained"
+                    sx={{ borderRadius: "10px" }}
+                    fullWidth
+                    onClick={() =>
+                      completeDeviceChoice(
+                        product_name,
+                        spec,
+                        url_link,
+                        "United States",
+                        price,
+                        img_src,
+                        stock,
+                        aispecs,
+                        props.supplier,
+                        cdw_part_no,
+                        "buy"
+                      )
+                    }
+                  >
+                    Buy Now
+                  </Button>
+                )}
                 <Button
                   variant="contained"
                   sx={{ borderRadius: "10px" }}
+                  fullWidth={client === "Alma" || client === "public"}
                   onClick={() =>
                     completeDeviceChoice(
                       product_name,

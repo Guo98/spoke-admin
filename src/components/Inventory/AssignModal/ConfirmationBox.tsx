@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, Divider, Stack, Button, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Divider,
+  Stack,
+  Button,
+  Alert,
+  IconButton,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { useDispatch } from "react-redux";
@@ -122,14 +130,19 @@ const ConfirmationBox = (props: ConfirmationProps) => {
   return (
     <Box sx={style}>
       <Stack spacing={2}>
-        <Typography variant="h6" component="h3" textAlign="center">
-          Deployment Details
-        </Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <IconButton onClick={() => props.back(0)}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h6" component="h3" textAlign="center">
+            Deployment Details
+          </Typography>
+        </Stack>
         {loading && <LinearLoading />}
         {success !== -1 && (
           <Alert severity={success === 0 ? "success" : "error"}>
             {success === 0
-              ? "Thank you for your order! You'll received a confirmation email with your order details."
+              ? "Thank you for your order! You'll receive a confirmation email with your order details."
               : "There was an error submitting your order. Please try again later."}
           </Alert>
         )}

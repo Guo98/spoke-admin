@@ -138,6 +138,19 @@ const OrderRow = (props: OrderRowProps) => {
     setOpen(false);
   }, [props.full_name, props.items]);
 
+  const has_yubikey = () => {
+    return (
+      props.items.filter((i) => i.name.toLowerCase().includes("yubikey"))
+        .length > 0
+    );
+  };
+
+  const get_yubikey_id = () => {
+    return props.items.filter((i) =>
+      i.name.toLowerCase().includes("yubikey")
+    )[0].shipment_id;
+  };
+
   return props.items ? (
     <>
       <TableRow
@@ -183,6 +196,8 @@ const OrderRow = (props: OrderRowProps) => {
             >
               {returned_laptop}
             </Typography>
+          ) : has_yubikey() && !get_yubikey_id() ? (
+            <Typography color="red">Yubikey didn't trigger</Typography>
           ) : (
             <Typography></Typography>
           )}
@@ -252,6 +267,21 @@ const OrderRow = (props: OrderRowProps) => {
                     </Typography>
                     <Typography display="inline" component="span">
                       {" " + returned_laptop}
+                    </Typography>
+                  </div>
+                )}
+                {props.parent_client === "spokeops" && has_yubikey() && (
+                  <div>
+                    <Typography
+                      fontWeight="bold"
+                      display="inline"
+                      component="span"
+                    >
+                      Yubikey Shipment ID:
+                    </Typography>
+                    <Typography display="inline" component="span">
+                      {" "}
+                      {get_yubikey_id()}
                     </Typography>
                   </div>
                 )}

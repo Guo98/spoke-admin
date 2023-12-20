@@ -44,6 +44,7 @@ export interface Item {
   delivery_status?: string;
   laptop_name?: string;
   spoke_fee?: number;
+  shipment_id?: string;
 }
 
 interface Variant {

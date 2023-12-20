@@ -18,7 +18,7 @@ const ProductCard = (props: ProductProps) => {
         maxWidth: "500px",
         margin: "10px",
         borderRadius: 2,
-        boxShadow: "5px 5px 5px gray",
+        boxShadow: "3px 3px 3px gray",
       }}
       onClick={() => cardAction(label, index)}
     >
