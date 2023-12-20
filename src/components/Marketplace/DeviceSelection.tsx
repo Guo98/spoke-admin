@@ -110,6 +110,8 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   useEffect(() => {}, [props.specs]);
 
+  useEffect(() => {}, [types]);
+
   const handleTypeChange = (event: SelectChangeEvent) => {
     // setType(event.target.value);
     props.setDeviceName(event.target.value);
@@ -293,7 +295,11 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
               types[typeIndex].colors?.map((c: string) => {
                 return <MenuItem value={c}>{c}</MenuItem>;
               })}
-            <MenuItem value="Default">Default</MenuItem>
+            {props.device_name !== "" &&
+              typeIndex !== -1 &&
+              types[typeIndex].colors?.indexOf("Default") < 0 && (
+                <MenuItem value="Default">Default</MenuItem>
+              )}
           </Select>
         </FormControl>
       )}
