@@ -115,14 +115,26 @@ const Marketplace = () => {
       setBookmarked([]);
     }
 
+    if (product !== "" && productRedux.length > 0) {
+      const product_index = productRedux.findIndex(
+        (p) => p.item_type === product
+      );
+
+      if (product_index > -1) {
+        setBrands(productRedux[product_index].brands);
+      }
+    }
+
     if (brandname !== "" && productRedux.length > 0) {
       const brand_index = productRedux
         .filter((p) => p.item_type === product)[0]
         .brands.findIndex((b) => b.brand === brandname);
 
       if (brand_index > -1) {
-        setTypes(brands![brand_index].types);
-        setImg(brands![brand_index].imgSrc);
+        let updt_brands = productRedux.filter((p) => p.item_type === product)[0]
+          .brands[brand_index];
+        setTypes(updt_brands.types);
+        setImg(updt_brands.imgSrc);
       }
     }
   }, [productRedux]);

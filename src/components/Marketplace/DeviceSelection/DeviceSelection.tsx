@@ -113,6 +113,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
   }, []);
 
   useEffect(() => {}, [props.specs]);
+  useEffect(() => {}, [types]);
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     // setType(event.target.value);
