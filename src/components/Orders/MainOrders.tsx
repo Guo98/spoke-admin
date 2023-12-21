@@ -76,8 +76,6 @@ const MainOrders = () => {
   const [rows_per_page, setRowsPerPage] = useState(25);
   const [no_of_expands, setNoExpands] = useState(1);
 
-  const { height, width } = useWindowDimensions();
-
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
@@ -129,6 +127,10 @@ const MainOrders = () => {
       combinedOrders.sort(sortOrders)
     );
   }, [data]);
+
+  useEffect(() => {
+    dispatch(filterEntity(selectedEntity));
+  }, [selectedEntity]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
