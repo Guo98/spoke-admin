@@ -84,26 +84,33 @@ export const ordersSlice = createSlice({
       state.data.in_progress = ipDefaultFilter;
     },
     filterEntity: (state, action: PayloadAction<string>) => {
-      if (action.payload !== "") {
-        if (
-          state.originalData.completed &&
-          state.originalData.completed.length > 0
-        ) {
-          state.data.completed = state.originalData.completed.filter(
-            (ord) => ord.entity === action.payload
-          );
-        }
+      const entity = action.payload;
+      let in_prog_filter = [] as Order[];
+      let completed_filter = [] as Order[];
 
+      if (entity !== "") {
         if (
           state.originalData.in_progress &&
           state.originalData.in_progress.length > 0
         ) {
-          state.data.in_progress = state.originalData.in_progress.filter(
-            (ord) => ord.entity === action.payload
+          in_prog_filter = state.originalData.in_progress.filter(
+            (i) => i.entity === entity
           );
         }
+
+        if (
+          state.originalData.completed &&
+          state.originalData.completed.length > 0
+        ) {
+          completed_filter = state.originalData.completed.filter(
+            (i) => i.entity === entity
+          );
+        }
+
+        state.orders_data.in_progress = in_prog_filter;
+        state.orders_data.completed = completed_filter;
       } else {
-        state.data = state.originalData;
+        state.orders_data = state.originalData;
       }
     },
     filterDate: (state, action: PayloadAction<string>) => {

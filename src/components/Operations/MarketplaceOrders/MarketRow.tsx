@@ -90,6 +90,7 @@ const MarketRow = (props: RowProps) => {
     setLoading(true);
     let bodyObj: any = {
       id: order.id,
+      client: order.client,
     };
 
     if (
@@ -98,7 +99,6 @@ const MarketRow = (props: RowProps) => {
     ) {
       bodyObj.updateClient = changeClient;
     } else {
-      bodyObj.client = order.client;
       if (status !== order.status) {
         bodyObj.status = status;
       }
