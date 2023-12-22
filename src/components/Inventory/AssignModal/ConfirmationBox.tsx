@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -46,7 +46,6 @@ interface ConfirmationProps {
   note: string;
   shipping: string;
   image_source: string | undefined;
-  back: Function;
   returning: boolean;
   client: string;
   id: string | undefined;
@@ -68,6 +67,8 @@ const ConfirmationBox = (props: ConfirmationProps) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(-1);
+
+  useEffect(() => {}, [props.device_name]);
 
   const deploy = async () => {
     setLoading(true);
@@ -128,135 +129,125 @@ const ConfirmationBox = (props: ConfirmationProps) => {
   };
 
   return (
-    <Box sx={style}>
-      <Stack spacing={2}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton onClick={() => props.back(0)}>
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h6" component="h3" textAlign="center">
-            Deployment Details
+    <Stack spacing={2} pt={2}>
+      {loading && <LinearLoading />}
+      {success !== -1 && (
+        <Alert severity={success === 0 ? "success" : "error"}>
+          {success === 0
+            ? "Thank you for your order! You'll receive a confirmation email with your order details."
+            : "There was an error submitting your order. Please try again later."}
+        </Alert>
+      )}
+      <Divider textAlign="left">Device Info</Divider>
+      {props.device_name && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Device:{" "}
           </Typography>
-        </Stack>
-        {loading && <LinearLoading />}
-        {success !== -1 && (
-          <Alert severity={success === 0 ? "success" : "error"}>
-            {success === 0
-              ? "Thank you for your order! You'll receive a confirmation email with your order details."
-              : "There was an error submitting your order. Please try again later."}
-          </Alert>
-        )}
-        <Divider textAlign="left">Device Info</Divider>
-        {props.device_name && (
+          <Typography display="inline" component="span">
+            {props.device_name}
+          </Typography>
+        </div>
+      )}
+      {props.serial_number && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Serial Number:{" "}
+          </Typography>
+          <Typography display="inline" component="span">
+            {props.serial_number}
+          </Typography>
+        </div>
+      )}
+      <Divider textAlign="left">Recipient Info</Divider>
+      {props.first_name && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Name:{" "}
+          </Typography>
+          <Typography display="inline" component="span">
+            {props.first_name} {props.last_name}
+          </Typography>
+        </div>
+      )}
+      {props.address_line1 && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Shipping Address:{" "}
+          </Typography>
+          <Typography display="inline" component="span">
+            {props.address_line1},{" "}
+            {props.address_line2 ? props.address_line2 + ", " : ""}
+            {props.city}, {props.state} {props.zipCode}, {props.country}
+          </Typography>
+        </div>
+      )}
+      {props.email && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Email:{" "}
+          </Typography>
+          <Typography display="inline" component="span">
+            {props.email}
+          </Typography>
+        </div>
+      )}
+      {props.phone_number && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Phone Number:{" "}
+          </Typography>
+          <Typography display="inline" component="span">
+            {props.phone_number}
+          </Typography>
+        </div>
+      )}
+      {props.returning && (
+        <>
+          <Divider textAlign="left">Return Info:</Divider>
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Device:{" "}
+              Returning Device:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.device_name}
+              {props.ret_device_name}
             </Typography>
           </div>
-        )}
-        {props.serial_number && (
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Serial Number:{" "}
+              Return Serial Number:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.serial_number}
+              {props.ret_sn}
             </Typography>
           </div>
-        )}
-        <Divider textAlign="left">Recipient Info</Divider>
-        {props.first_name && (
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Name:{" "}
+              Condition:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.first_name} {props.last_name}
+              {props.ret_condition}
             </Typography>
           </div>
-        )}
-        {props.address_line1 && (
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Shipping Address:{" "}
+              Activation Key:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.address_line1},{" "}
-              {props.address_line2 ? props.address_line2 + ", " : ""}
-              {props.city}, {props.state} {props.zipCode}, {props.country}
+              {props.ret_activation}
             </Typography>
           </div>
-        )}
-        {props.email && (
-          <div>
-            <Typography display="inline" component="span" fontWeight="bold">
-              Email:{" "}
-            </Typography>
-            <Typography display="inline" component="span">
-              {props.email}
-            </Typography>
-          </div>
-        )}
-        {props.phone_number && (
-          <div>
-            <Typography display="inline" component="span" fontWeight="bold">
-              Phone Number:{" "}
-            </Typography>
-            <Typography display="inline" component="span">
-              {props.phone_number}
-            </Typography>
-          </div>
-        )}
-        {props.returning && (
-          <>
-            <Divider textAlign="left">Return Info:</Divider>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Returning Device:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_device_name}
-              </Typography>
-            </div>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Return Serial Number:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_sn}
-              </Typography>
-            </div>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Condition:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_condition}
-              </Typography>
-            </div>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Activation Key:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_activation}
-              </Typography>
-            </div>
-          </>
-        )}
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
-          onClick={deploy}
-          disabled={success !== -1}
-        >
-          Deploy
-        </Button>
-      </Stack>
-    </Box>
+        </>
+      )}
+      <Button
+        variant="contained"
+        sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
+        onClick={deploy}
+        disabled={success !== -1}
+      >
+        Deploy
+      </Button>
+    </Stack>
   );
 };
 
