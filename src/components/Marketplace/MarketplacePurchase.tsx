@@ -6,8 +6,6 @@ import {
   Stepper,
   Step,
   StepLabel,
-  styled,
-  StepConnector,
   StepIconProps,
   Tooltip,
   IconButton,
@@ -15,7 +13,6 @@ import {
   ButtonGroup,
   Alert,
 } from "@mui/material";
-import { stepConnectorClasses } from "@mui/material/StepConnector";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
@@ -26,11 +23,12 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch } from "react-redux";
 
-import DeviceSelection from "./DeviceSelection";
+import DeviceSelection from "./DeviceSelection/DeviceSelection";
 import RecipientForm from "./RecipientForm";
 import SpecificDevice from "./SpecificDevice";
 import { standardPost } from "../../services/standard";
 import { openMarketplace } from "../../app/slices/marketSlice";
+import { ColorConnector, ColorIconRoot } from "../common/StepperUtils";
 
 interface MPProps {
   open: boolean;
@@ -47,6 +45,7 @@ interface MPProps {
   product_type?: string;
   bookmark?: boolean;
   refresh: Function;
+  item_type: string;
 }
 
 const style = {
@@ -62,55 +61,6 @@ const style = {
   p: 4,
   overflow: "scroll",
 };
-
-const ColorConnector = styled(StepConnector)(({ theme }) => ({
-  [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: 22,
-  },
-  [`&.${stepConnectorClasses.active}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundImage:
-        "linear-gradient(90deg, rgba(7,79,255,1) 0%, rgba(23,110,204,1) 49%, rgba(75,137,233,1) 100%)",
-    },
-  },
-  [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundImage:
-        "linear-gradient(90deg, rgba(7,79,255,1) 0%, rgba(23,110,204,1) 49%, rgba(75,137,233,1) 100%)",
-    },
-  },
-  [`& .${stepConnectorClasses.line}`]: {
-    height: 3,
-    border: 0,
-    backgroundColor:
-      theme.palette.mode === "dark" ? theme.palette.grey[800] : "#eaeaf0",
-    borderRadius: 1,
-  },
-}));
-
-const ColorIconRoot = styled("div")<{
-  ownerState: { completed?: boolean; active?: boolean };
-}>(({ theme, ownerState }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark" ? theme.palette.grey[700] : "#ccc",
-  zIndex: 1,
-  color: "#fff",
-  width: 45,
-  height: 45,
-  display: "flex",
-  borderRadius: "50%",
-  justifyContent: "center",
-  alignItems: "center",
-  ...(ownerState.active && {
-    backgroundImage:
-      "linear-gradient(90deg, rgba(7,79,255,1) 0%, rgba(23,110,204,1) 49%, rgba(75,137,233,1) 100%)",
-    boxShadow: "0 4px 10px 0 rgba(0,0,0,.25)",
-  }),
-  ...(ownerState.completed && {
-    backgroundImage:
-      "linear-gradient(90deg, rgba(7,79,255,1) 0%, rgba(23,110,204,1) 49%, rgba(75,137,233,1) 100%)",
-  }),
-}));
 
 function ColorStepIcon(props: StepIconProps) {
   // Add active to ownerstate if want deployment filled on form
@@ -129,7 +79,7 @@ function ColorStepIcon(props: StepIconProps) {
 }
 
 const MarketplacePurchase = (props: MPProps) => {
-  const { open, handleClose, imgSrc, types, brand, client } = props;
+  const { open, handleClose, imgSrc, types, brand, client, item_type } = props;
   const { getAccessTokenSilently } = useAuth0();
   const dispatch = useDispatch();
 
@@ -400,6 +350,7 @@ const MarketplacePurchase = (props: MPProps) => {
               specs={device_specs}
               device_name={device_name}
               bookmarked={setAlreadyBookmark}
+              item_type={item_type}
             />
           </>
         )}
@@ -420,6 +371,7 @@ const MarketplacePurchase = (props: MPProps) => {
               specs={props.specific_specs!}
               device_name={props.specific_device}
               bookmarked={setAlreadyBookmark}
+              item_type={item_type}
             />
           </>
         )}
