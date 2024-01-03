@@ -275,6 +275,7 @@ const OffboardModal = (props: OffboardProps) => {
                     freeSolo
                     options={[...props.all_devices]}
                     inputValue={selected_device}
+                    onChange={(e, v) => setSelectedDevice(v ? v : "")}
                     renderInput={(params) => (
                       <TF
                         {...params}
