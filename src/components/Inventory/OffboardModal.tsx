@@ -274,12 +274,14 @@ const OffboardModal = (props: OffboardProps) => {
                   <Autocomplete
                     freeSolo
                     options={[...props.all_devices]}
+                    inputValue={selected_device}
                     renderInput={(params) => (
                       <TF
                         {...params}
                         label="Device to Return"
                         size="small"
                         sx={textFieldStyle}
+                        onChange={(e) => setSelectedDevice(e.target.value)}
                       />
                     )}
                   />
