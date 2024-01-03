@@ -39,6 +39,8 @@ interface RecipientProps {
   supplier?: string;
   request_type: string;
   cdw_part_no: string;
+  addons?: string[];
+  item_type: string;
 }
 
 const textFieldStyle = {
@@ -62,6 +64,7 @@ const RecipientForm = (props: RecipientProps) => {
     ai_specs,
     request_type,
     cdw_part_no,
+    item_type,
   } = props;
 
   const { user, getAccessTokenSilently } = useAuth0();
@@ -198,6 +201,10 @@ const RecipientForm = (props: RecipientProps) => {
         postBody.address = addr;
       }
 
+      if (props.addons) {
+        postBody.addons = props.addons;
+      }
+
       postBody.notes.recipient = notes;
       postBody.email = email;
       postBody.phone_number = phone_number;
@@ -225,73 +232,83 @@ const RecipientForm = (props: RecipientProps) => {
       {!loading && status === -1 && (
         <Stack spacing={2} pt={2.5}>
           <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
-            Device Details
+            Order Details
           </Divider>
-          <Stack direction="row" spacing={2}>
-            {image_source && (
-              <img
-                src={image_source}
-                alt="Laptop picture"
-                style={{ maxHeight: 200, maxWidth: 200 }}
-              />
-            )}
-            <Stack justifyContent="center" spacing={1}>
-              <Typography fontWeight="bold">{device_name}</Typography>
-              <div>
-                <Typography display="inline" component="span" fontWeight="bold">
-                  Specs:{" "}
-                </Typography>
-                <Typography display="inline" component="span">
-                  {device_specs}
-                </Typography>
-              </div>
-              {stock_level && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                  >
-                    Stock Level:{" "}
-                  </Typography>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    color={stock_level === "In Stock" ? "greenyellow" : "red"}
-                  >
-                    {stock_level}
-                  </Typography>
-                </div>
+          {item_type !== "Accessories" && (
+            <Stack direction="row" spacing={2}>
+              {image_source && (
+                <img
+                  src={image_source}
+                  alt="Laptop picture"
+                  style={{ maxHeight: 200, maxWidth: 200 }}
+                />
               )}
-              {price && (
+              <Stack justifyContent="center" spacing={1}>
+                <Typography fontWeight="bold">{device_name}</Typography>
                 <div>
                   <Typography
                     display="inline"
                     component="span"
                     fontWeight="bold"
                   >
-                    Estimated Price:{" "}
+                    Specs:{" "}
                   </Typography>
                   <Typography display="inline" component="span">
-                    {price}
+                    {device_specs}
                   </Typography>
                 </div>
-              )}
-              {cdw_part_no && (
-                <div>
-                  <Typography
-                    display="inline"
-                    component="span"
-                    fontWeight="bold"
-                  >
-                    CDW Part Number:{" "}
-                  </Typography>
-                  <Typography display="inline" component="span">
-                    {cdw_part_no}
-                  </Typography>
-                </div>
-              )}
+                {stock_level && (
+                  <div>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontWeight="bold"
+                    >
+                      Stock Level:{" "}
+                    </Typography>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      color={stock_level === "In Stock" ? "greenyellow" : "red"}
+                    >
+                      {stock_level}
+                    </Typography>
+                  </div>
+                )}
+                {price && (
+                  <div>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontWeight="bold"
+                    >
+                      Estimated Price:{" "}
+                    </Typography>
+                    <Typography display="inline" component="span">
+                      {price}
+                    </Typography>
+                  </div>
+                )}
+                {cdw_part_no && (
+                  <div>
+                    <Typography
+                      display="inline"
+                      component="span"
+                      fontWeight="bold"
+                    >
+                      CDW Part Number:{" "}
+                    </Typography>
+                    <Typography display="inline" component="span">
+                      {cdw_part_no}
+                    </Typography>
+                  </div>
+                )}
+              </Stack>
             </Stack>
+          )}
+          <Stack spacing={1}>
+            <Typography>Accessories: </Typography>
+            <ul>{props.addons && props.addons.map((i) => <li>{i}</li>)}</ul>
           </Stack>
           <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
             Deployment Type
@@ -317,14 +334,14 @@ const RecipientForm = (props: RecipientProps) => {
           {request_type === "buy" && (
             <Typography>Order from CDW immediately</Typography>
           )}
-          {(deployment_type === "Drop Ship" || request_type === "buy") && (
+          {/* {(deployment_type === "Drop Ship" || request_type === "buy") && (
             <FormControlLabel
               control={
                 <Checkbox onChange={handleReturnChecked} checked={return_box} />
               }
               label="Include Equipment Return Box"
             />
-          )}
+          )} */}
           {request_type === "buy" && (
             <>
               <Divider textAlign="left" sx={{ fontWeight: "bold" }}>

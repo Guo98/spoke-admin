@@ -1,16 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UpdateMarketOrderAction } from "../../types/redux/market";
+import { PauseOutlined } from "@mui/icons-material";
+import { MarketplaceProducts2 } from "../../interfaces/inventory";
 
 const initialState: {
   data: any;
   filteredData: any;
   dateFilter: string;
   order_info: any;
+  accessories: any;
+  products: MarketplaceProducts2[];
 } = {
   data: [],
   filteredData: [],
   dateFilter: "30",
   order_info: null,
+  accessories: null,
+  products: [],
 };
 
 export const marketSlice = createSlice({
@@ -81,6 +87,15 @@ export const marketSlice = createSlice({
     resetMarketplaceInfo: (state) => {
       state.order_info = null;
     },
+    addProducts: (state, action: PayloadAction<MarketplaceProducts2[]>) => {
+      state.products = action.payload;
+
+      action.payload.forEach((product) => {
+        if (product.item_type === "Accessories") {
+          state.accessories = product;
+        }
+      });
+    },
   },
 });
 
@@ -90,6 +105,7 @@ export const {
   filterApprovals,
   openMarketplace,
   resetMarketplaceInfo,
+  addProducts,
 } = marketSlice.actions;
 
 export default marketSlice.reducer;

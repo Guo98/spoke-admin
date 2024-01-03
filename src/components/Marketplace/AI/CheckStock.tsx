@@ -210,13 +210,35 @@ const CheckStock = (props: CheckStockProps) => {
                         aispecs,
                         props.supplier,
                         cdw_part_no,
-                        "buy"
+                        "buy",
+                        false
                       )
                     }
                   >
                     Buy Now
                   </Button>
                 )}
+                <Button
+                  variant="contained"
+                  sx={{ borderRadius: "10px" }}
+                  fullWidth
+                  onClick={() =>
+                    completeDeviceChoice(
+                      product_name,
+                      spec,
+                      url_link,
+                      "United States",
+                      price,
+                      img_src,
+                      stock,
+                      aispecs,
+                      props.supplier,
+                      true
+                    )
+                  }
+                >
+                  Continue to Addons
+                </Button>
                 <Button
                   variant="contained"
                   sx={{ borderRadius: "10px" }}
@@ -231,7 +253,8 @@ const CheckStock = (props: CheckStockProps) => {
                       img_src,
                       stock,
                       aispecs,
-                      props.supplier
+                      props.supplier,
+                      false
                     )
                   }
                 >
@@ -267,6 +290,27 @@ const CheckStock = (props: CheckStockProps) => {
             {!loading ? "Check Supplier's Stock" : <CircularProgress />}
           </Button>
           <Button
+            variant="contained"
+            sx={{ borderRadius: "10px" }}
+            fullWidth
+            onClick={() =>
+              completeDeviceChoice(
+                type,
+                spec,
+                "",
+                "United States",
+                "",
+                "",
+                "",
+                "",
+                props.supplier,
+                true
+              )
+            }
+          >
+            Continue to Addons
+          </Button>
+          <Button
             fullWidth
             variant="contained"
             sx={{ borderRadius: "10px" }}
@@ -280,7 +324,8 @@ const CheckStock = (props: CheckStockProps) => {
                 "",
                 "",
                 "",
-                props.supplier
+                props.supplier,
+                false
               )
             }
             disabled={loading}

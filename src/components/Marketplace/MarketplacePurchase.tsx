@@ -20,15 +20,19 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import DeviceSelection from "./DeviceSelection/DeviceSelection";
 import RecipientForm from "./RecipientForm";
 import SpecificDevice from "./SpecificDevice";
+import AccessoriesSelection from "./DeviceSelection/AccessoriesSelection";
 import { standardPost } from "../../services/standard";
 import { openMarketplace } from "../../app/slices/marketSlice";
 import { ColorConnector, ColorIconRoot } from "../common/StepperUtils";
+import { RootState } from "../../app/store";
+import { access } from "fs";
 
 interface MPProps {
   open: boolean;
@@ -68,7 +72,8 @@ function ColorStepIcon(props: StepIconProps) {
 
   const icons: { [index: string]: React.ReactElement } = {
     1: <LaptopIcon />,
-    2: <LocalShippingIcon />,
+    2: <AddShoppingCartIcon />,
+    3: <LocalShippingIcon />,
   };
 
   return (
@@ -79,14 +84,20 @@ function ColorStepIcon(props: StepIconProps) {
 }
 
 const MarketplacePurchase = (props: MPProps) => {
+  const accessories_redux = useSelector(
+    (state: RootState) => state.market.accessories
+  );
+
   const { open, handleClose, imgSrc, types, brand, client, item_type } = props;
   const { getAccessTokenSilently } = useAuth0();
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const [completed1, setComplete1] = useState(false);
-  const [completed2, setComplete2] = useState(false);
+
+  const [step_1, setStep1] = useState(true);
+  const [step_2, setStep2] = useState(false);
+  const [step_3, setStep3] = useState(false);
 
   const [device_name, setDeviceName] = useState("");
   const [device_specs, setDeviceSpecs] = useState("");
@@ -100,6 +111,8 @@ const MarketplacePurchase = (props: MPProps) => {
   const [cdw_part_number, setCDWPartNo] = useState("");
   const [request_type, setReqType] = useState("");
 
+  const [accessories, setAccessories] = useState<any[]>([]);
+
   const [clear_device, setClearDevice] = useState(false);
   const [clear_deployment, setClearDeployment] = useState(false);
 
@@ -112,8 +125,9 @@ const MarketplacePurchase = (props: MPProps) => {
 
   useEffect(() => {
     setActiveStep(0);
-    setComplete1(false);
-    setComplete2(false);
+    setStep1(true);
+    setStep2(false);
+    setStep3(false);
   }, [brand, types]);
 
   useEffect(() => {
@@ -130,6 +144,15 @@ const MarketplacePurchase = (props: MPProps) => {
     }
   }, [props.specific_device, props.specific_specs, props.bookmark]);
 
+  useEffect(() => {
+    if (item_type === "Accessories") {
+      setActiveStep(1);
+      setStep2(true);
+    } else {
+      setStep1(true);
+    }
+  }, [item_type]);
+
   const completeDeviceStep = (
     dn: string,
     ds: string,
@@ -141,10 +164,10 @@ const MarketplacePurchase = (props: MPProps) => {
     ai_specs: string,
     sup: string,
     cdw_part_no: string = "",
-    type: string = "quote"
+    type: string = "quote",
+    go_to_addons: boolean
   ) => {
-    setActiveStep(1);
-    setComplete1(true);
+    // setComplete1(true);
     setDeviceName(dn);
     setDeviceSpecs(ds);
     setDeviceURL(du);
@@ -156,10 +179,24 @@ const MarketplacePurchase = (props: MPProps) => {
     setSupplier(sup);
     setCDWPartNo(cdw_part_no);
     setReqType(type);
+
+    if (go_to_addons) {
+      setActiveStep(2);
+      setStep3(true);
+    } else {
+      setActiveStep(1);
+      setStep2(true);
+    }
+  };
+
+  const addAccessories = (items: any[]) => {
+    setAccessories(items);
+    setActiveStep(2);
+    setStep3(true);
   };
 
   const completeDeploymentStep = () => {
-    setComplete2(true);
+    // setComplete2(true);
     setLoading(true);
   };
 
@@ -173,7 +210,8 @@ const MarketplacePurchase = (props: MPProps) => {
       setClearDeployment(true);
       setClearDevice(true);
       setActiveStep(0);
-      setComplete1(false);
+      setStep3(false);
+      setStep2(false);
     }
   };
 
@@ -241,10 +279,13 @@ const MarketplacePurchase = (props: MPProps) => {
           handleClose();
           dispatch(openMarketplace(null));
         }
-        if (completed1 && completed2) {
+        if (step_1 && step_3) {
           setActiveStep(0);
-          setComplete1(false);
-          setComplete2(false);
+          setStep1(false);
+          setStep3(false);
+          if (step_2) {
+            setStep2(false);
+          }
         }
         setBookmarkStatus(-1);
         setDeleteStatus(-1);
@@ -252,21 +293,38 @@ const MarketplacePurchase = (props: MPProps) => {
         setCanDelete(false);
         setDeviceName("");
         setDeviceSpecs("");
+        setStep2(false);
       }}
       open={open}
     >
       <Box sx={style}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h5" fontWeight="bold">
-            {"New Purchase" + (!props.specific_device ? " - " + brand : "")}
+            {"New Purchase" +
+              (!props.specific_device
+                ? item_type !== "Accessories"
+                  ? " - " + brand
+                  : " - Accessories"
+                : "")}
           </Typography>
           <ButtonGroup>
-            {activeStep === 1 && (
+            {activeStep !== 0 && (
               <Tooltip title="Back">
                 <IconButton
                   onClick={() => {
-                    setActiveStep(0);
-                    setComplete1(false);
+                    setActiveStep(activeStep - 1);
+                    if (item_type === "Accessories") {
+                      setStep2(true);
+                    } else {
+                      if (activeStep === 1) {
+                        setStep1(true);
+                        setStep2(false);
+                        setStep3(false);
+                      } else {
+                        setStep2(true);
+                        setStep3(false);
+                      }
+                    }
                   }}
                 >
                   <ArrowBackIcon />
@@ -322,12 +380,19 @@ const MarketplacePurchase = (props: MPProps) => {
           sx={{ paddingTop: "10px" }}
           connector={<ColorConnector />}
         >
-          <Step key="Device" completed={completed1}>
+          {item_type !== "Accessories" && (
+            <Step key="Device" completed={step_1}>
+              <StepLabel StepIconComponent={ColorStepIcon}>
+                <Typography>Device</Typography>
+              </StepLabel>
+            </Step>
+          )}
+          <Step key="Device" completed={step_2}>
             <StepLabel StepIconComponent={ColorStepIcon}>
-              <Typography>Device</Typography>
+              <Typography>Accessories</Typography>
             </StepLabel>
           </Step>
-          <Step completed={completed2}>
+          <Step completed={step_3}>
             <StepLabel StepIconComponent={ColorStepIcon}>
               <Typography>Deployment</Typography>
             </StepLabel>
@@ -387,6 +452,12 @@ const MarketplacePurchase = (props: MPProps) => {
           </>
         )}
         {activeStep === 1 && (
+          <AccessoriesSelection
+            addAccessories={addAccessories}
+            client={props.client}
+          />
+        )}
+        {activeStep === 2 && (
           <RecipientForm
             completeRecipientStep={completeDeploymentStep}
             device_name={device_name}
@@ -404,6 +475,8 @@ const MarketplacePurchase = (props: MPProps) => {
             supplier={supplier}
             request_type={request_type}
             cdw_part_no={cdw_part_number}
+            addons={accessories}
+            item_type={item_type}
           />
         )}
       </Box>

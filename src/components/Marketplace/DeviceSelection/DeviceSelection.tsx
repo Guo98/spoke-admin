@@ -182,14 +182,6 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   return (
     <>
-      {item_type.toLowerCase() === "accessories" && (
-        <AccessoriesSelection
-          items={types}
-          setItemName={props.setDeviceName}
-          item_name={props.device_name}
-          completeItemChoice={completeDeviceChoice}
-        />
-      )}
       {item_type.toLowerCase() !== "accessories" && (
         <>
           {brand !== "Others" && (

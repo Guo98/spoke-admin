@@ -56,6 +56,7 @@ interface ConfirmationProps {
   ret_condition?: string;
   ret_activation?: string;
   ret_note?: string;
+  addons: string[];
 }
 
 const ConfirmationBox = (props: ConfirmationProps) => {
@@ -107,6 +108,10 @@ const ConfirmationBox = (props: ConfirmationProps) => {
         condition: props.ret_condition,
         activation_key: props.ret_activation,
       };
+    }
+
+    if (props.addons.length > 0) {
+      deployObj.addons = props.addons;
     }
 
     const deployResult = await standardPost(

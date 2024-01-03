@@ -133,7 +133,12 @@ const OffboardModal = (props: OffboardProps) => {
       client: client,
       type: return_type,
       device_location: props.device_location,
-      device_name: props.device_name || selected_device,
+      device_name:
+        selected_device !== ""
+          ? selected_device
+          : props.device_name
+          ? props.device_name
+          : "",
       serial_number: props.serial_number || serial_number,
       device_condition: condition,
       recipient_name: first_name + " " + last_name,

@@ -33,6 +33,7 @@ import ReturnInfo from "./ReturnInfo";
 import ConfirmationBox from "./ConfirmationBox";
 import { ColorConnector, ColorIconRoot } from "../../common/StepperUtils";
 import AddOns from "../../common/AddOns/AddOns";
+import AccessoriesSelection from "../../Marketplace/DeviceSelection/AccessoriesSelection";
 
 import { InventorySummary } from "../../../interfaces/inventory";
 import { RootState } from "../../../app/store";
@@ -145,6 +146,9 @@ const AssignModal = (props: AssignProps) => {
   const [ret_condition, setRetCondition] = useState("");
   const [ret_activation, setRetActivation] = useState("");
   const [ret_note, setRetNote] = useState("");
+
+  //addons
+  const [addons, setAddons] = useState<string[]>([]);
 
   //stepper
   const [active_step, setActiveStep] = useState(0);
@@ -261,6 +265,11 @@ const AssignModal = (props: AssignProps) => {
         }
       }
     }
+  };
+
+  const addAddons = (addl_items: string[]) => {
+    setAddons(addl_items);
+    setActiveStep(2);
   };
 
   return (
@@ -573,15 +582,15 @@ const AssignModal = (props: AssignProps) => {
                     onChange={handleChange}
                     required
                   >
+                    <MenuItem value="Standard">Standard</MenuItem>
                     {assign_device_loc &&
                     assign_device_loc.toLowerCase().includes("us") ? (
-                      ["Overnight", "2 Day"].map((s) => (
+                      ["2 Day", "Overnight"].map((s) => (
                         <MenuItem value={s}>{s}</MenuItem>
                       ))
                     ) : (
                       <MenuItem value="Expedited">Expedited</MenuItem>
                     )}
-                    <MenuItem value="Standard">Standard</MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -629,7 +638,7 @@ const AssignModal = (props: AssignProps) => {
               </Stack>
             </Stack>
           )}
-          {active_step === 1 && (
+          {/* {active_step === 1 && (
             <>
               <AddOns
                 device_name={ret_device_name}
@@ -657,6 +666,14 @@ const AssignModal = (props: AssignProps) => {
                 Submit
               </Button>
             </>
+          )} */}
+          {active_step === 1 && (
+            <AccessoriesSelection
+              addAccessories={addAddons}
+              client={
+                clientData === "spokeops" ? selectedClientData : clientData
+              }
+            />
           )}
           {active_step === 2 && (
             <ConfirmationBox
@@ -700,6 +717,7 @@ const AssignModal = (props: AssignProps) => {
               ret_device_name={ret_device_name}
               ret_note={ret_note}
               ret_sn={ret_sn}
+              addons={addons}
             />
           )}
         </Box>
