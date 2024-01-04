@@ -70,7 +70,7 @@ const RecipientForm = (props: RecipientProps) => {
   const { user, getAccessTokenSilently } = useAuth0();
 
   const [deployment_type, setDeploymentType] = useState("Drop Ship");
-  const [return_box, setReturnBox] = useState(false);
+
   const [name, setName] = useState("");
   const [addr, setAddr] = useState("");
   const [email, setEmail] = useState("");
@@ -119,10 +119,6 @@ const RecipientForm = (props: RecipientProps) => {
     setChecked(event.target.checked);
   };
 
-  const handleReturnChecked = (event: ChangeEvent<HTMLInputElement>) => {
-    setReturnBox(event.target.checked);
-  };
-
   const fieldsFilled = () => {
     if (deployment_type === "Drop Ship" && request_type === "quote") {
       return (
@@ -165,7 +161,6 @@ const RecipientForm = (props: RecipientProps) => {
       notes: {},
       region,
       ai_specs: ai_specs,
-      return_device: return_box,
     };
     if (props.supplier !== "") {
       postBody.supplier = props.supplier;
@@ -203,6 +198,9 @@ const RecipientForm = (props: RecipientProps) => {
 
       if (props.addons) {
         postBody.addons = props.addons;
+        if (props.addons.includes("Include Return Box")) {
+          postBody.return_device = true;
+        }
       }
 
       postBody.notes.recipient = notes;
@@ -307,14 +305,20 @@ const RecipientForm = (props: RecipientProps) => {
             </Stack>
           )}
           <Stack spacing={1}>
-            <Typography>Accessories: </Typography>
+            <Typography fontWeight="bold">Accessories: </Typography>
             <ul>{props.addons && props.addons.map((i) => <li>{i}</li>)}</ul>
           </Stack>
           <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
             Deployment Type
           </Divider>
           {request_type === "quote" && (
-            <FormControl fullWidth sx={textFieldStyle} required size="small">
+            <FormControl
+              fullWidth
+              sx={textFieldStyle}
+              required
+              size="small"
+              disabled={props.addons && props.addons.length > 0}
+            >
               <InputLabel id="deployment-select-label">
                 Deployment Type
               </InputLabel>
@@ -334,14 +338,6 @@ const RecipientForm = (props: RecipientProps) => {
           {request_type === "buy" && (
             <Typography>Order from CDW immediately</Typography>
           )}
-          {/* {(deployment_type === "Drop Ship" || request_type === "buy") && (
-            <FormControlLabel
-              control={
-                <Checkbox onChange={handleReturnChecked} checked={return_box} />
-              }
-              label="Include Equipment Return Box"
-            />
-          )} */}
           {request_type === "buy" && (
             <>
               <Divider textAlign="left" sx={{ fontWeight: "bold" }}>

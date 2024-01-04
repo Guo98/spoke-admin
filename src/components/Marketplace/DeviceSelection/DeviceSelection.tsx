@@ -91,6 +91,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
 
   useEffect(() => {
     let type_index = -1;
+
     if (props.device_name !== "") {
       type_index = types
         .map((type: any) => type.type)
@@ -99,7 +100,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
     }
 
     if (props.specs !== "") {
-      const specIndex = types[type_index].specs
+      const specIndex = types[type_index]?.specs
         ?.map((spec: any) => spec.spec)
         .indexOf(props.specs);
       setSpecIndex(specIndex);

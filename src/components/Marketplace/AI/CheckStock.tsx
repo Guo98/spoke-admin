@@ -224,7 +224,7 @@ const CheckStock = (props: CheckStockProps) => {
                   fullWidth
                   onClick={() =>
                     completeDeviceChoice(
-                      product_name,
+                      type,
                       spec,
                       url_link,
                       "United States",
@@ -233,6 +233,8 @@ const CheckStock = (props: CheckStockProps) => {
                       stock,
                       aispecs,
                       props.supplier,
+                      "",
+                      "quote",
                       true
                     )
                   }
@@ -245,7 +247,7 @@ const CheckStock = (props: CheckStockProps) => {
                   fullWidth={client === "Alma" || client === "public"}
                   onClick={() =>
                     completeDeviceChoice(
-                      product_name,
+                      type,
                       spec,
                       url_link,
                       "United States",
@@ -254,6 +256,8 @@ const CheckStock = (props: CheckStockProps) => {
                       stock,
                       aispecs,
                       props.supplier,
+                      "",
+                      "quote",
                       false
                     )
                   }
@@ -293,6 +297,7 @@ const CheckStock = (props: CheckStockProps) => {
             variant="contained"
             sx={{ borderRadius: "10px" }}
             fullWidth
+            disabled={loading}
             onClick={() =>
               completeDeviceChoice(
                 type,
@@ -304,6 +309,8 @@ const CheckStock = (props: CheckStockProps) => {
                 "",
                 "",
                 props.supplier,
+                "",
+                "quote",
                 true
               )
             }
@@ -325,6 +332,8 @@ const CheckStock = (props: CheckStockProps) => {
                 "",
                 "",
                 props.supplier,
+                "",
+                "quote",
                 false
               )
             }

@@ -29,18 +29,14 @@ import { useSelector, useDispatch } from "react-redux";
 // @ts-ignore
 import isEmail from "validator/lib/isEmail";
 
-import ReturnInfo from "./ReturnInfo";
 import ConfirmationBox from "./ConfirmationBox";
 import { ColorConnector, ColorIconRoot } from "../../common/StepperUtils";
-import AddOns from "../../common/AddOns/AddOns";
 import AccessoriesSelection from "../../Marketplace/DeviceSelection/AccessoriesSelection";
 
 import { InventorySummary } from "../../../interfaces/inventory";
 import { RootState } from "../../../app/store";
-import {
-  deviceLocationMappings,
-  locationMappings,
-} from "../../../utilities/mappings";
+import { standardGet } from "../../../services/standard";
+import { setInventory } from "../../../app/slices/inventorySlice";
 import { button_style } from "../../../utilities/styles";
 
 const style = {
@@ -102,6 +98,9 @@ const AssignModal = (props: AssignProps) => {
     image_source,
     manage_modal,
   } = props;
+
+  const { getAccessTokenSilently } = useAuth0();
+  const dispatch = useDispatch();
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -168,7 +167,8 @@ const AssignModal = (props: AssignProps) => {
   const handleOpen = () => {
     setOpen(true);
   };
-  const handleClose = () => {
+
+  const handleClose = async () => {
     setOpen(false);
     setShipping("");
     setSD("");
@@ -186,6 +186,16 @@ const AssignModal = (props: AssignProps) => {
     setPhonenumber("");
     setReturnDevice(false);
     setSuccess(-1);
+    if (active_step === 2) {
+      const access_token = await getAccessTokenSilently();
+      const inventoryResult = await standardGet(
+        access_token,
+        `inventory/${
+          clientData === "spokeops" ? selectedClientData : clientData
+        }`
+      );
+      dispatch(setInventory(inventoryResult.data));
+    }
   };
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -270,6 +280,7 @@ const AssignModal = (props: AssignProps) => {
   const addAddons = (addl_items: string[]) => {
     setAddons(addl_items);
     setActiveStep(2);
+    setStep3(true);
   };
 
   return (
@@ -638,41 +649,22 @@ const AssignModal = (props: AssignProps) => {
               </Stack>
             </Stack>
           )}
-          {/* {active_step === 1 && (
-            <>
-              <AddOns
-                device_name={ret_device_name}
-                setRetDeviceName={setRetDeviceName}
-                serial_number={ret_sn}
-                setRetSN={setRetSN}
-                condition={ret_condition}
-                setRetCondition={setRetCondition}
-                activation_key={ret_activation}
-                setRetActivation={setRetActivation}
-                note={ret_note}
-                setRetNote={setRetNote}
-                return_box={return_device}
-                handleReturnChecked={setReturnDevice}
-              />
-              <Button
-                sx={{ ...button_style, mt: 2 }}
-                fullWidth
-                variant="contained"
-                onClick={() => {
-                  setActiveStep(2);
-                  setStep3(true);
-                }}
-              >
-                Submit
-              </Button>
-            </>
-          )} */}
           {active_step === 1 && (
             <AccessoriesSelection
               addAccessories={addAddons}
               client={
                 clientData === "spokeops" ? selectedClientData : clientData
               }
+              ret_device={ret_device_name}
+              setRetDevice={setRetDeviceName}
+              ret_sn={ret_sn}
+              setRetSN={setRetSN}
+              ret_condition={ret_condition}
+              setRetCondition={setRetCondition}
+              ret_act_key={ret_activation}
+              setRetActKey={setRetActivation}
+              ret_note={ret_note}
+              setRetNote={setRetNote}
             />
           )}
           {active_step === 2 && (
@@ -721,23 +713,6 @@ const AssignModal = (props: AssignProps) => {
             />
           )}
         </Box>
-        {/* /* {return_device && success === -1 && page === 1 && (
-            <ReturnInfo
-              back={setPage}
-              device_name={ret_device_name}
-              setRetDeviceName={setRetDeviceName}
-              serial_number={ret_sn}
-              setRetSN={setRetSN}
-              condition={ret_condition}
-              setRetCondition={setRetCondition}
-              activation_key={ret_activation}
-              setRetActivation={setRetActivation}
-              note={ret_note}
-              setRetNote={setRetNote}
-              deploy={deploy}
-            />
-          )}
-          */}
       </Modal>
     </>
   );

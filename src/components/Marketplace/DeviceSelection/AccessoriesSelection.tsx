@@ -1,5 +1,11 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { Stack, Button, Checkbox, FormControlLabel } from "@mui/material";
+import {
+  Stack,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -14,10 +20,33 @@ import { standardGet } from "../../../services/standard";
 interface AccessoriesProps {
   addAccessories: Function;
   client: string;
+  ret_device: string;
+  setRetDevice: Function;
+  ret_sn: string;
+  setRetSN: Function;
+  ret_condition: string;
+  setRetCondition: Function;
+  ret_act_key: string;
+  setRetActKey: Function;
+  ret_note: string;
+  setRetNote: Function;
 }
 
 const AccessoriesSelection = (props: AccessoriesProps) => {
-  const { addAccessories, client } = props;
+  const {
+    addAccessories,
+    client,
+    ret_device,
+    ret_sn,
+    ret_condition,
+    ret_act_key,
+    ret_note,
+    setRetDevice,
+    setRetSN,
+    setRetCondition,
+    setRetActKey,
+    setRetNote,
+  } = props;
 
   const dispatch = useDispatch();
 
@@ -60,7 +89,13 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
         accessToken,
         "getmarketplaceinventory/" + client
       );
-      dispatch(addProducts(marketplace_res.data));
+
+      if (
+        marketplace_res.data.filter((p: any) => p.item_type === "Accessories")
+          .length > 0
+      ) {
+        dispatch(addProducts(marketplace_res.data));
+      }
     }
     setLoading(false);
   };
@@ -99,6 +134,50 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
         }
         label="Include Return Box"
       />
+      {return_box && (
+        <Stack spacing={1} px={1}>
+          <TextField
+            sx={textfield_style}
+            size="small"
+            fullWidth
+            label="Device Name"
+            value={ret_device}
+            onChange={(e) => setRetDevice(e.target.value)}
+          />
+          <TextField
+            sx={textfield_style}
+            size="small"
+            fullWidth
+            label="Serial Number"
+            value={ret_sn}
+            onChange={(e) => setRetSN(e.target.value)}
+          />
+          <TextField
+            sx={textfield_style}
+            size="small"
+            fullWidth
+            label="Condition"
+            value={ret_condition}
+            onChange={(e) => setRetCondition(e.target.value)}
+          />
+          <TextField
+            sx={textfield_style}
+            size="small"
+            fullWidth
+            label="Activation Key"
+            value={ret_act_key}
+            onChange={(e) => setRetActKey(e.target.value)}
+          />
+          <TextField
+            sx={textfield_style}
+            size="small"
+            fullWidth
+            label="Return Note"
+            value={ret_note}
+            onChange={(e) => setRetNote(e.target.value)}
+          />
+        </Stack>
+      )}
       <Button
         variant="contained"
         sx={button_style}

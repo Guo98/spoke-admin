@@ -99,19 +99,19 @@ const ConfirmationBox = (props: ConfirmationProps) => {
       return_device: props.returning,
     };
 
-    if (props.returning) {
-      deployObj.return_device = true;
-      deployObj.return_info = {
-        device_name: props.ret_device_name,
-        serial_number: props.ret_sn,
-        note: props.ret_note,
-        condition: props.ret_condition,
-        activation_key: props.ret_activation,
-      };
-    }
-
     if (props.addons.length > 0) {
       deployObj.addons = props.addons;
+
+      if (props.addons.includes("Include Return Box")) {
+        deployObj.return_device = true;
+        deployObj.return_info = {
+          device_name: props.ret_device_name,
+          serial_number: props.ret_sn,
+          note: props.ret_note,
+          condition: props.ret_condition,
+          activation_key: props.ret_activation,
+        };
+      }
     }
 
     const deployResult = await standardPost(
@@ -122,11 +122,11 @@ const ConfirmationBox = (props: ConfirmationProps) => {
 
     if (deployResult.status === "Success") {
       setSuccess(0);
-      const inventoryResult = await standardGet(
-        accessToken,
-        `inventory/${client}`
-      );
-      dispatch(setInventory(inventoryResult.data));
+      // // const inventoryResult = await standardGet(
+      // //   accessToken,
+      // //   `inventory/${client}`
+      // // );
+      // // dispatch(setInventory(inventoryResult.data));
     } else {
       setSuccess(1);
     }
@@ -143,7 +143,7 @@ const ConfirmationBox = (props: ConfirmationProps) => {
             : "There was an error submitting your order. Please try again later."}
         </Alert>
       )}
-      <Divider textAlign="left">Device Info</Divider>
+      <Divider textAlign="left">Deployment Info</Divider>
       {props.device_name && (
         <div>
           <Typography display="inline" component="span" fontWeight="bold">
@@ -163,6 +163,18 @@ const ConfirmationBox = (props: ConfirmationProps) => {
             {props.serial_number}
           </Typography>
         </div>
+      )}
+      {props.addons.length > 0 && (
+        <>
+          <Typography fontWeight="bold">Add Ons:</Typography>
+          <ul>
+            {props.addons.map((i) => (
+              <li>
+                <Typography>{i}</Typography>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
       <Divider textAlign="left">Recipient Info</Divider>
       {props.first_name && (

@@ -113,6 +113,12 @@ const MarketplacePurchase = (props: MPProps) => {
 
   const [accessories, setAccessories] = useState<any[]>([]);
 
+  const [ret_device, setRetDevice] = useState("");
+  const [ret_sn, setRetSN] = useState("");
+  const [ret_condition, setRetCondition] = useState("");
+  const [ret_act_key, setRetActKey] = useState("");
+  const [ret_note, setRetNote] = useState("");
+
   const [clear_device, setClearDevice] = useState(false);
   const [clear_deployment, setClearDeployment] = useState(false);
 
@@ -149,6 +155,7 @@ const MarketplacePurchase = (props: MPProps) => {
       setActiveStep(1);
       setStep2(true);
     } else {
+      setActiveStep(0);
       setStep1(true);
     }
   }, [item_type]);
@@ -165,7 +172,7 @@ const MarketplacePurchase = (props: MPProps) => {
     sup: string,
     cdw_part_no: string = "",
     type: string = "quote",
-    go_to_addons: boolean
+    go_to_addons: boolean = false
   ) => {
     // setComplete1(true);
     setDeviceName(dn);
@@ -180,7 +187,7 @@ const MarketplacePurchase = (props: MPProps) => {
     setCDWPartNo(cdw_part_no);
     setReqType(type);
 
-    if (go_to_addons) {
+    if (!go_to_addons) {
       setActiveStep(2);
       setStep3(true);
     } else {
@@ -294,6 +301,7 @@ const MarketplacePurchase = (props: MPProps) => {
         setDeviceName("");
         setDeviceSpecs("");
         setStep2(false);
+        setAccessories([]);
       }}
       open={open}
     >
@@ -308,22 +316,21 @@ const MarketplacePurchase = (props: MPProps) => {
                 : "")}
           </Typography>
           <ButtonGroup>
-            {activeStep !== 0 && (
+            {((activeStep !== 0 && item_type !== "Accessories") ||
+              (step_3 && item_type === "Accessories")) && (
               <Tooltip title="Back">
                 <IconButton
                   onClick={() => {
-                    setActiveStep(activeStep - 1);
-                    if (item_type === "Accessories") {
-                      setStep2(true);
-                    } else {
-                      if (activeStep === 1) {
-                        setStep1(true);
-                        setStep2(false);
-                        setStep3(false);
+                    if (step_3) {
+                      setStep3(false);
+                      if (step_2) {
+                        setActiveStep(1);
                       } else {
-                        setStep2(true);
-                        setStep3(false);
+                        setActiveStep(0);
                       }
+                    } else if (step_2) {
+                      setActiveStep(0);
+                      setStep2(false);
                     }
                   }}
                 >
@@ -387,7 +394,7 @@ const MarketplacePurchase = (props: MPProps) => {
               </StepLabel>
             </Step>
           )}
-          <Step key="Device" completed={step_2}>
+          <Step key="Accessories" completed={step_2}>
             <StepLabel StepIconComponent={ColorStepIcon}>
               <Typography>Accessories</Typography>
             </StepLabel>
@@ -455,6 +462,16 @@ const MarketplacePurchase = (props: MPProps) => {
           <AccessoriesSelection
             addAccessories={addAccessories}
             client={props.client}
+            ret_device={ret_device}
+            setRetDevice={setRetDevice}
+            ret_sn={ret_sn}
+            setRetSN={setRetSN}
+            ret_condition={ret_condition}
+            setRetCondition={setRetCondition}
+            ret_act_key={ret_act_key}
+            setRetActKey={setRetActKey}
+            ret_note={ret_note}
+            setRetNote={setRetNote}
           />
         )}
         {activeStep === 2 && (
