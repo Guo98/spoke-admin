@@ -56,6 +56,10 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     (state: RootState) => state.market.accessories
   );
 
+  const mrkt_client = useSelector(
+    (state: RootState) => state.market.marketplace_client
+  );
+
   const [return_box, setReturnBox] = useState(false);
   const [include_items, setIncludeItems] = useState<string[]>([]);
 
@@ -90,12 +94,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
         "getmarketplaceinventory/" + client
       );
 
-      if (
-        marketplace_res.data.filter((p: any) => p.item_type === "Accessories")
-          .length > 0
-      ) {
-        dispatch(addProducts(marketplace_res.data));
-      }
+      dispatch(addProducts(marketplace_res.data));
     }
     setLoading(false);
   };
@@ -105,6 +104,12 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
       getProducts().catch();
     }
   }, [accessories_redux]);
+
+  useEffect(() => {
+    if (client !== mrkt_client) {
+      getProducts().catch();
+    }
+  }, [client]);
 
   return (
     <Stack spacing={2} pt={2}>
@@ -191,7 +196,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
           addAccessories(add_items);
         }}
       >
-        Submit Order
+        Continue
       </Button>
     </Stack>
   );

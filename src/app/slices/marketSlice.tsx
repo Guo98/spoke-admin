@@ -10,6 +10,7 @@ const initialState: {
   order_info: any;
   accessories: any;
   products: MarketplaceProducts2[];
+  marketplace_client: string;
 } = {
   data: [],
   filteredData: [],
@@ -17,6 +18,7 @@ const initialState: {
   order_info: null,
   accessories: null,
   products: [],
+  marketplace_client: "",
 };
 
 export const marketSlice = createSlice({
@@ -91,10 +93,15 @@ export const marketSlice = createSlice({
       state.products = action.payload;
       state.accessories = null;
       action.payload.forEach((product) => {
+        state.marketplace_client = product.client;
         if (product.item_type === "Accessories") {
           state.accessories = product;
         }
       });
+
+      if (state.accessories === null) {
+        state.accessories = {};
+      }
     },
   },
 });

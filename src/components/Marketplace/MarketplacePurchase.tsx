@@ -32,7 +32,7 @@ import { standardPost } from "../../services/standard";
 import { openMarketplace } from "../../app/slices/marketSlice";
 import { ColorConnector, ColorIconRoot } from "../common/StepperUtils";
 import { RootState } from "../../app/store";
-import { access } from "fs";
+import { resetInfo } from "../../app/slices/recipientSlice";
 
 interface MPProps {
   open: boolean;
@@ -130,10 +130,10 @@ const MarketplacePurchase = (props: MPProps) => {
   const [delete_status, setDeleteStatus] = useState(-1);
 
   useEffect(() => {
-    setActiveStep(0);
-    setStep1(true);
-    setStep2(false);
-    setStep3(false);
+    // setActiveStep(0);
+    // setStep1(true);
+    // setStep2(false);
+    // setStep3(false);
   }, [brand, types]);
 
   useEffect(() => {
@@ -157,7 +157,17 @@ const MarketplacePurchase = (props: MPProps) => {
     } else {
       setActiveStep(0);
       setStep1(true);
+      setStep2(false);
+      setAccessories([]);
     }
+    setStep3(false);
+    setReqType("");
+    setCDWPartNo("");
+    setAISpecs("");
+    setDeviceName("");
+    setDeviceSpecs("");
+    setDeviceURL("");
+    dispatch(resetInfo());
   }, [item_type]);
 
   const completeDeviceStep = (
@@ -209,16 +219,27 @@ const MarketplacePurchase = (props: MPProps) => {
 
   const clearAll = () => {
     setLoading(false);
-    if (activeStep === 0) {
-      setClearDevice(true);
-      setDeviceName("");
-      setDeviceSpecs("");
+    if (item_type === "Accessories") {
+      if (activeStep === 1) {
+        setAccessories([]);
+      } else {
+        setAccessories([]);
+        setActiveStep(1);
+        setStep3(false);
+      }
     } else {
-      setClearDeployment(true);
-      setClearDevice(true);
-      setActiveStep(0);
-      setStep3(false);
-      setStep2(false);
+      if (activeStep === 0) {
+        setClearDevice(true);
+        setDeviceName("");
+        setDeviceSpecs("");
+      } else {
+        setClearDeployment(true);
+        setClearDevice(true);
+        setAccessories([]);
+        setActiveStep(0);
+        setStep3(false);
+        setStep2(false);
+      }
     }
   };
 
@@ -279,32 +300,52 @@ const MarketplacePurchase = (props: MPProps) => {
     setLoading(false);
   };
 
+  const back_button = () => {
+    if (step_3) {
+      setStep3(false);
+      if (step_2) {
+        setActiveStep(1);
+      } else {
+        setActiveStep(0);
+      }
+    } else if (step_2) {
+      setActiveStep(0);
+      setStep2(false);
+    }
+  };
+
+  const close_module = () => {
+    if (!loading) {
+      handleClose();
+      dispatch(openMarketplace(null));
+    }
+    if (item_type === "Accessories") {
+      if (!step_3) {
+        setActiveStep(1);
+        setStep2(true);
+      }
+    } else {
+      if (step_1 && step_3) {
+        setActiveStep(0);
+        setStep1(true);
+        setStep3(false);
+        if (step_2) {
+          setStep2(false);
+        }
+        dispatch(resetInfo());
+      }
+    }
+
+    setBookmarkStatus(-1);
+    setDeleteStatus(-1);
+    setCanBookmark(false);
+    setCanDelete(false);
+    setDeviceName("");
+    setDeviceSpecs("");
+  };
+
   return (
-    <Modal
-      onClose={() => {
-        if (!loading) {
-          handleClose();
-          dispatch(openMarketplace(null));
-        }
-        if (step_1 && step_3) {
-          setActiveStep(0);
-          setStep1(false);
-          setStep3(false);
-          if (step_2) {
-            setStep2(false);
-          }
-        }
-        setBookmarkStatus(-1);
-        setDeleteStatus(-1);
-        setCanBookmark(false);
-        setCanDelete(false);
-        setDeviceName("");
-        setDeviceSpecs("");
-        setStep2(false);
-        setAccessories([]);
-      }}
-      open={open}
-    >
+    <Modal onClose={close_module} open={open}>
       <Box sx={style}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h5" fontWeight="bold">
@@ -319,21 +360,7 @@ const MarketplacePurchase = (props: MPProps) => {
             {((activeStep !== 0 && item_type !== "Accessories") ||
               (step_3 && item_type === "Accessories")) && (
               <Tooltip title="Back">
-                <IconButton
-                  onClick={() => {
-                    if (step_3) {
-                      setStep3(false);
-                      if (step_2) {
-                        setActiveStep(1);
-                      } else {
-                        setActiveStep(0);
-                      }
-                    } else if (step_2) {
-                      setActiveStep(0);
-                      setStep2(false);
-                    }
-                  }}
-                >
+                <IconButton onClick={back_button}>
                   <ArrowBackIcon />
                 </IconButton>
               </Tooltip>

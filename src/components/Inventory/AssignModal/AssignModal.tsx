@@ -364,7 +364,7 @@ const AssignModal = (props: AssignProps) => {
             </Step>
             <Step completed={step_2}>
               <StepLabel StepIconComponent={ColorStepIcon}>
-                <Typography>Add Ons</Typography>
+                <Typography>Accessories</Typography>
               </StepLabel>
             </Step>
             <Step completed={step_3}>

@@ -239,7 +239,7 @@ const CheckStock = (props: CheckStockProps) => {
                     )
                   }
                 >
-                  Continue to Addons
+                  Continue
                 </Button>
                 <Button
                   variant="contained"
@@ -315,7 +315,7 @@ const CheckStock = (props: CheckStockProps) => {
               )
             }
           >
-            Continue to Addons
+            Continue
           </Button>
           <Button
             fullWidth
