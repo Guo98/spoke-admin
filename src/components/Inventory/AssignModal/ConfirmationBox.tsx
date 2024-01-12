@@ -188,7 +188,7 @@ const ConfirmationBox = (props: ConfirmationProps) => {
       )}
       {props.addons.length > 0 && (
         <>
-          <Typography fontWeight="bold">Add Ons:</Typography>
+          <Typography fontWeight="bold">Accessories:</Typography>
           <ul>
             {props.addons.map((i) => (
               <li>
