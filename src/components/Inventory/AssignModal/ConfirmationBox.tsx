@@ -7,44 +7,24 @@ import {
   Button,
   Alert,
   IconButton,
+  TextField,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import LinearLoading from "../../common/LinearLoading";
+import RecipientForm from "../../common/RecipientForm";
 
 import { standardPost, standardGet } from "../../../services/standard";
+import { RootState } from "../../../app/store";
 import { setInventory } from "../../../app/slices/inventorySlice";
-
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: { xs: "85%", md: "50%" },
-  bgcolor: "background.paper",
-  borderRadius: "20px",
-  boxShadow: 24,
-  p: 4,
-};
+import { button_style, textfield_style } from "../../../utilities/styles";
 
 interface ConfirmationProps {
-  first_name: string;
-  last_name: string;
   device_name: string;
   serial_number: string;
-  address_line1: string;
-  address_line2?: string;
-  city: string;
-  country: string;
-  state: string;
-  zipCode: string;
-  email: string;
-  phone_number: string;
-  note: string;
-  shipping: string;
   image_source: string | undefined;
   returning: boolean;
   client: string;
@@ -60,7 +40,7 @@ interface ConfirmationProps {
 }
 
 const ConfirmationBox = (props: ConfirmationProps) => {
-  const { client } = props;
+  const { client, device_location } = props;
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -68,6 +48,33 @@ const ConfirmationBox = (props: ConfirmationProps) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(-1);
+  const [note, setNote] = useState("");
+
+  const fn_redux = useSelector(
+    (state: RootState) => state.recipient.first_name
+  );
+  const ln_redux = useSelector((state: RootState) => state.recipient.last_name);
+
+  const adl1_redux = useSelector(
+    (state: RootState) => state.recipient.address_line1
+  );
+  const adl2_redux = useSelector(
+    (state: RootState) => state.recipient.address_line2
+  );
+  const city_redux = useSelector((state: RootState) => state.recipient.city);
+  const state_redux = useSelector((state: RootState) => state.recipient.state);
+  const postal_redux = useSelector(
+    (state: RootState) => state.recipient.postal
+  );
+  const country_redux = useSelector(
+    (state: RootState) => state.recipient.country
+  );
+
+  const email_redux = useSelector((state: RootState) => state.recipient.email);
+  const phone_redux = useSelector((state: RootState) => state.recipient.phone);
+  const shipping_redux = useSelector(
+    (state: RootState) => state.recipient.shipping
+  );
 
   useEffect(() => {}, [props.device_name]);
 
@@ -76,26 +83,27 @@ const ConfirmationBox = (props: ConfirmationProps) => {
     const accessToken = await getAccessTokenSilently();
     let deployObj: any = {
       client: client,
-      first_name: props.first_name,
-      last_name: props.last_name,
+      first_name: fn_redux,
+      last_name: ln_redux,
       address: {
-        al1: props.address_line1,
-        al2: props.address_line2,
-        city: props.city,
-        state: props.state,
-        postal_code: props.zipCode,
-        country_code: props.country,
+        al1: adl1_redux,
+        al2: adl2_redux,
+        city: city_redux,
+        state: state_redux,
+        postal_code: postal_redux,
+        country_code: country_redux,
       },
-      email: props.email,
-      phone_number: props.phone_number,
+      email: email_redux,
+      phone_number: phone_redux,
       device_name: props.device_name,
       serial_number: props.serial_number,
-      device_location: props.device_location,
-      shipping: props.shipping,
+      device_location,
+      shipping: shipping_redux,
       requestor_email: user?.email,
       requestor_name: user?.name,
       id: props.id,
       warehouse: props.warehouse,
+      note,
       return_device: props.returning,
     };
 
@@ -131,6 +139,20 @@ const ConfirmationBox = (props: ConfirmationProps) => {
       setSuccess(1);
     }
     setLoading(false);
+  };
+
+  const fieldsFilled = () => {
+    return (
+      fn_redux === "" ||
+      ln_redux === "" ||
+      adl1_redux === "" ||
+      city_redux === "" ||
+      state_redux === "" ||
+      postal_redux === "" ||
+      email_redux === "" ||
+      phone_redux === "" ||
+      shipping_redux === ""
+    );
   };
 
   return (
@@ -176,49 +198,14 @@ const ConfirmationBox = (props: ConfirmationProps) => {
           </ul>
         </>
       )}
-      <Divider textAlign="left">Recipient Info</Divider>
-      {props.first_name && (
-        <div>
-          <Typography display="inline" component="span" fontWeight="bold">
-            Name:{" "}
-          </Typography>
-          <Typography display="inline" component="span">
-            {props.first_name} {props.last_name}
-          </Typography>
-        </div>
-      )}
-      {props.address_line1 && (
-        <div>
-          <Typography display="inline" component="span" fontWeight="bold">
-            Shipping Address:{" "}
-          </Typography>
-          <Typography display="inline" component="span">
-            {props.address_line1},{" "}
-            {props.address_line2 ? props.address_line2 + ", " : ""}
-            {props.city}, {props.state} {props.zipCode}, {props.country}
-          </Typography>
-        </div>
-      )}
-      {props.email && (
-        <div>
-          <Typography display="inline" component="span" fontWeight="bold">
-            Email:{" "}
-          </Typography>
-          <Typography display="inline" component="span">
-            {props.email}
-          </Typography>
-        </div>
-      )}
-      {props.phone_number && (
-        <div>
-          <Typography display="inline" component="span" fontWeight="bold">
-            Phone Number:{" "}
-          </Typography>
-          <Typography display="inline" component="span">
-            {props.phone_number}
-          </Typography>
-        </div>
-      )}
+      <RecipientForm address_required deployable_region={device_location} />
+      <TextField
+        sx={textfield_style}
+        fullWidth
+        size="small"
+        label="Note"
+        onChange={(e) => setNote(e.target.value)}
+      />
       {props.returning && (
         <>
           <Divider textAlign="left">Return Info:</Divider>
@@ -258,9 +245,9 @@ const ConfirmationBox = (props: ConfirmationProps) => {
       )}
       <Button
         variant="contained"
-        sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
+        sx={button_style}
         onClick={deploy}
-        disabled={success !== -1}
+        disabled={success !== -1 || fieldsFilled()}
       >
         Deploy
       </Button>

@@ -26,8 +26,6 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { useSelector, useDispatch } from "react-redux";
-// @ts-ignore
-import isEmail from "validator/lib/isEmail";
 
 import ConfirmationBox from "./ConfirmationBox";
 import { ColorConnector, ColorIconRoot } from "../../common/StepperUtils";
@@ -38,6 +36,7 @@ import { RootState } from "../../../app/store";
 import { standardGet } from "../../../services/standard";
 import { setInventory } from "../../../app/slices/inventorySlice";
 import { button_style } from "../../../utilities/styles";
+import { resetInfo } from "../../../app/slices/recipientSlice";
 
 const style = {
   position: "absolute" as "absolute",
@@ -118,24 +117,8 @@ const AssignModal = (props: AssignProps) => {
     device_location || ""
   );
 
-  const [shipping, setShipping] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-
-  const [email, setEmail] = useState("");
-  const [valid_email, setValidEmail] = useState(true);
-  const [phonenumber, setPhonenumber] = useState("");
-  const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [selectedDevice, setSD] = useState("");
-
-  //new address fields
-  const [ad1, setAd1] = useState("");
-  const [ad2, setAd2] = useState("");
-  const [city, setCity] = useState("");
-  const [pc, setPC] = useState("");
-  const [country, setCountry] = useState("");
-  const [prov, setProv] = useState("");
   const [country_err, setCountryErr] = useState("");
 
   // return info
@@ -170,22 +153,12 @@ const AssignModal = (props: AssignProps) => {
 
   const handleClose = async () => {
     setOpen(false);
-    setShipping("");
     setSD("");
     setError("");
-    setAd1("");
-    setAd2("");
-    setCity("");
-    setPC("");
-    setCountry("");
-    setProv("");
     setCountryErr("");
-    setFirstname("");
-    setLastname("");
-    setEmail("");
-    setPhonenumber("");
     setReturnDevice(false);
     setSuccess(-1);
+    dispatch(resetInfo());
     if (active_step === 2) {
       const access_token = await getAccessTokenSilently();
       const inventoryResult = await standardGet(
@@ -198,10 +171,6 @@ const AssignModal = (props: AssignProps) => {
     }
   };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setShipping(event.target.value as string);
-  };
-
   const handleDeviceChange = (event: SelectChangeEvent) => {
     setSD(event.target.value as string);
     setAssignDeviceName(
@@ -212,69 +181,56 @@ const AssignModal = (props: AssignProps) => {
     );
   };
 
-  const can_submit = () => {
-    return (
-      firstname === "" ||
-      lastname === "" ||
-      ad1 === "" ||
-      city === "" ||
-      prov === "" ||
-      pc === "" ||
-      country === "" ||
-      phonenumber === "" ||
-      email === "" ||
-      shipping === ""
-    );
-  };
-
   const deploy = async () => {
-    if (assign_device_loc) {
-      const lc_location = assign_device_loc.toLowerCase();
-      if (
-        lc_location.includes("usa") ||
-        lc_location.includes("united states") ||
-        lc_location === "us"
-      ) {
-        if (
-          !country.toLowerCase().includes("us") &&
-          !country.toLowerCase().includes("united states")
-        ) {
-          setCountryErr("This device is only deployable within the US.");
-          return;
-        } else {
-          setActiveStep(2);
-          setStep3(true);
-        }
-      } else if (
-        lc_location === "uk" ||
-        lc_location.includes("united kingdom") ||
-        lc_location.includes("uk")
-      ) {
-        if (
-          !country.toLowerCase().includes("uk") &&
-          !country.toLowerCase().includes("united kingdom")
-        ) {
-          setCountryErr("This device is only deployable within the UK.");
-          return;
-        } else {
-          setActiveStep(2);
-          setStep3(true);
-        }
-      } else {
-        if (
-          country.toLowerCase().includes("uk") ||
-          country.toLowerCase().includes("united kingdom") ||
-          country.toLowerCase().includes("us") ||
-          country.toLowerCase().includes("united states")
-        ) {
-          setCountryErr("This device is not deployable to this region.");
-          return;
-        } else {
-          setActiveStep(2);
-          setStep3(true);
-        }
-      }
-    }
+    // if (assign_device_loc) {
+    //   const lc_location = assign_device_loc.toLowerCase();
+    //   if (
+    //     lc_location.includes("usa") ||
+    //     lc_location.includes("united states") ||
+    //     lc_location === "us"
+    //   ) {
+    //     if (
+    //       !country.toLowerCase().includes("us") &&
+    //       !country.toLowerCase().includes("united states")
+    //     ) {
+    //       setCountryErr("This device is only deployable within the US.");
+    //       return;
+    //     } else {
+    //       setActiveStep(2);
+    //       setStep3(true);
+    //     }
+    //   } else if (
+    //     lc_location === "uk" ||
+    //     lc_location.includes("united kingdom") ||
+    //     lc_location.includes("uk")
+    //   ) {
+    //     if (
+    //       !country.toLowerCase().includes("uk") &&
+    //       !country.toLowerCase().includes("united kingdom")
+    //     ) {
+    //       setCountryErr("This device is only deployable within the UK.");
+    //       return;
+    //     } else {
+    //       setActiveStep(2);
+    //       setStep3(true);
+    //     }
+    //   } else {
+    //     if (
+    //       country.toLowerCase().includes("uk") ||
+    //       country.toLowerCase().includes("united kingdom") ||
+    //       country.toLowerCase().includes("us") ||
+    //       country.toLowerCase().includes("united states")
+    //     ) {
+    //       setCountryErr("This device is not deployable to this region.");
+    //       return;
+    //     } else {
+    //       setActiveStep(2);
+    //       setStep3(true);
+    //     }
+    //   }
+    // }
+    setActiveStep(2);
+    setStep3(true);
   };
 
   const addAddons = (addl_items: string[]) => {
@@ -369,7 +325,7 @@ const AssignModal = (props: AssignProps) => {
             </Step>
             <Step completed={step_3}>
               <StepLabel StepIconComponent={ColorStepIcon}>
-                <Typography>Confirmation</Typography>
+                <Typography>Deployment</Typography>
               </StepLabel>
             </Step>
           </Stepper>
@@ -448,7 +404,7 @@ const AssignModal = (props: AssignProps) => {
                   </FormControl>
                 </div>
               )}
-              <Divider textAlign="left">Recipient Info</Divider>
+              {/* <Divider textAlign="left">Recipient Info</Divider>
               <Stack direction="row" spacing={2}>
                 <TextField
                   required
@@ -604,47 +560,28 @@ const AssignModal = (props: AssignProps) => {
                     )}
                   </Select>
                 </FormControl>
-              </div>
-              <div>
-                <TextField
-                  id="standard-note"
-                  label="Note"
-                  value={note}
-                  fullWidth
-                  sx={textFieldStyle}
-                  size="small"
-                  onChange={(event) => setNote(event.target.value)}
-                />
-              </div>
+              </div> */}
               <Stack direction="row" spacing={1}>
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{
-                    backgroundColor: "#054ffe",
-                    borderRadius: "10px",
-                  }}
-                  disabled={can_submit()}
+                  sx={button_style}
                   onClick={() => {
                     setStep2(true);
                     setActiveStep(1);
                   }}
                 >
-                  Add Ons
+                  Continue
                 </Button>
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{
-                    backgroundColor: "#054ffe",
-                    borderRadius: "10px",
-                  }}
+                  sx={button_style}
                   onClick={() => {
                     deploy();
                   }}
-                  disabled={can_submit()}
                 >
-                  {return_device ? "Continue to Return Info" : "Submit"}
+                  Deploy
                 </Button>
               </Stack>
             </Stack>
@@ -669,25 +606,13 @@ const AssignModal = (props: AssignProps) => {
           )}
           {active_step === 2 && (
             <ConfirmationBox
-              first_name={firstname}
-              last_name={lastname}
               device_name={assign_device_name}
-              address_line1={ad1}
-              address_line2={ad2}
-              city={city}
-              state={prov}
-              zipCode={pc}
-              country={country}
               serial_number={
                 manage_modal
                   ? props.devices![parseInt(selectedDevice)]?.serial_numbers[0]
                       .sn
                   : serial_number!
               }
-              email={email}
-              phone_number={phonenumber}
-              note={note}
-              shipping={shipping}
               image_source={
                 manage_modal
                   ? props.devices![parseInt(selectedDevice)]?.image_source

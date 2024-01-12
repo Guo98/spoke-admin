@@ -10,6 +10,8 @@ import {
   Divider,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+// @ts-ignore
+import isEmail from "validator/lib/isEmail";
 
 import { textfield_style } from "../../utilities/styles";
 import {
@@ -36,6 +38,8 @@ const RecipientForm = (props: RFProps) => {
   const { address_required } = props;
 
   const [shipping_opts, setShippingOpts] = useState(["Standard", "Expedited"]);
+  const [valid_email, setValidEmail] = useState(true);
+  const [disable_country, setDisableCountry] = useState(false);
 
   const fn_redux = useSelector(
     (state: RootState) => state.recipient.first_name
@@ -66,12 +70,24 @@ const RecipientForm = (props: RFProps) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (
-      props.deployable_region &&
-      props.deployable_region === "United States"
-    ) {
-      dispatch(setCountry("US"));
-      setShippingOpts(["Standard", "2 Day", "Overnight"]);
+    if (props.deployable_region) {
+      if (
+        props.deployable_region === "United States" ||
+        props.deployable_region.toLowerCase().includes("united states") ||
+        props.deployable_region.toLowerCase().includes("usa") ||
+        props.deployable_region.toLowerCase() === "us"
+      ) {
+        dispatch(setCountry("US"));
+        setShippingOpts(["Standard", "2 Day", "Overnight"]);
+        setDisableCountry(true);
+      } else if (
+        props.deployable_region === "United Kingdom" ||
+        props.deployable_region.toLowerCase().includes("united kingdom") ||
+        props.deployable_region.toLowerCase() === "uk"
+      ) {
+        dispatch(setCountry("UK"));
+        setDisableCountry(true);
+      }
     }
   }, [props.deployable_region]);
 
@@ -110,7 +126,16 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required
           value={email_redux}
-          onChange={(e) => dispatch(setEmail(e.target.value))}
+          onChange={(e) => {
+            dispatch(setEmail(e.target.value));
+            if (!isEmail(e.target.value) && e.target.value !== "") {
+              setValidEmail(false);
+            } else {
+              setValidEmail(true);
+            }
+          }}
+          error={!valid_email}
+          helperText={!valid_email ? "Invalid email" : ""}
         />
         <TextField
           sx={textfield_style}
@@ -174,6 +199,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required={address_required}
           value={country_redux}
+          disabled={disable_country}
           onChange={(e) => dispatch(setCountry(e.target.value))}
         />
       </Stack>
