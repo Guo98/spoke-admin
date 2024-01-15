@@ -133,6 +133,14 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
             />
           );
         })}
+      {client === "Automox" && (
+        <FormControlLabel
+          control={
+            <Checkbox onChange={handleReturnBoxChecked} checked={return_box} />
+          }
+          label="2 x Yubikey 5C NFC"
+        />
+      )}
       <FormControlLabel
         control={
           <Checkbox onChange={handleReturnBoxChecked} checked={return_box} />
