@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import LinearLoading from "../../common/LinearLoading";
+import QuantityField from "../../common/QuantityField";
 
 import { addProducts } from "../../../app/slices/marketSlice";
 
@@ -30,6 +31,7 @@ interface AccessoriesProps {
   setRetActKey: Function;
   ret_note: string;
   setRetNote: Function;
+  addons: string[];
 }
 
 const AccessoriesSelection = (props: AccessoriesProps) => {
@@ -46,6 +48,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     setRetCondition,
     setRetActKey,
     setRetNote,
+    addons,
   } = props;
 
   const dispatch = useDispatch();
@@ -61,6 +64,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
   );
 
   const [return_box, setReturnBox] = useState(false);
+  const [yubikey, setYubikey] = useState(false);
   const [include_items, setIncludeItems] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -69,13 +73,29 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     setReturnBox(event.target.checked);
   };
 
-  const handleItemsChecked = (label: string, checked: boolean) => {
-    if (checked) {
-      if (!include_items.includes(label)) {
-        setIncludeItems((prevItems) => [...prevItems, label]);
+  const handleYubikeyChecked = (event: ChangeEvent<HTMLInputElement>) => {
+    setYubikey(event.target.checked);
+    if (event.target.checked) {
+      if (!include_items.includes("yubikey")) {
+        setIncludeItems((prevItems) => [...prevItems, "1 x yubikey"]);
       }
     } else {
-      const item_index = include_items.indexOf(label);
+      const item_index = include_items.findIndex((i) => i.includes("yubikey"));
+      if (item_index > -1) {
+        let current_items = [...include_items];
+        current_items.splice(item_index, 1);
+        setIncludeItems(current_items);
+      }
+    }
+  };
+
+  const handleItemsChecked = (label: string, checked: boolean) => {
+    const item_index = include_items.findIndex((i) => i.includes(label));
+    if (checked) {
+      if (item_index < 0) {
+        setIncludeItems((prevItems) => [...prevItems, "1 x " + label]);
+      }
+    } else {
       if (item_index > -1) {
         let current_items = [...include_items];
         current_items.splice(item_index, 1);
@@ -99,6 +119,16 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     setLoading(false);
   };
 
+  const changeQuantity = (label: string, quantity: number) => {
+    let updated_items = [...include_items];
+    let item_index = updated_items.findIndex((i) => i.includes(label));
+
+    if (item_index > -1) {
+      updated_items.splice(item_index, 1);
+      setIncludeItems([...updated_items, quantity + " x " + label]);
+    }
+  };
+
   useEffect(() => {
     if (accessories_redux === null) {
       getProducts().catch();
@@ -111,6 +141,10 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     }
   }, [client]);
 
+  useEffect(() => {
+    setIncludeItems(addons);
+  }, [addons]);
+
   return (
     <Stack spacing={2} pt={2}>
       {loading && <LinearLoading />}
@@ -119,27 +153,65 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
         accessories_redux.items.length > 0 &&
         accessories_redux.items.map((item: any) => {
           return (
-            <FormControlLabel
-              sx={{ ml: 0 }}
-              control={
-                <Checkbox
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleItemsChecked(item.name, e.target.checked)
-                  }
-                  checked={include_items.includes(item.name)}
+            <Stack
+              direction="row"
+              spacing={1}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <FormControlLabel
+                sx={{ ml: 0 }}
+                control={
+                  <Checkbox
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleItemsChecked(item.name, e.target.checked)
+                    }
+                    checked={
+                      include_items.findIndex((i) => i.includes(item.name)) > -1
+                    }
+                  />
+                }
+                label={item.name}
+              />
+              {include_items.findIndex((i) => i.includes(item.name)) > -1 && (
+                <QuantityField
+                  changeQuantity={changeQuantity}
+                  item={item.name}
+                  item_quantity={parseInt(
+                    include_items[
+                      include_items.findIndex((i) => i.includes(item.name))
+                    ].split("x")[0]
+                  )}
                 />
-              }
-              label={item.name}
-            />
+              )}
+            </Stack>
           );
         })}
       {client === "Automox" && (
-        <FormControlLabel
-          control={
-            <Checkbox onChange={handleReturnBoxChecked} checked={return_box} />
-          }
-          label="2 x Yubikey 5C NFC"
-        />
+        <Stack
+          direction="row"
+          spacing={1}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <FormControlLabel
+            control={
+              <Checkbox onChange={handleYubikeyChecked} checked={yubikey} />
+            }
+            label="2 x Yubikey 5C NFC"
+          />
+          {include_items.findIndex((i) => i.includes("yubikey")) > -1 && (
+            <QuantityField
+              changeQuantity={changeQuantity}
+              item="yubikey"
+              item_quantity={parseInt(
+                include_items[
+                  include_items.findIndex((i) => i.includes("yubikey"))
+                ].split("x")[0]
+              )}
+            />
+          )}
+        </Stack>
       )}
       <FormControlLabel
         control={

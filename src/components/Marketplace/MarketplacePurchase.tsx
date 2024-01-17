@@ -499,6 +499,7 @@ const MarketplacePurchase = (props: MPProps) => {
             setRetActKey={setRetActKey}
             ret_note={ret_note}
             setRetNote={setRetNote}
+            addons={accessories}
           />
         )}
         {activeStep === 2 && (
@@ -521,6 +522,11 @@ const MarketplacePurchase = (props: MPProps) => {
             cdw_part_no={cdw_part_number}
             addons={accessories}
             item_type={item_type}
+            ret_device_name={ret_device}
+            ret_condition={ret_condition}
+            ret_sn={ret_sn}
+            ret_note={ret_note}
+            ret_activation={ret_act_key}
           />
         )}
       </Box>

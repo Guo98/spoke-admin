@@ -398,6 +398,7 @@ const AssignModal = (props: AssignProps) => {
               setRetActKey={setRetActivation}
               ret_note={ret_note}
               setRetNote={setRetNote}
+              addons={addons}
             />
           )}
           {active_step === 2 && (

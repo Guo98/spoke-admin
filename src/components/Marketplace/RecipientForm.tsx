@@ -46,6 +46,11 @@ interface RecipientProps {
   cdw_part_no: string;
   addons?: string[];
   item_type: string;
+  ret_device_name?: string;
+  ret_sn?: string;
+  ret_condition?: string;
+  ret_note?: string;
+  ret_activation?: string;
 }
 
 const textFieldStyle = {
@@ -181,10 +186,19 @@ const RecipientForm = (props: RecipientProps) => {
       if (adl2_redux !== "") {
         adl = adl + ", " + adl2_redux;
       }
-
+      postBody.recipient_name = fn_redux + " " + ln_redux;
+      postBody.first_name = fn_redux;
+      postBody.last_name = ln_redux;
+      postBody.address_obj = {
+        al1: adl1_redux,
+        al2: adl2_redux,
+        city: city_redux,
+        state: state_redux,
+        postal_code: postal_redux,
+        country_code: country_redux,
+      };
       if (request_type === "buy") {
         postBody.order_type = "Buy Directly from CDW";
-        postBody.recipient_name = fn_redux + " " + ln_redux;
         postBody.address =
           adl +
           ", " +
@@ -211,7 +225,6 @@ const RecipientForm = (props: RecipientProps) => {
         postBody.unit_price = price.replace("$", "").replace(",", "");
       } else {
         postBody.order_type = "Deploy Right Away";
-        postBody.recipient_name = fn_redux + " " + ln_redux;
         postBody.address =
           adl +
           ", " +
@@ -228,6 +241,13 @@ const RecipientForm = (props: RecipientProps) => {
         postBody.addons = props.addons;
         if (props.addons.includes("Include Return Box")) {
           postBody.return_device = true;
+          postBody.return_info = {
+            device_name: props.ret_device_name,
+            serial_number: props.ret_sn,
+            note: props.ret_note,
+            condition: props.ret_condition,
+            activation_key: props.ret_activation,
+          };
         }
       }
 
