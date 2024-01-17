@@ -92,12 +92,18 @@ export const marketSlice = createSlice({
     addProducts: (state, action: PayloadAction<MarketplaceProducts2[]>) => {
       state.products = action.payload;
       state.accessories = null;
-      action.payload.forEach((product) => {
+      let accessories_index = -1;
+      action.payload.forEach((product, index) => {
         state.marketplace_client = product.client;
         if (product.item_type === "Accessories") {
           state.accessories = product;
+          accessories_index = index;
         }
       });
+
+      if (accessories_index > -1) {
+        state.products.push(state.products.splice(accessories_index, 1)[0]);
+      }
 
       if (state.accessories === null) {
         state.accessories = {};

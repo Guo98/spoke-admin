@@ -355,7 +355,16 @@ const RecipientForm = (props: RecipientProps) => {
           {props.addons && props.addons.length > 0 && (
             <Stack spacing={1}>
               <Typography fontWeight="bold">Accessories: </Typography>
-              <ul>{props.addons && props.addons.map((i) => <li>{i}</li>)}</ul>
+              <ul>
+                {props.addons &&
+                  props.addons.map((i) => (
+                    <li>
+                      {i.includes("yubikey")
+                        ? i.replace("yubikey", "2 x Yubikey 5C NFC")
+                        : i}
+                    </li>
+                  ))}
+              </ul>
             </Stack>
           )}
           {item_type !== "Accessories" && (

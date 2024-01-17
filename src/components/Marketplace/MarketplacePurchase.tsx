@@ -21,6 +21,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -300,6 +301,30 @@ const MarketplacePurchase = (props: MPProps) => {
     setLoading(false);
   };
 
+  const deleteAccessories = async () => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+    const delete_obj = {
+      client,
+      items: accessories,
+    };
+    const delete_resp = await standardPost(
+      access_token,
+      "marketplace/delete/accessories",
+      delete_obj
+    );
+
+    if (delete_resp.status === "Successful") {
+      //setDeleteStatus(0);
+      await props.refresh();
+      setAccessories([]);
+    } else {
+      setDeleteStatus(1);
+    }
+
+    setLoading(false);
+  };
+
   const back_button = () => {
     if (step_3) {
       setStep3(false);
@@ -348,15 +373,7 @@ const MarketplacePurchase = (props: MPProps) => {
     <Modal onClose={close_module} open={open}>
       <Box sx={style}>
         <Stack direction="row" justifyContent="space-between">
-          <Typography variant="h5" fontWeight="bold">
-            {"New Purchase" +
-              (!props.specific_device
-                ? item_type !== "Accessories"
-                  ? " - " + brand
-                  : " - Accessories"
-                : "")}
-          </Typography>
-          <ButtonGroup>
+          <Stack direction="row" spacing={2} alignItems="center">
             {((activeStep !== 0 && item_type !== "Accessories") ||
               (step_3 && item_type === "Accessories")) && (
               <Tooltip title="Back">
@@ -365,6 +382,16 @@ const MarketplacePurchase = (props: MPProps) => {
                 </IconButton>
               </Tooltip>
             )}
+            <Typography variant="h5" fontWeight="bold">
+              {"New Purchase" +
+                (!props.specific_device
+                  ? item_type !== "Accessories"
+                    ? " - " + brand
+                    : " - Accessories"
+                  : "")}
+            </Typography>
+          </Stack>
+          <ButtonGroup>
             {activeStep === 0 && (
               <Tooltip title="Bookmark">
                 <IconButton
@@ -385,6 +412,18 @@ const MarketplacePurchase = (props: MPProps) => {
               <Tooltip title="Delete Spec">
                 <IconButton disabled={!can_delete} onClick={deleteSpec}>
                   <DeleteForeverIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {activeStep === 1 && (
+              <Tooltip title="Delete Accessories">
+                <IconButton
+                  disabled={accessories.length === 0}
+                  onClick={deleteAccessories}
+                >
+                  <RemoveCircleIcon
+                    color={accessories.length === 0 ? "disabled" : "error"}
+                  />
                 </IconButton>
               </Tooltip>
             )}
@@ -487,7 +526,7 @@ const MarketplacePurchase = (props: MPProps) => {
         )}
         {activeStep === 1 && (
           <AccessoriesSelection
-            addAccessories={addAccessories}
+            nextStep={addAccessories}
             client={props.client}
             ret_device={ret_device}
             setRetDevice={setRetDevice}
@@ -500,6 +539,7 @@ const MarketplacePurchase = (props: MPProps) => {
             ret_note={ret_note}
             setRetNote={setRetNote}
             addons={accessories}
+            addAccessories={setAccessories}
           />
         )}
         {activeStep === 2 && (

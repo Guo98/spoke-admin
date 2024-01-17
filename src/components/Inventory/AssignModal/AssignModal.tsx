@@ -384,7 +384,7 @@ const AssignModal = (props: AssignProps) => {
           )}
           {active_step === 1 && (
             <AccessoriesSelection
-              addAccessories={addAddons}
+              nextStep={addAddons}
               client={
                 clientData === "spokeops" ? selectedClientData : clientData
               }

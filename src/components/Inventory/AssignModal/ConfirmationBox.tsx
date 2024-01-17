@@ -192,7 +192,11 @@ const ConfirmationBox = (props: ConfirmationProps) => {
           <ul>
             {props.addons.map((i) => (
               <li>
-                <Typography>{i}</Typography>
+                <Typography>
+                  {i.includes("yubikey")
+                    ? i.replace("yubikey", "2 x Yubikey 5C NFC")
+                    : i}
+                </Typography>
               </li>
             ))}
           </ul>

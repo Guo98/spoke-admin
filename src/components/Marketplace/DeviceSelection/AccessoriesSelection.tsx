@@ -19,7 +19,7 @@ import { RootState } from "../../../app/store";
 import { standardGet } from "../../../services/standard";
 
 interface AccessoriesProps {
-  addAccessories: Function;
+  addAccessories?: Function;
   client: string;
   ret_device: string;
   setRetDevice: Function;
@@ -32,6 +32,7 @@ interface AccessoriesProps {
   ret_note: string;
   setRetNote: Function;
   addons: string[];
+  nextStep: Function;
 }
 
 const AccessoriesSelection = (props: AccessoriesProps) => {
@@ -49,6 +50,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     setRetActKey,
     setRetNote,
     addons,
+    nextStep,
   } = props;
 
   const dispatch = useDispatch();
@@ -93,13 +95,20 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     const item_index = include_items.findIndex((i) => i.includes(label));
     if (checked) {
       if (item_index < 0) {
+        let new_items = [...include_items, "1 x " + label];
         setIncludeItems((prevItems) => [...prevItems, "1 x " + label]);
+        if (addAccessories) {
+          addAccessories(new_items);
+        }
       }
     } else {
       if (item_index > -1) {
         let current_items = [...include_items];
         current_items.splice(item_index, 1);
         setIncludeItems(current_items);
+        if (addAccessories) {
+          addAccessories(current_items);
+        }
       }
     }
   };
@@ -143,6 +152,10 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
 
   useEffect(() => {
     setIncludeItems(addons);
+
+    if (addons.findIndex((i) => i.includes("yubikey")) > -1) {
+      setYubikey(true);
+    }
   }, [addons]);
 
   return (
@@ -195,6 +208,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
           alignItems="center"
         >
           <FormControlLabel
+            sx={{ ml: 0 }}
             control={
               <Checkbox onChange={handleYubikeyChecked} checked={yubikey} />
             }
@@ -273,7 +287,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
             add_items.push("Include Return Box");
           }
 
-          addAccessories(add_items);
+          nextStep(add_items);
         }}
       >
         Continue

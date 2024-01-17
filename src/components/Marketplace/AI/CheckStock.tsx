@@ -190,9 +190,9 @@ const CheckStock = (props: CheckStockProps) => {
                 alignItems="center"
               >
                 {client !== "Alma" && client !== "public" ? (
-                  <Link href={url_link} target="_blank">
+                  <Button href={url_link} target="_blank" fullWidth>
                     Link to Product
-                  </Link>
+                  </Button>
                 ) : (
                   <Button
                     variant="contained"
@@ -244,7 +244,7 @@ const CheckStock = (props: CheckStockProps) => {
                 <Button
                   variant="contained"
                   sx={{ borderRadius: "10px" }}
-                  fullWidth={client === "Alma" || client === "public"}
+                  fullWidth
                   onClick={() =>
                     completeDeviceChoice(
                       type,
