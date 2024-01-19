@@ -151,6 +151,26 @@ const OrderRow = (props: OrderRowProps) => {
     )[0].shipment_id;
   };
 
+  const yubikey_shipping_issue = () => {
+    const yubikey_obj = props.items.filter((i) =>
+      i.name.toLowerCase().includes("yubikey")
+    )[0];
+
+    if (yubikey_obj) {
+      const delivery_status = yubikey_obj.delivery_status?.toLowerCase();
+
+      if (delivery_status) {
+        return (
+          delivery_status.includes("lost") ||
+          delivery_status.includes("not valid") ||
+          delivery_status.includes("exception")
+        );
+      }
+    }
+
+    return false;
+  };
+
   return props.items ? (
     <>
       <TableRow
@@ -196,8 +216,9 @@ const OrderRow = (props: OrderRowProps) => {
             >
               {returned_laptop}
             </Typography>
-          ) : has_yubikey() && !get_yubikey_id() ? (
-            <Typography color="red">Yubikey didn't trigger</Typography>
+          ) : has_yubikey() &&
+            (!get_yubikey_id() || yubikey_shipping_issue()) ? (
+            <Typography color="red">ATTN REQUIRED: Yubikey</Typography>
           ) : (
             <Typography></Typography>
           )}

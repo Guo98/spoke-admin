@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 
 import CheckStock from "../AI/CheckStock";
-import AccessoriesSelection from "./AccessoriesSelection";
+
+import { button_style } from "../../../utilities/styles";
 
 interface DeviceSelectionProps {
   types: any;
@@ -393,6 +394,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                 product_link={product_link}
                 others={brand === "Others"}
                 client={client}
+                color={color}
               />
             </>
           )}
@@ -400,7 +402,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
             <Button
               fullWidth
               variant="contained"
-              sx={{ borderRadius: "10px" }}
+              sx={button_style}
               onClick={() =>
                 completeDeviceChoice(
                   props.device_name === "" ? other_type : props.device_name,
