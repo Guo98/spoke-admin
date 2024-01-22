@@ -26,6 +26,7 @@ import LinearLoading from "../common/LinearLoading";
 import { default as RF } from "../common/RecipientForm";
 
 import { customer_ids } from "../../utilities/cdw-mappings";
+import { button_style } from "../../utilities/styles";
 
 interface RecipientProps {
   completeRecipientStep: Function;
@@ -451,7 +452,7 @@ const RecipientForm = (props: RecipientProps) => {
           />
           <Button
             variant="contained"
-            sx={{ borderRadius: "10px" }}
+            sx={button_style}
             disabled={fieldsFilled()}
             onClick={sendMarketplaceRequest}
           >
