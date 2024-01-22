@@ -445,8 +445,9 @@ const RecipientForm = (props: RecipientProps) => {
             control={<Checkbox required onChange={handleChecked} />}
             label={
               <div>
-                By checking this box, I agree to have Spoke generate a quote on
-                my behalf.
+                {request_type === "buy"
+                  ? "By checking this box, I agree to have Spoke initiate the purchase on my behalf."
+                  : "By checking this box, I agree to have Spoke generate a quote on my behalf."}
               </div>
             }
           />
