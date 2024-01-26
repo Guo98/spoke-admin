@@ -367,7 +367,7 @@ const AssignModal = (props: AssignProps) => {
                     setActiveStep(1);
                   }}
                 >
-                  Continue
+                  Add Accessories
                 </Button>
                 <Button
                   variant="contained"

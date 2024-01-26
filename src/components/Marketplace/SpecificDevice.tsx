@@ -17,6 +17,8 @@ import SmallLinearLoading from "../common/SmallLinearLoading";
 
 import { standardPost } from "../../services/standard";
 
+import { button_style } from "../../utilities/styles";
+
 interface SDProps {
   device_name: string;
   supplier_links?: any;
@@ -188,7 +190,7 @@ const SpecificDevice = (props: SDProps) => {
               )
             }
             fullWidth
-            sx={{ borderRadius: "10px" }}
+            sx={button_style}
             disabled={loading}
           >
             Request Quote
