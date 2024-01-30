@@ -35,6 +35,8 @@ import {
 import { RootState } from "../../app/store";
 import { Order } from "../../interfaces/orders";
 
+import { button_style } from "../../utilities/styles";
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -282,10 +284,7 @@ const OperationsManage = (props: OperationsOrder) => {
     <>
       <Button
         variant="contained"
-        sx={{
-          borderRadius: "10px",
-          textTransform: "none",
-        }}
+        sx={button_style}
         onClick={() => setOpen(true)}
         fullWidth
         size="small"
@@ -515,6 +514,7 @@ const OperationsManage = (props: OperationsOrder) => {
                     variant="contained"
                     disabled={in_inv}
                     onClick={addToInventory}
+                    sx={button_style}
                   >
                     Add
                   </Button>
@@ -542,6 +542,7 @@ const OperationsManage = (props: OperationsOrder) => {
                 variant="contained"
                 onClick={() => setEdit(true)}
                 disabled={edit || loading}
+                sx={button_style}
               >
                 Edit
               </Button>
@@ -550,6 +551,7 @@ const OperationsManage = (props: OperationsOrder) => {
                 variant="contained"
                 onClick={saveTrackingNumbers}
                 disabled={!edit || loading}
+                sx={button_style}
               >
                 Save
               </Button>
@@ -558,6 +560,7 @@ const OperationsManage = (props: OperationsOrder) => {
                 variant="contained"
                 onClick={completeOrder}
                 disabled={loading}
+                sx={button_style}
               >
                 Update Status
               </Button>

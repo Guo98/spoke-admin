@@ -3,6 +3,7 @@ import { Button, Modal, Box, Typography, Stack } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth0 } from "@auth0/auth0-react";
 import { standardPost } from "../../services/standard";
+import { button_style } from "../../utilities/styles";
 
 interface DeleteProps {
   id: string;
@@ -50,10 +51,7 @@ const DeleteModal = (props: DeleteProps) => {
       <Button
         variant="contained"
         startIcon={<DeleteIcon />}
-        sx={{
-          borderRadius: "10px",
-          textTransform: "none",
-        }}
+        sx={button_style}
         onClick={() => setOpen(true)}
         fullWidth
         size="small"

@@ -15,6 +15,7 @@ import { standardPost } from "../../services/standard";
 import { cdw_parts_prices, customer_ids } from "../../utilities/cdw-mappings";
 import { Order } from "../../interfaces/orders";
 import LinearLoading from "../common/LinearLoading";
+import { button_style } from "../../utilities/styles";
 
 const style = {
   position: "absolute" as "absolute",
@@ -113,7 +114,7 @@ const OrderLaptop = (props: Order) => {
       <Button
         fullWidth
         variant="contained"
-        sx={{ borderRadius: "10px", textTransform: "none" }}
+        sx={button_style}
         onClick={() => setOpen(true)}
       >
         Order Laptop
