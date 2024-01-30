@@ -11,7 +11,7 @@ import {
   TableCell,
   Paper,
   Typography,
-  Grid,
+  Tooltip,
   TextField,
   FormControl,
   InputLabel,
@@ -23,6 +23,8 @@ import {
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
+import SendIcon from "@mui/icons-material/Send";
+
 import { setOrders } from "../../app/slices/ordersSlice";
 import { setInventory } from "../../app/slices/inventorySlice";
 import {
@@ -251,6 +253,31 @@ const OperationsManage = (props: OperationsOrder) => {
     setLoading(false);
   };
 
+  const createAftershipTracking = async (
+    item_name: string,
+    tracking_number: string
+  ) => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+
+    const body = {
+      order_no: props.orderNo,
+      item_name,
+      customer_name: props.full_name,
+      tracking_number,
+      recipient_email: props.email,
+      client: props.client,
+    };
+
+    const post_resp = await standardPost(
+      access_token,
+      "orders/createshipment",
+      body
+    );
+
+    setLoading(false);
+  };
+
   return (
     <>
       <Button
@@ -302,6 +329,11 @@ const OperationsManage = (props: OperationsOrder) => {
                     <TableCell>
                       <Typography fontWeight="bold" align="right">
                         Courier
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography fontWeight="bold" align="right">
+                        Action
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -412,6 +444,21 @@ const OperationsManage = (props: OperationsOrder) => {
                           ) : (
                             item.courier
                           )}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Button
+                            onClick={async () =>
+                              await createAftershipTracking(
+                                item.name,
+                                item.tracking_number[0]
+                              )
+                            }
+                            disabled={item.tracking_number === ""}
+                          >
+                            <Tooltip title="Create Aftership Tracking">
+                              <SendIcon />
+                            </Tooltip>
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );
