@@ -69,6 +69,13 @@ const ConfirmSpecs = (props: ConfirmProps) => {
         ...body,
         item_name: device_name,
       };
+    } else if (specs.device_type === "phones") {
+      body = {
+        ...body,
+        item_name: device_name,
+        device_line: specs.device_line,
+        color: specs.color,
+      };
     }
     if (specs.supplier.toLowerCase() === "insight") {
       body.sku = specs.sku;

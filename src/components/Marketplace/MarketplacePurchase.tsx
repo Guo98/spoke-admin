@@ -64,6 +64,7 @@ const style = {
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
+  overflow: "scroll",
 };
 
 function ColorStepIcon(props: StepIconProps) {
@@ -369,7 +370,7 @@ const MarketplacePurchase = (props: MPProps) => {
   };
 
   return (
-    <Modal onClose={close_module} open={open}>
+    <Modal onClose={close_module} open={open} sx={{ overflow: "hidden" }}>
       <Box sx={style}>
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="row" spacing={2} alignItems="center">
