@@ -12,7 +12,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import CheckStock from "./CheckStock";
-import RecipientForm from "../RecipientForm";
 
 const style = {
   position: "absolute" as "absolute",
@@ -102,17 +101,6 @@ const MarketAI = (props: MarketAIProps) => {
           //   brand={brand}
           //   completeDeviceChoice={completeDeviceStep}
           // /><>
-          <></>
-        )}
-        {activeStep === 1 && (
-          // <RecipientForm
-          //   completeRecipientStep={completeDeploymentStep}
-          //   device_name={device_name}
-          //   device_specs={device_specs}
-          //   device_url={device_url}
-          //   client={client}
-          //   setParentLoading={setLoading}
-          // />
           <></>
         )}
       </Box>

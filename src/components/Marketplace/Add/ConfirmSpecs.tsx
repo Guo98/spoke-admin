@@ -48,18 +48,35 @@ const ConfirmSpecs = (props: ConfirmProps) => {
       client,
       type: specs.device_type,
       brand: specs.brand,
-      device_line: specs.device_line,
-      screen_size: specs.screen_size,
-      cpu: specs.cpu,
-      ram: specs.ram,
-      ssd: specs.hard_drive,
       supplier_url,
-      color: specs.color,
       locations: [location],
       supplier: specs.supplier,
       img_src: specs.image_source,
     };
 
+    if (specs.device_type === "laptops") {
+      body = {
+        ...body,
+        device_line: specs.device_line,
+        screen_size: specs.screen_size,
+        cpu: specs.cpu,
+        ram: specs.ram,
+        ssd: specs.hard_drive,
+        color: specs.color,
+      };
+    } else if (specs.device_type === "accessories") {
+      body = {
+        ...body,
+        item_name: device_name,
+      };
+    } else if (specs.device_type === "phones") {
+      body = {
+        ...body,
+        item_name: device_name,
+        device_line: specs.device_line,
+        color: specs.color,
+      };
+    }
     if (specs.supplier.toLowerCase() === "insight") {
       body.sku = specs.sku;
     }
@@ -134,49 +151,53 @@ const ConfirmSpecs = (props: ConfirmProps) => {
             sx={textfield_style}
             onChange={(e) => setDeviceName(e.target.value)}
           />
-          <Stack direction="row" spacing={2}>
-            <TextField
-              size="small"
-              sx={textfield_style}
-              label="Screen Size"
-              fullWidth
-              value={screen_size}
-              onChange={(e) => setScreenSize(e.target.value)}
-            />
-            <TextField
-              size="small"
-              sx={textfield_style}
-              label="CPU"
-              fullWidth
-              value={cpu}
-              onChange={(e) => setCPU(e.target.value)}
-            />
-          </Stack>
-          <Stack direction="row" spacing={2}>
-            <TextField
-              size="small"
-              sx={textfield_style}
-              label="RAM"
-              fullWidth
-              value={ram}
-              onChange={(e) => setRAM(e.target.value)}
-            />
-            <TextField
-              size="small"
-              sx={textfield_style}
-              label="SSD"
-              fullWidth
-              value={ssd}
-              onChange={(e) => setSSD(e.target.value)}
-            />
-          </Stack>
-          <TextField
-            label="Color"
-            value={color}
-            size="small"
-            sx={textfield_style}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          {specs.device_type === "laptops" && (
+            <>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  size="small"
+                  sx={textfield_style}
+                  label="Screen Size"
+                  fullWidth
+                  value={screen_size}
+                  onChange={(e) => setScreenSize(e.target.value)}
+                />
+                <TextField
+                  size="small"
+                  sx={textfield_style}
+                  label="CPU"
+                  fullWidth
+                  value={cpu}
+                  onChange={(e) => setCPU(e.target.value)}
+                />
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  size="small"
+                  sx={textfield_style}
+                  label="RAM"
+                  fullWidth
+                  value={ram}
+                  onChange={(e) => setRAM(e.target.value)}
+                />
+                <TextField
+                  size="small"
+                  sx={textfield_style}
+                  label="SSD"
+                  fullWidth
+                  value={ssd}
+                  onChange={(e) => setSSD(e.target.value)}
+                />
+              </Stack>
+              <TextField
+                label="Color"
+                value={color}
+                size="small"
+                sx={textfield_style}
+                onChange={(e) => setColor(e.target.value)}
+              />
+            </>
+          )}
           <TextField
             label="Location"
             value={location}

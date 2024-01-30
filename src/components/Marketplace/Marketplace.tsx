@@ -3,8 +3,10 @@ import { Box, Typography, Chip, Stack, Button } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addProducts } from "../../app/slices/inventorySlice";
-import { resetMarketplaceInfo } from "../../app/slices/marketSlice";
+import {
+  resetMarketplaceInfo,
+  addProducts,
+} from "../../app/slices/marketSlice";
 import { standardGet } from "../../services/standard";
 import { RootState } from "../../app/store";
 
@@ -16,8 +18,9 @@ import LinearLoading from "../common/LinearLoading";
 import AddNewDevice from "./Add/AddNewDevice";
 
 const Marketplace = () => {
-  const productRedux = useSelector(
-    (state: RootState) => state.inventory.products
+  const productRedux = useSelector((state: RootState) => state.market.products);
+  const accessories_redux = useSelector(
+    (state: RootState) => state.market.accessories
   );
 
   const client = useSelector((state: RootState) => state.client.data);
@@ -37,6 +40,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(false);
   const [pagenumber, setPagenumber] = useState(0);
   const [product, setProduct] = useState("");
+  const [product_type, setProductType] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any>({});
@@ -44,6 +48,7 @@ const Marketplace = () => {
   const [brandtypes, setTypes] = useState<any | null>(null);
   const [openModal, setOpen] = useState(false);
   const [modalimg, setImg] = useState("");
+  const [addons, setAddons] = useState<any[]>([]);
 
   const [bookmarked, setBookmarked] = useState<any[]>([]);
 
@@ -86,30 +91,34 @@ const Marketplace = () => {
   }, [existing_order_info]);
 
   useEffect(() => {
-    let bookmarked_devices: any[] = [];
+    if (productRedux) {
+      let bookmarked_devices: any[] = [];
 
-    productRedux.forEach((p) => {
-      p.brands.forEach((b) => {
-        b.types.forEach((t) => {
-          t.specs.forEach((s) => {
-            if (s.bookmarked) {
-              bookmarked_devices.push({
-                brand: b.brand,
-                type: t.type,
-                spec: s.spec,
-                locations: s.locations,
-                device_type: p.item_type,
+      productRedux.forEach((p) => {
+        if (p.item_type === "Laptops") {
+          p.brands.forEach((b) => {
+            b.types.forEach((t) => {
+              t.specs.forEach((s) => {
+                if (s.bookmarked) {
+                  bookmarked_devices.push({
+                    brand: b.brand,
+                    type: t.type,
+                    spec: s.spec,
+                    locations: s.locations,
+                    device_type: p.item_type,
+                  });
+                }
               });
-            }
+            });
           });
-        });
+        }
       });
-    });
 
-    if (bookmarked_devices.length > 0) {
-      setBookmarked(bookmarked_devices);
-    } else {
-      setBookmarked([]);
+      if (bookmarked_devices.length > 0) {
+        setBookmarked(bookmarked_devices);
+      } else {
+        setBookmarked([]);
+      }
     }
 
     if (product !== "" && productRedux.length > 0) {
@@ -139,11 +148,17 @@ const Marketplace = () => {
   useEffect(() => {}, [bookmarked]);
 
   const genericProduct = (product_name: string, item_index: number) => {
-    setPagenumber(1);
     setProduct(product_name);
     setSelectedProducts([product_name]);
-    setBrands(productRedux[item_index].brands);
     setSuppliers(productRedux[item_index].suppliers);
+    setProductType(productRedux[item_index].item_type);
+    if (product_name !== "Accessories") {
+      setBrands(productRedux[item_index].brands);
+      setPagenumber(1);
+    } else {
+      setAddons(productRedux[item_index].items!);
+      setOpen(true);
+    }
   };
 
   const selectBrand = (brand_name: string, index: number) => {
@@ -279,6 +294,7 @@ const Marketplace = () => {
               }
             })}
           {pagenumber === 1 &&
+            product !== "Accessories" &&
             brands.length > 0 &&
             brands.map((brand, index) => {
               return (
@@ -290,7 +306,7 @@ const Marketplace = () => {
                 />
               );
             })}
-          {existing_order_info === null ? (
+          {existing_order_info === null || product === "Accessories" ? (
             <MarketplacePurchase
               open={openModal}
               handleClose={handleClose}
@@ -301,6 +317,7 @@ const Marketplace = () => {
               suppliers={suppliers}
               product_type={product}
               refresh={getProducts}
+              item_type={product_type}
             />
           ) : (
             <MarketplacePurchase
@@ -316,6 +333,7 @@ const Marketplace = () => {
               specific_specs={existing_order_info.specific_specs}
               bookmark={existing_order_info.bookmark}
               refresh={getProducts}
+              item_type={product_type}
             />
           )}
         </Box>

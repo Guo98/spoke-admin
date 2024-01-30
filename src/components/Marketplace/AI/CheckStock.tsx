@@ -13,6 +13,8 @@ import { standardGet, standardPost } from "../../../services/standard";
 import Recommendations from "./Recommendations";
 import { customer_ids } from "../../../utilities/cdw-mappings";
 
+import { button_style } from "../../../utilities/styles";
+
 interface CheckStockProps {
   type: string;
   setLoading: Function;
@@ -23,6 +25,7 @@ interface CheckStockProps {
   product_link?: string;
   others: boolean;
   client: string;
+  color: string;
 }
 
 const CheckStock = (props: CheckStockProps) => {
@@ -34,6 +37,7 @@ const CheckStock = (props: CheckStockProps) => {
     completeDeviceChoice,
     others,
     client,
+    color,
   } = props;
 
   const [status, setStatus] = useState(-1);
@@ -66,6 +70,7 @@ const CheckStock = (props: CheckStockProps) => {
       specs: spec,
       supplier: props.supplier !== "" ? props.supplier : "cdw",
       others,
+      color,
     };
     if (props.product_link !== "") {
       checkObj.product_link = props.product_link;
@@ -178,67 +183,88 @@ const CheckStock = (props: CheckStockProps) => {
                   </div>
                 )}
               </div>
-              {(client === "Alma" || client === "public") && (
-                <Link href={url_link} target="_blank">
-                  Link to Product
-                </Link>
-              )}
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                spacing={1}
-                alignItems="center"
-              >
-                {client !== "Alma" && client !== "public" ? (
-                  <Link href={url_link} target="_blank">
-                    Link to Product
-                  </Link>
-                ) : (
-                  <Button
-                    variant="contained"
-                    sx={{ borderRadius: "10px" }}
-                    fullWidth
-                    onClick={() =>
-                      completeDeviceChoice(
-                        product_name,
-                        spec,
-                        url_link,
-                        "United States",
-                        price,
-                        img_src,
-                        stock,
-                        aispecs,
-                        props.supplier,
-                        cdw_part_no,
-                        "buy"
-                      )
-                    }
-                  >
-                    Buy Now
-                  </Button>
-                )}
-                <Button
-                  variant="contained"
-                  sx={{ borderRadius: "10px" }}
-                  fullWidth={client === "Alma" || client === "public"}
-                  onClick={() =>
-                    completeDeviceChoice(
-                      product_name,
-                      spec,
-                      url_link,
-                      "United States",
-                      price,
-                      img_src,
-                      stock,
-                      aispecs,
-                      props.supplier
-                    )
-                  }
-                >
-                  Request Quote
-                </Button>
-              </Stack>
+              <Link href={url_link} target="_blank">
+                Link to Product
+              </Link>
             </Stack>
+          </Stack>
+          <Stack
+            direction="row"
+            spacing={2}
+            pt={1}
+            justifyContent="space-between"
+          >
+            {(client === "Alma" || client === "public") && (
+              <Button
+                variant="contained"
+                sx={button_style}
+                fullWidth
+                onClick={() =>
+                  completeDeviceChoice(
+                    product_name,
+                    spec,
+                    url_link,
+                    "United States",
+                    price,
+                    img_src,
+                    stock,
+                    aispecs,
+                    props.supplier,
+                    cdw_part_no,
+                    "buy",
+                    false
+                  )
+                }
+              >
+                Buy Now
+              </Button>
+            )}
+            <Button
+              variant="contained"
+              sx={button_style}
+              fullWidth
+              onClick={() =>
+                completeDeviceChoice(
+                  type,
+                  spec,
+                  url_link,
+                  "United States",
+                  price,
+                  img_src,
+                  stock,
+                  aispecs,
+                  props.supplier,
+                  "",
+                  "quote",
+                  true
+                )
+              }
+            >
+              Add Accessories
+            </Button>
+            <Button
+              variant="contained"
+              sx={button_style}
+              fullWidth
+              onClick={() =>
+                completeDeviceChoice(
+                  type,
+                  spec,
+                  url_link,
+                  "United States",
+                  price,
+                  img_src,
+                  stock,
+                  aispecs,
+                  props.supplier,
+                  "",
+                  "quote",
+                  false
+                )
+              }
+            >
+              Request Quote
+            </Button>
           </Stack>
         </>
       )}
@@ -262,14 +288,15 @@ const CheckStock = (props: CheckStockProps) => {
             variant="contained"
             onClick={checkStock}
             fullWidth
-            sx={{ borderRadius: "10px" }}
+            sx={button_style}
           >
             {!loading ? "Check Supplier's Stock" : <CircularProgress />}
           </Button>
           <Button
-            fullWidth
             variant="contained"
-            sx={{ borderRadius: "10px" }}
+            sx={button_style}
+            fullWidth
+            disabled={loading}
             onClick={() =>
               completeDeviceChoice(
                 type,
@@ -280,7 +307,33 @@ const CheckStock = (props: CheckStockProps) => {
                 "",
                 "",
                 "",
-                props.supplier
+                props.supplier,
+                "",
+                "quote",
+                true
+              )
+            }
+          >
+            Add Accessories
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={button_style}
+            onClick={() =>
+              completeDeviceChoice(
+                type,
+                spec,
+                "",
+                "United States",
+                "",
+                "",
+                "",
+                "",
+                props.supplier,
+                "",
+                "quote",
+                false
               )
             }
             disabled={loading}

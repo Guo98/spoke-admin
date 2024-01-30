@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -7,46 +7,25 @@ import {
   Button,
   Alert,
   IconButton,
+  TextField,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import LinearLoading from "../../common/LinearLoading";
+import RecipientForm from "../../common/RecipientForm";
 
 import { standardPost, standardGet } from "../../../services/standard";
+import { RootState } from "../../../app/store";
 import { setInventory } from "../../../app/slices/inventorySlice";
-
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: { xs: "85%", md: "50%" },
-  bgcolor: "background.paper",
-  borderRadius: "20px",
-  boxShadow: 24,
-  p: 4,
-};
+import { button_style, textfield_style } from "../../../utilities/styles";
 
 interface ConfirmationProps {
-  first_name: string;
-  last_name: string;
   device_name: string;
   serial_number: string;
-  address_line1: string;
-  address_line2?: string;
-  city: string;
-  country: string;
-  state: string;
-  zipCode: string;
-  email: string;
-  phone_number: string;
-  note: string;
-  shipping: string;
   image_source: string | undefined;
-  back: Function;
   returning: boolean;
   client: string;
   id: string | undefined;
@@ -57,10 +36,11 @@ interface ConfirmationProps {
   ret_condition?: string;
   ret_activation?: string;
   ret_note?: string;
+  addons: string[];
 }
 
 const ConfirmationBox = (props: ConfirmationProps) => {
-  const { client } = props;
+  const { client, device_location } = props;
 
   const { getAccessTokenSilently, user } = useAuth0();
 
@@ -68,44 +48,78 @@ const ConfirmationBox = (props: ConfirmationProps) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(-1);
+  const [note, setNote] = useState("");
+
+  const fn_redux = useSelector(
+    (state: RootState) => state.recipient.first_name
+  );
+  const ln_redux = useSelector((state: RootState) => state.recipient.last_name);
+
+  const adl1_redux = useSelector(
+    (state: RootState) => state.recipient.address_line1
+  );
+  const adl2_redux = useSelector(
+    (state: RootState) => state.recipient.address_line2
+  );
+  const city_redux = useSelector((state: RootState) => state.recipient.city);
+  const state_redux = useSelector((state: RootState) => state.recipient.state);
+  const postal_redux = useSelector(
+    (state: RootState) => state.recipient.postal
+  );
+  const country_redux = useSelector(
+    (state: RootState) => state.recipient.country
+  );
+
+  const email_redux = useSelector((state: RootState) => state.recipient.email);
+  const phone_redux = useSelector((state: RootState) => state.recipient.phone);
+  const shipping_redux = useSelector(
+    (state: RootState) => state.recipient.shipping
+  );
+
+  useEffect(() => {}, [props.device_name]);
 
   const deploy = async () => {
     setLoading(true);
     const accessToken = await getAccessTokenSilently();
     let deployObj: any = {
       client: client,
-      first_name: props.first_name,
-      last_name: props.last_name,
+      first_name: fn_redux,
+      last_name: ln_redux,
       address: {
-        al1: props.address_line1,
-        al2: props.address_line2,
-        city: props.city,
-        state: props.state,
-        postal_code: props.zipCode,
-        country_code: props.country,
+        al1: adl1_redux,
+        al2: adl2_redux,
+        city: city_redux,
+        state: state_redux,
+        postal_code: postal_redux,
+        country_code: country_redux,
       },
-      email: props.email,
-      phone_number: props.phone_number,
+      email: email_redux,
+      phone_number: phone_redux,
       device_name: props.device_name,
       serial_number: props.serial_number,
-      device_location: props.device_location,
-      shipping: props.shipping,
+      device_location,
+      shipping: shipping_redux,
       requestor_email: user?.email,
       requestor_name: user?.name,
       id: props.id,
       warehouse: props.warehouse,
+      note,
       return_device: props.returning,
     };
 
-    if (props.returning) {
-      deployObj.return_device = true;
-      deployObj.return_info = {
-        device_name: props.ret_device_name,
-        serial_number: props.ret_sn,
-        note: props.ret_note,
-        condition: props.ret_condition,
-        activation_key: props.ret_activation,
-      };
+    if (props.addons.length > 0) {
+      deployObj.addons = props.addons;
+
+      if (props.addons.includes("Include Return Box")) {
+        deployObj.return_device = true;
+        deployObj.return_info = {
+          device_name: props.ret_device_name,
+          serial_number: props.ret_sn,
+          note: props.ret_note,
+          condition: props.ret_condition,
+          activation_key: props.ret_activation,
+        };
+      }
     }
 
     const deployResult = await standardPost(
@@ -116,147 +130,132 @@ const ConfirmationBox = (props: ConfirmationProps) => {
 
     if (deployResult.status === "Success") {
       setSuccess(0);
-      const inventoryResult = await standardGet(
-        accessToken,
-        `inventory/${client}`
-      );
-      dispatch(setInventory(inventoryResult.data));
+      // // const inventoryResult = await standardGet(
+      // //   accessToken,
+      // //   `inventory/${client}`
+      // // );
+      // // dispatch(setInventory(inventoryResult.data));
     } else {
       setSuccess(1);
     }
     setLoading(false);
   };
 
+  const fieldsFilled = () => {
+    return (
+      fn_redux === "" ||
+      ln_redux === "" ||
+      adl1_redux === "" ||
+      city_redux === "" ||
+      state_redux === "" ||
+      postal_redux === "" ||
+      email_redux === "" ||
+      phone_redux === "" ||
+      shipping_redux === ""
+    );
+  };
+
   return (
-    <Box sx={style}>
-      <Stack spacing={2}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton onClick={() => props.back(0)}>
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h6" component="h3" textAlign="center">
-            Deployment Details
+    <Stack spacing={2} pt={2}>
+      {loading && <LinearLoading />}
+      {success !== -1 && (
+        <Alert severity={success === 0 ? "success" : "error"}>
+          {success === 0
+            ? "Thank you for your order! You'll receive a confirmation email with your order details."
+            : "There was an error submitting your order. Please try again later."}
+        </Alert>
+      )}
+      <Divider textAlign="left">Deployment Info</Divider>
+      {props.device_name && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Device:{" "}
           </Typography>
-        </Stack>
-        {loading && <LinearLoading />}
-        {success !== -1 && (
-          <Alert severity={success === 0 ? "success" : "error"}>
-            {success === 0
-              ? "Thank you for your order! You'll receive a confirmation email with your order details."
-              : "There was an error submitting your order. Please try again later."}
-          </Alert>
-        )}
-        <Divider textAlign="left">Device Info</Divider>
-        {props.device_name && (
+          <Typography display="inline" component="span">
+            {props.device_name}
+          </Typography>
+        </div>
+      )}
+      {props.serial_number && (
+        <div>
+          <Typography display="inline" component="span" fontWeight="bold">
+            Serial Number:{" "}
+          </Typography>
+          <Typography display="inline" component="span">
+            {props.serial_number}
+          </Typography>
+        </div>
+      )}
+      {props.addons.length > 0 && (
+        <>
+          <Typography fontWeight="bold">Accessories:</Typography>
+          <ul>
+            {props.addons.map((i) => (
+              <li>
+                <Typography>
+                  {i.includes("yubikey")
+                    ? i.replace("yubikey", "2 x Yubikey 5C NFC")
+                    : i}
+                </Typography>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <RecipientForm address_required deployable_region={device_location} />
+      <TextField
+        sx={textfield_style}
+        fullWidth
+        size="small"
+        label="Note"
+        onChange={(e) => setNote(e.target.value)}
+      />
+      {props.returning && (
+        <>
+          <Divider textAlign="left">Return Info:</Divider>
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Device:{" "}
+              Returning Device:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.device_name}
+              {props.ret_device_name}
             </Typography>
           </div>
-        )}
-        {props.serial_number && (
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Serial Number:{" "}
+              Return Serial Number:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.serial_number}
+              {props.ret_sn}
             </Typography>
           </div>
-        )}
-        <Divider textAlign="left">Recipient Info</Divider>
-        {props.first_name && (
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Name:{" "}
+              Condition:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.first_name} {props.last_name}
+              {props.ret_condition}
             </Typography>
           </div>
-        )}
-        {props.address_line1 && (
           <div>
             <Typography display="inline" component="span" fontWeight="bold">
-              Shipping Address:{" "}
+              Activation Key:{" "}
             </Typography>
             <Typography display="inline" component="span">
-              {props.address_line1},{" "}
-              {props.address_line2 ? props.address_line2 + ", " : ""}
-              {props.city}, {props.state} {props.zipCode}, {props.country}
+              {props.ret_activation}
             </Typography>
           </div>
-        )}
-        {props.email && (
-          <div>
-            <Typography display="inline" component="span" fontWeight="bold">
-              Email:{" "}
-            </Typography>
-            <Typography display="inline" component="span">
-              {props.email}
-            </Typography>
-          </div>
-        )}
-        {props.phone_number && (
-          <div>
-            <Typography display="inline" component="span" fontWeight="bold">
-              Phone Number:{" "}
-            </Typography>
-            <Typography display="inline" component="span">
-              {props.phone_number}
-            </Typography>
-          </div>
-        )}
-        {props.returning && (
-          <>
-            <Divider textAlign="left">Return Info:</Divider>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Returning Device:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_device_name}
-              </Typography>
-            </div>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Return Serial Number:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_sn}
-              </Typography>
-            </div>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Condition:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_condition}
-              </Typography>
-            </div>
-            <div>
-              <Typography display="inline" component="span" fontWeight="bold">
-                Activation Key:{" "}
-              </Typography>
-              <Typography display="inline" component="span">
-                {props.ret_activation}
-              </Typography>
-            </div>
-          </>
-        )}
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: "#054ffe", borderRadius: "10px" }}
-          onClick={deploy}
-          disabled={success !== -1}
-        >
-          Deploy
-        </Button>
-      </Stack>
-    </Box>
+        </>
+      )}
+      <Button
+        variant="contained"
+        sx={button_style}
+        onClick={deploy}
+        disabled={success !== -1 || fieldsFilled()}
+      >
+        Deploy
+      </Button>
+    </Stack>
   );
 };
 
