@@ -125,7 +125,7 @@ const navMappings: any = {
     "Invite",
     "Misc",
   ],
-  FLYR: ["Orders", "Inventory", "Storefront"],
+  FLYR: ["Orders", "Inventory", "Storefront", "Marketplace", "Approvals"],
   Roivant: {
     admin: [
       "Orders",

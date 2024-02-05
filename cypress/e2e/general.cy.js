@@ -1,15 +1,33 @@
 describe("template spec", { testIsolation: false }, () => {
   before(() => {
-    cy.visit("https://spoke-admin-dev.azurewebsites.net");
-    cy.url().then(($url) => {
-      if ($url.includes("dev-wwotwaa87dcb33bj.us.auth0.com")) {
-        cy.origin("https://dev-wwotwaa87dcb33bj.us.auth0.com", () => {
-          cy.get("#organizationName").type("withspoke{Enter}");
-          cy.get("#username").type("e2e@withspoke.com");
-          cy.get("#password").type("Tester12!{Enter}");
+    // cy.visit("https://spoke-admin-dev.azurewebsites.net");
+    // cy.url().then(($url) => {
+    //   if ($url.includes("dev-wwotwaa87dcb33bj.us.auth0.com")) {
+    //     cy.origin("https://dev-wwotwaa87dcb33bj.us.auth0.com", () => {
+    //       cy.get("#organizationName").type("withspoke{Enter}");
+    //       cy.get("#username").type("e2e@withspoke.com");
+    //       cy.get("#password").type("Tester12!{Enter}");
+    //     });
+    //   }
+    // });
+    cy.login()
+      .then((resp) => {
+        return resp.body;
+      })
+      .then((body) => {
+        const { access_token, expires_in, id_token } = body;
+        const auth0State = {
+          nonce: "",
+          state: "some-random-state",
+        };
+        const callbackUrl = `/callback#access_token=${access_token}&scope=openid&id_token=${id_token}&expires_in=${expires_in}&token_type=Bearer&state=${auth0State.state}`;
+        cy.visit(callbackUrl, {
+          onBeforeLoad(win) {
+            win.document.cookie =
+              "com.auth0.auth.some-random-state=" + JSON.stringify(auth0State);
+          },
         });
-      }
-    });
+      });
   });
 
   it("should check that the three left nav options are available", () => {

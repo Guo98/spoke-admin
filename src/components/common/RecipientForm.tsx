@@ -106,7 +106,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required
           value={fn_redux}
-          onChange={(e) => dispatch(setFirstName(e.target.value))}
+          onChange={(e: any) => dispatch(setFirstName(e.target.value))}
         />
         <TextField
           sx={textfield_style}
@@ -115,7 +115,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required
           value={ln_redux}
-          onChange={(e) => dispatch(setLastName(e.target.value))}
+          onChange={(e: any) => dispatch(setLastName(e.target.value))}
         />
       </Stack>
       <Stack direction="row" spacing={1}>
@@ -126,7 +126,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required
           value={email_redux}
-          onChange={(e) => {
+          onChange={(e: any) => {
             dispatch(setEmail(e.target.value));
             if (!isEmail(e.target.value) && e.target.value !== "") {
               setValidEmail(false);
@@ -144,7 +144,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required
           value={phone_redux}
-          onChange={(e) => dispatch(setPhone(e.target.value))}
+          onChange={(e: any) => dispatch(setPhone(e.target.value))}
         />
       </Stack>
       <TextField
@@ -153,14 +153,14 @@ const RecipientForm = (props: RFProps) => {
         size="small"
         required={address_required}
         value={adl1_redux}
-        onChange={(e) => dispatch(setAddressLine1(e.target.value))}
+        onChange={(e: any) => dispatch(setAddressLine1(e.target.value))}
       />
       <TextField
         sx={textfield_style}
         label="Address Line 2"
         size="small"
         value={adl2_redux}
-        onChange={(e) => dispatch(setAddressLine2(e.target.value))}
+        onChange={(e: any) => dispatch(setAddressLine2(e.target.value))}
       />
       <Stack direction="row" spacing={1}>
         <TextField
@@ -170,7 +170,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required={address_required}
           value={city_redux}
-          onChange={(e) => dispatch(setCity(e.target.value))}
+          onChange={(e: any) => dispatch(setCity(e.target.value))}
         />
         <TextField
           sx={textfield_style}
@@ -179,7 +179,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required={address_required}
           value={state_redux}
-          onChange={(e) => dispatch(setState(e.target.value))}
+          onChange={(e: any) => dispatch(setState(e.target.value))}
         />
       </Stack>
       <Stack direction="row" spacing={1}>
@@ -190,7 +190,7 @@ const RecipientForm = (props: RFProps) => {
           fullWidth
           required={address_required}
           value={postal_redux}
-          onChange={(e) => dispatch(setPostal(e.target.value))}
+          onChange={(e: any) => dispatch(setPostal(e.target.value))}
         />
         <TextField
           sx={textfield_style}
@@ -200,7 +200,7 @@ const RecipientForm = (props: RFProps) => {
           required={address_required}
           value={country_redux}
           disabled={disable_country}
-          onChange={(e) => dispatch(setCountry(e.target.value))}
+          onChange={(e: any) => dispatch(setCountry(e.target.value))}
         />
       </Stack>
       <FormControl fullWidth sx={textfield_style} required size="small">
@@ -214,7 +214,9 @@ const RecipientForm = (props: RFProps) => {
           required
         >
           {shipping_opts.map((s) => (
-            <MenuItem value={s}>{s}</MenuItem>
+            <MenuItem value={s} key={s}>
+              {s}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
