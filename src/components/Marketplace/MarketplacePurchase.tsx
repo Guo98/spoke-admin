@@ -64,7 +64,7 @@ const style = {
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
-  overflow: "scroll",
+  overflowY: "scroll",
 };
 
 function ColorStepIcon(props: StepIconProps) {
