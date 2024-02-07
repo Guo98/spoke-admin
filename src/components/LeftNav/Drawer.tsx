@@ -177,7 +177,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
         ))}
         <div className="bottomPush">
           {["Support", "Roadmap", "Logout"].map((text) => (
-            <ListItem key={text} className="noVerticalPadding">
+            <ListItem
+              key={text}
+              className="noVerticalPadding"
+              id={text + "-leftnav"}
+            >
               <ListItemButton onClick={async () => await footerAction(text)}>
                 <ListItemIcon>
                   {iconMapping[text as keyof IconMapping]}

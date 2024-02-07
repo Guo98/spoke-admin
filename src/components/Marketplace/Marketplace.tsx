@@ -134,7 +134,7 @@ const Marketplace = () => {
     if (brandname !== "" && productRedux.length > 0) {
       const brand_index = productRedux
         .filter((p) => p.item_type === product)[0]
-        .brands.findIndex((b) => b.brand === brandname);
+        .brands?.findIndex((b) => b.brand === brandname);
 
       if (brand_index > -1) {
         let updt_brands = productRedux.filter((p) => p.item_type === product)[0]

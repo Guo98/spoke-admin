@@ -222,7 +222,12 @@ const MainOrders = () => {
           alignItems="center"
         >
           <Stack direction="row" spacing={1}>
-            <Typography component="h2" variant="h5" fontWeight="bold">
+            <Typography
+              component="h2"
+              variant="h5"
+              fontWeight="bold"
+              id="orders-header"
+            >
               Orders
             </Typography>
             <IconButton onClick={download} id="export-orders-button">
@@ -238,9 +243,9 @@ const MainOrders = () => {
           onChange={handleTabChange}
           aria-label="orders tab"
         >
-          <Tab label="All" {...a11yProps(0)} />
-          <Tab label="Deployments" {...a11yProps(1)} />
-          <Tab label="Returns" {...a11yProps(2)} />
+          <Tab label="All" {...a11yProps(0)} id="orders-all" />
+          <Tab label="Deployments" {...a11yProps(1)} id="orders-deployments" />
+          <Tab label="Returns" {...a11yProps(2)} id="orders-returns" />
         </Tabs>
       </Box>
       {all_orders.length > 0 && (
@@ -248,35 +253,36 @@ const MainOrders = () => {
           <TableContainer
             component={Paper}
             sx={{ borderRadius: "10px", mt: 3 }}
+            id="orders-table-container"
           >
             <Table aria-label="orders-table" stickyHeader>
               <TableHead>
-                <TableRow>
-                  <TableCell />
-                  <TableCell width="15%">
+                <TableRow id="orders-table-header-row">
+                  <TableCell id="orders-collapsible-col" />
+                  <TableCell width="15%" id="orders-number-col">
                     <Typography fontWeight="bold">Order Number</Typography>
                   </TableCell>
-                  <TableCell width="15%">
+                  <TableCell width="15%" id="orders-date-col">
                     <Typography fontWeight="bold">Order Date</Typography>
                   </TableCell>
-                  <TableCell width="20%">
+                  <TableCell width="20%" id="orders-name-col">
                     <Typography fontWeight="bold">Recipient Name</Typography>
                   </TableCell>
-                  <TableCell width="20%">
+                  <TableCell width="20%" id="orders-type-col">
                     <Typography fontWeight="bold">Device Type</Typography>
                   </TableCell>
-                  <TableCell width="15%">
+                  <TableCell width="15%" id="orders-price-col">
                     <Typography fontWeight="bold">Price</Typography>
                   </TableCell>
-                  <TableCell width="15%">
+                  <TableCell width="15%" id="orders-status-col">
                     <Typography fontWeight="bold">Status</Typography>
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
+              <TableBody id="orders-table-body">
                 {all_orders
                   .slice(0, no_of_expands * rows_per_page)
-                  .map((order) => {
+                  .map((order, index) => {
                     return (
                       <OrderRow
                         {...order}
@@ -284,6 +290,7 @@ const MainOrders = () => {
                         parent_client={clientData}
                         selected_client={client}
                         single_row={all_orders.length === 1}
+                        index={index}
                       />
                     );
                   })}

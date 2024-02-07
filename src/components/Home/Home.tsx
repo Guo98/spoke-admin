@@ -73,6 +73,7 @@ const Home = () => {
             }}
             variant="contained"
             onClick={login}
+            id="login-button"
           >
             Login
           </Button>

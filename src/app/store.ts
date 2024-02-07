@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import inventoryReducer from "./slices/inventorySlice";
 import ordersReducer from "./slices/ordersSlice";
 import approvalsReducer from "./slices/approvalsSlice";
@@ -44,11 +44,29 @@ const store = configureStore({
   },
 });
 
+const rootReducer = combineReducers({
+  inventory: inventoryReducer,
+  orders: ordersReducer,
+  client: clientSlice.reducer,
+  approvals: approvalsReducer,
+  market: marketReducer,
+  recipient: recipientReducer,
+});
+
+export const setupStore = (preloadedState?: Partial<RootState>) => {
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState,
+  });
+};
+
 export default store;
 
 export const { updateClient, updateSelectedClient, updateEntity, addRole } =
   clientSlice.actions;
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type RootReducerState = ReturnType<typeof rootReducer>;
 
 export type AppDispatch = typeof store.dispatch;
