@@ -25,13 +25,14 @@ const ExpandTable = (props: ExpandProps) => {
           <Button
             onClick={() => props.onExpandCollapse(true)}
             disabled={props.expands * props.rowsPerPage > props.count}
+            id="show-more"
           >
             <ExpandMoreIcon /> Show More
           </Button>
         </Tooltip>
       </Stack>
       <Stack direction="row" spacing={1} alignItems="center">
-        <Typography>
+        <Typography id="orders-count">
           1 -{" "}
           {props.expands * props.rowsPerPage > props.count
             ? props.count

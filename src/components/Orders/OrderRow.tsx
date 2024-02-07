@@ -26,6 +26,7 @@ interface OrderRowProps extends Order {
   selected_client: string;
   parent_client: string;
   single_row: boolean;
+  index: number;
 }
 
 const OrderRow = (props: OrderRowProps) => {
@@ -180,6 +181,7 @@ const OrderRow = (props: OrderRowProps) => {
               : "#F8F8F8"
             : "primary",
         }}
+        key={props.index}
       >
         <TableCell>
           <IconButton
@@ -227,7 +229,7 @@ const OrderRow = (props: OrderRowProps) => {
         </TableCell>
         <TableCell width="15%">{getStatus()}</TableCell>
       </TableRow>
-      <TableRow>
+      <TableRow id={"hidden-row-" + props.index}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ mx: 5, my: 1 }}>

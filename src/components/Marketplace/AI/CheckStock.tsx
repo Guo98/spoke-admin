@@ -212,7 +212,7 @@ const CheckStock = (props: CheckStockProps) => {
                     props.supplier,
                     cdw_part_no,
                     "buy",
-                    false
+                    true
                   )
                 }
               >
