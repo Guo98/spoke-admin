@@ -266,7 +266,7 @@ const Inventory: FC = (): ReactElement => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <h2>
+          <h2 id="inventory-header">
             Inventory{" "}
             <IconButton
               onClick={downloadInventory}
@@ -315,7 +315,7 @@ const Inventory: FC = (): ReactElement => {
                 {has_eol && <Tab label="End of Life" {...a11yProps(3)} />}
               </Tabs>
             </Box>
-            <Stack spacing={1} pt={1}>
+            <Stack spacing={1} pt={1} id="inventory-root-stack">
               {inventory_filter_msg !== "" && (
                 <Typography>{inventory_filter_msg}</Typography>
               )}

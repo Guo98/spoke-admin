@@ -156,7 +156,7 @@ const ConfirmationBox = (props: ConfirmationProps) => {
   };
 
   return (
-    <Stack spacing={2} pt={2}>
+    <Stack spacing={2} pt={2} id="assign-modal-recipient-form">
       {loading && <LinearLoading />}
       {success !== -1 && (
         <Alert severity={success === 0 ? "success" : "error"}>
@@ -171,7 +171,11 @@ const ConfirmationBox = (props: ConfirmationProps) => {
           <Typography display="inline" component="span" fontWeight="bold">
             Device:{" "}
           </Typography>
-          <Typography display="inline" component="span">
+          <Typography
+            display="inline"
+            component="span"
+            id="assign-recipient-form-device-name"
+          >
             {props.device_name}
           </Typography>
         </div>
@@ -181,7 +185,11 @@ const ConfirmationBox = (props: ConfirmationProps) => {
           <Typography display="inline" component="span" fontWeight="bold">
             Serial Number:{" "}
           </Typography>
-          <Typography display="inline" component="span">
+          <Typography
+            display="inline"
+            component="span"
+            id="assign-recipient-form-sn"
+          >
             {props.serial_number}
           </Typography>
         </div>
@@ -210,7 +218,7 @@ const ConfirmationBox = (props: ConfirmationProps) => {
         label="Note"
         onChange={(e) => setNote(e.target.value)}
       />
-      {props.returning && (
+      {/* {props.returning && (
         <>
           <Divider textAlign="left">Return Info:</Divider>
           <div>
@@ -246,7 +254,7 @@ const ConfirmationBox = (props: ConfirmationProps) => {
             </Typography>
           </div>
         </>
-      )}
+      )} */}
       <Button
         variant="contained"
         sx={button_style}

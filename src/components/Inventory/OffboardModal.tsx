@@ -52,10 +52,12 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: { xs: "85%", md: "50%" },
+  maxHeight: { xs: "75%" },
   bgcolor: "background.paper",
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
+  overflowY: "scroll",
 };
 
 const textFieldStyle = {
@@ -208,6 +210,7 @@ const OffboardModal = (props: OffboardProps) => {
           variant="contained"
           sx={{ height: "50%", width: "25%" }}
           onClick={() => setOpen(true)}
+          id="inventory-manage-return"
         >
           <Stack spacing={1} alignItems="center" p={2}>
             <KeyboardReturnIcon />
@@ -227,7 +230,7 @@ const OffboardModal = (props: OffboardProps) => {
         <Box sx={style}>
           {!loading && (
             <>
-              <Typography variant="h6" pb={2}>
+              <Typography variant="h6" pb={2} id="return-modal-header">
                 Return a Device
               </Typography>
               <Stack spacing={1}>
@@ -255,6 +258,7 @@ const OffboardModal = (props: OffboardProps) => {
                     label="Return Type"
                     onChange={handleTypeChange}
                     required
+                    id="return-modal-select-type"
                   >
                     <MenuItem value="Offboard">Offboarding</MenuItem>
                     <MenuItem value="Return">Returning</MenuItem>
@@ -312,6 +316,7 @@ const OffboardModal = (props: OffboardProps) => {
                     onChange={(text: string) => setFN(text)}
                     fullWidth
                     required
+                    id="return-modal-fn"
                   />
                   <TextField
                     label="Last Name"
@@ -319,6 +324,7 @@ const OffboardModal = (props: OffboardProps) => {
                     onChange={(text: string) => setLN(text)}
                     fullWidth
                     required
+                    id="return-modal-ln"
                   />
                 </Stack>
                 <Stack direction="row" spacing={2}>
@@ -342,6 +348,7 @@ const OffboardModal = (props: OffboardProps) => {
                     required
                     error={!valid_email}
                     helperText={!valid_email ? "Invalid email" : ""}
+                    id="return-modal-email"
                   />
                   <TextField
                     label="Phone Number"
@@ -419,6 +426,7 @@ const OffboardModal = (props: OffboardProps) => {
                   sx={{ borderRadius: "10px" }}
                   disabled={required_fields()}
                   onClick={submit_offboard}
+                  id="return-modal-submit"
                 >
                   Submit
                 </Button>

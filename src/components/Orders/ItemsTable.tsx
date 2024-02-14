@@ -78,35 +78,39 @@ const ItemsTable = (props: ITProps) => {
   };
 
   return (
-    <TableContainer component={Paper} sx={{ borderRadius: "7px" }}>
+    <TableContainer
+      component={Paper}
+      sx={{ borderRadius: "7px" }}
+      id="orders-items-table"
+    >
       <Table
         size="small"
         aria-label="items-table"
         sx={{ backgroundColor: isDarkTheme ? "#616E82" : "#F8F8F8" }}
       >
-        <TableHead>
+        <TableHead id="orders-items-table-head">
           <TableRow>
-            <TableCell width="30%">
+            <TableCell width="30%" id="orders-items-item-col">
               <Typography fontWeight="bold">Item Name</Typography>
             </TableCell>
-            <TableCell width="15%">
+            <TableCell width="15%" id="orders-items-sn-col">
               <Typography fontWeight="bold">Serial Number</Typography>
             </TableCell>
-            <TableCell width="10%">
+            <TableCell width="10%" id="orders-items-quantity-col">
               <Typography fontWeight="bold">Quantity</Typography>
             </TableCell>
-            <TableCell width="10%">
+            <TableCell width="10%" id="orders-items-price-col">
               <Typography fontWeight="bold">Price</Typography>
             </TableCell>
-            <TableCell width="20%">
+            <TableCell width="20%" id="orders-items-tracking-col">
               <Typography fontWeight="bold">Tracking #</Typography>
             </TableCell>
-            <TableCell width="15%">
+            <TableCell width="15%" id="orders-items-status-col">
               <Typography fontWeight="bold">Delivery Status</Typography>
             </TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody id="orders-items-table-body">
           {items.length > 0 &&
             items.map((item: any, index: number) => {
               const { name, price, quantity } = item;

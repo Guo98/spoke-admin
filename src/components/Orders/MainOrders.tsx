@@ -184,6 +184,7 @@ const MainOrders = () => {
   };
 
   const searchFilter = (search_term: string) => {
+    setTabIndex(0);
     if (search_term !== "") {
       dispatch(filterOrders(search_term));
     } else {

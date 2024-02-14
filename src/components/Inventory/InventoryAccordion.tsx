@@ -129,7 +129,11 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
             alt="laptop"
           />
           <Stack spacing={1} width="70%">
-            <Typography fontWeight="bold" fontSize="18px">
+            <Typography
+              fontWeight="bold"
+              fontSize="18px"
+              id={"inventory-summary-name-" + index}
+            >
               {(props.new_device ? "[Requested] " : "") + name}
             </Typography>
             {!props.new_device && (
@@ -142,7 +146,12 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 >
                   Screen Size:{" "}
                 </Typography>
-                <Typography display="inline" component="span" fontSize="14px">
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontSize="14px"
+                  id={"inventory-summary-screen-" + index}
+                >
                   {screen_size}
                 </Typography>
               </div>
@@ -157,7 +166,12 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 >
                   CPU:{" "}
                 </Typography>
-                <Typography display="inline" component="span" fontSize="14px">
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontSize="14px"
+                  id={"inventory-summary-cpu-" + index}
+                >
                   {cpu}
                 </Typography>
               </div>
@@ -172,7 +186,12 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 >
                   RAM:{" "}
                 </Typography>
-                <Typography display="inline" component="span" fontSize="14px">
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontSize="14px"
+                  id={"inventory-summary-ram-" + index}
+                >
                   {ram}
                 </Typography>
               </div>
@@ -187,14 +206,21 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 >
                   SSD:{" "}
                 </Typography>
-                <Typography display="inline" component="span" fontSize="14px">
+                <Typography
+                  display="inline"
+                  component="span"
+                  fontSize="14px"
+                  id={"inventory-summary-ssd-" + index}
+                >
                   {hard_drive}
                 </Typography>
               </div>
             )}
           </Stack>
           <Stack spacing={2} justifyContent="space-evenly" width="12%">
-            <Typography>{location}</Typography>
+            <Typography id={"inventory-summary-location-" + index}>
+              {location}
+            </Typography>
             <Chip
               label={
                 props.total_devices === 0
@@ -220,6 +246,7 @@ const InventoryAccordion = (props: InventoryAccordionProps) => {
                 marginTop: { md: "20px" },
                 marginLeft: { md: "0px", xs: "15px" },
               }}
+              id={"inventory-summary-stock-" + index}
             />
             {tabValue === 0 && props.total_devices === 0 && (
               <Button variant="contained" size="small" onClick={market_info}>

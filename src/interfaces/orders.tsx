@@ -45,6 +45,7 @@ export interface Item {
   laptop_name?: string;
   spoke_fee?: number;
   shipment_id?: string;
+  date_reminder_sent?: string;
 }
 
 interface Variant {

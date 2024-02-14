@@ -211,6 +211,7 @@ const AssignModal = (props: AssignProps) => {
           variant="contained"
           sx={{ height: "50%", width: "25%" }}
           onClick={handleOpen}
+          id="inventory-manage-assign"
         >
           <Stack spacing={1} alignItems="center" p={2}>
             <LocalShippingIcon />
@@ -224,7 +225,7 @@ const AssignModal = (props: AssignProps) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={style} id="assign-modal">
           <Stack direction="row" alignItems="center" spacing={1}>
             {active_step !== 0 && (
               <IconButton
@@ -239,6 +240,7 @@ const AssignModal = (props: AssignProps) => {
                     setActiveStep(active_step - 1);
                   }
                 }}
+                id="assign-modal-back"
               >
                 <ArrowBackIcon />
               </IconButton>
@@ -251,20 +253,12 @@ const AssignModal = (props: AssignProps) => {
             >
               New Deployment
             </Typography>
-            {/* <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={handleChecked}
-                      checked={return_device}
-                    />
-                  }
-                  label="Include Equipment Return Box"
-                /> */}
           </Stack>
           <Stepper
             activeStep={active_step}
             sx={{ paddingTop: "10px" }}
             connector={<ColorConnector />}
+            id="assign-stepper"
           >
             <Step key="Device" completed={step_1}>
               <StepLabel StepIconComponent={ColorStepIcon}>
@@ -294,7 +288,11 @@ const AssignModal = (props: AssignProps) => {
                   >
                     Device:{" "}
                   </Typography>
-                  <Typography display="inline" component="span">
+                  <Typography
+                    display="inline"
+                    component="span"
+                    id="assign-modal-device-name"
+                  >
                     {device_name}
                   </Typography>
                 </div>
@@ -308,7 +306,11 @@ const AssignModal = (props: AssignProps) => {
                   >
                     Serial Number:{" "}
                   </Typography>
-                  <Typography display="inline" component="span">
+                  <Typography
+                    display="inline"
+                    component="span"
+                    id="assign-modal-sn"
+                  >
                     {serial_number}
                   </Typography>
                 </div>
@@ -320,13 +322,14 @@ const AssignModal = (props: AssignProps) => {
                     sx={textFieldStyle}
                     required
                     size="small"
+                    id="manage-assign-dropdown"
                   >
-                    <InputLabel id="demo-simple-select-label">
+                    <InputLabel id="manage-select-device-label">
                       Device to Deploy
                     </InputLabel>
                     <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
+                      labelId="manage-select-device"
+                      id="manage-select-device"
                       label="Device to Deploy"
                       onChange={handleDeviceChange}
                       value={selectedDevice}
@@ -357,7 +360,7 @@ const AssignModal = (props: AssignProps) => {
                   </FormControl>
                 </div>
               )}
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} id="assign-modal-buttons-row">
                 <Button
                   variant="contained"
                   fullWidth

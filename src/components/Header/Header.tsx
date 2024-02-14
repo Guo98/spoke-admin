@@ -48,7 +48,7 @@ const Header = (props: HeaderProps): ReactElement => {
           sx={{ width: "80%" }}
         >
           <InputLabel
-            htmlFor="outlined-adornment-password"
+            htmlFor="search-bar"
             sx={{
               paddingLeft: "15px",
             }}
@@ -57,7 +57,7 @@ const Header = (props: HeaderProps): ReactElement => {
             {label}
           </InputLabel>
           <FilledInput
-            id="outlined-adornment-password"
+            id="search-bar"
             sx={{
               ":before": {
                 borderBottom: "0px",
@@ -74,6 +74,7 @@ const Header = (props: HeaderProps): ReactElement => {
             endAdornment={
               <InputAdornment position="end" sx={{ paddingRight: "25px" }}>
                 <IconButton
+                  id={!clear ? "search-button" : "clear-button"}
                   aria-label={label}
                   onClick={() => {
                     if (clear) {
