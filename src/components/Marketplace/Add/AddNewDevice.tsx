@@ -78,6 +78,7 @@ const AddNewDevice = (props: AddProps) => {
         variant="contained"
         sx={{ alignItems: "center", borderRadius: "20px" }}
         onClick={() => setOpen(true)}
+        id="marketplace-add-new"
       >
         <Stack direction="row" spacing={1} alignItems="center">
           <Add />
@@ -87,11 +88,15 @@ const AddNewDevice = (props: AddProps) => {
         </Stack>
       </Button>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={box_style}>
+        <Box sx={box_style} id="add-new-device-box">
           {loading && <LinearLoading />}
           {!loading && page === 0 && (
             <Stack spacing={2}>
-              <Typography component="h4" variant="h5">
+              <Typography
+                component="h4"
+                variant="h5"
+                id="add-new-device-header"
+              >
                 Add New Standard Device
               </Typography>
               <Divider />
@@ -114,6 +119,7 @@ const AddNewDevice = (props: AddProps) => {
                     ? "Only CDW and Insight links supported right now."
                     : ""
                 }
+                id="supplier-text-input"
               />
               <Divider />
               <Button
@@ -121,6 +127,7 @@ const AddNewDevice = (props: AddProps) => {
                 sx={{ borderRadius: "20px", textTransform: "none" }}
                 onClick={get_specs}
                 disabled={invalid_supplier || supplier_url === ""}
+                id="add-new-device-next-button"
               >
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Typography>Next</Typography>

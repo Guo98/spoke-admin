@@ -8,6 +8,7 @@ import {
   TextField,
   Button,
   Autocomplete,
+  Stack,
 } from "@mui/material";
 
 import CheckStock from "../AI/CheckStock";
@@ -183,7 +184,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
   };
 
   return (
-    <>
+    <Stack id="marketplace-purchase-device-selection-stack">
       {item_type.toLowerCase() !== "accessories" && (
         <>
           {brand !== "Others" && (
@@ -304,7 +305,11 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                   types[typeIndex].colors?.map((c: string) => {
                     return <MenuItem value={c}>{c}</MenuItem>;
                   })}
-                <MenuItem value="Default">Default</MenuItem>
+                {props.device_name !== "" &&
+                  typeIndex !== -1 &&
+                  !types[typeIndex].colors && (
+                    <MenuItem value="Default">Default</MenuItem>
+                  )}
               </Select>
             </FormControl>
           )}
@@ -418,13 +423,14 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                   supplier
                 )
               }
+              id="marketplace-purchase-modal-request-quote"
             >
               Request Quote
             </Button>
           )}
         </>
       )}
-    </>
+    </Stack>
   );
 };
 

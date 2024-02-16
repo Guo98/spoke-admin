@@ -302,6 +302,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
         onClick={() => {
           nextStep(include_items);
         }}
+        id="accessories-continue"
       >
         Continue
       </Button>

@@ -44,12 +44,17 @@ function loginViaAuth0Ui(username, password) {
         { args: { username, password } },
         ({ username, password }) => {
           // check if url is equal to localhost
-          if ($body.find("#organizationName").length > 0) {
-            cy.get("#organizationName").type("withspoke{Enter}");
-            cy.get("input#username").type(username + "{Enter}");
-            cy.get("input#password").type(password, { log: false });
-            cy.contains("button[value=default]", "Continue").click();
-          }
+
+          cy.get("#organizationName")
+            .should("exist")
+            .then(($el) => {
+              if ($el) {
+                cy.get("#organizationName").type("withspoke{Enter}");
+                cy.get("input#username").type(username + "{Enter}");
+                cy.get("input#password").type(password, { log: false });
+                cy.contains("button[value=default]", "Continue").click();
+              }
+            });
         }
       );
     }

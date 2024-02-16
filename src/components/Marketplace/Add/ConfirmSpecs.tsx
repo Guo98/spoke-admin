@@ -105,7 +105,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
   return (
     <>
       {!loading ? (
-        <Stack spacing={2}>
+        <Stack spacing={2} id="confirm-specs-stack">
           <Stack direction="row" spacing={2} alignItems="center">
             <IconButton onClick={() => back(0)}>
               <ArrowBackIcon />
@@ -122,16 +122,24 @@ const ConfirmSpecs = (props: ConfirmProps) => {
                 : "Error in adding to marketplace."}
             </Alert>
           )}
-          <Stack spacing={1}>
-            <Typography>Product Name: {specs.name}</Typography>
+          <Stack spacing={1} id="confirm-specs-details-stack">
+            <Typography id="confirm-specs-product-name">
+              Product Name: {specs.name}
+            </Typography>
             {specs.supplier && (
-              <Typography>Supplier: {specs.supplier}</Typography>
+              <Typography id="confirm-specs-supplier">
+                Supplier: {specs.supplier}
+              </Typography>
             )}
             {specs.stock_level && (
-              <Typography>Stock Level: {specs.stock_level}</Typography>
+              <Typography id="confirm-specs-stock-level">
+                Stock Level: {specs.stock_level}
+              </Typography>
             )}
             {specs.price && (
-              <Typography>Estimated Price: {specs.price}</Typography>
+              <Typography id="confirm-specs-est-price">
+                Estimated Price: {specs.price}
+              </Typography>
             )}
             {specs.image_source && (
               <Stack direction="row" justifyContent="space-evenly">
@@ -150,9 +158,11 @@ const ConfirmSpecs = (props: ConfirmProps) => {
             size="small"
             sx={textfield_style}
             onChange={(e) => setDeviceName(e.target.value)}
+            id="confirm-specs-text-product-name"
           />
-          {specs.device_type === "laptops" && (
-            <>
+          {(specs.device_type === "laptops" ||
+            specs.device_type === "desktops") && (
+            <Stack spacing={2} id="confirm-specs-device-details-stack">
               <Stack direction="row" spacing={2}>
                 <TextField
                   size="small"
@@ -161,6 +171,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
                   fullWidth
                   value={screen_size}
                   onChange={(e) => setScreenSize(e.target.value)}
+                  id="confirm-specs-text-screen"
                 />
                 <TextField
                   size="small"
@@ -169,6 +180,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
                   fullWidth
                   value={cpu}
                   onChange={(e) => setCPU(e.target.value)}
+                  id="confirm-specs-text-cpu"
                 />
               </Stack>
               <Stack direction="row" spacing={2}>
@@ -179,6 +191,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
                   fullWidth
                   value={ram}
                   onChange={(e) => setRAM(e.target.value)}
+                  id="confirm-specs-text-ram"
                 />
                 <TextField
                   size="small"
@@ -187,6 +200,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
                   fullWidth
                   value={ssd}
                   onChange={(e) => setSSD(e.target.value)}
+                  id="confirm-specs-text-ssd"
                 />
               </Stack>
               <TextField
@@ -195,8 +209,9 @@ const ConfirmSpecs = (props: ConfirmProps) => {
                 size="small"
                 sx={textfield_style}
                 onChange={(e) => setColor(e.target.value)}
+                id="confirm-specs-text-color"
               />
-            </>
+            </Stack>
           )}
           <TextField
             label="Location"
@@ -204,6 +219,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
             size="small"
             sx={textfield_style}
             onChange={(e) => setLocation(e.target.value)}
+            id="confirm-specs-text-location"
           />
           <Divider />
           <Button
@@ -211,6 +227,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
             sx={button_style}
             onClick={add_device}
             disabled={loading || success === 0}
+            id="confirm-specs-add-button"
           >
             {loading ? <LinearLoading /> : "Add to Marketplace"}
           </Button>

@@ -112,7 +112,7 @@ describe("Inventory Page", { testIsolation: false }, () => {
     const asc_sorted_serials = in_stock_serials.sort((a, b) =>
       a.sn > b.sn ? 1 : b.sn > a.sn ? -1 : 0
     );
-    console.log("in stock serials :::::::::::: ", asc_sorted_serials);
+
     asc_sorted_serials.forEach((serial, index) => {
       cy.get("#in-stock-devices-table-body")
         .find("tr")

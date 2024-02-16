@@ -129,8 +129,14 @@ const RecipientForm = (props: RecipientProps) => {
     }
   }, [clear_deployment]);
 
+  // useEffect(() => {
+  //   console.log("checked ::::::::::::::: ", checked);
+  // }, [checked]);
+
   const handleDeploymentChange = (event: SelectChangeEvent) => {
     setDeploymentType(event.target.value);
+
+    setChecked(false);
   };
 
   const handleChecked = (event: ChangeEvent<HTMLInputElement>) => {
@@ -401,7 +407,7 @@ const RecipientForm = (props: RecipientProps) => {
             <Typography>Order from CDW immediately</Typography>
           )}
           {deployment_type === "Buy and Hold" && (
-            <>
+            <Stack spacing={2} id="marketplace-modal-bh-stack">
               <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
                 Buy and Hold Details
               </Divider>
@@ -414,6 +420,7 @@ const RecipientForm = (props: RecipientProps) => {
                 onChange={(e) => setQuantity(parseInt(e.target.value))}
                 required
                 type="number"
+                id="bh-quantity"
               />
               <TextField
                 label="Notes"
@@ -422,8 +429,9 @@ const RecipientForm = (props: RecipientProps) => {
                 fullWidth
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                id="bh-notes"
               />
-            </>
+            </Stack>
           )}
           {(item_type === "Accessories" ||
             deployment_type === "Drop Ship" ||
@@ -442,7 +450,15 @@ const RecipientForm = (props: RecipientProps) => {
           )}
           <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
           <FormControlLabel
-            control={<Checkbox required onChange={handleChecked} />}
+            control={
+              <Checkbox
+                id="marketplace-modal-checkbox"
+                required
+                onChange={handleChecked}
+                checked={checked}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
             label={
               <div>
                 {request_type === "buy"
@@ -456,6 +472,7 @@ const RecipientForm = (props: RecipientProps) => {
             sx={button_style}
             disabled={fieldsFilled()}
             onClick={sendMarketplaceRequest}
+            id="marketplace-modal-request-button"
           >
             {request_type === "buy" ? "Buy Now" : "Request Quote"}
           </Button>

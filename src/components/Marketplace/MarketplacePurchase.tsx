@@ -371,7 +371,7 @@ const MarketplacePurchase = (props: MPProps) => {
 
   return (
     <Modal onClose={close_module} open={open} sx={{ overflow: "hidden" }}>
-      <Box sx={style}>
+      <Box sx={style} id="marketplace-purchase-modal">
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="row" spacing={2} alignItems="center">
             {((activeStep !== 0 && item_type !== "Accessories") ||
@@ -382,7 +382,11 @@ const MarketplacePurchase = (props: MPProps) => {
                 </IconButton>
               </Tooltip>
             )}
-            <Typography variant="h5" fontWeight="bold">
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              id="marketplace-purchase-modal-header"
+            >
               {"New Purchase" +
                 (!props.specific_device
                   ? item_type !== "Accessories"
@@ -399,6 +403,7 @@ const MarketplacePurchase = (props: MPProps) => {
                     !can_bookmark || props.bookmark || already_bookmarked
                   }
                   onClick={bookmarkDevice}
+                  id="bookmark-button"
                 >
                   {props.bookmark || already_bookmarked ? (
                     <BookmarkIcon />
@@ -410,7 +415,11 @@ const MarketplacePurchase = (props: MPProps) => {
             )}
             {activeStep === 0 && (
               <Tooltip title="Delete Spec">
-                <IconButton disabled={!can_delete} onClick={deleteSpec}>
+                <IconButton
+                  disabled={!can_delete}
+                  onClick={deleteSpec}
+                  id="delete-specs-button"
+                >
                   <DeleteForeverIcon />
                 </IconButton>
               </Tooltip>
@@ -428,7 +437,7 @@ const MarketplacePurchase = (props: MPProps) => {
               </Tooltip>
             )}
             <Tooltip title="Clear All">
-              <IconButton onClick={clearAll}>
+              <IconButton onClick={clearAll} id="clear-button">
                 <ClearAllIcon />
               </IconButton>
             </Tooltip>

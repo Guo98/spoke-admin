@@ -21,6 +21,7 @@ const ProductCard = (props: ProductProps) => {
         boxShadow: "3px 3px 3px gray",
       }}
       onClick={() => cardAction(label, index)}
+      id={label + "-card"}
     >
       <CardMedia
         image={imgSrc}

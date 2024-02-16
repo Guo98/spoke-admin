@@ -11,9 +11,12 @@ import {
   useTheme,
   Divider,
   Button,
+  LinearProgress,
+  CircularProgress,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import ItemsTable from "./ItemsTable";
 import OperationsManage from "./OperationsManage";
@@ -21,6 +24,8 @@ import OrderLaptop from "./OrderLaptop";
 import DeleteModal from "../Operations/DeleteModal";
 
 import { Order } from "../../interfaces/orders";
+
+import { standardPost } from "../../services/standard";
 
 interface OrderRowProps extends Order {
   selected_tab: number;
@@ -33,10 +38,15 @@ interface OrderRowProps extends Order {
 const OrderRow = (props: OrderRowProps) => {
   const { selected_tab, client, full_name, single_row } = props;
 
+  const { user, getAccessTokenSilently } = useAuth0();
+
   const [open, setOpen] = useState(false);
   const [order_price, setOrderPrice] = useState("");
   const [returned_laptop, setReturnedLaptop] = useState("");
   const [deployed_laptop, setDeployedLaptop] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [email_sent, setEmailSent] = useState(-1);
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -131,8 +141,8 @@ const OrderRow = (props: OrderRowProps) => {
             setReturnedLaptop(i.name);
           }
         } else if (i.name.includes("Return Box")) {
-          if (i.date_reminder_sent) {
-            setReturnedLaptop("Missing Returned Device");
+          if (i.date_reminder_sent && !i.delivery_status) {
+            setReturnedLaptop("Unreturned Device");
           }
         }
       });
@@ -175,6 +185,31 @@ const OrderRow = (props: OrderRowProps) => {
     return false;
   };
 
+  const send_reminder_email = async () => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+    const email_body = {
+      client,
+      name: full_name,
+      email: props.email,
+      address: props.address.formatted,
+      requestor_email: user?.email,
+    };
+    const email_resp = await standardPost(
+      access_token,
+      "sendemail/manualreminder",
+      email_body
+    );
+
+    if (email_resp.status === "Successful") {
+      setEmailSent(0);
+    } else {
+      setEmailSent(1);
+    }
+
+    setLoading(false);
+  };
+
   return props.items ? (
     <>
       <TableRow
@@ -215,7 +250,7 @@ const OrderRow = (props: OrderRowProps) => {
               color={
                 returned_laptop !== "Offboarding" &&
                 returned_laptop !== "Returning"
-                  ? returned_laptop.includes("Missing")
+                  ? returned_laptop.includes("Unreturned")
                     ? "red"
                     : "#AEDD6B"
                   : ""
@@ -314,7 +349,7 @@ const OrderRow = (props: OrderRowProps) => {
                   <Stack
                     direction="row"
                     justifyContent="space-between"
-                    alignContent="center"
+                    alignItems="center"
                   >
                     <div>
                       <Typography
@@ -328,7 +363,24 @@ const OrderRow = (props: OrderRowProps) => {
                         {" " + props.items[1].date_reminder_sent}
                       </Typography>
                     </div>
-                    <Button>Send Reminder Email</Button>
+                    <Button
+                      onClick={send_reminder_email}
+                      disabled={loading || email_sent > -1}
+                    >
+                      {loading ? (
+                        <CircularProgress />
+                      ) : email_sent > -1 ? (
+                        email_sent === 0 ? (
+                          "Email Sent!"
+                        ) : email_sent === 1 ? (
+                          "Error sending email..."
+                        ) : (
+                          "Not Possible"
+                        )
+                      ) : (
+                        "Send Reminder Email"
+                      )}
+                    </Button>
                   </Stack>
                 )}
                 {props.parent_client === "spokeops" && has_yubikey() && (
