@@ -95,6 +95,8 @@ const MainOrders = () => {
     if (searchParams.get("sn")) {
       setSearchSerial(searchParams.get("sn")!);
     } else if (searchParams.get("code")) {
+      console.log("code >>>>>>>>>>>>>>>> ", searchParams.get("code"));
+      authorizeSlack(searchParams.get("code")!).catch();
     } else {
       setSearchSerial("");
       searchFilter("");
