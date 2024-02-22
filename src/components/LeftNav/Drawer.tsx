@@ -36,6 +36,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ApprovalIcon from "@mui/icons-material/Approval";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SignpostIcon from "@mui/icons-material/Signpost";
+import Slack from "../common/icons/Slack";
 // import { useLocation } from "react-router-dom";
 import ManageOrder from "../Orders/ManageOrder";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -65,6 +66,7 @@ interface IconMapping {
   Approvals: JSX.Element;
   Invite: JSX.Element;
   Roadmap: JSX.Element;
+  "Add to Slack": JSX.Element;
 }
 
 const iconMapping: IconMapping = {
@@ -83,6 +85,7 @@ const iconMapping: IconMapping = {
   Approvals: <ApprovalIcon />,
   Invite: <PersonAddIcon />,
   Roadmap: <SignpostIcon />,
+  "Add to Slack": <Slack />,
 };
 
 interface DrawerProps {
@@ -176,7 +179,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
           </ListItem>
         ))}
         <div className="bottomPush">
-          <a
+          {/* <a
             href="https://slack.com/oauth/v2/authorize?scope=commands%2Cusers%3Aread%2Cusers%3Aread.email%2Cchat%3Awrite%2Cchannels%3Aread%2Capp_mentions%3Aread&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fspoke-admin-dev.azurewebsites.net%2F&amp;client_id=2122873212368.5093004197398"
             style={{
               alignItems: "center",
@@ -217,7 +220,13 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
               ></path>
             </svg>
             Add to Slack
-          </a>
+          </a> */}
+          <ListItem>
+            <ListItemButton href="https://slack.com/oauth/v2/authorize?scope=commands%2Cusers%3Aread%2Cusers%3Aread.email%2Cchat%3Awrite%2Cchannels%3Aread%2Capp_mentions%3Aread&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fspoke-admin-dev.azurewebsites.net%2F&amp;client_id=2122873212368.5093004197398">
+              <ListItemIcon>{iconMapping["Add to Slack"]}</ListItemIcon>
+              <ListItemText primary={"Add to Slack"} />
+            </ListItemButton>
+          </ListItem>
           {["Support", "Roadmap", "Logout"].map((text) => (
             <ListItem
               key={text}
