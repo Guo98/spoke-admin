@@ -147,6 +147,12 @@ const AssignModal = (props: AssignProps) => {
     }
   }, [active_step]);
 
+  useEffect(() => {
+    if (device_name) {
+      setAssignDeviceName(device_name);
+    }
+  }, [device_name]);
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -155,6 +161,8 @@ const AssignModal = (props: AssignProps) => {
     setOpen(false);
     setSD("");
     setError("");
+    // setAssignDeviceLoc("");
+    // setAssignDeviceName("");
     setCountryErr("");
     setReturnDevice(false);
     setSuccess(-1);

@@ -22,7 +22,7 @@ import { Buffer } from "buffer";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams, useLocation } from "react-router-dom";
 
-import { standardGet } from "../../services/standard";
+import { standardGet, standardPost } from "../../services/standard";
 import { RootState } from "../../app/store";
 import { roleMapping } from "../../utilities/mappings";
 import {
@@ -94,6 +94,7 @@ const MainOrders = () => {
   useEffect(() => {
     if (searchParams.get("sn")) {
       setSearchSerial(searchParams.get("sn")!);
+    } else if (searchParams.get("code")) {
     } else {
       setSearchSerial("");
       searchFilter("");
@@ -145,6 +146,16 @@ const MainOrders = () => {
     } else if (no_of_expands !== 1) {
       setNoExpands(no_of_expands - 1);
     }
+  };
+
+  const authorizeSlack = async (auth_code: string) => {
+    const access_token = await getAccessTokenSilently();
+
+    const slack_resp = await standardPost(access_token, "slack/authorize", {
+      code: auth_code,
+    });
+
+    console.log("slack respo ::::::::::: ", slack_resp);
   };
 
   const getOrders = async () => {
