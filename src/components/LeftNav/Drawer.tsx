@@ -222,7 +222,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             Add to Slack
           </a> */}
           <ListItem>
-            <ListItemButton href="https://slack.com/oauth/v2/authorize?scope=commands%2Cusers%3Aread%2Cusers%3Aread.email%2Cchat%3Awrite%2Cchannels%3Aread%2Capp_mentions%3Aread&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fspoke-admin-dev.azurewebsites.net%2F&amp;client_id=2122873212368.5093004197398">
+            <ListItemButton href="https://slack.com/oauth/v2/authorize?scope=commands%2Cusers%3Aread%2Cusers%3Aread.email%2Cchat%3Awrite%2Cchannels%3Aread%2Capp_mentions%3Aread&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fspoke-admin-dev.azurewebsites.net%2Fslack%2Fredirect&amp;client_id=2122873212368.5093004197398">
               <ListItemIcon>{iconMapping["Add to Slack"]}</ListItemIcon>
               <ListItemText primary={"Add to Slack"} />
             </ListItemButton>
