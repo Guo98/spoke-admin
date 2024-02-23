@@ -154,8 +154,11 @@ const MainOrders = () => {
   };
 
   const authorizeSlack = async (auth_code: string) => {
-    console.log("auth code ::::::::::: ", auth_code);
-    if (auth_code && auth_code !== "") {
+    if (
+      auth_code &&
+      auth_code !== "" &&
+      location.pathname.includes("/slack/redirect")
+    ) {
       setSlackLoading(true);
       const access_token = await getAccessTokenSilently();
 

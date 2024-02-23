@@ -77,6 +77,22 @@ const AppContainer = createBrowserRouter([
     ),
   },
   {
+    path: "/slack/redirect",
+    element: (
+      <>
+        <Box
+          component="nav"
+          sx={{ width: { sm: "20%" }, flexShrink: { sm: 0 } }}
+        >
+          <SpokeDrawer />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, paddingBottom: "125px" }}>
+          <MainOrders />
+        </Box>
+      </>
+    ),
+  },
+  {
     path: "/inventory",
     element: (
       <>
