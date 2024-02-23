@@ -14,6 +14,7 @@ import {
   Chip,
   Tabs,
   Tab,
+  Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -76,6 +77,9 @@ const MainOrders = () => {
   const [rows_per_page, setRowsPerPage] = useState(25);
   const [no_of_expands, setNoExpands] = useState(1);
 
+  const [slack_loading, setSlackLoading] = useState(false);
+  const [slack_status, setSlackStatus] = useState(-1);
+
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
@@ -95,7 +99,6 @@ const MainOrders = () => {
     if (searchParams.get("sn")) {
       setSearchSerial(searchParams.get("sn")!);
     } else if (searchParams.get("code")) {
-      console.log("code >>>>>>>>>>>>>>>> ", searchParams.get("code"));
       authorizeSlack(searchParams.get("code")!).catch();
     } else {
       setSearchSerial("");
@@ -151,13 +154,19 @@ const MainOrders = () => {
   };
 
   const authorizeSlack = async (auth_code: string) => {
+    setSlackLoading(true);
     const access_token = await getAccessTokenSilently();
 
     const slack_resp = await standardPost(access_token, "slack/authorize", {
       code: auth_code,
     });
 
-    console.log("slack respo ::::::::::: ", slack_resp);
+    if (slack_resp.status === "Successful") {
+      setSlackStatus(0);
+    } else {
+      setSlackStatus(1);
+    }
+    setSlackLoading(false);
   };
 
   const getOrders = async () => {
@@ -250,6 +259,17 @@ const MainOrders = () => {
           </Stack>
         </Stack>
         {loading && <LinearLoading />}
+        {slack_loading && <Alert severity="info">Adding...</Alert>}
+        {!slack_loading && slack_status === 0 && (
+          <Alert severity="success">
+            Successfully added slack bot to your workspace!
+          </Alert>
+        )}
+        {!slack_loading && slack_status === 1 && (
+          <Alert severity="error">
+            Error in adding slack bot to your workspace...
+          </Alert>
+        )}
       </Stack>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
