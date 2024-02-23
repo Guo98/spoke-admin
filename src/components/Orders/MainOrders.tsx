@@ -168,6 +168,7 @@ const MainOrders = () => {
         setSlackStatus(1);
       }
       searchParams.delete("code");
+      searchParams.delete("state");
       setSearchParams(searchParams);
       setSlackLoading(false);
     }
