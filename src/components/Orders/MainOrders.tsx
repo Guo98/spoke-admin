@@ -154,19 +154,23 @@ const MainOrders = () => {
   };
 
   const authorizeSlack = async (auth_code: string) => {
-    setSlackLoading(true);
-    const access_token = await getAccessTokenSilently();
+    if (auth_code && auth_code !== "") {
+      setSlackLoading(true);
+      const access_token = await getAccessTokenSilently();
 
-    const slack_resp = await standardPost(access_token, "slack/authorize", {
-      code: auth_code,
-    });
+      const slack_resp = await standardPost(access_token, "slack/authorize", {
+        code: auth_code,
+      });
 
-    if (slack_resp.status === "Successful") {
-      setSlackStatus(0);
-    } else {
-      setSlackStatus(1);
+      if (slack_resp.status === "Successful") {
+        setSlackStatus(0);
+      } else {
+        setSlackStatus(1);
+      }
+      searchParams.delete("code");
+      setSearchParams(searchParams);
+      setSlackLoading(false);
     }
-    setSlackLoading(false);
   };
 
   const getOrders = async () => {
