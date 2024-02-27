@@ -20,6 +20,7 @@ import {
   SelectChangeEvent,
   Divider,
   Stack,
+  Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
@@ -36,6 +37,7 @@ import { RootState } from "../../app/store";
 import { Order } from "../../interfaces/orders";
 
 import { button_style } from "../../utilities/styles";
+import LinearLoading from "../common/LinearLoading";
 
 const style = {
   position: "absolute" as "absolute",
@@ -75,6 +77,8 @@ const OperationsManage = (props: OperationsOrder) => {
   const [changed_items, setItems] = useState(items);
 
   const [inv_update, setInvUpdate] = useState(-1);
+
+  const [aftership_status, setAftershipStatus] = useState(1);
 
   useEffect(() => {
     const laptopFilter = items.findIndex(
@@ -277,6 +281,11 @@ const OperationsManage = (props: OperationsOrder) => {
       body
     );
 
+    if (post_resp.status === "Successful") {
+      setAftershipStatus(0);
+    } else {
+      setAftershipStatus(-1);
+    }
     setLoading(false);
   };
 
@@ -297,6 +306,13 @@ const OperationsManage = (props: OperationsOrder) => {
             <Typography component="h4" textAlign="center">
               Manage Order
             </Typography>
+            {loading && <LinearLoading />}
+            {aftership_status === 0 && (
+              <Alert>Aftership email successfully created!</Alert>
+            )}
+            {aftership_status === -1 && (
+              <Alert severity="error">Error in creating aftership email.</Alert>
+            )}
             <TableContainer
               component={Paper}
               sx={{ borderRadius: "10px", mt: 2 }}
