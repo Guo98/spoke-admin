@@ -164,7 +164,7 @@ const MainOrders = () => {
 
       const slack_resp = await standardPost(access_token, "slack/authorize", {
         code: auth_code,
-        client,
+        client: clientData === "spokeops" ? selectedClientData : clientData,
       });
 
       if (slack_resp.status === "Successful") {
