@@ -164,10 +164,13 @@ const MainOrders = () => {
 
       const slack_resp = await standardPost(access_token, "slack/authorize", {
         code: auth_code,
+        client,
       });
 
       if (slack_resp.status === "Successful") {
         setSlackStatus(0);
+      } else if (slack_resp.status === "Already exists") {
+        setSlackStatus(2);
       } else {
         setSlackStatus(1);
       }
@@ -278,6 +281,9 @@ const MainOrders = () => {
           <Alert severity="error">
             Error in adding slack bot to your workspace...
           </Alert>
+        )}
+        {!slack_loading && slack_status === 2 && (
+          <Alert severity="info">Already added to your workspace.</Alert>
         )}
       </Stack>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
