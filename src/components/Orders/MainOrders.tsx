@@ -79,6 +79,7 @@ const MainOrders = () => {
 
   const [slack_loading, setSlackLoading] = useState(false);
   const [slack_status, setSlackStatus] = useState(-1);
+  const [slack_code, setSlackCode] = useState("");
 
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
@@ -99,7 +100,8 @@ const MainOrders = () => {
     if (searchParams.get("sn")) {
       setSearchSerial(searchParams.get("sn")!);
     } else if (searchParams.get("code")) {
-      authorizeSlack(searchParams.get("code")!).catch();
+      // authorizeSlack(searchParams.get("code")!).catch();
+      setSlackCode(searchParams.get("code")!);
     } else {
       setSearchSerial("");
       searchFilter("");
@@ -118,6 +120,10 @@ const MainOrders = () => {
   useEffect(() => {
     if (client !== "" && search_serial === "") {
       getOrders().catch();
+    }
+
+    if (client !== "" && slack_code !== "") {
+      authorizeSlack().catch();
     }
   }, [client]);
 
@@ -153,18 +159,14 @@ const MainOrders = () => {
     }
   };
 
-  const authorizeSlack = async (auth_code: string) => {
-    if (
-      auth_code &&
-      auth_code !== "" &&
-      location.pathname.includes("/slack/redirect")
-    ) {
+  const authorizeSlack = async () => {
+    if (location.pathname.includes("/slack/redirect")) {
       setSlackLoading(true);
       const access_token = await getAccessTokenSilently();
 
       const slack_resp = await standardPost(access_token, "slack/authorize", {
-        code: auth_code,
-        client: clientData === "spokeops" ? selectedClientData : clientData,
+        code: slack_code,
+        client,
       });
 
       if (slack_resp.status === "Successful") {
@@ -176,6 +178,7 @@ const MainOrders = () => {
       }
       searchParams.delete("code");
       searchParams.delete("state");
+      setSlackCode("");
       setSearchParams(searchParams);
       setSlackLoading(false);
     }
