@@ -153,6 +153,7 @@ const Inventory: FC = (): ReactElement => {
   useEffect(() => {
     if (is_filtered) {
       setUIInventory(filtered_inventory);
+      sort_inventory();
       if (search_serial !== "") {
         if (filtered_inventory.length === 0) {
           missing_mapping().catch();

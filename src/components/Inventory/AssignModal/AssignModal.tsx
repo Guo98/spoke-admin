@@ -161,12 +161,13 @@ const AssignModal = (props: AssignProps) => {
     setOpen(false);
     setSD("");
     setError("");
-    // setAssignDeviceLoc("");
-    // setAssignDeviceName("");
+    //setAssignDeviceLoc("");
+    //setAssignDeviceName("");
     setCountryErr("");
     setReturnDevice(false);
     setSuccess(-1);
     dispatch(resetInfo());
+    setActiveStep(0);
     if (active_step === 2) {
       const access_token = await getAccessTokenSilently();
       const inventoryResult = await standardGet(
