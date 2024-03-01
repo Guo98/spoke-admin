@@ -88,7 +88,13 @@ const countryMappings: any = {
 };
 
 const navMappings: any = {
-  "Intersect Power": ["Orders", "Inventory", "Marketplace", "Approvals"],
+  "Intersect Power": [
+    "Orders",
+    "Inventory",
+    "Storefront",
+    "Marketplace",
+    "Approvals",
+  ],
   "Flo Health": ["Orders", "Inventory", "Storefront", "Marketplace", "Invite"],
   public: [
     "Orders",

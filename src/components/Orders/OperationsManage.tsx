@@ -83,7 +83,10 @@ const OperationsManage = (props: OperationsOrder) => {
   useEffect(() => {
     const laptopFilter = items.findIndex(
       (item) =>
-        item.type === "laptop" || item.name.toLowerCase().includes("mac mini")
+        item.type === "laptop" ||
+        item.name.toLowerCase().includes("mac mini") ||
+        item.name.toLowerCase().includes("iphone") ||
+        item.name.toLowerCase().includes("pixel")
     );
     if (laptopFilter > -1) {
       setLaptopIndex(laptopFilter);
