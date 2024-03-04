@@ -94,7 +94,7 @@ const MainOrders = () => {
 
   const dispatch = useDispatch();
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
   useEffect(() => {
     if (searchParams.get("sn")) {
@@ -167,6 +167,7 @@ const MainOrders = () => {
       const slack_resp = await standardPost(access_token, "slack/authorize", {
         code: slack_code,
         client,
+        user_email: user?.email,
       });
 
       if (slack_resp.status === "Successful") {
