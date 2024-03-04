@@ -174,6 +174,8 @@ const MainOrders = () => {
         setSlackStatus(0);
       } else if (slack_resp.status === "Already exists") {
         setSlackStatus(2);
+      } else if (slack_resp.status === "Added user") {
+        setSlackStatus(3);
       } else {
         setSlackStatus(1);
       }
@@ -288,6 +290,9 @@ const MainOrders = () => {
         )}
         {!slack_loading && slack_status === 2 && (
           <Alert severity="info">Already added to your workspace.</Alert>
+        )}
+        {!slack_loading && slack_status === 3 && (
+          <Alert severity="success">Added user to slack bot.</Alert>
         )}
       </Stack>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
