@@ -311,7 +311,9 @@ const OperationsManage = (props: OperationsOrder) => {
             </Typography>
             {loading && <LinearLoading />}
             {aftership_status === 0 && (
-              <Alert>Aftership email successfully created!</Alert>
+              <Alert severity="success">
+                Aftership email successfully created!
+              </Alert>
             )}
             {aftership_status === -1 && (
               <Alert severity="error">Error in creating aftership email.</Alert>
@@ -360,7 +362,26 @@ const OperationsManage = (props: OperationsOrder) => {
                   {items.map((item, index) => {
                     return (
                       <TableRow hover>
-                        <TableCell>{item.name}</TableCell>
+                        <TableCell>
+                          {edit ? (
+                            <TextField
+                              size="small"
+                              defaultValue={item.name}
+                              onChange={(event) => {
+                                setItems((prevState) => {
+                                  let newItems = JSON.parse(
+                                    JSON.stringify(prevState)
+                                  );
+                                  newItems[index].name = event.target.value;
+
+                                  return newItems;
+                                });
+                              }}
+                            />
+                          ) : (
+                            <Typography>{item.name}</Typography>
+                          )}
+                        </TableCell>
                         <TableCell>{item.quantity || 1}</TableCell>
                         <TableCell align="right">
                           {edit ? (
