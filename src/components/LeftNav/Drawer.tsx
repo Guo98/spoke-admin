@@ -125,6 +125,11 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     (state: RootState) => state.client.selectedClient
   );
   const roles = useSelector((state: RootState) => state.client.roles);
+
+  const allowed_pages = useSelector(
+    (state: RootState) => state.client.allowed_pages
+  );
+  const entities = useSelector((state: RootState) => state.client.entities);
   // const navigate = useNavigate();
 
   const isDarkTheme = useTheme().palette.mode === "dark";
@@ -135,11 +140,14 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
     respwindow !== undefined ? () => respwindow().document.body : undefined;
 
   useEffect(() => {
-    if (clientData === "Roivant") {
-      setLinks(navMappings[clientData][roles[0]]);
-      if (roles[0] === "manager") {
-        gotoPage("Invite");
-      }
+    // if (clientData === "Roivant") {
+    //   setLinks(navMappings[clientData][roles[0]]);
+    //   if (roles[0] === "manager") {
+    //     gotoPage("Invite");
+    //   }
+    // }
+    if (allowed_pages.length > 0) {
+      setLinks(allowed_pages);
     } else if (navMappings[clientData]) {
       setLinks(navMappings[clientData]);
     }
@@ -463,7 +471,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
             }}
           />
         </div>
-        {hasEntity() && (
+        {entities.length > 0 && (
           <FormControl
             size="small"
             variant="standard"
@@ -481,7 +489,7 @@ const SpokeDrawer = (props: DrawerProps): ReactElement => {
               label="Organization"
               onChange={handleEntityChange}
             >
-              {hasEntity().map((e: any) => (
+              {entities.map((e: any) => (
                 <MenuItem value={e}>{e}</MenuItem>
               ))}
             </Select>

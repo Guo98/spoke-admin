@@ -364,6 +364,11 @@ const MainOrders = () => {
           />
         </>
       )}
+      {all_orders.length === 0 && (
+        <Typography textAlign="center" pt={2}>
+          There are currently no orders
+        </Typography>
+      )}
     </Box>
   );
 };

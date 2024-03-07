@@ -13,6 +13,8 @@ export const clientSlice = createSlice({
     selectedClient: "public",
     selectedEntity: "",
     roles: [] as string[],
+    allowed_pages: [] as string[],
+    entities: [] as string[],
   },
   reducers: {
     updateClient: (state, action: PayloadAction<string>) => {
@@ -28,6 +30,16 @@ export const clientSlice = createSlice({
     addRole: (state, action: PayloadAction<string[]>) => {
       if (action.payload) {
         state.roles = action.payload;
+      }
+    },
+    updatePages: (state, action: PayloadAction<string[]>) => {
+      if (action.payload) {
+        state.allowed_pages = action.payload;
+      }
+    },
+    setEntities: (state, action: PayloadAction<string[]>) => {
+      if (action.payload) {
+        state.entities = action.payload;
       }
     },
   },
@@ -62,8 +74,14 @@ export const setupStore = (preloadedState?: Partial<RootState>) => {
 
 export default store;
 
-export const { updateClient, updateSelectedClient, updateEntity, addRole } =
-  clientSlice.actions;
+export const {
+  updateClient,
+  updateSelectedClient,
+  updateEntity,
+  addRole,
+  updatePages,
+  setEntities,
+} = clientSlice.actions;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppStore = ReturnType<typeof setupStore>;

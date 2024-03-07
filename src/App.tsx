@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { RouterProvider, BrowserRouter } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline, PaletteMode, useMediaQuery, styled } from "@mui/material";
-import SpokeDrawer from "./components/LeftNav/Drawer";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Box from "@mui/material/Box";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -11,8 +10,9 @@ import { useDispatch } from "react-redux";
 import { orgMapping } from "./utilities/mappings";
 import { ColorModeContext } from "./utilities/color-context";
 import { blueGrey } from "@mui/material/colors";
-import { updateClient, addRole } from "./app/store";
+import { updateClient, addRole, updatePages, setEntities } from "./app/store";
 import AuthRouter from "./components/AppContainer/AuthRouter";
+import { standardGet } from "./services/standard";
 import "./App.css";
 
 const getDesignTokens = (mode: PaletteMode) => ({
@@ -87,59 +87,77 @@ const getDesignTokens = (mode: PaletteMode) => ({
 const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
 
 function App() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
+    useAuth0();
   const YbugContext = useYbugApi();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"dark" | "light">("light");
   const [show, setShow] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (user && user.org_id) {
-      localStorage.setItem("orgId", user.org_id);
-      localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
-      dispatch(updateClient(orgMapping[user.org_id]));
-      dispatch(addRole(user.role));
+  const checkUserEmail = async (user_email: string) => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+    const client_resp = await standardGet(access_token, "client/" + user_email);
+    if (client_resp.status === "Successful") {
+      dispatch(updateClient(client_resp.client));
+      dispatch(updatePages(client_resp.allowed_pages));
+      dispatch(setEntities(client_resp.entities));
+    }
+    setLoading(false);
+  };
 
-      if (orgMapping[user.org_id] === "Flo Health") {
-        if (user.role.length > 0) {
-          if (user.role[0] === "flo-uk-emp") {
-            setShow(false);
-            window.open("https://withspoke.com/flo-health-uk", "_self");
-          } else if (user.role[0] === "flo-nl-emp") {
-            setShow(false);
-            window.open("https://withspoke.com/flo-health-nl", "_self");
-          } else if (user.role[0] === "flo-lt-emp") {
-            setShow(false);
-            window.open("https://withspoke.com/flo-health-lt", "_self");
-          }
-        }
-      } else if (orgMapping[user.org_id] === "Automox") {
-        if (user.role.length > 0) {
-          if (user.role[0] === "technical") {
-            setShow(false);
-            window.open("https://withspoke.com/automox-t", "_self");
-          } else if (user.role[0] === "nontechnical") {
-            setShow(false);
-            window.open("https://withspoke.com/automox-nt", "_self");
-          } else if (user.role[0] === "approvedbuyers") {
-            setShow(false);
-            window.open("https://withspoke.com/automox-ab", "_self");
-          }
-        }
-      } else if (orgMapping[user.org_id] === "Roivant") {
-        if (user.role.length > 0) {
-          if (user.role[0] === "windows") {
-            setShow(false);
-            window.open("https://www.withspoke.com/roivant-w", "_self");
-          } else if (user.role[0] === "mac") {
-            setShow(false);
-            window.open("https://www.withspoke.com/roivant-m", "_self");
-          }
-        }
+  useEffect(() => {
+    if (user) {
+      if (user.email) {
+        checkUserEmail(user.email).catch();
+      } else if (user.org_id) {
+        localStorage.setItem("orgId", user.org_id);
+        localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
+        dispatch(updateClient(orgMapping[user.org_id]));
+        dispatch(addRole(user.role));
       }
+
+      // if (orgMapping[user.org_id] === "Flo Health") {
+      //   if (user.role.length > 0) {
+      //     if (user.role[0] === "flo-uk-emp") {
+      //       setShow(false);
+      //       window.open("https://withspoke.com/flo-health-uk", "_self");
+      //     } else if (user.role[0] === "flo-nl-emp") {
+      //       setShow(false);
+      //       window.open("https://withspoke.com/flo-health-nl", "_self");
+      //     } else if (user.role[0] === "flo-lt-emp") {
+      //       setShow(false);
+      //       window.open("https://withspoke.com/flo-health-lt", "_self");
+      //     }
+      //   }
+      // } else if (orgMapping[user.org_id] === "Automox") {
+      //   if (user.role.length > 0) {
+      //     if (user.role[0] === "technical") {
+      //       setShow(false);
+      //       window.open("https://withspoke.com/automox-t", "_self");
+      //     } else if (user.role[0] === "nontechnical") {
+      //       setShow(false);
+      //       window.open("https://withspoke.com/automox-nt", "_self");
+      //     } else if (user.role[0] === "approvedbuyers") {
+      //       setShow(false);
+      //       window.open("https://withspoke.com/automox-ab", "_self");
+      //     }
+      //   }
+      // } else if (orgMapping[user.org_id] === "Roivant") {
+      //   if (user.role.length > 0) {
+      //     if (user.role[0] === "windows") {
+      //       setShow(false);
+      //       window.open("https://www.withspoke.com/roivant-w", "_self");
+      //     } else if (user.role[0] === "mac") {
+      //       setShow(false);
+      //       window.open("https://www.withspoke.com/roivant-m", "_self");
+      //     }
+      //   }
+      // }
 
       if (YbugContext?.Ybug) {
         YbugContext.init({
