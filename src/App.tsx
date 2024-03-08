@@ -106,6 +106,13 @@ function App() {
       dispatch(updateClient(client_resp.client));
       dispatch(updatePages(client_resp.allowed_pages));
       dispatch(setEntities(client_resp.entities));
+    } else {
+      if (user?.org_id) {
+        localStorage.setItem("orgId", user.org_id);
+        localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
+        dispatch(updateClient(orgMapping[user.org_id]));
+        dispatch(addRole(user.role));
+      }
     }
     setLoading(false);
   };
@@ -114,11 +121,6 @@ function App() {
     if (user) {
       if (user.email) {
         checkUserEmail(user.email).catch();
-      } else if (user.org_id) {
-        localStorage.setItem("orgId", user.org_id);
-        localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));
-        dispatch(updateClient(orgMapping[user.org_id]));
-        dispatch(addRole(user.role));
       }
 
       // if (orgMapping[user.org_id] === "Flo Health") {
@@ -158,7 +160,6 @@ function App() {
       //     }
       //   }
       // }
-
       if (YbugContext?.Ybug) {
         YbugContext.init({
           user: {

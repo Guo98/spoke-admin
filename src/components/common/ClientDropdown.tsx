@@ -30,7 +30,7 @@ const ClientDropdown = (props: DropdownProps) => {
         <MenuItem value="Hidden Road">Hidden Road</MenuItem>
         <MenuItem value="Alma">Alma</MenuItem>
         <MenuItem value="Automox">Automox</MenuItem>
-        <MenuItem value="Roivant">Roivant</MenuItem>
+        <MenuItem value="Life360">Life360</MenuItem>
         <MenuItem value="Sona">Sona</MenuItem>
       </Select>
     </FormControl>
