@@ -103,7 +103,11 @@ const ManageModal = (props: ManageProps) => {
 
   return (
     <div>
-      <Button onClick={handleOpen} variant="contained">
+      <Button
+        onClick={handleOpen}
+        variant="contained"
+        id="inventory-manage-button"
+      >
         Manage
       </Button>
       <Modal
@@ -122,7 +126,12 @@ const ManageModal = (props: ManageProps) => {
             >
               Manage Inventory
             </Typography>
-            <Stack direction="row" spacing={2} justifyContent="space-evenly">
+            <Stack
+              direction="row"
+              spacing={2}
+              justifyContent="space-evenly"
+              id="inventory-manage-actions-row"
+            >
               <AssignModal
                 manage_modal={true}
                 devices={devices}
@@ -137,6 +146,7 @@ const ManageModal = (props: ManageProps) => {
                 variant="contained"
                 sx={{ height: "50%", width: "25%" }}
                 onClick={() => AppContainer.navigate("marketplace")}
+                id="inventory-manage-buy"
               >
                 <Stack spacing={1} alignItems="center" p={2}>
                   <ShoppingCartIcon />

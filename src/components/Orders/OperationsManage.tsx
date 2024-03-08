@@ -20,6 +20,7 @@ import {
   SelectChangeEvent,
   Divider,
   Stack,
+  Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector, useDispatch } from "react-redux";
@@ -36,6 +37,7 @@ import { RootState } from "../../app/store";
 import { Order } from "../../interfaces/orders";
 
 import { button_style } from "../../utilities/styles";
+import LinearLoading from "../common/LinearLoading";
 
 const style = {
   position: "absolute" as "absolute",
@@ -76,10 +78,15 @@ const OperationsManage = (props: OperationsOrder) => {
 
   const [inv_update, setInvUpdate] = useState(-1);
 
+  const [aftership_status, setAftershipStatus] = useState(1);
+
   useEffect(() => {
     const laptopFilter = items.findIndex(
       (item) =>
-        item.type === "laptop" || item.name.toLowerCase().includes("mac mini")
+        item.type === "laptop" ||
+        item.name.toLowerCase().includes("mac mini") ||
+        item.name.toLowerCase().includes("iphone") ||
+        item.name.toLowerCase().includes("pixel")
     );
     if (laptopFilter > -1) {
       setLaptopIndex(laptopFilter);
@@ -277,6 +284,11 @@ const OperationsManage = (props: OperationsOrder) => {
       body
     );
 
+    if (post_resp.status === "Successful") {
+      setAftershipStatus(0);
+    } else {
+      setAftershipStatus(-1);
+    }
     setLoading(false);
   };
 
@@ -297,6 +309,15 @@ const OperationsManage = (props: OperationsOrder) => {
             <Typography component="h4" textAlign="center">
               Manage Order
             </Typography>
+            {loading && <LinearLoading />}
+            {aftership_status === 0 && (
+              <Alert severity="success">
+                Aftership email successfully created!
+              </Alert>
+            )}
+            {aftership_status === -1 && (
+              <Alert severity="error">Error in creating aftership email.</Alert>
+            )}
             <TableContainer
               component={Paper}
               sx={{ borderRadius: "10px", mt: 2 }}
@@ -341,7 +362,26 @@ const OperationsManage = (props: OperationsOrder) => {
                   {items.map((item, index) => {
                     return (
                       <TableRow hover>
-                        <TableCell>{item.name}</TableCell>
+                        <TableCell>
+                          {edit ? (
+                            <TextField
+                              size="small"
+                              defaultValue={item.name}
+                              onChange={(event) => {
+                                setItems((prevState) => {
+                                  let newItems = JSON.parse(
+                                    JSON.stringify(prevState)
+                                  );
+                                  newItems[index].name = event.target.value;
+
+                                  return newItems;
+                                });
+                              }}
+                            />
+                          ) : (
+                            <Typography>{item.name}</Typography>
+                          )}
+                        </TableCell>
                         <TableCell>{item.quantity || 1}</TableCell>
                         <TableCell align="right">
                           {edit ? (

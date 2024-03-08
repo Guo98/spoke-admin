@@ -229,7 +229,7 @@ const Marketplace = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography>
+          <Typography id="marketplace-header">
             <h2>Marketplace</h2>
           </Typography>
           <AddNewDevice client={marketClient} refresh={getProducts} />

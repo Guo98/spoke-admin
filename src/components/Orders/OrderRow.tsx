@@ -10,9 +10,13 @@ import {
   Stack,
   useTheme,
   Divider,
+  Button,
+  LinearProgress,
+  CircularProgress,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import ItemsTable from "./ItemsTable";
 import OperationsManage from "./OperationsManage";
@@ -20,6 +24,8 @@ import OrderLaptop from "./OrderLaptop";
 import DeleteModal from "../Operations/DeleteModal";
 
 import { Order } from "../../interfaces/orders";
+
+import { standardPost } from "../../services/standard";
 
 interface OrderRowProps extends Order {
   selected_tab: number;
@@ -32,10 +38,15 @@ interface OrderRowProps extends Order {
 const OrderRow = (props: OrderRowProps) => {
   const { selected_tab, client, full_name, single_row } = props;
 
+  const { user, getAccessTokenSilently } = useAuth0();
+
   const [open, setOpen] = useState(false);
   const [order_price, setOrderPrice] = useState("");
   const [returned_laptop, setReturnedLaptop] = useState("");
   const [deployed_laptop, setDeployedLaptop] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [email_sent, setEmailSent] = useState(-1);
 
   const isDarkTheme = useTheme().palette.mode === "dark";
 
@@ -122,18 +133,21 @@ const OrderRow = (props: OrderRowProps) => {
         if (i.type === "laptop") {
           setDeployedLaptop(i.name);
         }
+
+        if (i.name === "Offboarding" || i.name === "Returning") {
+          if (i.laptop_name) {
+            setReturnedLaptop(i.laptop_name);
+          } else {
+            setReturnedLaptop(i.name);
+          }
+        } else if (i.name.includes("Return Box")) {
+          if (i.date_reminder_sent && !i.delivery_status) {
+            setReturnedLaptop("Unreturned Device");
+          }
+        }
       });
 
       setOrderPrice(USDollar.format(total_price));
-
-      if (props.items[0].laptop_name) {
-        setReturnedLaptop(props.items[0].laptop_name);
-      } else if (
-        props.items[0].name === "Offboarding" ||
-        props.items[0].name === "Returning"
-      ) {
-        setReturnedLaptop(props.items[0].name);
-      }
     }
     setOpen(false);
   }, [props.full_name, props.items]);
@@ -169,6 +183,31 @@ const OrderRow = (props: OrderRowProps) => {
     }
 
     return false;
+  };
+
+  const send_reminder_email = async () => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+    const email_body = {
+      client,
+      name: full_name,
+      email: props.email,
+      address: props.address.formatted,
+      requestor_email: user?.email,
+    };
+    const email_resp = await standardPost(
+      access_token,
+      "sendemail/manualreminder",
+      email_body
+    );
+
+    if (email_resp.status === "Successful") {
+      setEmailSent(0);
+    } else {
+      setEmailSent(1);
+    }
+
+    setLoading(false);
   };
 
   return props.items ? (
@@ -211,7 +250,9 @@ const OrderRow = (props: OrderRowProps) => {
               color={
                 returned_laptop !== "Offboarding" &&
                 returned_laptop !== "Returning"
-                  ? "#AEDD6B"
+                  ? returned_laptop.includes("Unreturned")
+                    ? "red"
+                    : "#AEDD6B"
                   : ""
               }
             >
@@ -248,7 +289,11 @@ const OrderRow = (props: OrderRowProps) => {
                   >
                     Recipient Name:
                   </Typography>
-                  <Typography display="inline" component="span">
+                  <Typography
+                    display="inline"
+                    component="span"
+                    id={"orders-recipient-name-" + props.index}
+                  >
                     {" " + props.full_name}
                   </Typography>
                 </div>
@@ -260,7 +305,11 @@ const OrderRow = (props: OrderRowProps) => {
                   >
                     Email:
                   </Typography>
-                  <Typography display="inline" component="span">
+                  <Typography
+                    display="inline"
+                    component="span"
+                    id={"orders-email-" + props.index}
+                  >
                     {" " + props.email}
                   </Typography>
                 </div>
@@ -273,7 +322,11 @@ const OrderRow = (props: OrderRowProps) => {
                     >
                       Location:
                     </Typography>
-                    <Typography display="inline" component="span">
+                    <Typography
+                      display="inline"
+                      component="span"
+                      id={"orders-location-" + props.index}
+                    >
                       {" " + props.address.subdivision}, {props.address.country}
                     </Typography>
                   </div>
@@ -291,6 +344,44 @@ const OrderRow = (props: OrderRowProps) => {
                       {" " + returned_laptop}
                     </Typography>
                   </div>
+                )}
+                {props.items[1] && props.items[1].date_reminder_sent && (
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <div>
+                      <Typography
+                        fontWeight="bold"
+                        display="inline"
+                        component="span"
+                      >
+                        Date Reminder Sent:
+                      </Typography>
+                      <Typography display="inline" component="span">
+                        {" " + props.items[1].date_reminder_sent}
+                      </Typography>
+                    </div>
+                    <Button
+                      onClick={send_reminder_email}
+                      disabled={loading || email_sent > -1}
+                    >
+                      {loading ? (
+                        <CircularProgress />
+                      ) : email_sent > -1 ? (
+                        email_sent === 0 ? (
+                          "Email Sent!"
+                        ) : email_sent === 1 ? (
+                          "Error sending email..."
+                        ) : (
+                          "Not Possible"
+                        )
+                      ) : (
+                        "Send Reminder Email"
+                      )}
+                    </Button>
+                  </Stack>
                 )}
                 {props.parent_client === "spokeops" && has_yubikey() && (
                   <div>

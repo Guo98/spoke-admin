@@ -8,6 +8,8 @@ const box_style = {
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
+  maxHeight: { xs: "75%" },
+  overflowY: "scroll",
 };
 
 const textfield_style = {
@@ -17,6 +19,7 @@ const textfield_style = {
 const button_style = {
   borderRadius: "20px",
   textTransform: "none",
+  fontSize: "70%",
 };
 
 export { box_style, textfield_style, button_style };

@@ -14,6 +14,7 @@ import {
   Chip,
   Tabs,
   Tab,
+  Alert,
 } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -22,7 +23,7 @@ import { Buffer } from "buffer";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams, useLocation } from "react-router-dom";
 
-import { standardGet } from "../../services/standard";
+import { standardGet, standardPost } from "../../services/standard";
 import { RootState } from "../../app/store";
 import { roleMapping } from "../../utilities/mappings";
 import {
@@ -76,6 +77,10 @@ const MainOrders = () => {
   const [rows_per_page, setRowsPerPage] = useState(25);
   const [no_of_expands, setNoExpands] = useState(1);
 
+  const [slack_loading, setSlackLoading] = useState(false);
+  const [slack_status, setSlackStatus] = useState(-1);
+  const [slack_code, setSlackCode] = useState("");
+
   const clientData = useSelector((state: RootState) => state.client.data);
   const selectedClientData = useSelector(
     (state: RootState) => state.client.selectedClient
@@ -89,11 +94,14 @@ const MainOrders = () => {
 
   const dispatch = useDispatch();
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
   useEffect(() => {
     if (searchParams.get("sn")) {
       setSearchSerial(searchParams.get("sn")!);
+    } else if (searchParams.get("code")) {
+      // authorizeSlack(searchParams.get("code")!).catch();
+      setSlackCode(searchParams.get("code")!);
     } else {
       setSearchSerial("");
       searchFilter("");
@@ -112,6 +120,10 @@ const MainOrders = () => {
   useEffect(() => {
     if (client !== "" && search_serial === "") {
       getOrders().catch();
+    }
+
+    if (client !== "" && slack_code !== "") {
+      authorizeSlack().catch();
     }
   }, [client]);
 
@@ -144,6 +156,34 @@ const MainOrders = () => {
       setNoExpands(no_of_expands + 1);
     } else if (no_of_expands !== 1) {
       setNoExpands(no_of_expands - 1);
+    }
+  };
+
+  const authorizeSlack = async () => {
+    if (location.pathname.includes("/slack/redirect")) {
+      setSlackLoading(true);
+      const access_token = await getAccessTokenSilently();
+
+      const slack_resp = await standardPost(access_token, "slack/authorize", {
+        code: slack_code,
+        client,
+        user_email: user?.email,
+      });
+
+      if (slack_resp.status === "Successful") {
+        setSlackStatus(0);
+      } else if (slack_resp.status === "Already exists") {
+        setSlackStatus(2);
+      } else if (slack_resp.status === "Added user") {
+        setSlackStatus(3);
+      } else {
+        setSlackStatus(1);
+      }
+      searchParams.delete("code");
+      searchParams.delete("state");
+      setSlackCode("");
+      setSearchParams(searchParams);
+      setSlackLoading(false);
     }
   };
 
@@ -184,6 +224,7 @@ const MainOrders = () => {
   };
 
   const searchFilter = (search_term: string) => {
+    setTabIndex(0);
     if (search_term !== "") {
       dispatch(filterOrders(search_term));
     } else {
@@ -236,6 +277,23 @@ const MainOrders = () => {
           </Stack>
         </Stack>
         {loading && <LinearLoading />}
+        {slack_loading && <Alert severity="info">Adding...</Alert>}
+        {!slack_loading && slack_status === 0 && (
+          <Alert severity="success">
+            Successfully added slack bot to your workspace!
+          </Alert>
+        )}
+        {!slack_loading && slack_status === 1 && (
+          <Alert severity="error">
+            Error in adding slack bot to your workspace...
+          </Alert>
+        )}
+        {!slack_loading && slack_status === 2 && (
+          <Alert severity="info">Already added to your workspace.</Alert>
+        )}
+        {!slack_loading && slack_status === 3 && (
+          <Alert severity="success">Added user to slack bot.</Alert>
+        )}
       </Stack>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
@@ -305,6 +363,11 @@ const MainOrders = () => {
             expands={no_of_expands}
           />
         </>
+      )}
+      {all_orders.length === 0 && (
+        <Typography textAlign="center" pt={2}>
+          There are currently no orders
+        </Typography>
       )}
     </Box>
   );

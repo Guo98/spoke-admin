@@ -32,7 +32,7 @@ const InStock = (props: TableProps) => {
     if (serial_numbers.length > 0) {
       setSorted(
         [...serial_numbers].sort((a, b) =>
-          a.sn < b.sn ? 1 : b.sn < a.sn ? -1 : 0
+          a.sn > b.sn ? 1 : b.sn > a.sn ? -1 : 0
         )
       );
     }
@@ -82,9 +82,13 @@ const InStock = (props: TableProps) => {
   return (
     <>
       {serial_numbers.length > 0 ? (
-        <TableContainer component={Paper} sx={{ borderRadius: "10px" }}>
+        <TableContainer
+          component={Paper}
+          sx={{ borderRadius: "10px" }}
+          id="in-stock-devices-table"
+        >
           <Table aria-label="device-table">
-            <TableHead>
+            <TableHead id="in-stock-devices-table-head">
               <TableRow>
                 <TableCell
                   key="SerialNumber"
@@ -123,7 +127,7 @@ const InStock = (props: TableProps) => {
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody id="in-stock-devices-table-body">
               {sorted_serials.length > 0 &&
                 sorted_serials.map((item: any, index: number) => {
                   const { sn, condition } = item;

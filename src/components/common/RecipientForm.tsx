@@ -96,7 +96,7 @@ const RecipientForm = (props: RFProps) => {
   };
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} id="recipient-stack">
       <Divider textAlign="left">Recipient Details</Divider>
       <Stack direction="row" spacing={1}>
         <TextField
@@ -107,6 +107,7 @@ const RecipientForm = (props: RFProps) => {
           required
           value={fn_redux}
           onChange={(e: any) => dispatch(setFirstName(e.target.value))}
+          id="rf-fn"
         />
         <TextField
           sx={textfield_style}
@@ -116,6 +117,7 @@ const RecipientForm = (props: RFProps) => {
           required
           value={ln_redux}
           onChange={(e: any) => dispatch(setLastName(e.target.value))}
+          id="rf-ln"
         />
       </Stack>
       <Stack direction="row" spacing={1}>
@@ -136,6 +138,7 @@ const RecipientForm = (props: RFProps) => {
           }}
           error={!valid_email}
           helperText={!valid_email ? "Invalid email" : ""}
+          id="rf-email"
         />
         <TextField
           sx={textfield_style}
@@ -145,6 +148,7 @@ const RecipientForm = (props: RFProps) => {
           required
           value={phone_redux}
           onChange={(e: any) => dispatch(setPhone(e.target.value))}
+          id="rf-pnum"
         />
       </Stack>
       <TextField
@@ -154,6 +158,7 @@ const RecipientForm = (props: RFProps) => {
         required={address_required}
         value={adl1_redux}
         onChange={(e: any) => dispatch(setAddressLine1(e.target.value))}
+        id="rf-ad1"
       />
       <TextField
         sx={textfield_style}
@@ -161,6 +166,7 @@ const RecipientForm = (props: RFProps) => {
         size="small"
         value={adl2_redux}
         onChange={(e: any) => dispatch(setAddressLine2(e.target.value))}
+        id="rf-ad2"
       />
       <Stack direction="row" spacing={1}>
         <TextField
@@ -171,6 +177,7 @@ const RecipientForm = (props: RFProps) => {
           required={address_required}
           value={city_redux}
           onChange={(e: any) => dispatch(setCity(e.target.value))}
+          id="rf-city"
         />
         <TextField
           sx={textfield_style}
@@ -180,6 +187,7 @@ const RecipientForm = (props: RFProps) => {
           required={address_required}
           value={state_redux}
           onChange={(e: any) => dispatch(setState(e.target.value))}
+          id="rf-state"
         />
       </Stack>
       <Stack direction="row" spacing={1}>
@@ -191,6 +199,7 @@ const RecipientForm = (props: RFProps) => {
           required={address_required}
           value={postal_redux}
           onChange={(e: any) => dispatch(setPostal(e.target.value))}
+          id="rf-pc"
         />
         <TextField
           sx={textfield_style}
@@ -201,13 +210,14 @@ const RecipientForm = (props: RFProps) => {
           value={country_redux}
           disabled={disable_country}
           onChange={(e: any) => dispatch(setCountry(e.target.value))}
+          id="rf-country"
         />
       </Stack>
       <FormControl fullWidth sx={textfield_style} required size="small">
         <InputLabel id="shipping-select-label">Shipping Rate</InputLabel>
         <Select
           labelId="shipping-select-label"
-          id="shipping-select"
+          id="rf-shipping-select"
           label="Shipping Rate"
           onChange={handleChange}
           value={shipping_redux}

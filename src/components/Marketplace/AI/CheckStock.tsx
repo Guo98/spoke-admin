@@ -289,6 +289,7 @@ const CheckStock = (props: CheckStockProps) => {
             onClick={checkStock}
             fullWidth
             sx={button_style}
+            id="marketplace-purchase-modal-check-stock"
           >
             {!loading ? "Check Supplier's Stock" : <CircularProgress />}
           </Button>
@@ -297,6 +298,7 @@ const CheckStock = (props: CheckStockProps) => {
             sx={button_style}
             fullWidth
             disabled={loading}
+            id="marketplace-purchase-modal-add-accessories"
             onClick={() =>
               completeDeviceChoice(
                 type,
@@ -337,6 +339,7 @@ const CheckStock = (props: CheckStockProps) => {
               )
             }
             disabled={loading}
+            id="marketplace-purchase-modal-request-quote"
           >
             Request Quote
           </Button>

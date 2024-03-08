@@ -143,9 +143,7 @@ const Profile = (props: ProfileProps) => {
                   <MenuItem value="Hidden Road">Hidden Road</MenuItem>
                   <MenuItem value="Alma">Alma</MenuItem>
                   <MenuItem value="Automox">Automox</MenuItem>
-                  <MenuItem value="Flo Health">Flo Health</MenuItem>
-                  <MenuItem value="Roivant">Roivant</MenuItem>
-                  <MenuItem value="Sona">Sona</MenuItem>
+                  <MenuItem value="Life360">Life360</MenuItem>
                   {showAll && <MenuItem value="All">All</MenuItem>}
                 </Select>
               </FormControl>

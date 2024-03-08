@@ -73,6 +73,20 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
 
   const handleReturnBoxChecked = (event: ChangeEvent<HTMLInputElement>) => {
     setReturnBox(event.target.checked);
+    if (event.target.checked) {
+      if (!include_items.includes("Include Return Box")) {
+        setIncludeItems((prevItems) => [...prevItems, "Include Return Box"]);
+      }
+    } else {
+      const item_index = include_items.findIndex((i) =>
+        i.includes("Include Return Box")
+      );
+      if (item_index > -1) {
+        let current_items = [...include_items];
+        current_items.splice(item_index, 1);
+        setIncludeItems(current_items);
+      }
+    }
   };
 
   const handleYubikeyChecked = (event: ChangeEvent<HTMLInputElement>) => {
@@ -156,10 +170,14 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     if (addons.findIndex((i) => i.includes("yubikey")) > -1) {
       setYubikey(true);
     }
+
+    if (addons.findIndex((i) => i.includes("Include Return Box")) > -1) {
+      setReturnBox(true);
+    }
   }, [addons]);
 
   return (
-    <Stack spacing={2} pt={2}>
+    <Stack spacing={2} pt={2} id="accessories-stack">
       {loading && <LinearLoading />}
       {accessories_redux &&
         accessories_redux.items &&
@@ -232,6 +250,7 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
           <Checkbox onChange={handleReturnBoxChecked} checked={return_box} />
         }
         label="Include Return Box"
+        id="return-checkbox"
       />
       {return_box && (
         <Stack spacing={1} px={1}>
@@ -281,14 +300,9 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
         variant="contained"
         sx={button_style}
         onClick={() => {
-          let add_items = [...include_items];
-
-          if (return_box) {
-            add_items.push("Include Return Box");
-          }
-
-          nextStep(add_items);
+          nextStep(include_items);
         }}
+        id="accessories-continue"
       >
         Continue
       </Button>

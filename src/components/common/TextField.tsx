@@ -9,6 +9,7 @@ interface TextFieldProps {
   disabled?: boolean;
   defaultValue?: string;
   required?: boolean;
+  id?: string;
 }
 
 const textFieldStyle = {
@@ -16,7 +17,7 @@ const textFieldStyle = {
 };
 
 const TextField = (props: TextFieldProps) => {
-  const { label, value, onChange } = props;
+  const { label, value, onChange, id } = props;
   return (
     <TF
       label={label}
@@ -28,6 +29,7 @@ const TextField = (props: TextFieldProps) => {
       disabled={props.disabled}
       defaultValue={props.defaultValue}
       required={props.required}
+      id={id}
     />
   );
 };
