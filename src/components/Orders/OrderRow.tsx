@@ -140,7 +140,10 @@ const OrderRow = (props: OrderRowProps) => {
           } else {
             setReturnedLaptop(i.name);
           }
-        } else if (i.name.includes("Return Box")) {
+        } else if (
+          i.name.includes("Return Box") &&
+          props.shipping_status !== "Completed"
+        ) {
           if (i.date_reminder_sent && !i.delivery_status) {
             setReturnedLaptop("Unreturned Device");
           }
@@ -345,44 +348,47 @@ const OrderRow = (props: OrderRowProps) => {
                     </Typography>
                   </div>
                 )}
-                {props.items[1] && props.items[1].date_reminder_sent && (
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <div>
-                      <Typography
-                        fontWeight="bold"
-                        display="inline"
-                        component="span"
-                      >
-                        Date Reminder Sent:
-                      </Typography>
-                      <Typography display="inline" component="span">
-                        {" " + props.items[1].date_reminder_sent}
-                      </Typography>
-                    </div>
-                    <Button
-                      onClick={send_reminder_email}
-                      disabled={loading || email_sent > -1}
+                {props.items[1] &&
+                  props.items[1].date_reminder_sent &&
+                  props.shipping_status !== "Completed" &&
+                  !props.items[1].delivery_status && (
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
                     >
-                      {loading ? (
-                        <CircularProgress />
-                      ) : email_sent > -1 ? (
-                        email_sent === 0 ? (
-                          "Email Sent!"
-                        ) : email_sent === 1 ? (
-                          "Error sending email..."
+                      <div>
+                        <Typography
+                          fontWeight="bold"
+                          display="inline"
+                          component="span"
+                        >
+                          Date Reminder Sent:
+                        </Typography>
+                        <Typography display="inline" component="span">
+                          {" " + props.items[1].date_reminder_sent}
+                        </Typography>
+                      </div>
+                      <Button
+                        onClick={send_reminder_email}
+                        disabled={loading || email_sent > -1}
+                      >
+                        {loading ? (
+                          <CircularProgress />
+                        ) : email_sent > -1 ? (
+                          email_sent === 0 ? (
+                            "Email Sent!"
+                          ) : email_sent === 1 ? (
+                            "Error sending email..."
+                          ) : (
+                            "Not Possible"
+                          )
                         ) : (
-                          "Not Possible"
-                        )
-                      ) : (
-                        "Send Reminder Email"
-                      )}
-                    </Button>
-                  </Stack>
-                )}
+                          "Send Reminder Email"
+                        )}
+                      </Button>
+                    </Stack>
+                  )}
                 {props.parent_client === "spokeops" && has_yubikey() && (
                   <div>
                     <Typography

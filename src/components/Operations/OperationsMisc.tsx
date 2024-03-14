@@ -3,6 +3,7 @@ import { Typography, Box, Button } from "@mui/material";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import NewClient from "./NewClient";
 import MarketplaceOrders from "./MarketplaceOrders/MarketplaceOrders";
 import ViewUsers from "./Users/ViewUsers";
@@ -36,7 +37,14 @@ const OperationsMisc = () => {
         <Box sx={view === "" ? boxStyle : {}}>
           {view === "" && (
             <>
-              <NewClient />{" "}
+              <Button
+                variant="contained"
+                onClick={() => setView("newclient")}
+                sx={buttonPadding}
+              >
+                <PersonAddIcon sx={{ paddingRight: "5px" }} />
+                Add New Client
+              </Button>
               <Button
                 variant="contained"
                 onClick={() => setView("marketplace")}
@@ -71,6 +79,7 @@ const OperationsMisc = () => {
               </Button>
             </>
           )}
+          {view === "newclient" && <NewClient handleClose={handleClose} />}
           {view === "marketplace" && (
             <MarketplaceOrders handleClose={handleClose} />
           )}

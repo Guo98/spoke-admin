@@ -1,55 +1,172 @@
-import React, { useState } from "react";
-import { Button, Modal, Box, TextField, Typography } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import React, { useState, ChangeEvent } from "react";
+import {
+  Button,
+  Box,
+  TextField,
+  Typography,
+  Stack,
+  IconButton,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  SelectChangeEvent,
+  Chip,
+  FormControlLabel,
+  Checkbox,
+  Alert,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  borderRadius: "20px",
-  boxShadow: 24,
-  p: 4,
-};
+import { standardPost } from "../../services/standard";
+import LinearLoading from "../common/LinearLoading";
 
 const textFieldStyle = {
   "& fieldset": { borderRadius: "10px" },
 };
 
-const NewClient = () => {
-  const [open, setOpen] = useState(false);
+const portal_pages = [
+  "Orders",
+  "Inventory",
+  "Marketplace",
+  "Approvals",
+  "Invite",
+];
 
-  const handleClose = () => {
-    setOpen(false);
+interface NewClientProps {
+  handleClose: Function;
+}
+
+const NewClient = (props: NewClientProps) => {
+  const { handleClose } = props;
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(-1);
+
+  const [client_name, setClientName] = useState("");
+  const [pages, setPages] = useState<string[]>([]);
+  const [google, setGoogle] = useState(false);
+  const [microsoft, setMicrosoft] = useState(false);
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  const handleChange = (event: SelectChangeEvent<typeof pages>) => {
+    const {
+      target: { value },
+    } = event;
+    setPages(typeof value === "string" ? value.split(",") : value);
+  };
+
+  const addNewClient = async () => {
+    setLoading(true);
+    const access_token = await getAccessTokenSilently();
+    const post_obj = {
+      client_name,
+      allowed_pages: pages,
+      conenctions: {
+        google,
+        microsoft,
+      },
+    };
+
+    const new_result = await standardPost(access_token, "client/new", post_obj);
+
+    if (new_result.status === "Successful") {
+      setStatus(0);
+    } else {
+      setStatus(1);
+    }
+    setLoading(false);
   };
 
   return (
-    <>
-      <Button
-        onClick={() => setOpen(true)}
-        variant="contained"
-        size="large"
-        sx={{ marginTop: "15px" }}
-      >
-        <PersonAddIcon sx={{ paddingRight: "5px" }} />
-        Add New Client
-      </Button>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <Typography component="h6" variant="h6" textAlign="center">
+    <Box>
+      {loading && <LinearLoading />}
+      {status === 0 && (
+        <Alert severity="success">Client successfully created!</Alert>
+      )}
+      {status === 1 && (
+        <Alert severity="error">Error in creating client...</Alert>
+      )}
+      <Stack spacing={2}>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography component="h6" variant="h6">
             Add New Client
           </Typography>
-          <TextField
-            label="Client Name"
-            sx={textFieldStyle}
-            size="small"
+          <IconButton onClick={() => handleClose()}>
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+        <TextField
+          label="Client Name"
+          sx={textFieldStyle}
+          size="small"
+          fullWidth
+          value={client_name}
+          onChange={(e) => {
+            setClientName(e.target.value);
+          }}
+        />
+        <Typography>Pages:</Typography>
+        <FormControl sx={{ ...textFieldStyle, m: 1 }} size="small">
+          <InputLabel id="pages-multiple-chip-label">Select pages</InputLabel>
+          <Select
+            labelId="pages-multiple-chip-label"
+            id="pages-multiple-chip"
+            multiple
+            value={pages}
+            onChange={handleChange}
+            input={
+              <OutlinedInput id="select-multiple-chip" label="Select pages" />
+            }
+            renderValue={(selected) => (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )}
             fullWidth
+          >
+            {portal_pages.map((name) => (
+              <MenuItem key={name} value={name}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Typography>SSO Connections:</Typography>
+        <Stack spacing={2} direction="row">
+          <FormControlLabel
+            sx={{ ml: 0 }}
+            control={
+              <Checkbox
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setGoogle(e.target.checked)
+                }
+                checked={google}
+              />
+            }
+            label="Google"
           />
-          <Button variant="contained">Add</Button>
-        </Box>
-      </Modal>
-    </>
+          <FormControlLabel
+            sx={{ ml: 0 }}
+            control={
+              <Checkbox
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setMicrosoft(e.target.checked)
+                }
+                checked={microsoft}
+              />
+            }
+            label="Microsoft"
+          />
+        </Stack>
+        <Button variant="contained">Add</Button>
+      </Stack>
+    </Box>
   );
 };
 
