@@ -370,7 +370,9 @@ const OrderRow = (props: OrderRowProps) => {
                         </Typography>
                       </div>
                       <Button
-                        onClick={send_reminder_email}
+                        onClick={async () => {
+                          await send_reminder_email;
+                        }}
                         disabled={loading || email_sent > -1}
                       >
                         {loading ? (

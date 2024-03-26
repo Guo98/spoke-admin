@@ -150,13 +150,13 @@ const clientsList = [
   "Alma",
   "Automox",
   "Bowery",
-  "Flo Health",
   "FLYR",
   "Hidden Road",
   "Intersect Power",
   "NurseDash",
   "Roivant",
   "Sona",
+  "Life360",
   "public",
 ];
 
@@ -171,6 +171,7 @@ const clientRoles: any = {
   Automox: ["Admin", "Technical", "Non-technical", "Approved Buyers"],
   Roivant: ["Admin", "Hiring Manager", "New Hire (Windows)", "New Hire (Mac)"],
   public: ["Admin", "Technical", "Non-technical"],
+  Life360: ["Admin", "Employee"],
 };
 
 const clientRolesCode: any = {
@@ -188,6 +189,7 @@ const clientRolesCode: any = {
   "New Hire (Windows)": "windows",
   "New Hire (Mac)": "mac",
   "Hiring Manager": "manager",
+  Employee: "employee",
 };
 
 const connectionMappings: any = {
@@ -202,6 +204,7 @@ const connectionMappings: any = {
   Roivant: ["Microsoft", "Google", "Username Password"],
   Sona: ["Google", "Username Password"],
   public: ["Google", "Microsoft", "Username Password"],
+  Life360: ["Google", "Username Password"],
 };
 
 export {

@@ -49,6 +49,7 @@ const NewClient = (props: NewClientProps) => {
   const [pages, setPages] = useState<string[]>([]);
   const [google, setGoogle] = useState(false);
   const [microsoft, setMicrosoft] = useState(false);
+  const [employee_portal, setEmployeePortal] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -164,6 +165,19 @@ const NewClient = (props: NewClientProps) => {
             label="Microsoft"
           />
         </Stack>
+        <Typography>Extras:</Typography>
+        <FormControlLabel
+          sx={{ ml: 0 }}
+          control={
+            <Checkbox
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setEmployeePortal(e.target.checked)
+              }
+              checked={employee_portal}
+            />
+          }
+          label="Employee Portals Needed"
+        />
         <Button variant="contained">Add</Button>
       </Stack>
     </Box>

@@ -103,6 +103,14 @@ function App() {
     const access_token = await getAccessTokenSilently();
     const client_resp = await standardGet(access_token, "client/" + user_email);
     if (client_resp.status === "Successful") {
+      if (client_resp.employee_portal) {
+        if (
+          client_resp.employees.findIndex((e: string) => e === user_email) > -1
+        ) {
+          setShow(false);
+          window.open("https://www.withspoke.com/12965360", "_self");
+        }
+      }
       dispatch(updateClient(client_resp.client));
       dispatch(updatePages(client_resp.allowed_pages));
       dispatch(setEntities(client_resp.entities));
