@@ -358,7 +358,9 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
               onChange={(event) => setOtherRegion(event.target.value)}
             />
           )}
-          {region === "United States" && (
+          {(region === "United States" ||
+            region === "Netherlands" ||
+            region === "Poland") && (
             <>
               {props.suppliers && props.suppliers["United States"] && (
                 <FormControl
@@ -400,34 +402,38 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                 others={brand === "Others"}
                 client={client}
                 color={color}
+                region={region}
               />
             </>
           )}
-          {region !== "" && region !== "United States" && (
-            <Button
-              fullWidth
-              variant="contained"
-              sx={button_style}
-              onClick={() =>
-                completeDeviceChoice(
-                  props.device_name === "" ? other_type : props.device_name,
-                  props.specs === "Other" || props.specs === ""
-                    ? other_specs
-                    : props.specs,
-                  "",
-                  region === "Other" ? other_region : region,
-                  "",
-                  "",
-                  "",
-                  "",
-                  supplier
-                )
-              }
-              id="marketplace-purchase-modal-request-quote"
-            >
-              Request Quote
-            </Button>
-          )}
+          {region !== "" &&
+            region !== "United States" &&
+            region !== "Netherlands" &&
+            region !== "Poland" && (
+              <Button
+                fullWidth
+                variant="contained"
+                sx={button_style}
+                onClick={() =>
+                  completeDeviceChoice(
+                    props.device_name === "" ? other_type : props.device_name,
+                    props.specs === "Other" || props.specs === ""
+                      ? other_specs
+                      : props.specs,
+                    "",
+                    region === "Other" ? other_region : region,
+                    "",
+                    "",
+                    "",
+                    "",
+                    supplier
+                  )
+                }
+                id="marketplace-purchase-modal-request-quote"
+              >
+                Request Quote
+              </Button>
+            )}
         </>
       )}
     </Stack>

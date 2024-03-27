@@ -26,6 +26,7 @@ interface CheckStockProps {
   others: boolean;
   client: string;
   color: string;
+  region: string;
 }
 
 const CheckStock = (props: CheckStockProps) => {
@@ -38,6 +39,7 @@ const CheckStock = (props: CheckStockProps) => {
     others,
     client,
     color,
+    region,
   } = props;
 
   const [status, setStatus] = useState(-1);
@@ -68,9 +70,15 @@ const CheckStock = (props: CheckStockProps) => {
     let checkObj: any = {
       item_name: brand + " " + type,
       specs: spec,
-      supplier: props.supplier !== "" ? props.supplier : "cdw",
+      supplier:
+        region !== "United States"
+          ? "bechtle"
+          : props.supplier !== ""
+          ? props.supplier
+          : "cdw",
       others,
       color,
+      location: region,
     };
     if (props.product_link !== "") {
       checkObj.product_link = props.product_link;
