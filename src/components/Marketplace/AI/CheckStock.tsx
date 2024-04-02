@@ -202,31 +202,32 @@ const CheckStock = (props: CheckStockProps) => {
             pt={1}
             justifyContent="space-between"
           >
-            {(client === "Alma" || client === "public") && (
-              <Button
-                variant="contained"
-                sx={button_style}
-                fullWidth
-                onClick={() =>
-                  completeDeviceChoice(
-                    product_name,
-                    spec,
-                    url_link,
-                    "United States",
-                    price,
-                    img_src,
-                    stock,
-                    aispecs,
-                    props.supplier,
-                    cdw_part_no,
-                    "buy",
-                    true
-                  )
-                }
-              >
-                Buy Now
-              </Button>
-            )}
+            {(client === "Alma" || client === "public") &&
+              props.supplier === "cdw" && (
+                <Button
+                  variant="contained"
+                  sx={button_style}
+                  fullWidth
+                  onClick={() =>
+                    completeDeviceChoice(
+                      product_name,
+                      spec,
+                      url_link,
+                      "United States",
+                      price,
+                      img_src,
+                      stock,
+                      aispecs,
+                      props.supplier,
+                      cdw_part_no,
+                      "buy",
+                      true
+                    )
+                  }
+                >
+                  Buy Now
+                </Button>
+              )}
             <Button
               variant="contained"
               sx={button_style}
