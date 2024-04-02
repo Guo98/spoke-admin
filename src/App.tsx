@@ -106,6 +106,7 @@ function App() {
       dispatch(updateClient(client_resp.client));
       dispatch(updatePages(client_resp.allowed_pages));
       dispatch(setEntities(client_resp.entities));
+      dispatch(addRole(client_resp.role));
     } else {
       if (user?.org_id) {
         localStorage.setItem("orgId", user.org_id);
