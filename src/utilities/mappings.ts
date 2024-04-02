@@ -28,6 +28,7 @@ const orgMapping: any = {
   org_BmAU8UUBYjVbRMDD: "Flo Health",
   org_lgsM9ZWjP1GdrDoA: "Roivant",
   org_f0OJSheWDop7RPuc: "Sona",
+  org_6JDqHU4PVoWHs2Oq: "Life360",
 };
 
 const roleMapping: any = {
