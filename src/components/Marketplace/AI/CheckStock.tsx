@@ -203,7 +203,8 @@ const CheckStock = (props: CheckStockProps) => {
             justifyContent="space-between"
           >
             {(client === "Alma" || client === "public") &&
-              props.supplier === "cdw" && (
+              props.supplier === "cdw" &&
+              region === "United States" && (
                 <Button
                   variant="contained"
                   sx={button_style}

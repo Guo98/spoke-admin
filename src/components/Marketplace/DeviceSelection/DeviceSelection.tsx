@@ -307,7 +307,8 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                   })}
                 {props.device_name !== "" &&
                   typeIndex !== -1 &&
-                  !types[typeIndex].colors && (
+                  (!types[typeIndex].colors ||
+                    types[typeIndex].colors.length === 0) && (
                     <MenuItem value="Default">Default</MenuItem>
                   )}
               </Select>
