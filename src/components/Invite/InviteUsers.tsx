@@ -126,27 +126,23 @@ const InviteUsers = (props: IUProps) => {
             Something went wrong... Please reach out to Andy
           </Alert>
         )}
-        <FormControl
-          fullWidth
-          sx={textFieldStyle}
-          required
-          size="small"
-          disabled={selectedClient !== "spokeops"}
-        >
-          <InputLabel id="client-select-label">Client</InputLabel>
-          <Select
-            labelId="client-select-label"
-            id="client-simple-select"
-            value={client}
-            label="Client"
-            onChange={handleChange}
-            required
-          >
-            {clientsList.map((menuClient) => {
-              return <MenuItem value={menuClient}>{menuClient}</MenuItem>;
-            })}
-          </Select>
-        </FormControl>
+        {selectedClient === "spokeops" && (
+          <FormControl fullWidth sx={textFieldStyle} required size="small">
+            <InputLabel id="client-select-label">Client</InputLabel>
+            <Select
+              labelId="client-select-label"
+              id="client-simple-select"
+              value={client}
+              label="Client"
+              onChange={handleChange}
+              required
+            >
+              {clientsList.map((menuClient) => {
+                return <MenuItem value={menuClient}>{menuClient}</MenuItem>;
+              })}
+            </Select>
+          </FormControl>
+        )}
         {clientRoles[client] && (
           <FormControl fullWidth sx={textFieldStyle} required size="small">
             <InputLabel id="role-select-label">Select Role</InputLabel>

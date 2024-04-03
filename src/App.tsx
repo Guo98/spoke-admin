@@ -100,6 +100,7 @@ function App() {
 
   const checkUserEmail = async (user_email: string) => {
     setLoading(true);
+    setShow(false);
     const access_token = await getAccessTokenSilently();
     const client_resp = await standardGet(access_token, "client/" + user_email);
     if (client_resp.status === "Successful") {
@@ -114,7 +115,14 @@ function App() {
       dispatch(updateClient(client_resp.client));
       dispatch(updatePages(client_resp.allowed_pages));
       dispatch(setEntities(client_resp.entities));
+      if (client_resp.role === "Employee" && client_resp.client === "Life360") {
+        window.open("https://www.withspoke.com/12965360", "_self");
+      } else {
+        setShow(true);
+        dispatch(addRole([client_resp.role]));
+      }
     } else {
+      setShow(true);
       if (user?.org_id) {
         localStorage.setItem("orgId", user.org_id);
         localStorage.setItem("spokeclient", btoa(orgMapping[user.org_id]));

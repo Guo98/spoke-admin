@@ -28,6 +28,7 @@ const orgMapping: any = {
   org_BmAU8UUBYjVbRMDD: "Flo Health",
   org_lgsM9ZWjP1GdrDoA: "Roivant",
   org_f0OJSheWDop7RPuc: "Sona",
+  org_6JDqHU4PVoWHs2Oq: "Life360",
 };
 
 const roleMapping: any = {
@@ -131,7 +132,7 @@ const navMappings: any = {
     "Invite",
     "Misc",
   ],
-  FLYR: ["Orders", "Inventory", "Storefront", "Marketplace", "Approvals"],
+  FLYR: ["Orders", "Inventory", "Marketplace", "Approvals"],
   Roivant: {
     admin: [
       "Orders",
@@ -158,6 +159,7 @@ const clientsList = [
   "Sona",
   "Life360",
   "public",
+  "Life360",
 ];
 
 const clientRoles: any = {
@@ -203,6 +205,7 @@ const connectionMappings: any = {
   NurseDash: ["Google", "Username Password"],
   Roivant: ["Microsoft", "Google", "Username Password"],
   Sona: ["Google", "Username Password"],
+  Life360: ["Google", "Username Password"],
   public: ["Google", "Microsoft", "Username Password"],
   Life360: ["Google", "Username Password"],
 };
