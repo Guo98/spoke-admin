@@ -207,7 +207,6 @@ const connectionMappings: any = {
   Sona: ["Google", "Username Password"],
   Life360: ["Google", "Username Password"],
   public: ["Google", "Microsoft", "Username Password"],
-  Life360: ["Google", "Username Password"],
 };
 
 export {

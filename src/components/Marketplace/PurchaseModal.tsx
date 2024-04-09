@@ -49,7 +49,7 @@ const style = {
   borderRadius: "20px",
   boxShadow: 24,
   p: 4,
-  overflow: "scroll",
+  overflowY: "scroll",
 };
 
 const textFieldStyle = {
