@@ -18,6 +18,9 @@ import {
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
+// @ts-ignore
+import isEmail from "validator/lib/isEmail";
+
 import { RootState } from "../../app/store";
 import {
   clientsList,
@@ -48,6 +51,8 @@ const InviteUsers = (props: IUProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const [valid_email, setValidEmail] = useState(true);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -176,7 +181,16 @@ const InviteUsers = (props: IUProps) => {
           label="User Email"
           size="small"
           required
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (!isEmail(e.target.value) && e.target.value !== "") {
+              setValidEmail(false);
+            } else {
+              setValidEmail(true);
+            }
+          }}
+          error={!valid_email}
+          helperText={!valid_email ? "Invalid email" : ""}
         />
         {connectionMappings[client] && (
           <FormControl fullWidth sx={textFieldStyle} required size="small">
@@ -195,7 +209,16 @@ const InviteUsers = (props: IUProps) => {
             </Select>
           </FormControl>
         )}
-        <Button onClick={inviteUser} disabled={loading}>
+        <Button
+          onClick={inviteUser}
+          disabled={
+            loading ||
+            email === "" ||
+            !valid_email ||
+            connection === "" ||
+            (clientRoles[client] && selectedRole === "")
+          }
+        >
           Invite
         </Button>
       </Stack>

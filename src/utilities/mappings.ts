@@ -173,7 +173,7 @@ const clientRoles: any = {
   Automox: ["Admin", "Technical", "Non-technical", "Approved Buyers"],
   Roivant: ["Admin", "Hiring Manager", "New Hire (Windows)", "New Hire (Mac)"],
   public: ["Admin", "Technical", "Non-technical"],
-  Life360: ["Admin", "Employee"],
+  Life360: ["Admin", "Employee (Technical)", "Employee (Non-technical)"],
 };
 
 const clientRolesCode: any = {
@@ -192,6 +192,8 @@ const clientRolesCode: any = {
   "New Hire (Mac)": "mac",
   "Hiring Manager": "manager",
   Employee: "employee",
+  "Employee (Technical)": "technical",
+  "Employee (Non-technical)": "nontechnical",
 };
 
 const connectionMappings: any = {
