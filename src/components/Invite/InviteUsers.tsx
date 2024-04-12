@@ -51,6 +51,7 @@ const InviteUsers = (props: IUProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [err_msg, setErrMsg] = useState("");
 
   const [valid_email, setValidEmail] = useState(true);
 
@@ -85,15 +86,16 @@ const InviteUsers = (props: IUProps) => {
 
     const accessToken = await getAccessTokenSilently();
 
-    const postResp = await standardPost(accessToken, "invites", inviteObj);
+    const post_resp = await standardPost(accessToken, "invites", inviteObj);
 
-    if (postResp.status === "Successful") {
-      setLoading(false);
+    if (post_resp.status === "Successful") {
       setSuccess(true);
     } else {
-      setLoading(false);
+      console.log("post resp message ", post_resp);
+      setErrMsg(post_resp.message);
       setError(true);
     }
+    setLoading(false);
   };
 
   return (
@@ -126,11 +128,7 @@ const InviteUsers = (props: IUProps) => {
         {!loading && success && (
           <Alert severity="success">Invite successfully sent!</Alert>
         )}
-        {!loading && error && (
-          <Alert severity="error">
-            Something went wrong... Please reach out to Andy
-          </Alert>
-        )}
+        {!loading && error && <Alert severity="error">{err_msg}</Alert>}
         {selectedClient === "spokeops" && (
           <FormControl fullWidth sx={textFieldStyle} required size="small">
             <InputLabel id="client-select-label">Client</InputLabel>

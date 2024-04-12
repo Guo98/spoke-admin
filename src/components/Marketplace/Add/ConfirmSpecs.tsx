@@ -99,6 +99,12 @@ const ConfirmSpecs = (props: ConfirmProps) => {
       supplier_url.includes("www.insight.com")
     ) {
       setLocation("United States");
+    } else if (supplier_url.includes("www.bechtle.com")) {
+      if (supplier_url.includes("pl-en")) {
+        setLocation("Poland");
+      } else if (supplier_url.includes("nl-en")) {
+        setLocation("Netherlands");
+      }
     }
   }, [supplier_url]);
 

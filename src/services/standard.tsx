@@ -34,16 +34,13 @@ export async function standardPost(
     body: JSON.stringify(body),
   })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Missing Body");
-      }
       return response.json();
     })
     .then((data) => {
       return data;
     })
     .catch((err) => {
-      return [];
+      return { status: "Error" };
     });
 }
 

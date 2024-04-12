@@ -64,7 +64,14 @@ const AddNewDevice = (props: AddProps) => {
     if (
       supplier_url !== "" &&
       !supplier_url.includes("www.cdw.com") &&
-      !supplier_url.includes("www.insight.com")
+      !supplier_url.includes("www.insight.com") &&
+      !supplier_url.includes("www.bechtle.com")
+    ) {
+      setInvalidSupplier(true);
+    } else if (
+      supplier_url.includes("www.bechtle.com") &&
+      !supplier_url.includes("pl-en") &&
+      !supplier_url.includes("nl-en")
     ) {
       setInvalidSupplier(true);
     } else {

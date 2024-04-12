@@ -159,7 +159,6 @@ const clientsList = [
   "Sona",
   "Life360",
   "public",
-  "Life360",
 ];
 
 const clientRoles: any = {
