@@ -115,8 +115,12 @@ function App() {
       dispatch(updateClient(client_resp.client));
       dispatch(updatePages(client_resp.allowed_pages));
       dispatch(setEntities(client_resp.entities));
-      if (client_resp.role === "Employee" && client_resp.client === "Life360") {
-        window.open("https://www.withspoke.com/12965360", "_self");
+      if (client_resp.client === "Life360") {
+        if (client_resp.role === "nontechnical") {
+          window.open("https://www.withspoke.com/129653602", "_self");
+        } else if (client_resp.role === "technical") {
+          window.open("https://www.withspoke.com/12965360", "_self");
+        }
       } else {
         setShow(true);
         dispatch(addRole([client_resp.role]));
