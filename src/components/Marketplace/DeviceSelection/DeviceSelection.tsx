@@ -404,6 +404,7 @@ const DeviceSelection = (props: DeviceSelectionProps) => {
                 client={client}
                 color={color}
                 region={region}
+                show_button={true}
               />
             </>
           )}

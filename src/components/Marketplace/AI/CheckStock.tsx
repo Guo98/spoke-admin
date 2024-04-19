@@ -27,6 +27,10 @@ interface CheckStockProps {
   client: string;
   color: string;
   region: string;
+  is_page?: boolean;
+  show_button: boolean;
+  check_stock?: boolean;
+  setScrapedInfo?: Function;
 }
 
 const CheckStock = (props: CheckStockProps) => {
@@ -87,15 +91,36 @@ const CheckStock = (props: CheckStockProps) => {
 
     if (stockResp.status === "Successful") {
       setStockChecked(true);
-      if (stockResp.data.stock_level !== "Not Found") {
-        setStock(stockResp.data.stock_level);
-        setPrice(stockResp.data.price);
-        setProdName(stockResp.data.product_name);
-        setUrlLink(stockResp.data.url_link);
-        setAISpecs(stockResp.data.specs);
-        setImgSrc(stockResp.data.image_source);
-        setCDWPartNo(stockResp.data.cdw_part_no);
-        setStatus(0);
+
+      if (stockResp.data?.stock_level !== "Not Found") {
+        if (stockResp.data) {
+          setStock(stockResp.data.stock_level);
+          setPrice(stockResp.data.price);
+          setProdName(stockResp.data.product_name);
+          setUrlLink(stockResp.data.url_link);
+          setAISpecs(stockResp.data.specs);
+          setImgSrc(stockResp.data.image_source);
+          setCDWPartNo(stockResp.data.cdw_part_no);
+          setStatus(0);
+        }
+
+        if (props.setScrapedInfo) {
+          props.setScrapedInfo({
+            device_url: stockResp.data.url_link,
+            stock_level: stockResp.data.stock_level,
+            est_price: stockResp.data.price,
+            image_source: stockResp.data.image_source,
+            scraped_specs: stockResp.data.specs,
+            scraped_name: stockResp.data.product_name,
+            supplier:
+              region !== "United States"
+                ? "bechtle"
+                : props.supplier !== ""
+                ? props.supplier
+                : "cdw",
+            cdw_part_no: stockResp.data.cdw_part_no,
+          });
+        }
       } else {
         setStatus(2);
       }
@@ -108,6 +133,12 @@ const CheckStock = (props: CheckStockProps) => {
     setLoading(false);
     setBoxLoading(false);
   };
+
+  useEffect(() => {
+    if (props.check_stock && !stock_checked) {
+      checkStock().catch();
+    }
+  }, [props.check_stock]);
 
   return (
     <>
@@ -170,7 +201,11 @@ const CheckStock = (props: CheckStockProps) => {
                     <Typography
                       display="inline"
                       component="span"
-                      color={stock.includes("In Stock") ? "greenyellow" : "red"}
+                      color={
+                        stock.toLowerCase().includes("in stock")
+                          ? "greenyellow"
+                          : "red"
+                      }
                     >
                       {stock}
                     </Typography>
@@ -196,86 +231,88 @@ const CheckStock = (props: CheckStockProps) => {
               </Link>
             </Stack>
           </Stack>
-          <Stack
-            direction="row"
-            spacing={2}
-            pt={1}
-            justifyContent="space-between"
-          >
-            {(client === "Alma" || client === "public") &&
-              props.supplier === "cdw" &&
-              region === "United States" && (
-                <Button
-                  variant="contained"
-                  sx={button_style}
-                  fullWidth
-                  onClick={() =>
-                    completeDeviceChoice(
-                      product_name,
-                      spec,
-                      url_link,
-                      "United States",
-                      price,
-                      img_src,
-                      stock,
-                      aispecs,
-                      props.supplier,
-                      cdw_part_no,
-                      "buy",
-                      true
-                    )
-                  }
-                >
-                  Buy Now
-                </Button>
-              )}
-            <Button
-              variant="contained"
-              sx={button_style}
-              fullWidth
-              onClick={() =>
-                completeDeviceChoice(
-                  type,
-                  spec,
-                  url_link,
-                  "United States",
-                  price,
-                  img_src,
-                  stock,
-                  aispecs,
-                  props.supplier,
-                  "",
-                  "quote",
-                  true
-                )
-              }
+          {!props.is_page && (
+            <Stack
+              direction="row"
+              spacing={2}
+              pt={1}
+              justifyContent="space-between"
             >
-              Add Accessories
-            </Button>
-            <Button
-              variant="contained"
-              sx={button_style}
-              fullWidth
-              onClick={() =>
-                completeDeviceChoice(
-                  type,
-                  spec,
-                  url_link,
-                  "United States",
-                  price,
-                  img_src,
-                  stock,
-                  aispecs,
-                  props.supplier,
-                  "",
-                  "quote",
-                  false
-                )
-              }
-            >
-              Request Quote
-            </Button>
-          </Stack>
+              {(client === "Alma" || client === "public") &&
+                props.supplier === "cdw" &&
+                region === "United States" && (
+                  <Button
+                    variant="contained"
+                    sx={button_style}
+                    fullWidth
+                    onClick={() =>
+                      completeDeviceChoice(
+                        product_name,
+                        spec,
+                        url_link,
+                        "United States",
+                        price,
+                        img_src,
+                        stock,
+                        aispecs,
+                        props.supplier,
+                        cdw_part_no,
+                        "buy",
+                        true
+                      )
+                    }
+                  >
+                    Buy Now
+                  </Button>
+                )}
+              <Button
+                variant="contained"
+                sx={button_style}
+                fullWidth
+                onClick={() =>
+                  completeDeviceChoice(
+                    type,
+                    spec,
+                    url_link,
+                    "United States",
+                    price,
+                    img_src,
+                    stock,
+                    aispecs,
+                    props.supplier,
+                    "",
+                    "quote",
+                    true
+                  )
+                }
+              >
+                Add Accessories
+              </Button>
+              <Button
+                variant="contained"
+                sx={button_style}
+                fullWidth
+                onClick={() =>
+                  completeDeviceChoice(
+                    type,
+                    spec,
+                    url_link,
+                    "United States",
+                    price,
+                    img_src,
+                    stock,
+                    aispecs,
+                    props.supplier,
+                    "",
+                    "quote",
+                    false
+                  )
+                }
+              >
+                Request Quote
+              </Button>
+            </Stack>
+          )}
         </>
       )}
       {recs.length > 0 && (
@@ -293,66 +330,72 @@ const CheckStock = (props: CheckStockProps) => {
           justifyContent="center"
           sx={{ mt: 2 }}
         >
-          <Button
-            disabled={loading}
-            variant="contained"
-            onClick={checkStock}
-            fullWidth
-            sx={button_style}
-            id="marketplace-purchase-modal-check-stock"
-          >
-            {!loading ? "Check Supplier's Stock" : <CircularProgress />}
-          </Button>
-          <Button
-            variant="contained"
-            sx={button_style}
-            fullWidth
-            disabled={loading}
-            id="marketplace-purchase-modal-add-accessories"
-            onClick={() =>
-              completeDeviceChoice(
-                type,
-                spec,
-                "",
-                "United States",
-                "",
-                "",
-                "",
-                "",
-                props.supplier,
-                "",
-                "quote",
-                true
-              )
-            }
-          >
-            Add Accessories
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            sx={button_style}
-            onClick={() =>
-              completeDeviceChoice(
-                type,
-                spec,
-                "",
-                "United States",
-                "",
-                "",
-                "",
-                "",
-                props.supplier,
-                "",
-                "quote",
-                false
-              )
-            }
-            disabled={loading}
-            id="marketplace-purchase-modal-request-quote"
-          >
-            Request Quote
-          </Button>
+          {props.show_button && (
+            <Button
+              disabled={loading}
+              variant="contained"
+              onClick={checkStock}
+              fullWidth
+              sx={button_style}
+              id="marketplace-purchase-modal-check-stock"
+            >
+              {!loading ? "Check Supplier's Stock" : <CircularProgress />}
+            </Button>
+          )}
+          {!props.is_page && (
+            <Button
+              variant="contained"
+              sx={button_style}
+              fullWidth
+              disabled={loading}
+              id="marketplace-purchase-modal-add-accessories"
+              onClick={() =>
+                completeDeviceChoice(
+                  type,
+                  spec,
+                  "",
+                  "United States",
+                  "",
+                  "",
+                  "",
+                  "",
+                  props.supplier,
+                  "",
+                  "quote",
+                  true
+                )
+              }
+            >
+              Add Accessories
+            </Button>
+          )}
+          {!props.is_page && (
+            <Button
+              fullWidth
+              variant="contained"
+              sx={button_style}
+              onClick={() =>
+                completeDeviceChoice(
+                  type,
+                  spec,
+                  "",
+                  "United States",
+                  "",
+                  "",
+                  "",
+                  "",
+                  props.supplier,
+                  "",
+                  "quote",
+                  false
+                )
+              }
+              disabled={loading}
+              id="marketplace-purchase-modal-request-quote"
+            >
+              Request Quote
+            </Button>
+          )}
         </Stack>
       )}
     </>

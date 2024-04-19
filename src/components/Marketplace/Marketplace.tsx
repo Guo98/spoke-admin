@@ -16,6 +16,7 @@ import BookmarkedCard from "./BookmarkedCard";
 import MarketplacePurchase from "./MarketplacePurchase";
 import LinearLoading from "../common/LinearLoading";
 import AddNewDevice from "./Add/AddNewDevice";
+import DeviceSelectionPage from "./DeviceSelection/DeviceSelectionPage";
 
 const Marketplace = () => {
   const productRedux = useSelector((state: RootState) => state.market.products);
@@ -162,8 +163,8 @@ const Marketplace = () => {
   };
 
   const selectBrand = (brand_name: string, index: number) => {
-    // setPagenumber(2);
-    setOpen(true);
+    setPagenumber(2);
+    // setOpen(true);
     setBrand(brand_name);
     setTypes(brands![index].types);
     setImg(brands![index].imgSrc);
@@ -306,6 +307,7 @@ const Marketplace = () => {
                 />
               );
             })}
+
           {existing_order_info === null || product === "Accessories" ? (
             <MarketplacePurchase
               open={openModal}
@@ -360,7 +362,14 @@ const Marketplace = () => {
             </Stack>
           </Stack>
         )}
-        {pagenumber > 0 && (
+        {pagenumber === 2 && (
+          <DeviceSelectionPage
+            brand={brandname}
+            device_lines={brandtypes}
+            setPageNumber={setPagenumber}
+          />
+        )}
+        {pagenumber > 0 && pagenumber < 2 && (
           <Button
             sx={{ marginTop: "50px" }}
             onClick={() => {

@@ -120,6 +120,8 @@ function App() {
           window.open("https://www.withspoke.com/129653602", "_self");
         } else if (client_resp.role === "technical") {
           window.open("https://www.withspoke.com/12965360", "_self");
+        } else {
+          setShow(true);
         }
       } else {
         setShow(true);
