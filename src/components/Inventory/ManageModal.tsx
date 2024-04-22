@@ -145,7 +145,7 @@ const ManageModal = (props: ManageProps) => {
               <Button
                 variant="contained"
                 sx={{ height: "50%", width: "25%" }}
-                onClick={() => AppContainer.navigate("marketplace")}
+                onClick={() => AppContainer.navigate("/marketplace")}
                 id="inventory-manage-buy"
               >
                 <Stack spacing={1} alignItems="center" p={2}>

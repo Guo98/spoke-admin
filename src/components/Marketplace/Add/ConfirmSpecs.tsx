@@ -226,6 +226,7 @@ const ConfirmSpecs = (props: ConfirmProps) => {
             sx={textfield_style}
             onChange={(e) => setLocation(e.target.value)}
             id="confirm-specs-text-location"
+            disabled={true}
           />
           <Divider />
           <Button

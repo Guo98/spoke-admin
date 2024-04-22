@@ -41,6 +41,7 @@ interface RecipientFormPageProps {
   ret_activation: string;
   color: string;
   scraped_info: ScrapedStockInfo | null;
+  accessories_only: boolean;
 }
 
 const RecipientFormPage = (props: RecipientFormPageProps) => {
@@ -52,6 +53,7 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
     device_url,
     addons,
     scraped_info,
+    accessories_only,
   } = props;
 
   const dispatch = useDispatch();
@@ -114,13 +116,19 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
     let postBody: any = {
       requestor_email: user?.email,
       client: client_data === "spokeops" ? selected_client : client_data,
-      device_type: device_name,
-      specs: device_specs,
-      color: props.color,
-      ref_url: device_url,
       notes: {},
-      region: device_location,
     };
+
+    if (!accessories_only) {
+      postBody = {
+        ...postBody,
+        region: device_location,
+        device_type: device_name,
+        specs: device_specs,
+        color: props.color,
+        ref_url: device_url,
+      };
+    }
 
     if (scraped_info !== null) {
       postBody.ai_specs = scraped_info.scraped_specs;
@@ -194,7 +202,7 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
     } else {
       setRequestStatus(1);
     }
-    console.log("marketplace requets body :::::::::: ", postBody);
+
     setLoading(false);
   };
 
@@ -325,7 +333,7 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
-            sx={button_style}
+            sx={{ ...button_style, px: 10 }}
             disabled={canSubmitForm()}
             onClick={sendMarketplaceRequest}
           >

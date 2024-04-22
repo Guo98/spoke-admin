@@ -153,12 +153,14 @@ const Marketplace = () => {
     setSelectedProducts([product_name]);
     setSuppliers(productRedux[item_index].suppliers);
     setProductType(productRedux[item_index].item_type);
+
     if (product_name !== "Accessories") {
       setBrands(productRedux[item_index].brands);
       setPagenumber(1);
     } else {
       setAddons(productRedux[item_index].items!);
-      setOpen(true);
+      setPagenumber(2);
+      // setOpen(true);
     }
   };
 
@@ -367,6 +369,9 @@ const Marketplace = () => {
             brand={brandname}
             device_lines={brandtypes}
             setPageNumber={setPagenumber}
+            accessories_only={product === "Accessories"}
+            product_type={product_type}
+            refresh={getProducts}
           />
         )}
         {pagenumber > 0 && pagenumber < 2 && (
