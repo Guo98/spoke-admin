@@ -549,6 +549,8 @@ const MarketplacePurchase = (props: MPProps) => {
             setRetNote={setRetNote}
             addons={accessories}
             addAccessories={setAccessories}
+            can_buy_direct={false}
+            is_page={false}
           />
         )}
         {activeStep === 2 && (

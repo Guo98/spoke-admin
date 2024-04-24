@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 
-import CheckStock from "../AI/CheckStock";
+import CheckStockSection from "../AI/CheckStockSection";
 import { RootState } from "../../../app/store";
 import { button_style, textfield_style } from "../../../utilities/styles";
 import LinearLoading from "../../common/LinearLoading";
 
 import { ScrapedStockInfo } from "../../../interfaces/marketplace";
+import { setState } from "../../../app/slices/recipientSlice";
 
 interface PageTwoProps {
   spec_options: any;
@@ -31,6 +32,7 @@ interface PageTwoProps {
   setDeviceLocation: Function;
   setDeviceColor: Function;
   setSupplier: Function;
+  setRequestType: Function;
 }
 
 const DeviceSelectionPageTwo = (props: PageTwoProps) => {
@@ -106,14 +108,16 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
   };
 
   const isInStock = () => {
-    console.log("supplier ::::::::::: ", supplier);
     if (supplier.toLowerCase() === "cdw") {
-      console.log("scarepd info ::::::::::::: ", scraped_info);
       if (
         scraped_info !== null &&
         scraped_info.stock_level.toLowerCase().includes("in stock")
       ) {
-        if (selected_client === "Alma" || client_data === "Alma") {
+        if (
+          selected_client === "Alma" ||
+          client_data === "Alma" ||
+          selected_client === "public"
+        ) {
           return true;
         }
       }
@@ -130,6 +134,12 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
 
     return false;
   };
+
+  useEffect(() => {
+    if (!loading) {
+      setCheckStock(false);
+    }
+  }, [loading]);
 
   return (
     <Stack spacing={2}>
@@ -225,7 +235,7 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
           </FormControl>
         )}
       {loading && <LinearLoading />}
-      <CheckStock
+      <CheckStockSection
         type={device_line}
         spec={spec_options.spec}
         brand={brand}
@@ -259,7 +269,14 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
               </Button>
             )}
           {isInStock() && (
-            <Button variant="contained" sx={button_style}>
+            <Button
+              variant="contained"
+              sx={button_style}
+              onClick={() => {
+                props.setRequestType("buy");
+                setPage(3);
+              }}
+            >
               Buy Directly From CDW
             </Button>
           )}

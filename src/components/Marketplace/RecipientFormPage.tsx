@@ -25,6 +25,7 @@ import { standardPost } from "../../services/standard";
 import { resetInfo } from "../../app/slices/recipientSlice";
 import LinearLoading from "../common/LinearLoading";
 import { ScrapedStockInfo } from "../../interfaces/marketplace";
+import { customer_ids } from "../../utilities/cdw-mappings";
 
 interface RecipientFormPageProps {
   setPage: Function;
@@ -42,6 +43,7 @@ interface RecipientFormPageProps {
   color: string;
   scraped_info: ScrapedStockInfo | null;
   accessories_only: boolean;
+  request_type: string;
 }
 
 const RecipientFormPage = (props: RecipientFormPageProps) => {
@@ -54,6 +56,7 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
     addons,
     scraped_info,
     accessories_only,
+    request_type,
   } = props;
 
   const dispatch = useDispatch();
@@ -160,17 +163,47 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
         postal_code: postal_redux,
         country_code: country_redux,
       };
-      postBody.order_type = "Deploy Right Away";
-      postBody.address =
-        adl +
-        ", " +
-        city_redux +
-        ", " +
-        state_redux +
-        " " +
-        postal_redux +
-        ", " +
-        country_redux;
+      if (request_type === "buy") {
+        postBody.order_type = "Buy Directly from CDW";
+        postBody.address =
+          adl +
+          ", " +
+          city_redux +
+          ", " +
+          state_redux +
+          " " +
+          postal_redux +
+          ", US";
+        postBody.approved = true;
+        postBody.cdw_part_no = scraped_info?.cdw_part_no;
+        postBody.cdw_address = {
+          addressLine: adl,
+          city: city_redux,
+          subdivision: state_redux,
+          postalCode: postal_redux,
+        };
+        postBody.cdw_name = {
+          first_name: fn_redux,
+          last_name: ln_redux,
+        };
+        // postBody.customer_id = "15004983";
+        postBody.customer_id = customer_ids[postBody.client];
+        postBody.unit_price = scraped_info?.price
+          .replace("$", "")
+          .replace(",", "");
+      } else {
+        postBody.order_type = "Deploy Right Away";
+        postBody.address =
+          adl +
+          ", " +
+          city_redux +
+          ", " +
+          state_redux +
+          " " +
+          postal_redux +
+          ", " +
+          country_redux;
+      }
 
       if (props.addons) {
         postBody.addons = props.addons;
@@ -246,26 +279,30 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
       <Divider textAlign="left">
         <Typography>Deployment Type</Typography>
       </Divider>
-      <FormControl
-        fullWidth
-        sx={textfield_style}
-        required
-        size="small"
-        disabled={addons && addons.length > 0}
-      >
-        <InputLabel id="deployment-select-label">Deployment Type</InputLabel>
-        <Select
-          labelId="deployment-select-label"
-          id="deployment-select"
-          label="Deployment Type"
-          onChange={handleDeploymentChange}
-          value={deployment_type}
+      {request_type === "quote" ? (
+        <FormControl
+          fullWidth
+          sx={textfield_style}
           required
+          size="small"
+          disabled={addons && addons.length > 0}
         >
-          <MenuItem value="Drop Ship">Drop Ship</MenuItem>
-          <MenuItem value="Buy and Hold">Buy and Hold</MenuItem>
-        </Select>
-      </FormControl>
+          <InputLabel id="deployment-select-label">Deployment Type</InputLabel>
+          <Select
+            labelId="deployment-select-label"
+            id="deployment-select"
+            label="Deployment Type"
+            onChange={handleDeploymentChange}
+            value={deployment_type}
+            required
+          >
+            <MenuItem value="Drop Ship">Drop Ship</MenuItem>
+            <MenuItem value="Buy and Hold">Buy and Hold</MenuItem>
+          </Select>
+        </FormControl>
+      ) : (
+        <Typography>Buy Directly from CDW</Typography>
+      )}
       {deployment_type === "Buy and Hold" && (
         <>
           <Divider textAlign="left" sx={{ fontWeight: "bold" }}>
@@ -284,7 +321,7 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
           />
         </>
       )}
-      {deployment_type === "Drop Ship" && (
+      {(deployment_type === "Drop Ship" || request_type === "buy") && (
         <RecipientForm address_required deployable_region={device_location} />
       )}
       {deployment_type !== "" && (

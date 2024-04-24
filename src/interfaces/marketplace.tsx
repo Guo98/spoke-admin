@@ -7,4 +7,5 @@ export interface ScrapedStockInfo {
   supplier: string;
   cdw_part_no?: string;
   scraped_name: string;
+  price: string;
 }

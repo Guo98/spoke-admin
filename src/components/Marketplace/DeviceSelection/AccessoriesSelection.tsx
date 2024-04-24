@@ -33,6 +33,10 @@ interface AccessoriesProps {
   setRetNote: Function;
   addons: string[];
   nextStep: Function;
+  setRequestType?: Function;
+  can_buy_direct: boolean;
+  is_page: boolean;
+  goBack?: Function;
 }
 
 const AccessoriesSelection = (props: AccessoriesProps) => {
@@ -51,6 +55,8 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
     setRetNote,
     addons,
     nextStep,
+    is_page,
+    can_buy_direct,
   } = props;
 
   const dispatch = useDispatch();
@@ -296,16 +302,57 @@ const AccessoriesSelection = (props: AccessoriesProps) => {
           />
         </Stack>
       )}
-      <Button
-        variant="contained"
-        sx={button_style}
-        onClick={() => {
-          nextStep(include_items);
-        }}
-        id="accessories-continue"
-      >
-        Continue
-      </Button>
+      {is_page ? (
+        <Stack direction="row" justifyContent="space-between">
+          <Button
+            onClick={() => {
+              if (props.goBack) {
+                props.goBack();
+              }
+            }}
+          >
+            Back
+          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="contained"
+              sx={button_style}
+              onClick={() => {
+                nextStep(include_items);
+              }}
+              id="accessories-continue"
+            >
+              Continue
+            </Button>
+            {can_buy_direct && (
+              <Button
+                variant="contained"
+                sx={button_style}
+                onClick={() => {
+                  nextStep(include_items);
+                  if (props.setRequestType) {
+                    props.setRequestType("buy");
+                  }
+                }}
+                id="accessories-continue"
+              >
+                Buy Direct from CDW
+              </Button>
+            )}
+          </Stack>
+        </Stack>
+      ) : (
+        <Button
+          variant="contained"
+          sx={button_style}
+          onClick={() => {
+            nextStep(include_items);
+          }}
+          id="accessories-continue"
+        >
+          Continue
+        </Button>
+      )}
     </Stack>
   );
 };

@@ -411,6 +411,8 @@ const AssignModal = (props: AssignProps) => {
               ret_note={ret_note}
               setRetNote={setRetNote}
               addons={addons}
+              can_buy_direct={false}
+              is_page={false}
             />
           )}
           {active_step === 2 && (

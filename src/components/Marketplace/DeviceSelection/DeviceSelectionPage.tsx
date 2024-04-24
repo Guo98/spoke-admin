@@ -45,6 +45,8 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
     (state: RootState) => state.client.selectedClient
   );
 
+  const [request_type, setRequestType] = useState("quote");
+
   const [page, setPage] = useState(accessories_only ? 2 : 0);
   const [selected_specs, setSelectedSpecs] = useState<any>(null);
   const [selected_line, setSelectedLine] = useState("");
@@ -129,6 +131,23 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
       setDeleteStatus(1);
     }
     setDeleteLoading(false);
+  };
+
+  const canBuyDirect = () => {
+    if (
+      (client_data === "Alma" ||
+        selected_client === "Alma" ||
+        selected_client === "public") &&
+      supplier === "CDW" &&
+      scraped_info !== null
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  const accessoriesBack = () => {
+    setPage(1);
   };
 
   return (
@@ -326,6 +345,7 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
           setDeviceLocation={setDeviceLocation}
           setDeviceUrl={setDeviceUrl}
           setSupplier={setSupplier}
+          setRequestType={setRequestType}
         />
       )}
       {page === 2 && (
@@ -346,6 +366,10 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
             addons={addons}
             addAccessories={setAddons}
             nextStep={completeAddAccessories}
+            setRequestType={setRequestType}
+            can_buy_direct={canBuyDirect()}
+            is_page={true}
+            goBack={accessoriesBack}
           />
         </>
       )}
@@ -366,6 +390,7 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
           color={device_color}
           scraped_info={scraped_info}
           accessories_only={accessories_only}
+          request_type={request_type}
         />
       )}
       {page === 0 && (
