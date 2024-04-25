@@ -18,7 +18,10 @@ import { RootState } from "../../../app/store";
 import { button_style, textfield_style } from "../../../utilities/styles";
 import LinearLoading from "../../common/LinearLoading";
 
-import { ScrapedStockInfo } from "../../../interfaces/marketplace";
+import {
+  ScrapedStockInfo,
+  OtherDeviceInfo,
+} from "../../../interfaces/marketplace";
 import { setState } from "../../../app/slices/recipientSlice";
 
 interface PageTwoProps {
@@ -33,6 +36,10 @@ interface PageTwoProps {
   setDeviceColor: Function;
   setSupplier: Function;
   setRequestType: Function;
+  setOtherDevice: Function;
+  device_color: string;
+  device_location: string;
+  other_device: OtherDeviceInfo | null;
 }
 
 const DeviceSelectionPageTwo = (props: PageTwoProps) => {
@@ -46,12 +53,20 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
     setDeviceColor,
     setDeviceLocation,
     setDeviceUrl,
+    setOtherDevice,
+    device_color,
+    device_location,
+    other_device,
   } = props;
 
   const client_data = useSelector((state: RootState) => state.client.data);
   const selected_client = useSelector(
     (state: RootState) => state.client.selectedClient
   );
+
+  const [other_brand, setOtherBrand] = useState("");
+  const [other_line, setOtherLine] = useState("");
+  const [other_specs, setOtherSpecs] = useState("");
 
   const [region, setRegion] = useState("");
   const [color, setColor] = useState("");
@@ -128,7 +143,16 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
   const completeDeviceChoice = () => {};
 
   const canContinue = () => {
-    if (region === "" || color === "") {
+    if (brand === "Others") {
+      if (
+        other_brand === "" ||
+        other_specs === "" ||
+        other_line === "" ||
+        other_region === ""
+      ) {
+        return true;
+      }
+    } else if (region === "" || color === "") {
       return true;
     }
 
@@ -141,32 +165,113 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
     }
   }, [loading]);
 
+  useEffect(() => {
+    if (brand === "Others") {
+      if (device_color !== "") {
+        setOtherColor(device_color);
+      }
+      if (device_location !== "") {
+        setOtherRegion(device_location);
+      }
+      if (other_device !== null) {
+        setOtherBrand(other_device.brand);
+        setOtherLine(other_device.line);
+        setOtherSpecs(other_device.specs);
+      }
+    } else {
+      if (spec_options.colors_by_location) {
+        if (
+          Object.keys(spec_options.colors_by_location).includes(device_location)
+        ) {
+          setRegion(device_location);
+        } else {
+          setOtherRegion(device_location);
+          setRegion("Other");
+          setOtherColor(device_color);
+          setColor("Other");
+        }
+
+        if (spec_options.colors_by_location[device_location]) {
+          if (
+            Object.keys(spec_options.colors_by_location[region]).includes(
+              device_color
+            )
+          ) {
+            setColor(device_color);
+          } else {
+            setOtherColor(device_color);
+            setColor("Other");
+          }
+        }
+      }
+    }
+  }, [device_color, device_location, other_device]);
+
   return (
     <Stack spacing={2}>
       <Divider textAlign="left">
         <Typography>Device Options</Typography>
       </Divider>
-      <FormControl fullWidth size="small" sx={textfield_style} required>
-        <InputLabel id="region-select-label">Shipping Region</InputLabel>
-        <Select
-          labelId="region-select-label"
-          label="Shipping Region"
-          onChange={handleRegionChange}
-          required
-          id="region-modal-select-type"
-          value={region}
-        >
-          {spec_options.colors_by_location &&
-            Object.keys(spec_options.colors_by_location).map((location) => (
-              <MenuItem value={location}>{location}</MenuItem>
-            ))}
-          <MenuItem value="Other">Other</MenuItem>
-        </Select>
-      </FormControl>
-      {region === "Other" && (
+      {brand !== "Others" && (
+        <FormControl fullWidth size="small" sx={textfield_style} required>
+          <InputLabel id="region-select-label">Shipping Region</InputLabel>
+          <Select
+            labelId="region-select-label"
+            label="Shipping Region"
+            onChange={handleRegionChange}
+            required
+            id="region-modal-select-type"
+            value={region}
+          >
+            {spec_options.colors_by_location &&
+              Object.keys(spec_options.colors_by_location).map((location) => (
+                <MenuItem value={location}>{location}</MenuItem>
+              ))}
+            <MenuItem value="Other">Other</MenuItem>
+          </Select>
+        </FormControl>
+      )}
+      {brand === "Others" && (
+        <>
+          <TextField
+            sx={textfield_style}
+            label="Device Brand"
+            value={other_brand}
+            onChange={(e) => {
+              setOtherBrand(e.target.value);
+            }}
+            size="small"
+            helperText="e.g. Apple, Dell, Lenovo"
+            required
+          />
+          <TextField
+            sx={textfield_style}
+            label="Device Line"
+            value={other_line}
+            onChange={(e) => {
+              setOtherLine(e.target.value);
+            }}
+            helperText="e.g. Macbook Pro, ThinkPad X1 Carbon, XPS"
+            size="small"
+            required
+          />
+          <TextField
+            sx={textfield_style}
+            label="Device Specs"
+            value={other_specs}
+            onChange={(e) => {
+              setOtherSpecs(e.target.value);
+            }}
+            helperText='Format specs as Screen Size, CPU, RAM, SSD. eg. 14", M3, 36GB, 1TB'
+            size="small"
+            required
+          />
+        </>
+      )}
+      {(region === "Other" || brand === "Others") && (
         <TextField
           sx={textfield_style}
-          label="Other Region"
+          label={brand === "Others" ? "Region" : "Other Region"}
           value={other_region}
           onChange={(e) => {
             setOtherRegion(e.target.value);
@@ -176,7 +281,7 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
           required
         />
       )}
-      {region !== "" && region !== "Other" && (
+      {region !== "" && region !== "Other" && brand !== "Others" && (
         <FormControl fullWidth size="small" sx={textfield_style} required>
           <InputLabel id="color-select-label">Device Color</InputLabel>
           <Select
@@ -197,21 +302,21 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
           </Select>
         </FormControl>
       )}
-      {(color === "Other" || region === "Other") && (
+      {(color === "Other" || region === "Other" || brand === "Others") && (
         <TextField
           sx={textfield_style}
-          label="Other Color"
+          label={brand === "Others" ? "Color" : "Other Color"}
           value={other_color}
           onChange={(e) => {
             setOtherColor(e.target.value);
             setDeviceColor(e.target.value);
           }}
           size="small"
-          required
         />
       )}
       {color !== "Other" &&
         color !== "" &&
+        brand !== "Others" &&
         spec_options.colors_by_location[region][color] &&
         Object.keys(spec_options.colors_by_location[region][color]) &&
         Object.keys(spec_options.colors_by_location[region][color]).length >
@@ -235,25 +340,37 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
           </FormControl>
         )}
       {loading && <LinearLoading />}
-      <CheckStockSection
-        type={device_line}
-        spec={spec_options.spec}
-        brand={brand}
-        setLoading={setLoading}
-        supplier={supplier}
-        product_link={product_link}
-        others={brand === "Others"}
-        client={client_data === "spokeops" ? selected_client : client_data}
-        color={color}
-        region={region}
-        completeDeviceChoice={completeDeviceChoice}
-        is_page={true}
-        show_button={false}
-        check_stock={check_stock}
-        setScrapedInfo={setScrapedInfo}
-      />
+      {brand !== "Others" && (
+        <CheckStockSection
+          type={device_line}
+          spec={spec_options.spec}
+          brand={brand}
+          setLoading={setLoading}
+          supplier={supplier}
+          product_link={product_link}
+          others={brand === "Others"}
+          client={client_data === "spokeops" ? selected_client : client_data}
+          color={color}
+          region={region}
+          completeDeviceChoice={completeDeviceChoice}
+          is_page={true}
+          show_button={false}
+          check_stock={check_stock}
+          setScrapedInfo={setScrapedInfo}
+        />
+      )}
       <Stack direction="row" justifyContent="space-between">
-        <Button onClick={() => setPage(0)}>Back</Button>
+        <Button
+          onClick={() => {
+            if (brand === "Others") {
+              setPage(-1);
+            } else {
+              setPage(0);
+            }
+          }}
+        >
+          Back
+        </Button>
         <Stack direction="row" spacing={2}>
           {(region === "United States" ||
             region === "Netherlands" ||
@@ -292,7 +409,16 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
             variant="contained"
             sx={button_style}
             disabled={canContinue()}
-            onClick={() => setPage(3)}
+            onClick={() => {
+              if (brand === "Others") {
+                setOtherDevice({
+                  brand: other_brand,
+                  line: other_line,
+                  specs: other_specs,
+                });
+              }
+              setPage(3);
+            }}
           >
             Request Quote
           </Button>

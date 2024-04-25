@@ -21,7 +21,10 @@ import DeviceSelectionPageTwo from "./DeviceSelectionPageTwo";
 import RecipientFormPage from "../RecipientFormPage";
 import AccessoriesSelection from "./AccessoriesSelection";
 
-import { ScrapedStockInfo } from "../../../interfaces/marketplace";
+import {
+  ScrapedStockInfo,
+  OtherDeviceInfo,
+} from "../../../interfaces/marketplace";
 import { RootState } from "../../../app/store";
 import { box_style, button_style } from "../../../utilities/styles";
 import { standardPost } from "../../../services/standard";
@@ -37,7 +40,8 @@ interface DeviceSelectionProps {
 }
 
 const DeviceSelectionPage = (props: DeviceSelectionProps) => {
-  const { brand, device_lines, setPageNumber, accessories_only } = props;
+  const { brand, device_lines, setPageNumber, accessories_only, product_type } =
+    props;
   const { getAccessTokenSilently } = useAuth0();
 
   const client_data = useSelector((state: RootState) => state.client.data);
@@ -59,6 +63,8 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
   const [scraped_info, setScrapedInfo] = useState<ScrapedStockInfo | null>(
     null
   );
+
+  const [other_device, setOtherDevice] = useState<OtherDeviceInfo | null>(null);
 
   //addons
   const [addons, setAddons] = useState<string[]>([]);
@@ -82,6 +88,12 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
   };
 
   useEffect(() => {
+    if (brand === "Others") {
+      setPage(1);
+    }
+  }, [brand]);
+
+  useEffect(() => {
     if (page === 0) {
       if (accessories_only) {
         setPageNumber(0);
@@ -96,6 +108,8 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
         setRetActivation("");
         setScrapedInfo(null);
       }
+    } else if (page === -1) {
+      setPageNumber(0);
     }
   }, [page]);
 
@@ -147,7 +161,11 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
   };
 
   const accessoriesBack = () => {
-    setPage(1);
+    if (product_type !== "Accessories") {
+      setPage(1);
+    } else {
+      setPageNumber(0);
+    }
   };
 
   return (
@@ -209,6 +227,35 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
               )}
             </div>
           </Stack>
+        </>
+      )}
+      {page > 0 && other_device !== null && (
+        <>
+          <Divider />
+          <Typography component="h5" fontWeight="bold" fontSize="105%">
+            Order Details
+          </Typography>
+          <Typography>Device:</Typography>
+          <ul>
+            <li>
+              <Typography>
+                {other_device.brand + " " + other_device.line}
+              </Typography>
+            </li>
+            <li>
+              <Typography>Requested Specs: {other_device.specs}</Typography>
+            </li>
+            {device_color !== "" && (
+              <li>
+                <Typography>Device Color: {device_color}</Typography>
+              </li>
+            )}
+            {device_location !== "" && (
+              <li>
+                <Typography>Location: {device_location}</Typography>
+              </li>
+            )}
+          </ul>
         </>
       )}
       {page > 2 && accessories_only && addons.length > 0 && (
@@ -346,6 +393,10 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
           setDeviceUrl={setDeviceUrl}
           setSupplier={setSupplier}
           setRequestType={setRequestType}
+          setOtherDevice={setOtherDevice}
+          device_color={device_color}
+          device_location={device_location}
+          other_device={other_device}
         />
       )}
       {page === 2 && (
@@ -376,8 +427,15 @@ const DeviceSelectionPage = (props: DeviceSelectionProps) => {
       {page === 3 && (
         <RecipientFormPage
           setPage={setPage}
-          device_name={selected_line}
-          device_specs={selected_specs?.spec}
+          device_brand={brand === "Others" ? other_device!.brand : brand}
+          device_name={
+            brand === "Others"
+              ? other_device!.brand + " " + other_device!.line
+              : selected_line
+          }
+          device_specs={
+            brand === "Others" ? other_device!.specs : selected_specs?.spec
+          }
           device_location={device_location}
           device_url={device_url}
           supplier={supplier}

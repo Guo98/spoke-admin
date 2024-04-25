@@ -9,3 +9,17 @@ export interface ScrapedStockInfo {
   scraped_name: string;
   price: string;
 }
+
+export interface OtherDeviceInfo {
+  brand: string;
+  line: string;
+  specs: string;
+}
+
+export interface NewOrderRedux {
+  brand: string;
+  line: string;
+  specs: string;
+  location: string;
+  color: string;
+}

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UpdateMarketOrderAction } from "../../types/redux/market";
 import { PauseOutlined } from "@mui/icons-material";
 import { MarketplaceProducts2 } from "../../interfaces/inventory";
+import { NewOrderRedux } from "../../interfaces/marketplace";
 
 const initialState: {
   data: any;
@@ -11,6 +12,7 @@ const initialState: {
   accessories: any;
   products: MarketplaceProducts2[];
   marketplace_client: string;
+  new_order: NewOrderRedux | null;
 } = {
   data: [],
   filteredData: [],
@@ -19,6 +21,7 @@ const initialState: {
   accessories: null,
   products: [],
   marketplace_client: "",
+  new_order: null,
 };
 
 export const marketSlice = createSlice({
@@ -109,6 +112,9 @@ export const marketSlice = createSlice({
         state.accessories = {};
       }
     },
+    setNewOrder: (state, action: PayloadAction<NewOrderRedux>) => {
+      state.new_order = action.payload;
+    },
   },
 });
 
@@ -119,6 +125,7 @@ export const {
   openMarketplace,
   resetMarketplaceInfo,
   addProducts,
+  setNewOrder,
 } = marketSlice.actions;
 
 export default marketSlice.reducer;

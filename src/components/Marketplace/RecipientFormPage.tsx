@@ -30,6 +30,7 @@ import { customer_ids } from "../../utilities/cdw-mappings";
 interface RecipientFormPageProps {
   setPage: Function;
   addons: string[];
+  device_brand: string;
   device_name: string;
   device_specs: string;
   device_location: string;
