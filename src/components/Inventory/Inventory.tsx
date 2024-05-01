@@ -92,7 +92,7 @@ const Inventory: FC = (): ReactElement => {
 
     let route = `inventory/${client}`;
 
-    if (roles?.length > 0 && roles[0] !== "admin") {
+    if (roles?.length > 0 && roles[0].toLowerCase() !== "admin") {
       route = route + `/${roleMapping[roles[0]]}`;
     }
 
