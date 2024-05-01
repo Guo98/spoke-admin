@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, Link, Stack, Button } from "@mui/material";
 import RateSelection from "./RateSelection";
+import { button_style } from "../../../utilities/styles";
 
 interface RecommendationProps {
   price: string;
@@ -93,7 +94,7 @@ const Recommendation = (props: RecommendationProps) => {
             </Link>
             <Button
               variant="contained"
-              sx={{ borderRadius: "10px" }}
+              sx={button_style}
               onClick={() =>
                 completeDeviceChoice(
                   product_name,
@@ -107,7 +108,7 @@ const Recommendation = (props: RecommendationProps) => {
                 )
               }
             >
-              Request Quote
+              Request This Instead
             </Button>
           </Stack>
         </Stack>

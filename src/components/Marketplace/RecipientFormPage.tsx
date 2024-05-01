@@ -358,7 +358,7 @@ const RecipientFormPage = (props: RecipientFormPageProps) => {
           onClick={() => {
             if (request_status !== -1) {
               dispatch(resetInfo());
-              setPage(0);
+              setPage(-1);
             } else if (addons && addons.length > 0) {
               setPage(2);
             } else {

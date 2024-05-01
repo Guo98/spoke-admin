@@ -142,6 +142,8 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
 
   const completeDeviceChoice = () => {};
 
+  const requestRecommendedDevice = () => {};
+
   const canContinue = () => {
     if (brand === "Others") {
       if (
@@ -160,7 +162,7 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
   };
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && scraped_info === null) {
       setCheckStock(false);
     }
   }, [loading]);
@@ -178,7 +180,7 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
         setOtherLine(other_device.line);
         setOtherSpecs(other_device.specs);
       }
-    } else {
+    } else if (device_location !== "") {
       if (spec_options.colors_by_location) {
         if (
           Object.keys(spec_options.colors_by_location).includes(device_location)
@@ -190,17 +192,18 @@ const DeviceSelectionPageTwo = (props: PageTwoProps) => {
           setOtherColor(device_color);
           setColor("Other");
         }
-
-        if (spec_options.colors_by_location[device_location]) {
-          if (
-            Object.keys(spec_options.colors_by_location[region]).includes(
-              device_color
-            )
-          ) {
-            setColor(device_color);
-          } else {
-            setOtherColor(device_color);
-            setColor("Other");
+        if (device_color !== "") {
+          if (spec_options.colors_by_location[device_location]) {
+            if (
+              Object.keys(
+                spec_options.colors_by_location[device_location]
+              ).includes(device_color)
+            ) {
+              setColor(device_color);
+            } else {
+              setOtherColor(device_color);
+              setColor("Other");
+            }
           }
         }
       }
