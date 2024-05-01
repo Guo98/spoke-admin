@@ -347,7 +347,12 @@ const AssignModal = (props: AssignProps) => {
                     >
                       {props.devices!.length > 0 &&
                         props.devices?.map((dev, index) => {
-                          if (dev.serial_numbers.length > 0) {
+                          if (
+                            dev.serial_numbers.length > 0 &&
+                            dev.serial_numbers.findIndex(
+                              (s) => s.status.toLowerCase() === "in stock"
+                            ) > -1
+                          ) {
                             return (
                               <MenuItem value={index}>
                                 <Typography display="inline" component="span">
@@ -418,8 +423,11 @@ const AssignModal = (props: AssignProps) => {
               device_name={assign_device_name}
               serial_number={
                 manage_modal
-                  ? props.devices![parseInt(selectedDevice)]?.serial_numbers[0]
-                      .sn
+                  ? props.devices![
+                      parseInt(selectedDevice)
+                    ]?.serial_numbers.filter(
+                      (s) => s.status.toLowerCase() === "in stock"
+                    )[0].sn
                   : serial_number!
               }
               image_source={
