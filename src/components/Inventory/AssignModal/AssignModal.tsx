@@ -47,6 +47,8 @@ const style = {
   bgcolor: "background.paper",
   borderRadius: "20px",
   boxShadow: 24,
+  maxHeight: { xs: "75%" },
+  overflowY: "scroll",
   p: 4,
 };
 
